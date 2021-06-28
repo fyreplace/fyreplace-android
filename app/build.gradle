@@ -1,0 +1,51 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'androidx.navigation.safeargs.kotlin'
+}
+
+android {
+    compileSdkVersion configuration.compileSdkVersion
+
+    defaultConfig {
+        applicationId "app.fyreplace.client"
+        minSdkVersion configuration.minSdkVersion
+        targetSdkVersion configuration.targetSdkVersion
+        versionCode 9001
+        versionName "0.9.1"
+    }
+
+    buildTypes {
+        debug {
+            versionNameSuffix "-dev"
+            applicationIdSuffix ".dev"
+        }
+
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+}
+
+dependencies {
+    implementation libraries.kotlin
+    implementation libraries.androidx.core
+    implementation libraries.androidx.appCompat
+    implementation libraries.material
+}
