@@ -14,6 +14,7 @@ android {
         targetSdkVersion configuration.targetSdkVersion
         versionCode 9001
         versionName "0.9.1"
+        vectorDrawables.useSupportLibrary true
     }
 
     buildTypes {
@@ -39,7 +40,7 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
+        dataBinding true
     }
 }
 
@@ -47,5 +48,10 @@ dependencies {
     implementation libraries.kotlin
     implementation libraries.androidx.core
     implementation libraries.androidx.appCompat
+    implementation libraries.androidx.fragment
+    implementation libraries.androidx.lifecycle.runtime
+    implementation libraries.androidx.navigation.fragment
+    implementation libraries.androidx.navigation.ui
+    implementation libraries.koin
     implementation libraries.material
 }

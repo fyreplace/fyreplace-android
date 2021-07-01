@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="app_name">Fyreplace</string>
+    <string name="destination_feed">Feed</string>
+    <string name="destination_notifications">Notifications</string>
+    <string name="destination_archive">Archive</string>
+    <string name="destination_drafts">Drafts</string>
+    <string name="destination_settings">Settings</string>
 </resources>

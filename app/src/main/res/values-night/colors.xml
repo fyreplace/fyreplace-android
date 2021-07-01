@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF8243</color>
-    <color name="primaryDark">#C65314</color>
-    <color name="secondary">@color/primary</color>
-    <color name="secondaryDark">@color/primaryDark</color>
+    <color name="primary">@color/main_light</color>
+    <color name="on_primary">@android:color/black</color>
+    <color name="primary_dark">@android:color/black</color>
+    <color name="splash">@android:color/black</color>
 </resources>

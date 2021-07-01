@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/fragment_feed"
+        android:icon="@drawable/ic_baseline_file_copy"
+        android:title="@string/destination_feed" />
+    <item
+        android:id="@+id/fragment_notifications"
+        android:icon="@drawable/ic_baseline_notifications"
+        android:title="@string/destination_notifications" />
+    <item
+        android:id="@+id/fragment_archive"
+        android:icon="@drawable/ic_baseline_history"
+        android:title="@string/destination_archive" />
+    <item
+        android:id="@+id/fragment_drafts"
+        android:icon="@drawable/ic_baseline_note_add"
+        android:title="@string/destination_drafts" />
+    <item
+        android:id="@+id/fragment_settings"
+        android:icon="@drawable/ic_baseline_account_circle"
+        android:title="@string/destination_settings" />
+</menu>

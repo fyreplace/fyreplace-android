@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF8243</color>
-    <color name="primaryDark">#C65314</color>
-    <color name="primaryLight">#FFB371</color>
-    <color name="secondary">@color/primary</color>
-    <color name="secondaryDark">@color/primaryDark</color>
-    <color name="secondaryLight">@color/primaryLight</color>
+    <color name="main">#FF8243</color>
+    <color name="main_dark">#C65314</color>
+    <color name="main_light">#FFB371</color>
+    <color name="primary">@color/main</color>
+    <color name="on_primary">@android:color/white</color>
+    <color name="primary_dark">@color/main_dark</color>
+    <color name="navigation">@android:color/black</color>
+    <color name="splash">@color/primary</color>
 </resources>
