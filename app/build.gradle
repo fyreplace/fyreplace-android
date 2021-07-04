@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.protobuf'
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
@@ -55,14 +56,37 @@ android {
     }
 }
 
+protobuf {
+    protoc {
+        artifact = libraries.protoc
+    }
+
+    plugins {
+        grpc {
+            artifact = libraries.grpc.protoc
+        }
+    }
+
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins { java {} }
+            task.plugins { grpc {} }
+        }
+    }
+}
+
 dependencies {
     implementation libraries.kotlin
-    implementation libraries.androidx.core
     implementation libraries.androidx.appCompat
+    implementation libraries.androidx.core
     implementation libraries.androidx.fragment
     implementation libraries.androidx.lifecycle.runtime
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
+    implementation libraries.grpc.okHttp
+    implementation libraries.grpc.protobuf
+    implementation libraries.grpc.stub
+    implementation libraries.javax.annotation
     implementation libraries.koin
     implementation libraries.material
     vanillaImplementation libraries.play.basement
