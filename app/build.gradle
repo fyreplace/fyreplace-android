@@ -1,6 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'com.google.protobuf'
+    id 'com.squareup.wire'
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
@@ -56,22 +56,11 @@ android {
     }
 }
 
-protobuf {
-    protoc {
-        artifact = libraries.protoc
-    }
-
-    plugins {
-        grpc {
-            artifact = libraries.grpc.protoc
-        }
-    }
-
-    generateProtoTasks {
-        all().each { task ->
-            task.builtins { java {} }
-            task.plugins { grpc {} }
-        }
+wire {
+    kotlin {
+        android = true
+        rpcCallStyle = 'suspending'
+        rpcRole = 'client'
     }
 }
 
@@ -80,15 +69,14 @@ dependencies {
     implementation libraries.androidx.appCompat
     implementation libraries.androidx.core
     implementation libraries.androidx.fragment
+    implementation libraries.androidx.lifecycle.liveData
     implementation libraries.androidx.lifecycle.runtime
+    implementation libraries.androidx.lifecycle.viewModel
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
-    implementation libraries.grpc.okHttp
-    implementation libraries.grpc.protobuf
-    implementation libraries.grpc.stub
-    implementation libraries.javax.annotation
     implementation libraries.koin
     implementation libraries.material
+    implementation libraries.wire
     vanillaImplementation libraries.play.basement
     libreImplementation libraries.conscrypt
 }
