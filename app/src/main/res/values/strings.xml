@@ -1,9 +1,50 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <resources>
     <string name="app_name">Fyreplace</string>
+    <string name="ok">@android:string/ok</string>
+    <string name="cancel">@android:string/cancel</string>
+    <string name="error_title">Unknown error: %1$s</string>
+
     <string name="destination_feed">Feed</string>
     <string name="destination_notifications">Notifications</string>
     <string name="destination_archive">Archive</string>
     <string name="destination_drafts">Drafts</string>
     <string name="destination_settings">Settings</string>
+    <string name="destination_login">Login</string>
+
+    <string name="settings_username">Guest</string>
+    <string name="settings_avatar_desc">Avatar</string>
+
+    <string name="login_register">Register</string>
+    <string name="login_login">Login</string>
+    <string name="login_email">Email</string>
+    <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
+    <string name="login_logo_desc">Logo</string>
+    <string name="login_register_title">Check your email</string>
+    <string name="login_register_message">A confirmation email has been sent to your address. It contains a link that will allow you to confirm your registration.</string>
+    <string name="login_error_existing_email_title">Email taken</string>
+    <string name="login_error_existing_email_message">This email is already used in another account.</string>
+    <string name="login_error_existing_username_title">Username taken</string>
+    <string name="login_error_existing_username_message">This username is already used in another account.</string>
+    <string name="login_error_caller_pending_title">Account not activated</string>
+    <string name="login_error_caller_pending_message">You have not yet activated your account. Have you checked your email for an activation link?</string>
+    <string name="login_error_caller_deleted_title">Account deleted</string>
+    <string name="login_error_caller_deleted_message">This account has been deleted. You cannot use a deleted account, and it cannot be recovered.</string>
+    <string name="login_error_caller_banned_title">Account banned</string>
+    <string name="login_error_caller_banned_message">This account has been banned permanently.</string>
+    <string name="login_error_username_reserved_title">Username unavailable</string>
+    <string name="login_error_username_reserved_message">This username is not available.</string>
+    <string name="login_error_invalid_credentials_title">Invalid credentials</string>
+    <string name="login_error_invalid_credentials_message">Username or password incorrect.</string>
+    <string name="login_error_invalid_email_title">Invalid email address</string>
+    <string name="login_error_invalid_email_message">This email address is not valid.</string>
+    <string name="login_error_invalid_username_title">Invalid username</string>
+    <string name="login_error_invalid_username_message">This username is not valid. Usernames can contain letters, numbers, and @/./+/-/_ characters.</string>
+    <string name="login_error_invalid_password_title">Weak password</string>
+    <string name="login_error_invalid_password_message">This password is too weak.</string>
+    <string name="login_error_permission_title">Permission error</string>
+    <string name="login_error_permission_message">You do not have the permission to perform this action.</string>
+    <string name="login_error_validation_title">Validation error</string>
+    <string name="login_error_validation_message">Please ensure the information you wrote is correct.</string>
 </resources>

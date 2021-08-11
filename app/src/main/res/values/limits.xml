@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="login_email_min_size">3</integer>
+    <integer name="login_email_max_size">100</integer>
+    <integer name="login_username_min_size">3</integer>
+    <integer name="login_username_max_size">50</integer>
+    <integer name="login_password_min_size">8</integer>
+    <integer name="login_password_max_size">100</integer>
+</resources>

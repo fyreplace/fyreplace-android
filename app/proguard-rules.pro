@@ -1,2 +1,0 @@
--keep class com.squareup.wire.** { *; }
--keep class app.fyreplace.protos.** { *; }

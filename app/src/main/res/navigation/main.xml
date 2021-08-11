@@ -28,5 +28,18 @@
         android:id="@+id/fragment_settings"
         android:name="app.fyreplace.client.ui.SettingsFragment"
         android:label="@string/destination_settings"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+        <action
+            android:id="@+id/to_fragment_login"
+            app:destination="@id/fragment_login" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_login"
+        android:name="app.fyreplace.client.ui.LoginFragment"
+        android:label=""
+        tools:layout="@layout/fragment_login">
+        <argument
+            android:name="isRegistering"
+            app:argType="boolean" />
+    </fragment>
 </navigation>

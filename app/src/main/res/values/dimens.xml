@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="gap">16dp</dimen>
+    <dimen name="gap_wide">32dp</dimen>
+    <dimen name="settings_avatar_size">80dp</dimen>
+    <dimen name="login_form_width">240dp</dimen>
+</resources>
