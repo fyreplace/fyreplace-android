@@ -30,9 +30,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentOnAttach
     override fun onCreate(savedInstanceState: Bundle?) {
         window.setBackgroundDrawable(null)
         super.onCreate(savedInstanceState)
-        bd = ActivityMainBinding.bind(findViewById(R.id.root)).apply {
-            lifecycleOwner = this@MainActivity
-            vm = this@MainActivity.vm
+        bd = ActivityMainBinding.bind(findViewById(R.id.root)).also {
+            it.lifecycleOwner = this
+            it.vm = vm
         }
 
         setSupportActionBar(bd.toolbar)

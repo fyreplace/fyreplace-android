@@ -48,21 +48,21 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         val error = Status.fromThrowable(failure)
         val (title, message) = when (error.code) {
             Status.Code.ALREADY_EXISTS -> when (error.description) {
-                "email_taken" -> (R.string.login_error_existing_email_title to R.string.login_error_existing_email_message)
-                else -> (R.string.login_error_existing_username_title to R.string.login_error_existing_username_message)
+                "email_taken" -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
+                else -> R.string.login_error_existing_username_title to R.string.login_error_existing_username_message
             }
             Status.Code.PERMISSION_DENIED -> when (error.description) {
-                "caller_pending" -> (R.string.login_error_caller_pending_title to R.string.login_error_caller_pending_message)
-                "caller_deleted" -> (R.string.login_error_caller_deleted_title to R.string.login_error_caller_deleted_message)
-                "caller_banned" -> (R.string.login_error_caller_banned_title to R.string.login_error_caller_banned_message)
-                else -> (R.string.login_error_permission_title to R.string.login_error_permission_message)
+                "caller_pending" -> R.string.login_error_caller_pending_title to R.string.login_error_caller_pending_message
+                "caller_deleted" -> R.string.login_error_caller_deleted_title to R.string.login_error_caller_deleted_message
+                "caller_banned" -> R.string.login_error_caller_banned_title to R.string.login_error_caller_banned_message
+                else -> R.string.error_permission_title to R.string.error_permission_message
             }
             Status.Code.INVALID_ARGUMENT -> when (error.description) {
-                "invalid_credentials" -> (R.string.login_error_invalid_credentials_title to R.string.login_error_invalid_credentials_message)
-                "invalid_email" -> (R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message)
-                "invalid_username" -> (R.string.login_error_invalid_username_title to R.string.login_error_invalid_username_message)
-                "invalid_password" -> (R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message)
-                else -> (R.string.login_error_validation_title to R.string.login_error_validation_message)
+                "invalid_credentials" -> R.string.login_error_invalid_credentials_title to R.string.login_error_invalid_credentials_message
+                "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
+                "invalid_username" -> R.string.login_error_invalid_username_title to R.string.login_error_invalid_username_message
+                "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
+                else -> R.string.error_validation_title to R.string.error_validation_message
             }
             else -> return super.onFailure(failure)
         }
