@@ -1,7 +1,6 @@
 package app.fyreplace.client.viewmodels
 
 import android.content.res.Resources
-import android.util.Log
 import androidx.annotation.IntegerRes
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
@@ -9,16 +8,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.fyreplace.client.R
 import app.fyreplace.client.grpc.awaitSingleResponse
+import app.fyreplace.client.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpc
-import app.fyreplace.protos.Client
 import app.fyreplace.protos.Credentials
 import app.fyreplace.protos.UserCreation
-import com.google.protobuf.Empty
 import io.grpc.stub.StreamObserver
-import kotlinx.coroutines.awaitCancellation
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlin.coroutines.coroutineContext
 import kotlin.reflect.KFunction2
 
 class LoginViewModel(
@@ -59,7 +53,7 @@ class LoginViewModel(
         val request = Credentials.newBuilder()
             .setIdentifier(username.value)
             .setPassword(password.value)
-            .setClient(Client.newBuilder().setHardware("mobile").setSoftware("android"))
+            .setClient(defaultClient)
             .build()
 
         awaitResponse(accountStub::connect, request)

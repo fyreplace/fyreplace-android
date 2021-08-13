@@ -1,6 +1,5 @@
 package app.fyreplace.client.ui
 
-import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
@@ -13,9 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-interface FailureHandler : LifecycleOwner, ViewModelStoreOwner {
-    fun getContext(): Context?
-
+interface FailureHandler : BasePresenter, LifecycleOwner, ViewModelStoreOwner {
     fun onFailure(failure: Throwable) {
         getContext()?.run {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())

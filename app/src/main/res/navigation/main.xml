@@ -32,6 +32,9 @@
         <action
             android:id="@+id/to_fragment_login"
             app:destination="@id/fragment_login" />
+        <deepLink
+            app:action="ACTION_VIEW"
+            app:uri="fyreplace:///AccountService.ConfirmActivation" />
     </fragment>
     <fragment
         android:id="@+id/fragment_login"

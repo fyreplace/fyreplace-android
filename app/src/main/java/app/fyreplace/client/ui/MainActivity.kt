@@ -1,5 +1,6 @@
 package app.fyreplace.client.ui
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -18,10 +19,11 @@ import app.fyreplace.client.R
 import app.fyreplace.client.databinding.ActivityMainBinding
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
+import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentOnAttachListener,
-    TabLayout.OnTabSelectedListener {
+class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
+    FragmentOnAttachListener, TabLayout.OnTabSelectedListener {
     private lateinit var bd: ActivityMainBinding
     private val vm by viewModel<MainViewModel>()
     private lateinit var navHost: NavHostFragment
@@ -49,6 +51,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentOnAttach
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
+        vm.getUsableIntent(intent)?.let { handleIntent(it) }
         vm.pageState.observe(this) { state ->
             skipNextTabChange = true
             bd.tabs.removeAllTabs()
@@ -71,8 +74,34 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentOnAttach
         super.onDestroy()
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        navHost.navController.handleDeepLink(intent)
+        vm.getUsableIntent(intent)?.let { handleIntent(it) }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         return navHost.navController.navigateUp() || super.onSupportNavigateUp()
+    }
+
+    override fun getContext() = this
+
+    override fun onFailure(failure: Throwable) {
+        val error = Status.fromThrowable(failure)
+        val (title, message) = when (error.code) {
+            Status.Code.UNAUTHENTICATED -> when (error.description) {
+                "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
+                "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
+                else -> R.string.error_authentication_title to R.string.error_authentication_message
+            }
+            Status.Code.PERMISSION_DENIED -> when (error.description) {
+                "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
+                else -> R.string.error_permission_title to R.string.error_permission_message
+            }
+            else -> return super.onFailure(failure)
+        }
+
+        showBasicAlert(title, message, error = true)
     }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
@@ -117,6 +146,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FragmentOnAttach
                 bd.root.systemUiVisibility =
                     bd.root.systemUiVisibility or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val uri = intent.data ?: return
+
+        if (uri.scheme != "fyreplace" || !uri.host.isNullOrEmpty()) {
+            return showBasicAlert(
+                R.string.main_error_malformed_url_title,
+                R.string.main_error_malformed_url_message,
+                error = true
+            )
+        }
+
+        when (uri.path) {
+            "/AccountService.ConfirmActivation" -> confirmActivation(uri.fragment.orEmpty())
+            else -> showBasicAlert(
+                R.string.main_error_malformed_url_title,
+                R.string.main_error_malformed_url_message,
+                error = true
+            )
+        }
+    }
+
+    private fun confirmActivation(token: String) = launch {
+        vm.confirmActivation(token)
+        showBasicAlert(
+            R.string.main_account_activated_title,
+            R.string.main_account_activated_message
+        )
     }
 
     private companion object {

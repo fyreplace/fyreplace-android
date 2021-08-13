@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-sdk tools:overrideLibrary="androidx.security" />
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -27,6 +29,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <nav-graph android:value="@navigation/main" />
         </activity>
     </application>
 </manifest>

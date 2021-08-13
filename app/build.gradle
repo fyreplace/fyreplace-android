@@ -85,6 +85,7 @@ dependencies {
     implementation libraries.androidx.lifecycle.viewModel
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
+    implementation libraries.androidx.security
     implementation libraries.grpc.okHttp
     implementation libraries.grpc.protobuf
     implementation libraries.grpc.stub
