@@ -1,3 +1,11 @@
-# Default ignored files
-/shelf/
+/shelf
+/caches
+/libraries
+/codeStyles
+/dictionaries
+/misc.xml
+/modules.xml
 /workspace.xml
+/navEditor.xml
+/assetWizardSettings.xml
+/deploymentTargetDropDown.xml
