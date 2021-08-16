@@ -24,8 +24,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
     FragmentOnAttachListener, TabLayout.OnTabSelectedListener {
-    private lateinit var bd: ActivityMainBinding
     private val vm by viewModel<MainViewModel>()
+    private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
     private var skipNextTabChange = true
 

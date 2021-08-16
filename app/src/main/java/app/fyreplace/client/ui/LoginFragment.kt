@@ -13,8 +13,8 @@ import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
-    private lateinit var bd: FragmentLoginBinding
     private val vm by viewModel<LoginViewModel>()
+    private lateinit var bd: FragmentLoginBinding
     private val args by navArgs<LoginFragmentArgs>()
 
     override fun onCreateView(
