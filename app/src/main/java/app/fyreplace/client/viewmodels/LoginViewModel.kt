@@ -19,7 +19,7 @@ class LoginViewModel(
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
 ) : ViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
-    private var mIsLoading = MutableStateFlow(false)
+    private val mIsLoading = MutableStateFlow(false)
     val isRegistering: StateFlow<Boolean> = mIsRegistering
     val email = MutableStateFlow("")
     val username = MutableStateFlow("")
