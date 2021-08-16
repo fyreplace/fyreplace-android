@@ -81,7 +81,6 @@ dependencies {
     implementation libraries.androidx.appCompat
     implementation libraries.androidx.core
     implementation libraries.androidx.fragment
-    implementation libraries.androidx.lifecycle.liveData
     implementation libraries.androidx.lifecycle.runtime
     implementation libraries.androidx.lifecycle.viewModel
     implementation libraries.androidx.navigation.fragment

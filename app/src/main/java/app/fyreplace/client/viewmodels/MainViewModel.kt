@@ -4,32 +4,27 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import androidx.core.content.edit
-import androidx.lifecycle.*
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.ConnectionToken
+import kotlinx.coroutines.flow.*
 
 class MainViewModel(
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
     private val preferences: SharedPreferences
 ) : ViewModel() {
-    private val mPageChoices = MutableLiveData<List<@StringRes Int>>(emptyList())
-    private val mCurrentPage = MutableLiveData(0)
-    private val mPagesState = MediatorLiveData<PagesState>()
+    private val mPageChoices = MutableStateFlow<List<@StringRes Int>>(emptyList())
+    private val mCurrentPage = MutableStateFlow(0)
     private var lastIntent: Intent? = null
-    val pageState = mPagesState
-    val hasPageChoices = mPageChoices.map { it.isNotEmpty() }
-
-    init {
-        mPagesState.addSource(mPageChoices.distinctUntilChanged()) {
-            mPagesState.value = PagesState(it, 0)
-        }
-
-        mPagesState.addSource(mCurrentPage.distinctUntilChanged()) {
-            mPagesState.value = PagesState(mPageChoices.value!!, it)
-        }
-    }
+    val hasPageChoices = mPageChoices
+        .map { it.isNotEmpty() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val pageState = mPageChoices
+        .combine(mCurrentPage) { choices, page -> PagesState(choices, page) }
+        .stateIn(viewModelScope, SharingStarted.Lazily, PagesState(emptyList(), 0))
 
     fun setPageChoices(choices: List<Int>) {
         mPageChoices.value = choices

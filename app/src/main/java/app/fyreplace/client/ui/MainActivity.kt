@@ -20,6 +20,7 @@ import app.fyreplace.client.databinding.ActivityMainBinding
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import io.grpc.Status
+import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
@@ -52,20 +53,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         vm.getUsableIntent(intent)?.let(::handleIntent)
-        vm.pageState.observe(this) { state ->
-            skipNextTabChange = true
-            bd.tabs.removeAllTabs()
+        vm.pageState
+            .onEach { state ->
+                skipNextTabChange = true
+                bd.tabs.removeAllTabs()
 
-            for (title in state.choices) {
-                val tab = bd.tabs.newTab()
-                bd.tabs.addTab(tab)
-                tab.setText(title)
+                for (title in state.choices) {
+                    val tab = bd.tabs.newTab()
+                    bd.tabs.addTab(tab)
+                    tab.setText(title)
 
-                if (tab.position == state.current) {
-                    bd.tabs.selectTab(tab)
+                    if (tab.position == state.current) {
+                        bd.tabs.selectTab(tab)
+                    }
                 }
             }
-        }
+            .launch()
     }
 
     override fun onDestroy() {

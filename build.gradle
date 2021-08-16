@@ -47,7 +47,6 @@ buildscript {
         libraries = [
                 androidx : [
                         lifecycle            : [
-                                liveData : "androidx.lifecycle:lifecycle-livedata-ktx:$versions.androidx.lifecycle",
                                 runtime  : "androidx.lifecycle:lifecycle-runtime-ktx:$versions.androidx.lifecycle",
                                 viewModel: "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.androidx.lifecycle",
                         ],

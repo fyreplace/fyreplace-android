@@ -2,10 +2,8 @@ package app.fyreplace.client.viewmodels
 
 import android.content.res.Resources
 import androidx.annotation.IntegerRes
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.client.R
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
@@ -13,27 +11,39 @@ import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.Credentials
 import app.fyreplace.protos.UserCreation
 import io.grpc.stub.StreamObserver
+import kotlinx.coroutines.flow.*
 import kotlin.reflect.KFunction2
 
 class LoginViewModel(
     private val resources: Resources,
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
 ) : ViewModel() {
-    private val mIsRegistering = MutableLiveData(false)
-    private val mCanProceed = MediatorLiveData<Boolean>()
-    private var mIsLoading = MutableLiveData(false)
-    val isRegistering: LiveData<Boolean> = mIsRegistering
-    val email = MutableLiveData("")
-    val username = MutableLiveData("")
-    val password = MutableLiveData("")
-    val canProceed: LiveData<Boolean> = mCanProceed
-    val isLoading: LiveData<Boolean> = mIsLoading
-
-    init {
-        for (source in listOf(isRegistering, email, username, password)) {
-            mCanProceed.addSource(source) { computeCanProceed() }
+    private val mIsRegistering = MutableStateFlow(false)
+    private var mIsLoading = MutableStateFlow(false)
+    val isRegistering: StateFlow<Boolean> = mIsRegistering
+    val email = MutableStateFlow("")
+    val username = MutableStateFlow("")
+    val password = MutableStateFlow("")
+    val isLoading: StateFlow<Boolean> = mIsLoading
+    val canProceed = isRegistering
+        .combine(email) { registering, email ->
+            !registering || email.between(
+                R.integer.login_email_min_size,
+                R.integer.login_email_max_size
+            )
         }
-    }
+        .combine(username) { res, username ->
+            res && username.between(
+                R.integer.login_username_min_size,
+                R.integer.login_username_max_size
+            )
+        }
+        .combine(password) { res, password ->
+            res && password.between(
+                R.integer.login_password_min_size,
+                R.integer.login_password_max_size
+            )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
     fun setIsRegistering(registering: Boolean) {
         mIsRegistering.value = registering
@@ -71,28 +81,6 @@ class LoginViewModel(
         }
     }
 
-    private fun computeCanProceed() {
-        val emailValue = email.value.orEmpty()
-        val isEmailValid = emailValue.isNotBlank() && emailValue.length.between(
-            R.integer.login_email_min_size,
-            R.integer.login_email_max_size
-        )
-
-        val usernameValue = username.value.orEmpty()
-        val isUsernameValid = usernameValue.isNotBlank() && usernameValue.length.between(
-            R.integer.login_username_min_size,
-            R.integer.login_username_max_size
-        )
-
-        val passwordValue = password.value.orEmpty()
-        val isPasswordValid = passwordValue.isNotBlank() && passwordValue.length.between(
-            R.integer.login_password_min_size,
-            R.integer.login_password_max_size
-        )
-        mCanProceed.value =
-            (!isRegistering.value!! || isEmailValid) && isUsernameValid && isPasswordValid
-    }
-
-    private fun Int.between(@IntegerRes a: Int, @IntegerRes b: Int) =
-        this in resources.getInteger(a)..resources.getInteger(b)
+    private fun String.between(@IntegerRes a: Int, @IntegerRes b: Int) =
+        isNotBlank() && length in resources.getInteger(a)..resources.getInteger(b)
 }
