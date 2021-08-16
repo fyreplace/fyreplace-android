@@ -3,7 +3,6 @@ package app.fyreplace.client.ui
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.client.R
 import kotlinx.coroutines.CancellationException
@@ -12,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-interface FailureHandler : BasePresenter, LifecycleOwner, ViewModelStoreOwner {
+interface FailureHandler : BasePresenter, LifecycleOwner {
     fun onFailure(failure: Throwable) {
         getContext()?.run {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())
