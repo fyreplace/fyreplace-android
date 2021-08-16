@@ -51,7 +51,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        vm.getUsableIntent(intent)?.let { handleIntent(it) }
+        vm.getUsableIntent(intent)?.let(::handleIntent)
         vm.pageState.observe(this) { state ->
             skipNextTabChange = true
             bd.tabs.removeAllTabs()
