@@ -75,7 +75,17 @@ class MainActivity :
             }
         }
 
-        cvm.isAuthenticated.launchCollect { cvm.retrieveMe() }
+        cvm.isAuthenticated.launchCollect { authenticated ->
+            cvm.retrieveMe()
+
+            for (destination in AUTHENTICATED_DESTINATIONS) {
+                bd.bottomNavigation.menu.findItem(destination).isEnabled = authenticated
+            }
+
+            if (!authenticated && navHost.navController.currentDestination?.id in AUTHENTICATED_DESTINATIONS) {
+                navHost.navController.navigate(R.id.fragment_settings)
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -194,6 +204,11 @@ class MainActivity :
             R.id.fragment_archive,
             R.id.fragment_drafts,
             R.id.fragment_settings,
+        )
+        val AUTHENTICATED_DESTINATIONS = setOf(
+            R.id.fragment_notifications,
+            R.id.fragment_archive,
+            R.id.fragment_drafts,
         )
     }
 }
