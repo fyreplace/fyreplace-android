@@ -1,6 +1,7 @@
 package app.fyreplace.client.viewmodels
 
 import android.content.SharedPreferences
+import app.fyreplace.client.exists
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.protos.User
 import app.fyreplace.protos.UserServiceGrpc
@@ -19,7 +20,7 @@ class CentralViewModel(
 
     init {
         preferences.registerOnSharedPreferenceChangeListener(this)
-        mIsAuthenticated.value = !preferences.getString("auth.token", null).isNullOrEmpty()
+        onSharedPreferenceChanged(preferences, "auth.token")
     }
 
     override fun onCleared() {
@@ -29,7 +30,7 @@ class CentralViewModel(
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         if (key == "auth.token") {
-            mIsAuthenticated.value = !sharedPreferences.getString(key, null).isNullOrEmpty()
+            mIsAuthenticated.value = sharedPreferences.getString(key, null).exists()
         }
     }
 

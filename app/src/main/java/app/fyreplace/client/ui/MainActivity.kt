@@ -18,6 +18,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.ActivityMainBinding
+import app.fyreplace.client.exists
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
@@ -171,7 +172,7 @@ class MainActivity :
     private fun handleIntent(intent: Intent) {
         val uri = intent.data ?: return
 
-        if (uri.scheme != "fyreplace" || !uri.host.isNullOrEmpty()) {
+        if (uri.scheme != "fyreplace" || uri.host.exists()) {
             return showBasicAlert(
                 R.string.main_error_malformed_url_title,
                 R.string.main_error_malformed_url_message,
