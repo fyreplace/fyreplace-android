@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="cvm"
+            type="app.fyreplace.client.viewmodels.CentralViewModel" />
+    </data>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -20,6 +29,7 @@
                 android:src="@drawable/ic_baseline_account_circle" />
 
             <TextView
+                android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap"
@@ -30,6 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_wide"
+                android:animateLayoutChanges="true"
                 android:orientation="vertical">
 
                 <Button
@@ -37,14 +48,25 @@
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_register" />
+                    android:text="@string/login_register"
+                    android:visibility="@{cvm.user == null ? View.VISIBLE : View.GONE}" />
 
                 <Button
                     android:id="@+id/login"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_login" />
+                    android:text="@string/login_login"
+                    android:visibility="@{cvm.user == null ? View.VISIBLE : View.GONE}" />
+
+                <Button
+                    android:id="@+id/logout"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/login_logout"
+                    android:textColor="?attr/colorError"
+                    android:visibility="@{cvm.user != null ? View.VISIBLE : View.GONE}" />
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

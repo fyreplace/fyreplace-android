@@ -17,15 +17,16 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.ActivityMainBinding
+import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import io.grpc.Status
-import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
     FragmentOnAttachListener, TabLayout.OnTabSelectedListener {
     private val vm by viewModel<MainViewModel>()
+    private val cvm by viewModel<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
     private var skipNextTabChange = true
@@ -53,22 +54,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         vm.getUsableIntent(intent)?.let(::handleIntent)
-        vm.pageState
-            .onEach { state ->
-                skipNextTabChange = true
-                bd.tabs.removeAllTabs()
+        vm.pageState.launchOnEach { state ->
+            skipNextTabChange = true
+            bd.tabs.removeAllTabs()
 
-                for (title in state.choices) {
-                    val tab = bd.tabs.newTab()
-                    bd.tabs.addTab(tab)
-                    tab.setText(title)
+            for (title in state.choices) {
+                val tab = bd.tabs.newTab()
+                bd.tabs.addTab(tab)
+                tab.setText(title)
 
-                    if (tab.position == state.current) {
-                        bd.tabs.selectTab(tab)
-                    }
+                if (tab.position == state.current) {
+                    bd.tabs.selectTab(tab)
                 }
             }
-            .launch()
+        }
+
+        cvm.isAuthenticated.launchOnEach { cvm.retrieveMe() }
     }
 
     override fun onDestroy() {

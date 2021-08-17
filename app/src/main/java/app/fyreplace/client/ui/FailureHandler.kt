@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -43,5 +44,6 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
         }
     }
 
-    fun <T> Flow<T>.launch() = catch { fail(it) }.launchIn(lifecycleScope)
+    fun <T> Flow<T>.launchOnEach(action: suspend (T) -> Unit) =
+        onEach(action).catch { fail(it) }.launchIn(lifecycleScope)
 }

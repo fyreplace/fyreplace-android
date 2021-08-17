@@ -5,10 +5,11 @@ import org.koin.dsl.module
 
 val viewModelsModule = module {
     viewModel { MainViewModel(get(), get()) }
+    viewModel { CentralViewModel(get(), get()) }
     viewModel { FeedViewModel() }
     viewModel { NotificationsViewModel() }
     viewModel { ArchiveViewModel() }
     viewModel { DraftsViewModel() }
-    viewModel { SettingsViewModel() }
-    viewModel { LoginViewModel(get(), get()) }
+    viewModel { SettingsViewModel(get(), get()) }
+    viewModel { LoginViewModel(get(), get(), get()) }
 }

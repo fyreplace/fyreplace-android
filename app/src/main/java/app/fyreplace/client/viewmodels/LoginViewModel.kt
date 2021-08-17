@@ -1,9 +1,9 @@
 package app.fyreplace.client.viewmodels
 
+import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.annotation.IntegerRes
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.core.content.edit
 import app.fyreplace.client.R
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
@@ -11,13 +11,16 @@ import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.Credentials
 import app.fyreplace.protos.UserCreation
 import io.grpc.stub.StreamObserver
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlin.reflect.KFunction2
 
 class LoginViewModel(
     private val resources: Resources,
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
-) : ViewModel() {
+    private val preferences: SharedPreferences
+) : BaseViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
     private val mIsLoading = MutableStateFlow(false)
     val isRegistering: StateFlow<Boolean> = mIsRegistering
@@ -43,7 +46,7 @@ class LoginViewModel(
                 R.integer.login_password_min_size,
                 R.integer.login_password_max_size
             )
-        }.stateIn(viewModelScope, SharingStarted.Lazily, false)
+        }.asState(false)
 
     fun setIsRegistering(registering: Boolean) {
         mIsRegistering.value = registering
@@ -66,16 +69,17 @@ class LoginViewModel(
             .setClient(defaultClient)
             .build()
 
-        awaitResponse(accountStub::connect, request)
+        val response = awaitResponse(accountStub::connect, request)
+        preferences.edit { putString("auth.token", response.token) }
     }
 
     private suspend fun <Request, Response> awaitResponse(
         call: KFunction2<Request, StreamObserver<Response>, Unit>,
         request: Request
-    ) {
+    ): Response {
         try {
             mIsLoading.value = true
-            awaitSingleResponse(call, request)
+            return awaitSingleResponse(call, request)
         } finally {
             mIsLoading.value = false
         }

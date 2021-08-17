@@ -4,27 +4,27 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.annotation.StringRes
 import androidx.core.content.edit
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.ConnectionToken
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class MainViewModel(
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
     private val preferences: SharedPreferences
-) : ViewModel() {
+) : BaseViewModel() {
     private val mPageChoices = MutableStateFlow<List<@StringRes Int>>(emptyList())
     private val mCurrentPage = MutableStateFlow(0)
     private var lastIntent: Intent? = null
     val hasPageChoices = mPageChoices
         .map { it.isNotEmpty() }
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+        .asState(false)
     val pageState = mPageChoices
         .combine(mCurrentPage) { choices, page -> PagesState(choices, page) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, PagesState(emptyList(), 0))
+        .asState(PagesState(emptyList(), 0))
 
     fun setPageChoices(choices: List<Int>) {
         mPageChoices.value = choices

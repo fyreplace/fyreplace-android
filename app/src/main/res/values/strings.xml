@@ -34,6 +34,7 @@
 
     <string name="login_register">Register</string>
     <string name="login_login">Login</string>
+    <string name="login_logout">Logout</string>
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>

@@ -4,10 +4,13 @@ import android.content.res.Resources
 import app.fyreplace.client.R
 import app.fyreplace.protos.*
 import io.grpc.Channel
+import io.grpc.ClientInterceptor
 import io.grpc.ManagedChannelBuilder
 import org.koin.dsl.module
 
 val grpcModule = module {
+    single<List<ClientInterceptor>> { listOf(AuthenticationInterceptor(get())) }
+
     single<Channel> {
         val resources = get<Resources>()
         return@single ManagedChannelBuilder.forAddress(
@@ -15,7 +18,7 @@ val grpcModule = module {
             resources.getInteger(R.integer.api_port)
         ).run {
             if (resources.getBoolean(R.bool.clear_text_communication)) usePlaintext() else this
-        }.build()
+        }.intercept(get<List<ClientInterceptor>>()).build()
     }
 
     factory { AccountServiceGrpc.newStub(get()) }
