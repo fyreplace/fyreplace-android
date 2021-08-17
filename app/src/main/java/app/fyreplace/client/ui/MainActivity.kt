@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         vm.getUsableIntent(intent)?.let(::handleIntent)
-        vm.pageState.launchOnEach { state ->
+        vm.pageState.launchCollect { state ->
             skipNextTabChange = true
             bd.tabs.removeAllTabs()
 
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
             }
         }
 
-        cvm.isAuthenticated.launchOnEach { cvm.retrieveMe() }
+        cvm.isAuthenticated.launchCollect { cvm.retrieveMe() }
     }
 
     override fun onDestroy() {

@@ -9,9 +9,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -33,17 +31,12 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
     ) = lifecycleScope.launch(context) {
         try {
             block()
+        } catch (e: CancellationException) {
+            // Cancellation is a normal occurrence
         } catch (e: Exception) {
-            fail(e)
+            onFailure(e)
         }
     }
 
-    private fun fail(failure: Throwable) {
-        if (failure !is CancellationException) {
-            onFailure(failure)
-        }
-    }
-
-    fun <T> Flow<T>.launchOnEach(action: suspend (T) -> Unit) =
-        onEach(action).catch { fail(it) }.launchIn(lifecycleScope)
+    fun <T> Flow<T>.launchCollect(action: suspend (T) -> Unit) = launch { collect(action) }
 }

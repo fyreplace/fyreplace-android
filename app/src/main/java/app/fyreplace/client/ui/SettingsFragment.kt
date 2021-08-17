@@ -29,7 +29,7 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        cvm.user.launchOnEach {
+        cvm.user.launchCollect {
             bd.username.text = it?.username ?: getString(R.string.settings_username)
         }
 
