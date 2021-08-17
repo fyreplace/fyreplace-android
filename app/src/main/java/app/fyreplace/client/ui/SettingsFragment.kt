@@ -7,14 +7,11 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentSettingsBinding
-import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
     private val vm by viewModel<SettingsViewModel>()
-    private val cvm by sharedViewModel<CentralViewModel>()
     private lateinit var bd: FragmentSettingsBinding
 
     override fun onCreateView(

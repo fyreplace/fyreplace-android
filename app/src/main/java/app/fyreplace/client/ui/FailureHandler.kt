@@ -1,10 +1,15 @@
 package app.fyreplace.client.ui
 
+import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.client.R
+import io.grpc.Status
+import io.grpc.StatusException
+import io.grpc.StatusRuntimeException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +19,8 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 interface FailureHandler : BasePresenter, LifecycleOwner {
+    val preferences: SharedPreferences
+
     fun onFailure(failure: Throwable) {
         getContext()?.run {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())
@@ -33,7 +40,19 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
             block()
         } catch (e: CancellationException) {
             // Cancellation is a normal occurrence
+        } catch (e: StatusException) {
+            onGrpcFailure(StatusRuntimeException(e.status))
+        } catch (e: StatusRuntimeException) {
+            onGrpcFailure(e)
         } catch (e: Exception) {
+            onFailure(e)
+        }
+    }
+
+    private fun onGrpcFailure(e: StatusRuntimeException) {
+        if (e.status.code == Status.Code.UNAUTHENTICATED) {
+            preferences.edit { putString("auth.token", "") }
+        } else {
             onFailure(e)
         }
     }

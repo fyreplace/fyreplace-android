@@ -1,6 +1,7 @@
 package app.fyreplace.client.ui
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
@@ -21,10 +22,15 @@ import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import io.grpc.Status
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(R.layout.activity_main), FailureHandler,
-    FragmentOnAttachListener, TabLayout.OnTabSelectedListener {
+class MainActivity :
+    AppCompatActivity(R.layout.activity_main),
+    FailureHandler,
+    FragmentOnAttachListener,
+    TabLayout.OnTabSelectedListener {
+    override val preferences by inject<SharedPreferences>()
     private val vm by viewModel<MainViewModel>()
     private val cvm by viewModel<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
