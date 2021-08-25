@@ -33,8 +33,10 @@
             android:id="@+id/to_fragment_login"
             app:destination="@id/fragment_login" />
         <deepLink
+            android:autoVerify="@bool/link_auto_verify"
             app:action="ACTION_VIEW"
-            app:uri="fyreplace:///AccountService.ConfirmActivation" />
+            app:uri="fyreplace.link/AccountService.ConfirmActivation"
+            tools:ignore="UnusedAttribute" />
     </fragment>
     <fragment
         android:id="@+id/fragment_login"

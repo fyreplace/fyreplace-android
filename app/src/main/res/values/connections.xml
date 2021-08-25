@@ -2,4 +2,5 @@
 <resources>
     <string name="api_host" translatable="false">api.fyreplace.app</string>
     <integer name="api_port">443</integer>
+    <string name="link_path_account_confirm_account">/AccountService.ConfirmActivation</string>
 </resources>
