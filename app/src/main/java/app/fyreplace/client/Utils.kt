@@ -1,3 +1,3 @@
 package app.fyreplace.client
 
-fun String?.exists() = !isNullOrBlank()
+fun String?.isNotNullOrBlank() = !isNullOrBlank()

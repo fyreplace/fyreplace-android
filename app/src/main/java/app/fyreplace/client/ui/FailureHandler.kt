@@ -7,7 +7,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.client.R
-import app.fyreplace.client.exists
+import app.fyreplace.client.isNotNullOrBlank
 import io.grpc.Status
 import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
@@ -51,7 +51,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
     }
 
     private fun onGrpcFailure(e: StatusRuntimeException) {
-        val isAuthenticated = preferences.getString("auth.token", null).exists()
+        val isAuthenticated = preferences.getString("auth.token", null).isNotNullOrBlank()
 
         if (e.status.code == Status.Code.UNAUTHENTICATED && isAuthenticated) {
             preferences.edit { putString("auth.token", "") }
