@@ -100,9 +100,8 @@ class MainActivity :
         vm.getUsableIntent(intent)?.let { handleIntent(it) }
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        return navHost.navController.navigateUp() || super.onSupportNavigateUp()
-    }
+    override fun onSupportNavigateUp() =
+        navHost.navController.navigateUp() || super.onSupportNavigateUp()
 
     override fun getContext() = this
 
