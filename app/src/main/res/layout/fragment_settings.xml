@@ -37,10 +37,10 @@
                 android:textAppearance="?attr/textAppearanceHeadline6" />
 
             <LinearLayout
+                android:id="@+id/buttons"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap_wide"
-                android:animateLayoutChanges="true"
                 android:orientation="vertical">
 
                 <Button
@@ -48,7 +48,7 @@
                     style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_register"
+                    android:text="@string/settings_register"
                     android:visibility="@{cvm.user == null ? View.VISIBLE : View.GONE}" />
 
                 <Button
@@ -56,7 +56,7 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_login"
+                    android:text="@string/settings_login"
                     android:visibility="@{cvm.user == null ? View.VISIBLE : View.GONE}" />
 
                 <Button
@@ -64,8 +64,17 @@
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/login_logout"
-                    android:textColor="?attr/colorError"
+                    android:text="@string/settings_logout"
+                    android:theme="@style/Theme.Fyreplace.Danger"
+                    android:visibility="@{cvm.user != null ? View.VISIBLE : View.GONE}" />
+
+                <Button
+                    android:id="@+id/delete"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/settings_delete"
+                    android:theme="@style/Theme.Fyreplace.Danger"
                     android:visibility="@{cvm.user != null ? View.VISIBLE : View.GONE}" />
             </LinearLayout>
         </LinearLayout>

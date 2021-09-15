@@ -31,10 +31,16 @@
 
     <string name="settings_username">Guest</string>
     <string name="settings_avatar_desc">Avatar</string>
+    <string name="settings_register">Register</string>
+    <string name="settings_login">Login</string>
+    <string name="settings_logout">Logout</string>
+    <string name="settings_delete">Delete account</string>
+    <string name="settings_delete_countdown">Delete account (%1$d)</string>
+    <string name="settings_account_deletion_title">Account deletion</string>
+    <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards.\n\nAre you sure you want to go through with this?</string>
+    <string name="settings_account_deletion_success_title">Account deleted</string>
+    <string name="settings_account_deletion_success_message">Your account has been deleted, your posts and comments will be fully removed as well within the next minutes.\n\nGoodbye! 👋</string>
 
-    <string name="login_register">Register</string>
-    <string name="login_login">Login</string>
-    <string name="login_logout">Logout</string>
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>

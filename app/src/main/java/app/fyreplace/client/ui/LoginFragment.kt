@@ -30,18 +30,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.setIsRegistering(args.isRegistering)
-        bd.button.setOnClickListener {
-            launch {
-                if (args.isRegistering) {
-                    vm.register()
-                    showBasicAlert(R.string.login_register_title, R.string.login_register_message)
-                } else {
-                    vm.login()
-                }
-
-                findNavController().navigateUp()
-            }
-        }
+        bd.button.setOnClickListener { registerOrLogin() }
     }
 
     override fun onFailure(failure: Throwable) {
@@ -71,5 +60,16 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
     }
 
     override fun getTitle() =
-        if (args.isRegistering) R.string.login_register else R.string.login_login
+        if (args.isRegistering) R.string.settings_register else R.string.settings_login
+
+    private fun registerOrLogin() = launch {
+        if (args.isRegistering) {
+            vm.register()
+            showBasicAlert(R.string.login_register_title, R.string.login_register_message)
+        } else {
+            vm.login()
+        }
+
+        findNavController().navigateUp()
+    }
 }

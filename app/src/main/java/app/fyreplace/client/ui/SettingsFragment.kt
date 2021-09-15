@@ -1,13 +1,17 @@
 package app.fyreplace.client.ui
 
+import android.animation.LayoutTransition
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentSettingsBinding
 import app.fyreplace.client.viewmodels.SettingsViewModel
+import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
@@ -38,6 +42,40 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
             }
         }
 
-        bd.logout.setOnClickListener { launch { vm.logout() } }
+        bd.logout.setOnClickListener { logout() }
+
+        bd.delete.setOnClickListener {
+            val alert = AlertDialog.Builder(requireContext())
+                .setTitle(R.string.settings_account_deletion_title)
+                .setMessage(R.string.settings_account_deletion_message)
+                .setPositiveButton(R.string.settings_delete) { _, _ -> delete() }
+                .setNeutralButton(R.string.cancel, null)
+                .show()
+            val button = alert.getButton(DialogInterface.BUTTON_POSITIVE)
+            button.isEnabled = false
+
+            launch {
+                for (i in 3 downTo 1) {
+                    button.text = getString(R.string.settings_delete_countdown, i)
+                    delay(1000)
+                }
+
+                button.setText(R.string.settings_delete)
+                button.isEnabled = true
+            }
+        }
+    }
+
+    private fun logout() = launch {
+        bd.buttons.layoutTransition = LayoutTransition()
+        vm.logout()
+    }
+
+    private fun delete() = launch {
+        vm.delete()
+        showBasicAlert(
+            R.string.settings_account_deletion_success_title,
+            R.string.settings_account_deletion_success_message
+        )
     }
 }

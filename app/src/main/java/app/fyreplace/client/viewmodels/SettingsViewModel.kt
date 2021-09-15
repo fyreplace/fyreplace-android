@@ -5,6 +5,7 @@ import androidx.core.content.edit
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.IntId
+import com.google.protobuf.Empty
 
 class SettingsViewModel(
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
@@ -12,6 +13,11 @@ class SettingsViewModel(
 ) : BaseViewModel() {
     suspend fun logout() {
         awaitSingleResponse(accountStub::disconnect, IntId.getDefaultInstance())
+        preferences.edit { putString("auth.token", "") }
+    }
+
+    suspend fun delete() {
+        awaitSingleResponse(accountStub::delete, Empty.getDefaultInstance())
         preferences.edit { putString("auth.token", "") }
     }
 }

@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.canProceed}"
-                android:text="@{vm.isRegistering ? @string/login_register : @string/login_login}"
+                android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
                 android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
 
             <ProgressBar
