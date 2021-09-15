@@ -11,6 +11,8 @@ import androidx.navigation.fragment.findNavController
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentSettingsBinding
 import app.fyreplace.client.viewmodels.SettingsViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade
 import kotlinx.coroutines.delay
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,6 +33,12 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         cvm.user.launchCollect {
+            Glide.with(this)
+                .load(it?.avatar?.url)
+                .placeholder(R.drawable.ic_baseline_account_circle)
+                .circleCrop()
+                .transition(withCrossFade())
+                .into(bd.avatar)
             bd.username.text = it?.username ?: getString(R.string.settings_username)
         }
 

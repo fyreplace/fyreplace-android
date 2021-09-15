@@ -76,6 +76,7 @@ protobuf {
 }
 
 dependencies {
+    kapt processors.glide
     implementation libraries.kotlin
     implementation libraries.kotlinx.coroutines
     implementation libraries.androidx.appCompat
@@ -86,6 +87,8 @@ dependencies {
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
     implementation libraries.androidx.security
+    implementation libraries.glide.base
+    implementation libraries.glide.okHttp
     implementation libraries.grpc.okHttp
     implementation libraries.grpc.protobuf
     implementation libraries.grpc.stub
