@@ -1,9 +1,9 @@
 buildscript {
     ext {
         configuration = [
-                compileSdkVersion: 30,
-                targetSdkVersion : 30,
-                minSdkVersion    : 21,
+                compileSdk: 30,
+                targetSdk : 30,
+                minSdk    : 21,
         ]
         versions = [
                 androidx : [
@@ -78,7 +78,6 @@ buildscript {
                         annotation: "javax.annotation:javax.annotation-api:$versions.javax.annotation",
                 ],
                 koin     : "io.insert-koin:koin-android:$versions.koin",
-                kotlin   : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$versions.kotlin",
                 kotlinx  : [
                         coroutines: "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinx.coroutines",
                 ],

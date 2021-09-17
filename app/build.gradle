@@ -7,12 +7,12 @@ plugins {
 }
 
 android {
-    compileSdkVersion configuration.compileSdkVersion
+    compileSdk configuration.compileSdk
 
     defaultConfig {
         applicationId "app.fyreplace.client"
-        minSdkVersion configuration.minSdkVersion
-        targetSdkVersion configuration.targetSdkVersion
+        minSdk configuration.minSdk
+        targetSdk configuration.targetSdk
         versionCode 9001
         versionName "0.9.1"
         vectorDrawables.useSupportLibrary true
@@ -42,15 +42,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-
     buildFeatures {
         dataBinding true
     }
@@ -77,7 +68,6 @@ protobuf {
 
 dependencies {
     kapt processors.glide
-    implementation libraries.kotlin
     implementation libraries.kotlinx.coroutines
     implementation libraries.androidx.appCompat
     implementation libraries.androidx.core
