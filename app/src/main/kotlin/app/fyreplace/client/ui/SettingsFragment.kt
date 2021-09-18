@@ -63,6 +63,8 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
             button.isEnabled = false
 
             launch {
+                alert.setOnDismissListener { cancel() }
+
                 for (i in 3 downTo 1) {
                     button.text = getString(R.string.settings_delete_countdown, i)
                     delay(1000)
