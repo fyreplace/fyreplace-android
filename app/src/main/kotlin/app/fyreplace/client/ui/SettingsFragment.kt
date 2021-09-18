@@ -57,7 +57,7 @@ class SettingsFragment : BaseFragment(R.layout.fragment_settings) {
                 .setTitle(R.string.settings_account_deletion_title)
                 .setMessage(R.string.settings_account_deletion_message)
                 .setPositiveButton(R.string.settings_delete) { _, _ -> delete() }
-                .setNeutralButton(R.string.cancel, null)
+                .setNegativeButton(R.string.cancel, null)
                 .show()
             val button = alert.getButton(DialogInterface.BUTTON_POSITIVE)
             button.isEnabled = false
