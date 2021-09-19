@@ -12,6 +12,7 @@
             app:icon="@drawable/ic_baseline_alternate_email"
             app:isPreferenceVisible="false"
             app:key="email"
+            app:persistent="false"
             app:summary="@string/settings_email_desc"
             app:title="@string/settings_email" />
     </PreferenceCategory>
