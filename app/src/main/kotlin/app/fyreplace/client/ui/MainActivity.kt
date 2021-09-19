@@ -169,9 +169,11 @@ class MainActivity :
 
     private fun handleIntent(intent: Intent) {
         val uri = intent.data ?: return
+        val token = uri.fragment.orEmpty()
 
         when (uri.path) {
-            getString(R.string.link_path_account_confirm_account) -> confirmActivation(uri.fragment.orEmpty())
+            getString(R.string.link_path_account_confirm_account) -> confirmActivation(token)
+            getString(R.string.link_path_user_confirm_email) -> confirmEmailUpdate(token)
             else -> showBasicAlert(
                 R.string.main_error_malformed_url_title,
                 R.string.main_error_malformed_url_message,
@@ -185,6 +187,15 @@ class MainActivity :
         showBasicAlert(
             R.string.main_account_activated_title,
             R.string.main_account_activated_message
+        )
+    }
+
+    private fun confirmEmailUpdate(token: String) = launch {
+        vm.confirmEmailUpdate(token)
+        cvm.retrieveMe()
+        showBasicAlert(
+            R.string.main_user_email_changed_title,
+            R.string.main_user_email_changed_message
         )
     }
 

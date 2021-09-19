@@ -20,6 +20,8 @@
 
     <string name="main_account_activated_title">Account activated</string>
     <string name="main_account_activated_message">Congratulations!\nYour account has been successfully activated.</string>
+    <string name="main_user_email_changed_title">Email changed</string>
+    <string name="main_user_email_changed_message">Your email has been successfully updated.</string>
     <string name="main_error_malformed_url_title">Cannot open URL</string>
     <string name="main_error_malformed_url_message">The URL is malformed and cannot be used.</string>
     <string name="main_error_timestamp_exceeded_title">Outdated URL</string>
@@ -29,12 +31,26 @@
     <string name="main_error_user_not_pending_title">Account already activated</string>
     <string name="main_error_user_not_pending_message">This account has already been activated.</string>
 
+    <string name="settings_profile">Profile</string>
     <string name="settings_username">Guest</string>
+    <string name="settings_date_joined">Joined %1$s</string>
+    <string name="settings_not_joined">Hasn\'t joined yet</string>
     <string name="settings_avatar_desc">Avatar</string>
+    <string name="settings_email">Email</string>
+    <string name="settings_email_desc">email@example.org</string>
+    <string name="settings_email_change_title">Email change</string>
+    <string name="settings_email_change_message">What\'s your new email address?</string>
+    <string name="settings_email_change_success_title">Email change requested</string>
+    <string name="settings_email_change_success_message">A confirmation email has been sen to your new address.</string>
+    <string name="settings_account">Account</string>
     <string name="settings_register">Register</string>
+    <string name="settings_register_desc">Create a new account</string>
     <string name="settings_login">Login</string>
+    <string name="settings_login_desc">Log into an existing account</string>
     <string name="settings_logout">Logout</string>
+    <string name="settings_logout_desc">Disconnect from your account</string>
     <string name="settings_delete">Delete account</string>
+    <string name="settings_delete_desc">Permanently delete your account</string>
     <string name="settings_delete_countdown">Delete account (%1$d)</string>
     <string name="settings_account_deletion_title">Account deletion</string>
     <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards.\n\nAre you sure you want to go through with this?</string>

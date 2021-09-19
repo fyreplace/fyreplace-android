@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/settings_profile">
+        <app.fyreplace.client.views.ImagePreference
+            app:icon="@drawable/ic_baseline_account_circle"
+            app:key="avatar"
+            app:summary="@string/settings_not_joined"
+            app:title="@string/settings_username" />
+        <EditTextPreference
+            app:dialogMessage="@string/settings_email_change_message"
+            app:dialogTitle="@string/settings_email_change_title"
+            app:icon="@drawable/ic_baseline_alternate_email"
+            app:isPreferenceVisible="false"
+            app:key="email"
+            app:summary="@string/settings_email_desc"
+            app:title="@string/settings_email" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/settings_account">
+        <Preference
+            app:icon="@drawable/ic_baseline_how_to_reg"
+            app:isPreferenceVisible="false"
+            app:key="register"
+            app:summary="@string/settings_register_desc"
+            app:title="@string/settings_register" />
+        <Preference
+            app:icon="@drawable/ic_baseline_login"
+            app:isPreferenceVisible="false"
+            app:key="login"
+            app:summary="@string/settings_login_desc"
+            app:title="@string/settings_login" />
+        <Preference
+            app:icon="@drawable/ic_baseline_logout"
+            app:isPreferenceVisible="false"
+            app:key="logout"
+            app:summary="@string/settings_logout_desc"
+            app:title="@string/settings_logout" />
+        <Preference
+            app:icon="@drawable/ic_baseline_delete"
+            app:isPreferenceVisible="false"
+            app:key="delete"
+            app:summary="@string/settings_delete_desc"
+            app:title="@string/settings_delete" />
+    </PreferenceCategory>
+</PreferenceScreen>

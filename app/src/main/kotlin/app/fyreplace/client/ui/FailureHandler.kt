@@ -53,7 +53,11 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
     private fun onGrpcFailure(e: StatusRuntimeException) {
         val isAuthenticated = preferences.getString("auth.token", null).isNotNullOrBlank()
 
-        if (e.status.code == Status.Code.UNAUTHENTICATED && isAuthenticated) {
+        if (
+            e.status.code == Status.Code.UNAUTHENTICATED
+            && e.status.description !in setOf("timestamp_exceeded", "invalid_token")
+            && isAuthenticated
+        ) {
             preferences.edit { putString("auth.token", "") }
         } else {
             onFailure(e)

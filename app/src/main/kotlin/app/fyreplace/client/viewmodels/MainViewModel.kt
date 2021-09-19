@@ -8,12 +8,15 @@ import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpc
 import app.fyreplace.protos.ConnectionToken
+import app.fyreplace.protos.Token
+import app.fyreplace.protos.UserServiceGrpc
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 class MainViewModel(
     private val accountStub: AccountServiceGrpc.AccountServiceStub,
+    private val userStub: UserServiceGrpc.UserServiceStub,
     private val preferences: SharedPreferences
 ) : BaseViewModel() {
     private val mPageChoices = MutableStateFlow<List<@StringRes Int>>(emptyList())
@@ -45,6 +48,13 @@ class MainViewModel(
 
         val response = awaitSingleResponse(accountStub::confirmActivation, request)
         preferences.edit { putString("auth.token", response.token) }
+    }
+
+    suspend fun confirmEmailUpdate(token: String) {
+        val request = Token.newBuilder()
+            .setToken(token)
+            .build()
+        awaitSingleResponse(userStub::confirmEmailUpdate, request)
     }
 }
 

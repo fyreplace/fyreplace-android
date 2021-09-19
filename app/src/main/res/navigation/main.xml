@@ -35,7 +35,12 @@
         <deepLink
             android:autoVerify="@bool/link_auto_verify"
             app:action="ACTION_VIEW"
-            app:uri="fyreplace.link/AccountService.ConfirmActivation"
+            app:uri="fyreplace.link/AccountService.ConfirmActivation#{token}"
+            tools:ignore="UnusedAttribute" />
+        <deepLink
+            android:autoVerify="@bool/link_auto_verify"
+            app:action="ACTION_VIEW"
+            app:uri="fyreplace.link/UserService.ConfirmEmailUpdate#{token}"
             tools:ignore="UnusedAttribute" />
     </fragment>
     <fragment
