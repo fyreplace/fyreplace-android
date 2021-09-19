@@ -53,14 +53,16 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
     private fun onGrpcFailure(e: StatusRuntimeException) {
         val isAuthenticated = preferences.getString("auth.token", null).isNotNullOrBlank()
 
-        if (
+        when {
+            e.status.code == Status.Code.UNAVAILABLE -> showBasicAlert(
+                R.string.error_unavailable_title,
+                R.string.error_unavailable_message,
+                error = true
+            )
             e.status.code == Status.Code.UNAUTHENTICATED
-            && e.status.description !in setOf("timestamp_exceeded", "invalid_token")
-            && isAuthenticated
-        ) {
-            preferences.edit { putString("auth.token", "") }
-        } else {
-            onFailure(e)
+                    && e.status.description !in setOf("timestamp_exceeded", "invalid_token")
+                    && isAuthenticated -> preferences.edit { putString("auth.token", "") }
+            else -> onFailure(e)
         }
     }
 

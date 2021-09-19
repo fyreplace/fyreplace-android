@@ -4,6 +4,8 @@
     <string name="ok">@android:string/ok</string>
     <string name="cancel">@android:string/cancel</string>
     <string name="error_title">Unknown error: %1$s</string>
+    <string name="error_unavailable_title">Service unavailable</string>
+    <string name="error_unavailable_message">The Fyreplace server is currently unavailable. It\'s probably undergoing maintenance, come back later!</string>
     <string name="error_authentication_title">Authentication error</string>
     <string name="error_authentication_message">You are not authenticated.</string>
     <string name="error_permission_title">Permission error</string>
