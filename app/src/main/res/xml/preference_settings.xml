@@ -15,6 +15,13 @@
             app:persistent="false"
             app:summary="@string/settings_email_desc"
             app:title="@string/settings_email" />
+        <app.fyreplace.client.views.TextBlockPreference
+            app:dialogTitle="@string/settings_bio"
+            app:icon="@drawable/ic_baseline_person"
+            app:isPreferenceVisible="false"
+            app:key="bio"
+            app:summary="@string/settings_bio_desc"
+            app:title="@string/settings_bio" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/settings_account">
         <Preference

@@ -31,6 +31,8 @@
     <string name="settings_email_change_message">What\'s your new email address?</string>
     <string name="settings_email_change_success_title">Email change requested</string>
     <string name="settings_email_change_success_message">A confirmation email has been sen to your new address.</string>
+    <string name="settings_bio">Bio</string>
+    <string name="settings_bio_desc">Empty</string>
     <string name="settings_account">Account</string>
     <string name="settings_register">Register</string>
     <string name="settings_register_desc">Create a new account</string>

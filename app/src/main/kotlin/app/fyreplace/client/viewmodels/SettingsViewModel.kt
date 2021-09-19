@@ -36,6 +36,13 @@ class SettingsViewModel(
         awaitSingleResponse(userStub::confirmEmailUpdate, request)
     }
 
+    suspend fun updateBio(bio: String) {
+        val request = Bio.newBuilder()
+            .setBio(bio)
+            .build()
+        awaitSingleResponse(userStub::updateBio, request)
+    }
+
     suspend fun logout() {
         awaitSingleResponse(accountStub::disconnect, IntId.getDefaultInstance())
         preferences.edit { putString("auth.token", "") }

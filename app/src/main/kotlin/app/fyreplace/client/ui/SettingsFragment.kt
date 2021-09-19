@@ -3,10 +3,12 @@ package app.fyreplace.client.ui
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.preference.EditTextPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
@@ -53,11 +55,20 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
             findPreference<Preference>("email")?.summary =
                 user?.email ?: getString(R.string.settings_email)
 
+            findPreference<EditTextPreference>("bio")?.run {
+                summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
+                setOnBindEditTextListener {
+                    it.minLines = 3
+                    it.gravity = Gravity.TOP or Gravity.START
+                    it.setText(user?.bio)
+                }
+            }
+
             for (preference in listOf("register", "login")) {
                 findPreference<Preference>(preference)?.isVisible = user == null
             }
 
-            for (preference in listOf("email", "logout", "delete")) {
+            for (preference in listOf("email", "bio", "logout", "delete")) {
                 findPreference<Preference>(preference)?.isVisible = user != null
             }
         }
@@ -176,11 +187,19 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
 
     private inner class SettingsDataStore : PreferenceDataStore() {
         override fun putString(key: String, value: String?) = launch {
-            vm.sendEmailUpdateEmail(value ?: "")
-            showBasicAlert(
-                R.string.settings_email_change_success_title,
-                R.string.settings_email_change_success_message
-            )
+            when (key) {
+                "email" -> {
+                    vm.sendEmailUpdateEmail(value ?: "")
+                    showBasicAlert(
+                        R.string.settings_email_change_success_title,
+                        R.string.settings_email_change_success_message
+                    )
+                }
+                "bio" -> {
+                    vm.updateBio(value ?: "")
+                    cvm.retrieveMe()
+                }
+            }
         }.let {}
     }
 }
