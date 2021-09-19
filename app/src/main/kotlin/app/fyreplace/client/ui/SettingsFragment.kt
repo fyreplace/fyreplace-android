@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
@@ -27,6 +28,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
     override val preferences by inject<SharedPreferences>()
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<SettingsViewModel>()
+    private val args by navArgs<SettingsFragmentArgs>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +37,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        handleArgs()
         cvm.user.launchCollect { user ->
             findPreference<ImagePreference>("avatar")?.run {
                 imageUrl = user?.avatar?.url
@@ -110,12 +113,51 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
     override fun onFailure(failure: Throwable) {
         val error = Status.fromThrowable(failure)
         val (title, message) = when (error.code) {
+            Status.Code.UNAUTHENTICATED -> when (error.description) {
+                "timestamp_exceeded" -> R.string.settings_error_timestamp_exceeded_title to R.string.settings_error_timestamp_exceeded_message
+                "invalid_token" -> R.string.settings_error_invalid_token_title to R.string.settings_error_invalid_token_message
+                else -> R.string.error_authentication_title to R.string.error_authentication_message
+            }
+            Status.Code.PERMISSION_DENIED -> when (error.description) {
+                "user_not_pending" -> R.string.settings_error_user_not_pending_title to R.string.settings_error_user_not_pending_message
+                else -> R.string.error_permission_title to R.string.error_permission_message
+            }
             Status.Code.ALREADY_EXISTS -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
             Status.Code.INVALID_ARGUMENT -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             else -> return super.onFailure(failure)
         }
 
         showBasicAlert(title, message, error = true)
+    }
+
+    private fun handleArgs() {
+        when (args.path) {
+            "" -> return
+            getString(R.string.link_path_account_confirm_account) -> confirmActivation(args.token)
+            getString(R.string.link_path_user_confirm_email) -> confirmEmailUpdate(args.token)
+            else -> showBasicAlert(
+                R.string.settings_error_malformed_url_title,
+                R.string.settings_error_malformed_url_message,
+                error = true
+            )
+        }
+    }
+
+    private fun confirmActivation(token: String) = launch {
+        vm.confirmActivation(token)
+        showBasicAlert(
+            R.string.settings_account_activated_title,
+            R.string.settings_account_activated_message
+        )
+    }
+
+    private fun confirmEmailUpdate(token: String) = launch {
+        vm.confirmEmailUpdate(token)
+        cvm.retrieveMe()
+        showBasicAlert(
+            R.string.settings_user_email_changed_title,
+            R.string.settings_user_email_changed_message
+        )
     }
 
     private fun logout() = launch { vm.logout() }

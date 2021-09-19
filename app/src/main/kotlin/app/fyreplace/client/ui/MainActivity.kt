@@ -21,7 +21,6 @@ import app.fyreplace.client.databinding.ActivityMainBinding
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
-import io.grpc.Status
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -59,7 +58,6 @@ class MainActivity :
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        vm.getUsableIntent(intent)?.let(::handleIntent)
         vm.pageState.launchCollect { state ->
             skipNextTabChange = true
             bd.tabs.removeAllTabs()
@@ -97,31 +95,12 @@ class MainActivity :
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         navHost.navController.handleDeepLink(intent)
-        vm.getUsableIntent(intent)?.let { handleIntent(it) }
     }
 
     override fun onSupportNavigateUp() =
         navHost.navController.navigateUp() || super.onSupportNavigateUp()
 
     override fun getContext() = this
-
-    override fun onFailure(failure: Throwable) {
-        val error = Status.fromThrowable(failure)
-        val (title, message) = when (error.code) {
-            Status.Code.UNAUTHENTICATED -> when (error.description) {
-                "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
-                "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
-                else -> R.string.error_authentication_title to R.string.error_authentication_message
-            }
-            Status.Code.PERMISSION_DENIED -> when (error.description) {
-                "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
-                else -> R.string.error_permission_title to R.string.error_permission_message
-            }
-            else -> return super.onFailure(failure)
-        }
-
-        showBasicAlert(title, message, error = true)
-    }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         vm.setPageChoices(if (fragment is PageChoosing) fragment.pageChoices else emptyList())
@@ -165,38 +144,6 @@ class MainActivity :
                 bd.root.systemUiVisibility =
                     bd.root.systemUiVisibility or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
         }
-    }
-
-    private fun handleIntent(intent: Intent) {
-        val uri = intent.data ?: return
-        val token = uri.fragment.orEmpty()
-
-        when (uri.path) {
-            getString(R.string.link_path_account_confirm_account) -> confirmActivation(token)
-            getString(R.string.link_path_user_confirm_email) -> confirmEmailUpdate(token)
-            else -> showBasicAlert(
-                R.string.main_error_malformed_url_title,
-                R.string.main_error_malformed_url_message,
-                error = true
-            )
-        }
-    }
-
-    private fun confirmActivation(token: String) = launch {
-        vm.confirmActivation(token)
-        showBasicAlert(
-            R.string.main_account_activated_title,
-            R.string.main_account_activated_message
-        )
-    }
-
-    private fun confirmEmailUpdate(token: String) = launch {
-        vm.confirmEmailUpdate(token)
-        cvm.retrieveMe()
-        showBasicAlert(
-            R.string.main_user_email_changed_title,
-            R.string.main_user_email_changed_message
-        )
     }
 
     private companion object {
