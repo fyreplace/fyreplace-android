@@ -38,8 +38,8 @@ buildscript {
                 play     : [
                         basement: '17.6.0',
                 ],
-                protobuf : '0.8.16',
-                protoc   : '3.5.1',
+                protobuf : '0.8.17',
+                protoc   : '3.18.0',
         ]
 
         libraries = [
@@ -73,7 +73,7 @@ buildscript {
                 grpc     : [
                         okHttp  : "io.grpc:grpc-okhttp:$versions.grpc",
                         protoc  : "io.grpc:protoc-gen-grpc-java:$versions.grpc",
-                        protobuf: "io.grpc:grpc-protobuf:$versions.grpc",
+                        protobuf: "io.grpc:grpc-protobuf-lite:$versions.grpc",
                         stub    : "io.grpc:grpc-stub:$versions.grpc",
                 ],
                 javax    : [
