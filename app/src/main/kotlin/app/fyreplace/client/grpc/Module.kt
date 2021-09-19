@@ -13,12 +13,19 @@ val grpcModule = module {
 
     single<Channel> {
         val resources = get<Resources>()
-        return@single ManagedChannelBuilder.forAddress(
+        val channel = ManagedChannelBuilder.forAddress(
             resources.getString(R.string.api_host),
             resources.getInteger(R.integer.api_port)
-        ).run {
-            if (resources.getBoolean(R.bool.clear_text_communication)) usePlaintext() else this
-        }.intercept(get<List<ClientInterceptor>>()).build()
+        )
+
+        if (resources.getBoolean(R.bool.clear_text_communication)) {
+            channel.usePlaintext()
+        }
+
+        return@single channel
+            .enableRetry()
+            .intercept(get<List<ClientInterceptor>>())
+            .build()
     }
 
     factory { AccountServiceGrpc.newStub(get()) }
