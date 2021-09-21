@@ -44,7 +44,7 @@ class SettingsViewModel(
     }
 
     suspend fun logout() {
-        awaitSingleResponse(accountStub::disconnect, IntId.getDefaultInstance())
+        awaitSingleResponse(accountStub::disconnect, StringId.getDefaultInstance())
         preferences.edit { putString("auth.token", "") }
     }
 
