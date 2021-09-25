@@ -23,23 +23,17 @@ class SettingsViewModel(
     }
 
     suspend fun sendEmailUpdateEmail(address: String) {
-        val request = Email.newBuilder()
-            .setEmail(address)
-            .build()
+        val request = Email.newBuilder().setEmail(address).build()
         awaitSingleResponse(userStub::sendEmailUpdateEmail, request)
     }
 
     suspend fun confirmEmailUpdate(token: String) {
-        val request = Token.newBuilder()
-            .setToken(token)
-            .build()
+        val request = Token.newBuilder().setToken(token).build()
         awaitSingleResponse(userStub::confirmEmailUpdate, request)
     }
 
     suspend fun updateBio(bio: String) {
-        val request = Bio.newBuilder()
-            .setBio(bio)
-            .build()
+        val request = Bio.newBuilder().setBio(bio).build()
         awaitSingleResponse(userStub::updateBio, request)
     }
 

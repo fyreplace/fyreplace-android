@@ -192,14 +192,14 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
         override fun putString(key: String, value: String?) = launch {
             when (key) {
                 "email" -> {
-                    vm.sendEmailUpdateEmail(value ?: "")
+                    vm.sendEmailUpdateEmail(value.orEmpty())
                     showBasicAlert(
                         R.string.settings_email_change_success_title,
                         R.string.settings_email_change_success_message
                     )
                 }
                 "bio" -> {
-                    vm.updateBio(value ?: "")
+                    vm.updateBio(value.orEmpty())
                     cvm.retrieveMe()
                 }
             }
