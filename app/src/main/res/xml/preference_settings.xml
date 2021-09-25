@@ -7,16 +7,20 @@
             app:summary="@string/settings_not_joined"
             app:title="@string/settings_username" />
         <EditTextPreference
+            app:dialogMessage="@string/settings_password_change_message"
+            app:icon="@drawable/ic_baseline_lock"
+            app:isPreferenceVisible="false"
+            app:key="password"
+            app:summary="@string/settings_password_desc"
+            app:title="@string/settings_password" />
+        <EditTextPreference
             app:dialogMessage="@string/settings_email_change_message"
-            app:dialogTitle="@string/settings_email_change_title"
             app:icon="@drawable/ic_baseline_alternate_email"
             app:isPreferenceVisible="false"
             app:key="email"
-            app:persistent="false"
             app:summary="@string/settings_email_desc"
             app:title="@string/settings_email" />
         <app.fyreplace.client.views.TextBlockPreference
-            app:dialogTitle="@string/settings_bio"
             app:icon="@drawable/ic_baseline_person"
             app:isPreferenceVisible="false"
             app:key="bio"

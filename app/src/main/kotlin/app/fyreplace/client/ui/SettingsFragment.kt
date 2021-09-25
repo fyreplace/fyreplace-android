@@ -3,6 +3,7 @@ package app.fyreplace.client.ui
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.InputType
 import android.view.Gravity
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -52,12 +53,28 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
                 } ?: getString(R.string.settings_not_joined)
             }
 
-            findPreference<Preference>("email")?.summary =
-                user?.email ?: getString(R.string.settings_email)
+            findPreference<EditTextPreference>("password")?.run {
+                setOnBindEditTextListener {
+                    it.inputType =
+                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    it.setText("")
+                }
+            }
+
+            findPreference<EditTextPreference>("email")?.run {
+                summary = user?.email
+                setOnBindEditTextListener {
+                    it.inputType =
+                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
+                    it.setText("")
+                }
+            }
 
             findPreference<EditTextPreference>("bio")?.run {
                 summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
                 setOnBindEditTextListener {
+                    it.inputType =
+                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
                     it.minLines = 3
                     it.gravity = Gravity.TOP or Gravity.START
                     it.setText(user?.bio)
@@ -68,7 +85,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
                 findPreference<Preference>(preference)?.isVisible = user == null
             }
 
-            for (preference in listOf("email", "bio", "logout", "delete")) {
+            for (preference in listOf("password", "email", "bio", "logout", "delete")) {
                 findPreference<Preference>(preference)?.isVisible = user != null
             }
         }
@@ -114,7 +131,11 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
                 else -> R.string.error_permission_title to R.string.error_permission_message
             }
             Status.Code.ALREADY_EXISTS -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
-            Status.Code.INVALID_ARGUMENT -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
+            Status.Code.INVALID_ARGUMENT -> when (error.description) {
+                "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
+                "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
+                else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
+            }
             else -> return super.onFailure(failure)
         }
 
@@ -191,6 +212,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
     private inner class SettingsDataStore : PreferenceDataStore() {
         override fun putString(key: String, value: String?) = launch {
             when (key) {
+                "password" -> {
+                    vm.updatePassword(value.orEmpty())
+                    showBasicAlert(
+                        R.string.settings_password_change_success_title,
+                        R.string.settings_password_change_success_message
+                    )
+                }
                 "email" -> {
                     vm.sendEmailUpdateEmail(value.orEmpty())
                     showBasicAlert(
@@ -202,6 +230,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
                     vm.updateBio(value.orEmpty())
                     cvm.retrieveMe()
                 }
+                else -> super.putString(key, value)
             }
         }.let {}
     }

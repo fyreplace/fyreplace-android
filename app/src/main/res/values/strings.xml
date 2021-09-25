@@ -25,9 +25,13 @@
     <string name="settings_date_joined">Joined %1$s</string>
     <string name="settings_not_joined">Hasn\'t joined yet</string>
     <string name="settings_avatar_desc">Avatar</string>
+    <string name="settings_password">Mot de passe</string>
+    <string name="settings_password_desc">**********</string>
+    <string name="settings_password_change_message">What\'s your new password?</string>
+    <string name="settings_password_change_success_title">Password changed</string>
+    <string name="settings_password_change_success_message">Your password has been successfully updated.</string>
     <string name="settings_email">Email</string>
     <string name="settings_email_desc">email@example.org</string>
-    <string name="settings_email_change_title">Email change</string>
     <string name="settings_email_change_message">What\'s your new email address?</string>
     <string name="settings_email_change_success_title">Email change requested</string>
     <string name="settings_email_change_success_message">A confirmation email has been sen to your new address.</string>
@@ -59,6 +63,8 @@
     <string name="settings_error_invalid_token_message">The token in the URL is not correctly formed.</string>
     <string name="settings_error_user_not_pending_title">Account already activated</string>
     <string name="settings_error_user_not_pending_message">This account has already been activated.</string>
+    <string name="settings_error_bio_too_long_title">Invalid bio</string>
+    <string name="settings_error_bio_too_long_message">Your bio is too long.</string>
 
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>

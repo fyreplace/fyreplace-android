@@ -22,6 +22,11 @@ class SettingsViewModel(
         preferences.edit { putString("auth.token", response.token) }
     }
 
+    suspend fun updatePassword(password: String) {
+        val request = Password.newBuilder().setPassword(password).build()
+        awaitSingleResponse(userStub::updatePassword, request)
+    }
+
     suspend fun sendEmailUpdateEmail(address: String) {
         val request = Email.newBuilder().setEmail(address).build()
         awaitSingleResponse(userStub::sendEmailUpdateEmail, request)
