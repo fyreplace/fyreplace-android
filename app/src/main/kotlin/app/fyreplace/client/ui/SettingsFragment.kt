@@ -91,27 +91,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
         }
 
         findPreference<Preference>("delete")?.setOnPreferenceClickListener {
-            val alert = AlertDialog.Builder(requireContext())
-                .setTitle(R.string.settings_account_deletion_title)
-                .setMessage(R.string.settings_account_deletion_message)
-                .setPositiveButton(R.string.settings_delete) { _, _ -> delete() }
-                .setNegativeButton(R.string.cancel, null)
-                .show()
-            val button = alert.getButton(DialogInterface.BUTTON_POSITIVE)
-            button.isEnabled = false
-
-            launch {
-                alert.setOnDismissListener { cancel() }
-
-                for (i in 3 downTo 1) {
-                    button.text = getString(R.string.settings_delete_countdown, i)
-                    delay(1000)
-                }
-
-                button.setText(R.string.settings_delete)
-                button.isEnabled = true
-            }
-
+            startDelete()
             return@setOnPreferenceClickListener true
         }
     }
@@ -172,6 +152,29 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
     }
 
     private fun logout() = launch { vm.logout() }
+
+    private fun startDelete() {
+        val alert = AlertDialog.Builder(requireContext())
+            .setTitle(R.string.settings_account_deletion_title)
+            .setMessage(R.string.settings_account_deletion_message)
+            .setPositiveButton(R.string.settings_delete) { _, _ -> delete() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+        val button = alert.getButton(DialogInterface.BUTTON_POSITIVE)
+        button.isEnabled = false
+
+        launch {
+            alert.setOnDismissListener { cancel() }
+
+            for (i in 3 downTo 1) {
+                button.text = getString(R.string.settings_delete_countdown, i)
+                delay(1000)
+            }
+
+            button.setText(R.string.settings_delete)
+            button.isEnabled = true
+        }
+    }
 
     private fun delete() = launch {
         vm.delete()
