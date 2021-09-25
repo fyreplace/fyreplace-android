@@ -3,6 +3,7 @@ package app.fyreplace.client.ui
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
 import android.view.View
@@ -73,10 +74,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
             findPreference<EditTextPreference>("bio")?.run {
                 summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
                 setOnBindEditTextListener {
-                    it.inputType =
-                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE
-                    it.minLines = 3
+                    val maxSize = resources.getInteger(R.integer.settings_bio_max_size)
+                    it.minLines = resources.getInteger(R.integer.settings_bio_min_lines)
                     it.gravity = Gravity.TOP or Gravity.START
+                    it.filters = arrayOf(InputFilter.LengthFilter(maxSize))
                     it.setText(user?.bio)
                 }
             }
