@@ -1,5 +1,9 @@
 package app.fyreplace.client.grpc
 
+import app.fyreplace.client.data.ImageData
+import app.fyreplace.client.ui.ImageSelector
+import app.fyreplace.protos.ImageChunk
+import com.google.protobuf.ByteString
 import io.grpc.stub.StreamObserver
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -7,6 +11,7 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.reflect.KFunction1
 import kotlin.reflect.KFunction2
 
 class SingleResponseObserver<T> : StreamObserver<T> {
@@ -33,14 +38,28 @@ class SingleResponseObserver<T> : StreamObserver<T> {
 
     override fun onCompleted() = Unit
 
-    suspend fun await() = suspendCoroutine<T> { continuation = it }
+    suspend fun await() = withContext(Dispatchers.IO) { suspendCoroutine<T> { continuation = it } }
 }
 
 suspend fun <Request, Response> awaitSingleResponse(
     call: KFunction2<Request, StreamObserver<Response>, Unit>,
     request: Request
-): Response = withContext(Dispatchers.IO) {
+): Response {
     val observer = SingleResponseObserver<Response>()
     call(request, observer)
-    return@withContext observer.await()
+    return observer.await()
+}
+
+suspend fun <Response> awaitImageUpload(
+    call: KFunction1<StreamObserver<Response>, StreamObserver<ImageChunk>>,
+    image: ImageData?
+) {
+    val responseObserver = SingleResponseObserver<Response>()
+    val requestObserver = call(responseObserver)
+    image?.data?.asIterable()
+        ?.chunked(ImageSelector.IMAGE_CHUNK_SIZE)
+        ?.map { ImageChunk.newBuilder().setData(ByteString.copyFrom(it.toByteArray())).build() }
+        ?.forEach(requestObserver::onNext)
+    requestObserver.onCompleted()
+    responseObserver.await()
 }

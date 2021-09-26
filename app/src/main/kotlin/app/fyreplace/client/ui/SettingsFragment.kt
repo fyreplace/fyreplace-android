@@ -15,6 +15,7 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.client.R
+import app.fyreplace.client.data.ImageData
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
 import app.fyreplace.client.views.ImagePreference
@@ -24,18 +25,23 @@ import kotlinx.coroutines.delay
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
-class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
+class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
     override val preferences by inject<SharedPreferences>()
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<SettingsViewModel>()
     private val args by navArgs<SettingsFragmentArgs>()
+    private val imageSelector by inject<ImageSelector<SettingsFragment>> {
+        parametersOf(this, 0.5f)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        imageSelector.onCreate()
         setupTransitions()
     }
 
@@ -52,6 +58,18 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
                         DATE_FORMATTER.format(Date(dateJoined.seconds * 1000))
                     )
                 } ?: getString(R.string.settings_not_joined)
+
+                if (user != null) {
+                    setOnPreferenceClickListener {
+                        imageSelector.showImageChooser(
+                            R.string.settings_avatar_desc,
+                            canRemove = true
+                        )
+                        return@setOnPreferenceClickListener true
+                    }
+                } else {
+                    onPreferenceChangeListener = null
+                }
             }
 
             findPreference<EditTextPreference>("password")?.run {
@@ -117,6 +135,16 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = SettingsDataStore()
         setPreferencesFromResource(R.xml.preference_settings, rootKey)
+    }
+
+    override suspend fun onImage(image: ImageData) {
+        vm.updateAvatar(image)
+        cvm.retrieveMe()
+    }
+
+    override suspend fun onImageRemoved() {
+        vm.updateAvatar(null)
+        cvm.retrieveMe()
     }
 
     override fun onFailure(failure: Throwable) {

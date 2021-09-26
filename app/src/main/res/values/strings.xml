@@ -92,4 +92,11 @@
     <string name="login_error_invalid_username_message">This username is not valid. Usernames can contain letters, numbers, and @/./+/-/_ characters.</string>
     <string name="login_error_invalid_password_title">Weak password</string>
     <string name="login_error_invalid_password_message">This password is too weak.</string>
+
+    <string name="image_selector_dialog_file">Pick a file</string>
+    <string name="image_selector_dialog_photo">Take a picture</string>
+    <string name="image_selector_dialog_remove">Remove</string>
+    <string name="image_selector_snackbar_upload">Uploading…</string>
+    <string name="image_failure_unknown_type">Unknown file type</string>
+    <string name="image_failure_file_size">Image file too large</string>
 </resources>
