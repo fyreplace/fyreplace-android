@@ -1,12 +1,10 @@
 package app.fyreplace.client.ui
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.webkit.MimeTypeMap
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -15,7 +13,6 @@ import androidx.exifinterface.media.ExifInterface
 import androidx.exifinterface.media.ExifInterface.*
 import androidx.fragment.app.Fragment
 import app.fyreplace.client.R
-import app.fyreplace.client.data.ImageData
 import app.fyreplace.client.viewmodels.ImageSelectorViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -148,7 +145,6 @@ class ImageSelector<F>(
         mimeType: String
     ) {
         var compressedBytes = bytes
-        var compressedMimeType = mimeType
         val isTooBig = compressedBytes.size > maxImageByteSize
         val isUnknownMime = mimeType !in listOf("jpeg", "png").map { "image/$it" }
         val isPng = mimeType == "image/png"
@@ -190,28 +186,14 @@ class ImageSelector<F>(
             }
 
             compressedBytes = os.toByteArray()
-            @SuppressLint("NewApi")
-            compressedMimeType = "image/" + when (compressFormat) {
-                CompressFormat.JPEG -> "jpeg"
-                CompressFormat.PNG -> "png"
-                CompressFormat.WEBP,
-                CompressFormat.WEBP_LOSSY,
-                CompressFormat.WEBP_LOSSLESS -> "webp"
-            }
-
             coroutineContext.ensureActive()
         }
 
-        withContext(Dispatchers.Main) {
-            if (compressedBytes.size <= maxImageByteSize) {
-                val extension =
-                    MimeTypeMap.getSingleton().getExtensionFromMimeType(compressedMimeType)
-                val image = ImageData("image.${extension}", compressedMimeType, compressedBytes)
-                fragment.onImage(image)
-            } else {
-                throw IOException(fragment.resources.getString(R.string.image_failure_file_size))
-            }
+        if (compressedBytes.size > maxImageByteSize) {
+            throw IOException(fragment.resources.getString(R.string.image_failure_file_size))
         }
+
+        withContext(Dispatchers.Main) { fragment.onImage(compressedBytes) }
     }
 
     companion object {
@@ -220,7 +202,7 @@ class ImageSelector<F>(
     }
 
     interface Listener {
-        suspend fun onImage(image: ImageData) = Unit
+        suspend fun onImage(image: ByteArray) = Unit
 
         suspend fun onImageRemoved() = Unit
     }

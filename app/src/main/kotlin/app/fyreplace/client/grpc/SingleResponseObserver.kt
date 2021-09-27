@@ -1,6 +1,5 @@
 package app.fyreplace.client.grpc
 
-import app.fyreplace.client.data.ImageData
 import app.fyreplace.client.ui.ImageSelector
 import app.fyreplace.protos.ImageChunk
 import com.google.protobuf.ByteString
@@ -52,11 +51,11 @@ suspend fun <Request, Response> awaitSingleResponse(
 
 suspend fun <Response> awaitImageUpload(
     call: KFunction1<StreamObserver<Response>, StreamObserver<ImageChunk>>,
-    image: ImageData?
+    image: ByteArray?
 ) {
     val responseObserver = SingleResponseObserver<Response>()
     val requestObserver = call(responseObserver)
-    image?.data?.asIterable()
+    image?.asIterable()
         ?.chunked(ImageSelector.IMAGE_CHUNK_SIZE)
         ?.map { ImageChunk.newBuilder().setData(ByteString.copyFrom(it.toByteArray())).build() }
         ?.forEach(requestObserver::onNext)

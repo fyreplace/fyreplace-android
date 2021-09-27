@@ -2,7 +2,6 @@ package app.fyreplace.client.viewmodels
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import app.fyreplace.client.data.ImageData
 import app.fyreplace.client.grpc.awaitImageUpload
 import app.fyreplace.client.grpc.awaitSingleResponse
 import app.fyreplace.client.grpc.defaultClient
@@ -24,7 +23,7 @@ class SettingsViewModel(
         preferences.edit { putString("auth.token", response.token) }
     }
 
-    suspend fun updateAvatar(image: ImageData?) = awaitImageUpload(userStub::updateAvatar, image)
+    suspend fun updateAvatar(image: ByteArray?) = awaitImageUpload(userStub::updateAvatar, image)
 
     suspend fun updatePassword(password: String) {
         val request = Password.newBuilder().setPassword(password).build()

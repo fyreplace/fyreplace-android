@@ -15,7 +15,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.client.R
-import app.fyreplace.client.data.ImageData
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
 import app.fyreplace.client.views.ImagePreference
@@ -137,7 +136,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         setPreferencesFromResource(R.xml.preference_settings, rootKey)
     }
 
-    override suspend fun onImage(image: ImageData) {
+    override suspend fun onImage(image: ByteArray) {
         vm.updateAvatar(image)
         cvm.retrieveMe()
     }
