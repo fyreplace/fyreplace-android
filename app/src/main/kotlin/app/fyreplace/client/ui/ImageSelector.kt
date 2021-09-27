@@ -36,33 +36,33 @@ class ImageSelector<F>(
     private val fragment: F,
     maxImageSize: Float
 ) where F : Fragment, F : FailureHandler, F : ImageSelector.Listener {
-    private var snackbar: Snackbar? = null
     private val vm by fragment.viewModel<ImageSelectorViewModel>()
     private val imagesDirectory = File(fragment.requireContext().filesDir, "images")
     private val photoImageFile = File(imagesDirectory, "image.data")
     private val maxImageByteSize = (maxImageSize * 1024 * 1024).roundToInt()
-    private lateinit var getContentContract: ActivityResultLauncher<String>
-    private lateinit var takePictureContract: ActivityResultLauncher<Uri>
+    private var snackbar: Snackbar? = null
+    private lateinit var getContentLauncher: ActivityResultLauncher<String>
+    private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>
 
     fun onCreate() {
-        getContentContract =
-            fragment.registerForActivityResult(ActivityResultContracts.GetContent()) {
-                it?.let { fragment.launch { useImageUri(it) } }
+        val getContentContract = ActivityResultContracts.GetContent()
+        getContentLauncher = fragment.registerForActivityResult(getContentContract) {
+            it?.let { fragment.launch { useImageUri(it) } }
+        }
+
+        val takePictureContract = ActivityResultContracts.TakePicture()
+        takePictureLauncher = fragment.registerForActivityResult(takePictureContract) {
+            if (!it) {
+                return@registerForActivityResult
             }
 
-        takePictureContract =
-            fragment.registerForActivityResult(ActivityResultContracts.TakePicture()) {
-                if (!it) {
-                    return@registerForActivityResult
-                }
-
-                fragment.launch {
-                    vm.pop().let {
-                        useImageUri(it)
-                        photoImageFile.delete()
-                    }
+            fragment.launch {
+                vm.pop().let {
+                    useImageUri(it)
+                    photoImageFile.delete()
                 }
             }
+        }
     }
 
     fun showImageChooser(@StringRes title: Int, canRemove: Boolean) {
@@ -99,9 +99,9 @@ class ImageSelector<F>(
             imageFile
         )
         imageUri?.let { vm.push(it) }
-        takePictureContract.launch(imageUri)
+        takePictureLauncher.launch(imageUri)
     } else {
-        getContentContract.launch("image/*")
+        getContentLauncher.launch("image/*")
     }
 
     @Suppress("BlockingMethodInNonBlockingContext")
