@@ -5,11 +5,9 @@ import app.fyreplace.protos.ImageChunk
 import com.google.protobuf.ByteString
 import io.grpc.stub.StreamObserver
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import kotlin.coroutines.Continuation
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
+import kotlin.coroutines.*
 import kotlin.reflect.KFunction1
 import kotlin.reflect.KFunction2
 
@@ -58,7 +56,10 @@ suspend fun <Response> awaitImageUpload(
     image?.asIterable()
         ?.chunked(ImageSelector.IMAGE_CHUNK_SIZE)
         ?.map { ImageChunk.newBuilder().setData(ByteString.copyFrom(it.toByteArray())).build() }
-        ?.forEach(requestObserver::onNext)
+        ?.forEach {
+            coroutineContext.ensureActive()
+            requestObserver.onNext(it)
+        }
     requestObserver.onCompleted()
     responseObserver.await()
 }
