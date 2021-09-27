@@ -198,7 +198,7 @@ class ImageSelector<F>(
 
     companion object {
         const val IMAGE_MAX_AREA = 1920 * 1080
-        const val IMAGE_CHUNK_SIZE = 4096
+        const val IMAGE_CHUNK_SIZE = 100 * 1024
     }
 
     interface Listener {
