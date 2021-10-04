@@ -70,6 +70,8 @@ dependencies {
     kapt processors.glide
     implementation libraries.kotlinx.coroutines
     implementation libraries.androidx.appCompat
+    implementation libraries.androidx.constraintLayout
+    implementation libraries.androidx.coordinatorLayout
     implementation libraries.androidx.core
     implementation libraries.androidx.fragment
     implementation libraries.androidx.lifecycle.runtime
