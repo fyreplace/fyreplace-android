@@ -9,7 +9,6 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.*
 import kotlin.reflect.KFunction1
-import kotlin.reflect.KFunction2
 
 class SingleResponseObserver<T> : StreamObserver<T> {
     private var nextValue: T? = null
@@ -36,15 +35,6 @@ class SingleResponseObserver<T> : StreamObserver<T> {
     override fun onCompleted() = Unit
 
     suspend fun await() = withContext(Dispatchers.IO) { suspendCoroutine<T> { continuation = it } }
-}
-
-suspend fun <Request, Response> awaitSingleResponse(
-    call: KFunction2<Request, StreamObserver<Response>, Unit>,
-    request: Request
-): Response {
-    val observer = SingleResponseObserver<Response>()
-    call(request, observer)
-    return observer.await()
 }
 
 suspend fun <Response> awaitImageUpload(
