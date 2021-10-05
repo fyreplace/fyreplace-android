@@ -67,7 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                         return@setOnPreferenceClickListener true
                     }
                 } else {
-                    onPreferenceChangeListener = null
+                    onPreferenceClickListener = null
                 }
             }
 
