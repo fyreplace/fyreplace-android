@@ -10,38 +10,45 @@ import kotlinx.coroutines.withContext
 import kotlin.coroutines.*
 import kotlin.reflect.KFunction1
 
-class SingleResponseObserver<T> : StreamObserver<T> {
-    private var nextValue: T? = null
+class ResponsesObserver<T> : StreamObserver<T> {
+    private val responses = mutableListOf<T>()
     private var error: Throwable? = null
+    private var stop = false
     private var continuation: Continuation<T>? = null
         set(value) {
             field = value
-            nextValue?.let { field?.resume(it) }
-            error?.let { field?.resumeWithException(it) }
+            field?.run {
+                error?.let { resumeWithException(it) } ?: if (responses.size > 0) {
+                    resume(responses.removeFirst())
+                }
+            }
         }
 
     override fun onNext(value: T) {
-        nextValue = value
         error = null
-        continuation?.resume(value)
+        continuation?.resume(value) ?: responses.add(value)
     }
 
     override fun onError(t: Throwable) {
-        nextValue = null
         error = t
         continuation?.resumeWithException(t)
     }
 
-    override fun onCompleted() = Unit
+    override fun onCompleted() {
+        stop = true
+    }
 
-    suspend fun await() = withContext(Dispatchers.IO) { suspendCoroutine<T> { continuation = it } }
+    suspend fun awaitNext() = when {
+        stop -> throw IllegalStateException()
+        else -> withContext(Dispatchers.IO) { suspendCoroutine<T> { continuation = it } }
+    }
 }
 
 suspend fun <Response> awaitImageUpload(
     call: KFunction1<StreamObserver<Response>, StreamObserver<ImageChunk>>,
     image: ByteArray?
 ) {
-    val responseObserver = SingleResponseObserver<Response>()
+    val responseObserver = ResponsesObserver<Response>()
     val requestObserver = call(responseObserver)
     image?.asIterable()
         ?.chunked(ImageSelector.IMAGE_CHUNK_SIZE)
@@ -51,5 +58,5 @@ suspend fun <Response> awaitImageUpload(
             requestObserver.onNext(it)
         }
     requestObserver.onCompleted()
-    responseObserver.await()
+    responseObserver.awaitNext()
 }

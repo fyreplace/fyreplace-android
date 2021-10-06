@@ -1,4 +1,4 @@
-package app.fyreplace.client.ui
+package app.fyreplace.client.ui.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentLoginBinding
+import app.fyreplace.client.ui.TitleChoosing
 import app.fyreplace.client.viewmodels.LoginViewModel
 import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel

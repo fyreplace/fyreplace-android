@@ -1,4 +1,4 @@
-package app.fyreplace.client.ui
+package app.fyreplace.client.ui.fragments
 
 import androidx.fragment.app.Fragment
 import com.google.android.material.transition.MaterialSharedAxis

@@ -20,6 +20,8 @@
     <string name="destination_settings">Settings</string>
     <string name="destination_login">Login</string>
 
+    <string name="archive_empty">No subscribed posts</string>
+
     <string name="settings_profile">Profile</string>
     <string name="settings_username">Guest</string>
     <string name="settings_date_joined">Joined %1$s</string>

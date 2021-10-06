@@ -78,8 +78,10 @@ dependencies {
     implementation libraries.androidx.lifecycle.viewModel
     implementation libraries.androidx.navigation.fragment
     implementation libraries.androidx.navigation.ui
+    implementation libraries.androidx.paging
     implementation libraries.androidx.preference
     implementation libraries.androidx.security
+    implementation libraries.androidx.swipeRefreshLayout
     implementation libraries.glide.base
     implementation libraries.glide.okHttp
     implementation libraries.grpc.okHttp

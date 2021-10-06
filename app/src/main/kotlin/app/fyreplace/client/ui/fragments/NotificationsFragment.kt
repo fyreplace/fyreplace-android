@@ -1,4 +1,4 @@
-package app.fyreplace.client.ui
+package app.fyreplace.client.ui.fragments
 
 import app.fyreplace.client.R
 import app.fyreplace.client.viewmodels.NotificationsViewModel

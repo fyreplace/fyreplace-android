@@ -1,4 +1,4 @@
-package app.fyreplace.client.ui
+package app.fyreplace.client.ui.fragments
 
 import android.content.DialogInterface
 import android.content.SharedPreferences
@@ -15,6 +15,8 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.client.R
+import app.fyreplace.client.ui.FailureHandler
+import app.fyreplace.client.ui.ImageSelector
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
 import app.fyreplace.client.views.ImagePreference

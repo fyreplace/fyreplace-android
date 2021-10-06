@@ -6,8 +6,8 @@ import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.fyreplace.client.R
+import app.fyreplace.client.ui.loadAvatar
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 class ImagePreference : Preference {
     var imageUrl: String? = null
@@ -50,13 +50,6 @@ class ImagePreference : Preference {
     }
 
     private fun updateImage() {
-        image?.let {
-            Glide.with(context)
-                .load(imageUrl)
-                .placeholder(R.drawable.ic_baseline_account_circle)
-                .circleCrop()
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(it)
-        }
+        image?.let { Glide.with(context).loadAvatar(imageUrl).into(it) }
     }
 }
