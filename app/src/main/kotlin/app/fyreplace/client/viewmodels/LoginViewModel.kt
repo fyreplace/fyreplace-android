@@ -6,19 +6,15 @@ import androidx.annotation.IntegerRes
 import androidx.core.content.edit
 import app.fyreplace.client.R
 import app.fyreplace.client.grpc.defaultClient
-import app.fyreplace.protos.AccountServiceGrpc
-import app.fyreplace.protos.Credentials
-import app.fyreplace.protos.UserCreation
-import kotlinx.coroutines.Dispatchers
+import app.fyreplace.protos.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.withContext
 
 class LoginViewModel(
     private val resources: Resources,
     private val preferences: SharedPreferences,
-    private val accountBlocking: AccountServiceGrpc.AccountServiceBlockingStub
+    private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub
 ) : BaseViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
     private val mIsLoading = MutableStateFlow(false)
@@ -52,24 +48,22 @@ class LoginViewModel(
     }
 
     suspend fun register() {
-        val request = UserCreation.newBuilder()
-            .setEmail(email.value)
-            .setUsername(username.value)
-            .setPassword(password.value)
-            .build()
-
-        executeWhileLoading { accountBlocking.create(request) }
+        executeWhileLoading {
+            accountStub.create(userCreation {
+                email = this@LoginViewModel.email.value
+                username = this@LoginViewModel.username.value
+                password = this@LoginViewModel.password.value
+            })
+        }
     }
 
     suspend fun login() {
-        val request = Credentials.newBuilder()
-            .setIdentifier(username.value)
-            .setPassword(password.value)
-            .setClient(defaultClient)
-            .build()
-
         executeWhileLoading {
-            val response = accountBlocking.connect(request)
+            val response = accountStub.connect(credentials {
+                identifier = this@LoginViewModel.username.value
+                password = this@LoginViewModel.password.value
+                client = defaultClient
+            })
             preferences.edit { putString("auth.token", response.token) }
         }
     }
@@ -77,7 +71,7 @@ class LoginViewModel(
     private suspend fun executeWhileLoading(block: suspend () -> Unit) {
         try {
             mIsLoading.value = true
-            withContext(Dispatchers.IO) { block() }
+            block()
         } finally {
             mIsLoading.value = false
         }

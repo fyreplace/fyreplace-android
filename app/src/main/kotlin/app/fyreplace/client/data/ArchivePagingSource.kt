@@ -1,13 +1,13 @@
 package app.fyreplace.client.data
 
-import app.fyreplace.client.grpc.ResponsesObserver
-import app.fyreplace.protos.*
-import io.grpc.stub.StreamObserver
+import app.fyreplace.protos.Cursor
+import app.fyreplace.protos.Post
+import app.fyreplace.protos.PostServiceGrpcKt
+import app.fyreplace.protos.Posts
 
-class ArchivePagingSource(private val postStub: PostServiceGrpc.PostServiceStub) :
+class ArchivePagingSource(postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
     ItemListPagingSource<Post, Posts>() {
-    override fun startListing(observer: ResponsesObserver<Posts>): StreamObserver<Page> =
-        postStub.listArchive(observer)
+    override val itemsFlow = postStub.listArchive(cursorFlow)
 
     override fun makeResult(items: Posts): LoadResult.Page<Cursor, Post> {
         val previous = if (items.hasPrevious()) items.previous else null

@@ -25,7 +25,10 @@ buildscript {
                 conscrypt: '2.5.2',
                 glide    : '4.12.0',
                 gradle   : '7.0.3',
-                grpc     : '1.41.0',
+                grpc     : [
+                        base  : '1.41.0',
+                        kotlin: '1.2.0',
+                ],
                 javax    : [
                         annotation: '1.3.2',
                 ],
@@ -71,10 +74,12 @@ buildscript {
                         okHttp: "com.github.bumptech.glide:okhttp3-integration:$versions.glide",
                 ],
                 grpc     : [
-                        okHttp  : "io.grpc:grpc-okhttp:$versions.grpc",
-                        protoc  : "io.grpc:protoc-gen-grpc-java:$versions.grpc",
-                        protobuf: "io.grpc:grpc-protobuf-lite:$versions.grpc",
-                        stub    : "io.grpc:grpc-stub:$versions.grpc",
+                        okHttp      : "io.grpc:grpc-okhttp:$versions.grpc.base",
+                        protoc      : "io.grpc:protoc-gen-grpc-java:$versions.grpc.base",
+                        protocKotlin: "io.grpc:protoc-gen-grpc-kotlin:$versions.grpc.kotlin:jdk7@jar",
+                        protobuf    : "io.grpc:grpc-protobuf:$versions.grpc.base",
+                        stub        : "io.grpc:grpc-stub:$versions.grpc.base",
+                        stubKotlin  : "io.grpc:grpc-kotlin-stub:$versions.grpc.kotlin",
                 ],
                 javax    : [
                         annotation: "javax.annotation:javax.annotation-api:$versions.javax.annotation",
@@ -87,6 +92,7 @@ buildscript {
                 play     : [
                         basement: "com.google.android.gms:play-services-basement:$versions.play.basement"
                 ],
+                protobuf : "com.google.protobuf:protobuf-kotlin:$versions.protoc",
                 protoc   : "com.google.protobuf:protoc:$versions.protoc",
         ]
 

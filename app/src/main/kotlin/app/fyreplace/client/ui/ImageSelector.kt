@@ -69,7 +69,7 @@ class ImageSelector<F>(
         )
 
         if (canRemove) {
-            items.add(R.string.image_selector_dialog_remove)
+            items += R.string.image_selector_dialog_remove
         }
 
         MaterialAlertDialogBuilder(fragment.requireContext())

@@ -56,12 +56,23 @@ protobuf {
         grpc {
             artifact = libraries.grpc.protoc
         }
+
+        grpckt {
+            artifact = libraries.grpc.protocKotlin
+        }
     }
 
     generateProtoTasks {
         all().each { task ->
-            task.builtins { java { option 'lite' } }
-            task.plugins { grpc { option 'lite' } }
+            task.builtins {
+                java {}
+                kotlin {}
+            }
+
+            task.plugins {
+                grpc {}
+                grpckt {}
+            }
         }
     }
 }
@@ -87,9 +98,11 @@ dependencies {
     implementation libraries.grpc.okHttp
     implementation libraries.grpc.protobuf
     implementation libraries.grpc.stub
+    implementation libraries.grpc.stubKotlin
     implementation libraries.javax.annotation
     implementation libraries.koin
     implementation libraries.material
+    implementation libraries.protobuf
     vanillaImplementation libraries.play.basement
     libreImplementation libraries.conscrypt
 }

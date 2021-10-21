@@ -28,22 +28,10 @@ val grpcModule = module {
             .build()
     }
 
-    factory { AccountServiceGrpc.newStub(get()) }
-    factory { AccountServiceGrpc.newFutureStub(get()) }
-    factory { AccountServiceGrpc.newBlockingStub(get()) }
-    factory { UserServiceGrpc.newStub(get()) }
-    factory { UserServiceGrpc.newFutureStub(get()) }
-    factory { UserServiceGrpc.newBlockingStub(get()) }
-    factory { PostServiceGrpc.newStub(get()) }
-    factory { PostServiceGrpc.newFutureStub(get()) }
-    factory { PostServiceGrpc.newBlockingStub(get()) }
-    factory { ChapterServiceGrpc.newStub(get()) }
-    factory { ChapterServiceGrpc.newFutureStub(get()) }
-    factory { ChapterServiceGrpc.newBlockingStub(get()) }
-    factory { CommentServiceGrpc.newStub(get()) }
-    factory { CommentServiceGrpc.newFutureStub(get()) }
-    factory { CommentServiceGrpc.newBlockingStub(get()) }
-    factory { NotificationServiceGrpc.newStub(get()) }
-    factory { NotificationServiceGrpc.newFutureStub(get()) }
-    factory { NotificationServiceGrpc.newBlockingStub(get()) }
+    factory { AccountServiceGrpcKt.AccountServiceCoroutineStub(get()) }
+    factory { UserServiceGrpcKt.UserServiceCoroutineStub(get()) }
+    factory { PostServiceGrpcKt.PostServiceCoroutineStub(get()) }
+    factory { ChapterServiceGrpcKt.ChapterServiceCoroutineStub(get()) }
+    factory { CommentServiceGrpcKt.CommentServiceCoroutineStub(get()) }
+    factory { NotificationServiceGrpcKt.NotificationServiceCoroutineStub(get()) }
 }

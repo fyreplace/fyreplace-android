@@ -3,62 +3,52 @@ package app.fyreplace.client.viewmodels
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import app.fyreplace.client.grpc.awaitImageUpload
+import app.fyreplace.client.data.imageChunkFlow
 import app.fyreplace.client.grpc.defaultClient
 import app.fyreplace.protos.*
-import com.google.protobuf.Empty
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.google.protobuf.empty
 
+@SuppressLint("CheckResult")
 class SettingsViewModel(
     private val preferences: SharedPreferences,
-    private val accountBlocking: AccountServiceGrpc.AccountServiceBlockingStub,
-    private val userBlocking: UserServiceGrpc.UserServiceBlockingStub,
-    private val userStub: UserServiceGrpc.UserServiceStub
+    private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
+    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
 ) : BaseViewModel() {
-    suspend fun confirmActivation(token: String) {
-        val request = ConnectionToken.newBuilder()
-            .setToken(token)
-            .setClient(defaultClient)
-            .build()
-
-        withContext(Dispatchers.IO) {
-            val response = accountBlocking.confirmActivation(request)
-            preferences.edit { putString("auth.token", response.token) }
-        }
+    suspend fun confirmActivation(tokenValue: String) {
+        val response = accountStub.confirmActivation(connectionToken {
+            token = tokenValue
+            client = defaultClient
+        })
+        preferences.edit { putString("auth.token", response.token) }
     }
 
-    suspend fun updateAvatar(image: ByteArray?) = awaitImageUpload(userStub::updateAvatar, image)
+    suspend fun updateAvatar(image: ByteArray?) {
+        userStub.updateAvatar(image.imageChunkFlow())
+    }
 
-    suspend fun updatePassword(password: String) {
-        val request = Password.newBuilder().setPassword(password).build()
-        withContext(Dispatchers.IO) { userBlocking.updatePassword(request) }
+    suspend fun updatePassword(passwordValue: String) {
+        userStub.updatePassword(password { password = passwordValue })
     }
 
     suspend fun sendEmailUpdateEmail(address: String) {
-        val request = Email.newBuilder().setEmail(address).build()
-        withContext(Dispatchers.IO) { userBlocking.sendEmailUpdateEmail(request) }
+        userStub.sendEmailUpdateEmail(email { email = address })
     }
 
-    suspend fun confirmEmailUpdate(token: String) {
-        val request = Token.newBuilder().setToken(token).build()
-        withContext(Dispatchers.IO) { userBlocking.confirmEmailUpdate(request) }
+    suspend fun confirmEmailUpdate(tokenValue: String) {
+        userStub.confirmEmailUpdate(token { token = tokenValue })
     }
 
-    suspend fun updateBio(bio: String) {
-        val request = Bio.newBuilder().setBio(bio).build()
-        withContext(Dispatchers.IO) { userBlocking.updateBio(request) }
+    suspend fun updateBio(bioValue: String) {
+        userStub.updateBio(bio { bio = bioValue })
     }
 
-    @SuppressLint("CheckResult")
-    suspend fun logout() = withContext(Dispatchers.IO) {
-        accountBlocking.disconnect(StringId.getDefaultInstance())
+    suspend fun logout() {
+        accountStub.disconnect(stringId { })
         preferences.edit { putString("auth.token", "") }
     }
 
-    @SuppressLint("CheckResult")
-    suspend fun delete() = withContext(Dispatchers.IO) {
-        accountBlocking.delete(Empty.getDefaultInstance())
+    suspend fun delete() {
+        accountStub.delete(empty { })
         preferences.edit { putString("auth.token", "") }
     }
 }
