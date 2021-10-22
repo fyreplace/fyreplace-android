@@ -32,7 +32,9 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(
 
         fun setup(profile: Profile, timestamp: Timestamp) {
             Glide.with(itemView.context).loadAvatar(profile).into(avatar)
-            username.text = profile.username
+            username.text =
+                if (profile.username.isNotEmpty()) profile.username
+                else username.resources.getText(R.string.anonymous)
             date.text = timestamp.formatDate(singleLine = false)
         }
     }
