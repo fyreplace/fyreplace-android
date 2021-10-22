@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentLoginBinding
 import app.fyreplace.client.ui.TitleChoosing
+import app.fyreplace.client.ui.hideSoftKeyboard
 import app.fyreplace.client.viewmodels.LoginViewModel
 import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -60,6 +61,8 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         if (args.isRegistering) R.string.settings_register else R.string.settings_login
 
     private fun registerOrLogin() = launch {
+        view?.hideSoftKeyboard()
+
         if (args.isRegistering) {
             vm.register()
             showBasicAlert(R.string.login_register_title, R.string.login_register_message)
