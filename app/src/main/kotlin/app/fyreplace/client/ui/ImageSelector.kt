@@ -54,8 +54,8 @@ class ImageSelector<F>(
             }
 
             fragment.launch {
-                vm.pop().let {
-                    useImageUri(it)
+                vm.pop().let { uri ->
+                    useImageUri(uri)
                     photoImageFile.delete()
                 }
             }
