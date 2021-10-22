@@ -22,15 +22,19 @@ import kotlin.coroutines.CoroutineContext
 interface FailureHandler : BasePresenter, LifecycleOwner {
     val preferences: SharedPreferences
 
+    fun getFailureTexts(error: Status): Pair<Int, Int>? = null
+
     fun onFailure(failure: Throwable) {
-        getContext()?.run {
+        val error = Status.fromThrowable(failure)
+        val (title, message) = getFailureTexts(error) ?: return getContext()?.run {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())
             Toast.makeText(
                 this,
                 getString(R.string.error_title, failure.localizedMessage),
                 Toast.LENGTH_LONG
             ).show()
-        }
+        } ?: Unit
+        showBasicAlert(title, message, error = true)
     }
 
     fun launch(

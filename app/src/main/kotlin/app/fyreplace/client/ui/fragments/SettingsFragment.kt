@@ -148,28 +148,23 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         cvm.retrieveMe()
     }
 
-    override fun onFailure(failure: Throwable) {
-        val error = Status.fromThrowable(failure)
-        val (title, message) = when (error.code) {
-            Status.Code.UNAUTHENTICATED -> when (error.description) {
-                "timestamp_exceeded" -> R.string.settings_error_timestamp_exceeded_title to R.string.settings_error_timestamp_exceeded_message
-                "invalid_token" -> R.string.settings_error_invalid_token_title to R.string.settings_error_invalid_token_message
-                else -> R.string.error_authentication_title to R.string.error_authentication_message
-            }
-            Status.Code.PERMISSION_DENIED -> when (error.description) {
-                "user_not_pending" -> R.string.settings_error_user_not_pending_title to R.string.settings_error_user_not_pending_message
-                else -> R.string.error_permission_title to R.string.error_permission_message
-            }
-            Status.Code.ALREADY_EXISTS -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
-            Status.Code.INVALID_ARGUMENT -> when (error.description) {
-                "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
-                "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
-                else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
-            }
-            else -> return super.onFailure(failure)
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.UNAUTHENTICATED -> when (error.description) {
+            "timestamp_exceeded" -> R.string.settings_error_timestamp_exceeded_title to R.string.settings_error_timestamp_exceeded_message
+            "invalid_token" -> R.string.settings_error_invalid_token_title to R.string.settings_error_invalid_token_message
+            else -> R.string.error_authentication_title to R.string.error_authentication_message
         }
-
-        showBasicAlert(title, message, error = true)
+        Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "user_not_pending" -> R.string.settings_error_user_not_pending_title to R.string.settings_error_user_not_pending_message
+            else -> R.string.error_permission_title to R.string.error_permission_message
+        }
+        Status.Code.ALREADY_EXISTS -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
+        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
+            "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
+            else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
+        }
+        else -> null
     }
 
     private fun handleArgs() {
