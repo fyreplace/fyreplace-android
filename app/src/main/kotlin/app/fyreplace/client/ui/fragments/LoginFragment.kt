@@ -45,6 +45,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
                 "caller_pending" -> R.string.login_error_caller_pending_title to R.string.login_error_caller_pending_message
                 "caller_deleted" -> R.string.login_error_caller_deleted_title to R.string.login_error_caller_deleted_message
                 "caller_banned" -> R.string.login_error_caller_banned_title to R.string.login_error_caller_banned_message
+                "username_reserved" -> R.string.login_error_username_reserved_title to R.string.login_error_username_reserved_message
                 else -> R.string.error_permission_title to R.string.error_permission_message
             }
             Status.Code.INVALID_ARGUMENT -> when (error.description) {
