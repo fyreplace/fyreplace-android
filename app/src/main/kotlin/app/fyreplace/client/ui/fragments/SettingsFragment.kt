@@ -6,8 +6,11 @@ import android.os.Bundle
 import android.text.InputFilter
 import android.text.InputType
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.doOnPreDraw
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.EditTextPreference
@@ -44,6 +47,16 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         super.onCreate(savedInstanceState)
         imageSelector.onCreate()
         setupTransitions()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        postponeEnterTransition()
+        return super.onCreateView(inflater, container, savedInstanceState)
+            ?.apply { doOnPreDraw { startPostponedEnterTransition() } }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
