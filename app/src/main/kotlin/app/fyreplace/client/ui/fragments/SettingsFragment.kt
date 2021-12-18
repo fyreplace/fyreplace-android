@@ -39,9 +39,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<SettingsViewModel>()
     private val args by navArgs<SettingsFragmentArgs>()
-    private val imageSelector by inject<ImageSelector<SettingsFragment>> {
-        parametersOf(this, 1f)
-    }
+    private val imageSelector by inject<ImageSelector<SettingsFragment>> { parametersOf(this, 1f) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -16,8 +16,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
     private val vm by viewModel<LoginViewModel>()
-    private lateinit var bd: FragmentLoginBinding
     private val args by navArgs<LoginFragmentArgs>()
+    private lateinit var bd: FragmentLoginBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,

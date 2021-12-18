@@ -27,8 +27,7 @@
     <fragment
         android:id="@+id/fragment_settings"
         android:name="app.fyreplace.client.ui.fragments.SettingsFragment"
-        android:label="@string/destination_settings"
-        tools:layout="@xml/preference_settings">
+        android:label="@string/destination_settings">
         <argument
             android:name="path"
             android:defaultValue=""
