@@ -11,6 +11,7 @@ import app.fyreplace.client.R
 import app.fyreplace.client.grpc.formatDate
 import app.fyreplace.client.ui.loadAvatar
 import app.fyreplace.client.ui.resolveTextAttribute
+import app.fyreplace.client.ui.setUsername
 import app.fyreplace.protos.Profile
 import com.bumptech.glide.Glide
 import com.google.protobuf.Timestamp
@@ -32,9 +33,7 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(
 
         fun setup(profile: Profile, timestamp: Timestamp) {
             Glide.with(itemView.context).loadAvatar(profile).into(avatar)
-            username.text =
-                if (profile.username.isNotEmpty()) profile.username
-                else username.resources.getText(R.string.anonymous)
+            username.setUsername(profile.username)
             date.text = timestamp.formatDate(singleLine = false)
         }
     }
