@@ -8,4 +8,5 @@
     <color name="primary_dark">@color/main_dark</color>
     <color name="navigation">@android:color/black</color>
     <color name="splash">@color/primary</color>
+    <color name="on_toolbar">@android:color/white</color>
 </resources>

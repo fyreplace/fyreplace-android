@@ -32,8 +32,8 @@
                 android:layout_height="wrap_content"
                 app:contentInsetStartWithNavigation="0dp"
                 app:popupTheme="@style/ThemeOverlay.Fyreplace.Popup"
-                app:subtitleTextColor="?attr/colorOnPrimary"
-                app:titleTextColor="?attr/colorOnPrimary" />
+                app:subtitleTextColor="@color/on_toolbar"
+                app:titleTextColor="@color/on_toolbar" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"
