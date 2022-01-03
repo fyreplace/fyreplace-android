@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
@@ -205,6 +206,15 @@ class MainActivity :
                     updateLayoutParams<ViewGroup.LayoutParams> {
                         width = size
                         height = size
+                    }
+
+                    with(TypedValue()) {
+                        context.theme.resolveAttribute(
+                            R.attr.selectableItemBackgroundBorderless,
+                            this,
+                            true
+                        )
+                        setBackgroundResource(resourceId)
                     }
                 }
         }
