@@ -12,6 +12,7 @@ import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 class ArchiveAdapter(context: Context) :
     ItemListAdapter<Post, ItemListAdapter.Holder>(context) {
@@ -50,6 +51,7 @@ class ArchiveAdapter(context: Context) :
             is ImageHolder -> Glide.with(context)
                 .load(chapter.image.url)
                 .transform(CenterCrop(), RoundedCorners(cornerSize))
+                .transition(DrawableTransitionOptions.withCrossFade())
                 .into(holder.preview)
         }
     }
