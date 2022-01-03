@@ -61,7 +61,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
 
         launch {
             vm.startListing().launchCollect {
-                bd.emptyText.isVisible = false
+                bd.emptyText.isVisible = it.isEmpty()
                 bd.swipe.isRefreshing = false
                 adapter.add(it)
             }
