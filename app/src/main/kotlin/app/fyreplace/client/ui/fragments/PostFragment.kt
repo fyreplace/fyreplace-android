@@ -33,6 +33,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
     ) = super.onCreateView(inflater, container, savedInstanceState)?.also {
         bd = FragmentPostBinding.bind(it)
         bd.lifecycleOwner = viewLifecycleOwner
+        bd.recycler.setHasFixedSize(true)
         setHasOptionsMenu(true)
     }
 

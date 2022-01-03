@@ -41,6 +41,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
         bd.emptyText.text = emptyText
         val color = ResourcesCompat.getColor(resources, R.color.primary, context?.theme)
         bd.swipe.setColorSchemeColors(color)
+        bd.recycler.setHasFixedSize(true)
         bd.recycler.addOnChildAttachStateChangeListener(this)
         bd.recycler.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
