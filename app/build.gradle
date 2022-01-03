@@ -10,11 +10,11 @@ android {
     compileSdk configuration.compileSdk
 
     defaultConfig {
-        applicationId "app.fyreplace.client"
+        applicationId "app.fyreplace.fyreplace"
         minSdk configuration.minSdk
         targetSdk configuration.targetSdk
-        versionCode 9001
-        versionName "0.9.1"
+        versionCode 1
+        versionName "0.0.1"
         vectorDrawables.useSupportLibrary true
     }
 
