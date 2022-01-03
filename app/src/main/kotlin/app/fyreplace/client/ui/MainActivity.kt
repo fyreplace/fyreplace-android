@@ -40,6 +40,7 @@ class MainActivity :
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener,
     TabLayout.OnTabSelectedListener {
+    override val rootView get() = bd.root
     override val preferences by inject<SharedPreferences>()
     private val vm by viewModel<MainViewModel>()
     private val cvm by viewModel<CentralViewModel>()
@@ -112,8 +113,6 @@ class MainActivity :
 
     override fun onSupportNavigateUp() =
         navHost.navController.navigateUp() || super.onSupportNavigateUp()
-
-    override fun getContext() = this
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         vm.setPageChoices(if (fragment is PageChoosing) fragment.pageChoices else emptyList())

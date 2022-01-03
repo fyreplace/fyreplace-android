@@ -30,8 +30,7 @@
     <string name="post_menu_action_unsubscribe">Unsubscribe</string>
     <string name="post_menu_action_report">Report</string>
     <string name="post_menu_action_delete">Delete</string>
-    <string name="post_report_title">Post reported</string>
-    <string name="post_report_message">This post has been reported and will be examined as soon as possible.</string>
+    <string name="post_report_message">Post reported!</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
 
@@ -43,8 +42,7 @@
     <string name="settings_password">Mot de passe</string>
     <string name="settings_password_desc">**********</string>
     <string name="settings_password_change_message">What\'s your new password?</string>
-    <string name="settings_password_change_success_title">Password changed</string>
-    <string name="settings_password_change_success_message">Your password has been successfully updated.</string>
+    <string name="settings_password_change_success_message">Password updated!</string>
     <string name="settings_email">Email</string>
     <string name="settings_email_desc">email@example.org</string>
     <string name="settings_email_change_message">What\'s your new email address?</string>
@@ -66,10 +64,8 @@
     <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards.\n\nAre you sure you want to go through with this?</string>
     <string name="settings_account_deletion_success_title">Account deleted</string>
     <string name="settings_account_deletion_success_message">Your account has been deleted, your posts and comments will be fully removed as well within the next minutes.\n\nGoodbye! 👋</string>
-    <string name="settings_user_email_changed_title">Email changed</string>
-    <string name="settings_user_email_changed_message">Your email has been successfully updated.</string>
-    <string name="settings_account_activated_title">Account activated</string>
-    <string name="settings_account_activated_message">Congratulations!\nYour account has been successfully activated.</string>
+    <string name="settings_user_email_changed_message">Email updated!</string>
+    <string name="settings_account_activated_message">Account activated!</string>
     <string name="settings_error_malformed_url_title">Cannot open URL</string>
     <string name="settings_error_malformed_url_message">The URL is malformed and cannot be used.</string>
     <string name="settings_error_timestamp_exceeded_title">Outdated URL</string>

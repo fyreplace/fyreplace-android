@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
+    override var rootView: View? = null
     override val preferences by inject<SharedPreferences>()
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<SettingsViewModel>()
@@ -53,8 +54,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         savedInstanceState: Bundle?
     ): View? {
         postponeEnterTransition()
-        return super.onCreateView(inflater, container, savedInstanceState)
+        rootView = super.onCreateView(inflater, container, savedInstanceState)
             ?.apply { doOnPreDraw { startPostponedEnterTransition() } }
+        return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -193,19 +195,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     private fun confirmActivation(token: String) = launch {
         vm.confirmActivation(token)
-        showBasicAlert(
-            R.string.settings_account_activated_title,
-            R.string.settings_account_activated_message
-        )
+        showBasicSnackbar(R.string.settings_account_activated_message)
     }
 
     private fun confirmEmailUpdate(token: String) = launch {
         vm.confirmEmailUpdate(token)
         cvm.retrieveMe()
-        showBasicAlert(
-            R.string.settings_user_email_changed_title,
-            R.string.settings_user_email_changed_message
-        )
+        showBasicSnackbar(R.string.settings_user_email_changed_message)
     }
 
     private fun logout() = launch { vm.logout() }
@@ -250,10 +246,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             when (key) {
                 "password" -> {
                     vm.updatePassword(value.orEmpty())
-                    showBasicAlert(
-                        R.string.settings_password_change_success_title,
-                        R.string.settings_password_change_success_message
-                    )
+                    showBasicSnackbar(R.string.settings_password_change_success_message)
                 }
                 "email" -> {
                     vm.sendEmailUpdateEmail(value.orEmpty())

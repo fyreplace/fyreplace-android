@@ -20,6 +20,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class PostFragment : BaseFragment(R.layout.fragment_post) {
+    override val rootView get() = bd.root
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<PostViewModel> { parametersOf(args.post) }
     private val args by navArgs<PostFragmentArgs>()
@@ -99,7 +100,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
     private suspend fun report() {
         vm.report()
-        showBasicAlert(R.string.post_report_title, R.string.post_report_message)
+        showBasicSnackbar(R.string.post_report_message)
     }
 
     private suspend fun delete() {

@@ -19,6 +19,7 @@ import java.io.Serializable
 abstract class ItemListFragment<Item : Any, Items : Any> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
+    override val rootView get() = bd.root
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
     protected lateinit var adapter: ItemListAdapter<Item, ItemListAdapter.Holder>
