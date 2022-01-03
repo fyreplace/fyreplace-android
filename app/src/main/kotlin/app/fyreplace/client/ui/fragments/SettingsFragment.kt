@@ -23,9 +23,12 @@ import app.fyreplace.client.ui.ImageSelector
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
 import app.fyreplace.client.views.ImagePreference
+import com.bumptech.glide.Glide
 import io.grpc.Status
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -204,7 +207,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         showBasicSnackbar(R.string.settings_user_email_changed_message)
     }
 
-    private fun logout() = launch { vm.logout() }
+    private fun logout() = launch {
+        vm.logout()
+        clearGlideCache()
+    }
 
     private fun startDelete() {
         val alert = AlertDialog.Builder(requireContext())
@@ -231,10 +237,16 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     private fun delete() = launch {
         vm.delete()
+        clearGlideCache()
         showBasicAlert(
             R.string.settings_account_deletion_success_title,
             R.string.settings_account_deletion_success_message
         )
+    }
+
+    private suspend fun clearGlideCache() {
+        withContext(Dispatchers.Main.immediate) { Glide.get(requireContext()).clearMemory() }
+        withContext(Dispatchers.IO) { Glide.get(requireContext()).clearDiskCache() }
     }
 
     private companion object {
