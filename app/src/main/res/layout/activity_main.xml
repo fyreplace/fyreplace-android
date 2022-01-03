@@ -30,7 +30,10 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:popupTheme="@style/ThemeOverlay.Fyreplace.Popup" />
+                app:contentInsetStartWithNavigation="0dp"
+                app:popupTheme="@style/ThemeOverlay.Fyreplace.Popup"
+                app:subtitleTextColor="?attr/colorOnPrimary"
+                app:titleTextColor="?attr/colorOnPrimary" />
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tabs"

@@ -12,5 +12,6 @@ val viewModelsModule = module {
     viewModel { DraftsViewModel() }
     viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get(), get(), get()) }
+    viewModel { PostViewModel(it.get(), get()) }
     viewModel { ImageSelectorViewModel() }
 }

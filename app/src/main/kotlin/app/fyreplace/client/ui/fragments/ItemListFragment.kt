@@ -8,18 +8,20 @@ import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
-import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.client.R
 import app.fyreplace.client.databinding.FragmentItemListBinding
 import app.fyreplace.client.ui.adapters.ItemListAdapter
 import app.fyreplace.client.viewmodels.ItemListViewModel
-import kotlinx.coroutines.flow.map
+import java.io.Serializable
 
 abstract class ItemListFragment<Item : Any, Items : Any> :
-    BaseFragment(R.layout.fragment_item_list) {
+    BaseFragment(R.layout.fragment_item_list),
+    RecyclerView.OnChildAttachStateChangeListener {
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
+    protected lateinit var adapter: ItemListAdapter<Item, ItemListAdapter.Holder>
     private lateinit var bd: FragmentItemListBinding
 
     abstract fun makeAdapter(context: Context): ItemListAdapter<Item, ItemListAdapter.Holder>
@@ -38,6 +40,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
         bd.emptyText.text = emptyText
         val color = ResourcesCompat.getColor(resources, R.color.primary, context?.theme)
         bd.swipe.setColorSchemeColors(color)
+        bd.recycler.addOnChildAttachStateChangeListener(this)
         bd.recycler.addItemDecoration(
             DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
         )
@@ -47,21 +50,45 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val adapter = makeAdapter(view.context)
+        adapter = makeAdapter(view.context)
         bd.recycler.adapter = adapter
-
-        adapter.loadStateFlow.map {
-            adapter.itemCount == 0 &&
-                    it.append is LoadState.NotLoading &&
-                    it.append.endOfPaginationReached
-        }.launchCollect { bd.emptyText.isVisible = it }
-
-        vm.items.launchCollect {
-            bd.swipe.isRefreshing = false
-            adapter.submitData(it)
+        bd.swipe.setOnRefreshListener {
+            adapter.clear()
+            bd.emptyText.isVisible = true
+            vm.reset()
+            launch { vm.fetchMore() }
         }
 
-        bd.swipe.setOnRefreshListener(adapter::refresh)
+        launch {
+            vm.startListing().launchCollect {
+                bd.emptyText.isVisible = false
+                bd.swipe.isRefreshing = false
+                adapter.add(it)
+            }
+        }
     }
+
+    override fun onDestroyView() {
+        bd.recycler.removeOnChildAttachStateChangeListener(this)
+        vm.stopListing()
+        super.onDestroyView()
+    }
+
+    override fun onChildViewAttachedToWindow(view: View) {
+        val childPosition = bd.recycler.getChildAdapterPosition(view)
+
+        if (adapter.itemCount - childPosition < ItemListViewModel.pageSize) {
+            launch { vm.fetchMore() }
+        }
+    }
+
+    override fun onChildViewDetachedFromWindow(view: View) = Unit
+
+    inner class ItemDeletionNotifier(private val position: Int) : DeletionNotifier {
+        override fun onDelete() = adapter.remove(position)
+    }
+}
+
+interface DeletionNotifier : Serializable {
+    fun onDelete()
 }

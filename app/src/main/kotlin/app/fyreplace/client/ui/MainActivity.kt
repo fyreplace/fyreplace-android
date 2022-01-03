@@ -3,15 +3,22 @@ package app.fyreplace.client.ui
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Configuration
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Bundle
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+import android.view.ViewGroup
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.children
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -20,6 +27,9 @@ import app.fyreplace.client.R
 import app.fyreplace.client.databinding.ActivityMainBinding
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.MainViewModel
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.tabs.TabLayout
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,6 +38,7 @@ class MainActivity :
     AppCompatActivity(R.layout.activity_main),
     FailureHandler,
     FragmentOnAttachListener,
+    NavController.OnDestinationChangedListener,
     TabLayout.OnTabSelectedListener {
     override val preferences by inject<SharedPreferences>()
     private val vm by viewModel<MainViewModel>()
@@ -53,6 +64,7 @@ class MainActivity :
         bd.bottomNavigation.setupWithNavController(navHost.navController)
 
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
+        navHost.navController.addOnDestinationChangedListener(this)
         bd.tabs.addOnTabSelectedListener(this)
     }
 
@@ -88,6 +100,7 @@ class MainActivity :
 
     override fun onDestroy() {
         navHost.childFragmentManager.removeFragmentOnAttachListener(this)
+        navHost.navController.removeOnDestinationChangedListener(this)
         bd.tabs.removeOnTabSelectedListener(this)
         super.onDestroy()
     }
@@ -110,6 +123,12 @@ class MainActivity :
         }
     }
 
+    override fun onDestinationChanged(
+        controller: NavController,
+        destination: NavDestination,
+        arguments: Bundle?
+    ) = setToolbarInfo(null, "", "")
+
     override fun onTabSelected(tab: TabLayout.Tab) {
         if (skipNextTabChange) {
             skipNextTabChange = false
@@ -126,6 +145,19 @@ class MainActivity :
     override fun onTabUnselected(tab: TabLayout.Tab) = Unit
 
     override fun onTabReselected(tab: TabLayout.Tab) = Unit
+
+    fun setToolbarInfo(title: String?, subtitle: String?, icon: String?) {
+        title?.let { bd.toolbar.title = getUsername(it) }
+        subtitle?.let { bd.toolbar.subtitle = it }
+        icon?.let {
+            if (it.isEmpty()) {
+                bd.toolbar.logo = null
+            } else {
+                val avatarSize = resources.getDimensionPixelSize(R.dimen.avatar_size)
+                Glide.with(this).loadAvatar(icon).into(LogoTarget(avatarSize))
+            }
+        }
+    }
 
     private fun setupSystemBars() {
         window.statusBarColor = ActivityCompat.getColor(this, R.color.primary_dark)
@@ -159,5 +191,29 @@ class MainActivity :
             R.id.fragment_archive,
             R.id.fragment_drafts,
         )
+    }
+
+    private inner class LogoTarget(private val size: Int) : CustomTarget<Drawable>() {
+        override fun onResourceReady(
+            resource: Drawable,
+            transition: Transition<in Drawable>?
+        ) {
+            bd.toolbar.logo = resource
+            bd.toolbar.children
+                .filterIsInstance<ImageView>()
+                .find { it.drawable == resource }
+                ?.run {
+                    updateLayoutParams<ViewGroup.LayoutParams> {
+                        width = size
+                        height = size
+                    }
+                }
+        }
+
+        override fun onLoadCleared(placeholder: Drawable?) = Unit
+
+        override fun onLoadFailed(errorDrawable: Drawable?) {
+            errorDrawable?.let { onResourceReady(it, null) }
+        }
     }
 }

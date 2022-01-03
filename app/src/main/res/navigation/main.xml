@@ -25,6 +25,18 @@
         android:label="@string/destination_drafts"
         tools:layout="@layout/fragment_drafts" />
     <fragment
+        android:id="@+id/fragment_post"
+        android:name="app.fyreplace.client.ui.fragments.PostFragment"
+        android:label=""
+        tools:layout="@layout/fragment_post">
+        <argument
+            android:name="deletionNotifier"
+            app:argType="app.fyreplace.client.ui.fragments.DeletionNotifier" />
+        <argument
+            android:name="post"
+            app:argType="app.fyreplace.protos.Post" />
+    </fragment>
+    <fragment
         android:id="@+id/fragment_settings"
         android:name="app.fyreplace.client.ui.fragments.SettingsFragment"
         android:label="@string/destination_settings">
@@ -54,4 +66,7 @@
             android:name="isRegistering"
             app:argType="boolean" />
     </fragment>
+    <action
+        android:id="@+id/action_post"
+        app:destination="@id/fragment_post" />
 </navigation>

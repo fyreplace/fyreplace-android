@@ -4,13 +4,18 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import app.fyreplace.client.ui.FailureHandler
+import app.fyreplace.client.ui.MainActivity
 import org.koin.android.ext.android.inject
 
 abstract class BaseFragment(contentLayoutId: Int) : Fragment(contentLayoutId), FailureHandler {
     override val preferences by inject<SharedPreferences>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         setupTransitions()
+        super.onCreate(savedInstanceState)
+    }
+
+    protected fun setToolbarInfo(title: String, subtitle: String, icon: String) {
+        (activity as? MainActivity)?.setToolbarInfo(title, subtitle, icon)
     }
 }

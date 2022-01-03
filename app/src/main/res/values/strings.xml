@@ -3,6 +3,8 @@
     <string name="app_name">Fyreplace</string>
     <string name="ok">@android:string/ok</string>
     <string name="cancel">@android:string/cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="anonymous"><i>Anonymous</i></string>
 
     <string name="error_title">Unknown error: %1$s</string>
@@ -22,6 +24,16 @@
     <string name="destination_settings">Settings</string>
 
     <string name="archive_empty">No subscribed posts</string>
+
+    <string name="post_menu_action_share">Share</string>
+    <string name="post_menu_action_subscribe">Subscribe</string>
+    <string name="post_menu_action_unsubscribe">Unsubscribe</string>
+    <string name="post_menu_action_report">Report</string>
+    <string name="post_menu_action_delete">Delete</string>
+    <string name="post_report_title">Post reported</string>
+    <string name="post_report_message">This post has been reported and will be examined as soon as possible.</string>
+    <string name="post_delete_title">Delete this post?</string>
+    <string name="post_delete_message">This action cannot be undone.</string>
 
     <string name="settings_profile">Profile</string>
     <string name="settings_username">Guest</string>

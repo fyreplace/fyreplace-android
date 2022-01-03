@@ -14,9 +14,9 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
 class ArchiveAdapter(context: Context) :
-    ItemListAdapter<Post, ItemListAdapter.Holder>(context, PostDiffer()) {
+    ItemListAdapter<Post, ItemListAdapter.Holder>(context) {
     override fun getItemViewType(position: Int) =
-        when (getItem(position)?.getChapters(0)?.text?.length) {
+        when (items[position].getChapters(0)?.text?.length) {
             null, 0 -> TYPE_IMAGE
             else -> TYPE_TEXT
         }
@@ -31,7 +31,8 @@ class ArchiveAdapter(context: Context) :
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val post = getItem(position) ?: return
+        super.onBindViewHolder(holder, position)
+        val post = items[position]
         val chapter = post.getChapters(0)
         val context = holder.itemView.context
         holder.setup(post.author, post.dateCreated)
