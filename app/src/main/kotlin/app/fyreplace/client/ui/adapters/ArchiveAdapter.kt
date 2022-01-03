@@ -54,6 +54,8 @@ class ArchiveAdapter(context: Context) :
         }
     }
 
+    override fun getItemId(item: Post): String = item.id
+
     class TextHolder(itemView: View) : ItemListAdapter.Holder(itemView) {
         val preview: TextView = itemView.findViewById(R.id.text_preview)
     }

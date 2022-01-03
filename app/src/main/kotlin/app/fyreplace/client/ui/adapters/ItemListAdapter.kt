@@ -13,6 +13,7 @@ import app.fyreplace.client.ui.setUsername
 import app.fyreplace.protos.Profile
 import com.bumptech.glide.Glide
 import com.google.protobuf.Timestamp
+import java.util.*
 
 abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context: Context) :
     RecyclerView.Adapter<VH>() {
@@ -24,11 +25,22 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
     protected val items = mutableListOf<Item>()
     private var itemListener: ((item: Item, position: Int) -> Unit)? = null
 
+    init {
+        setHasStableIds(true)
+    }
+
+    final override fun setHasStableIds(hasStableIds: Boolean) = super.setHasStableIds(hasStableIds)
+
+    override fun getItemId(position: Int) =
+        UUID.fromString(getItemId(items[position])).mostSignificantBits
+
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.itemView.setOnClickListener { itemListener?.invoke(items[position], position) }
     }
+
+    abstract fun getItemId(item: Item): String
 
     fun setOnClickListener(listener: (item: Item, position: Int) -> Unit) {
         itemListener = listener
