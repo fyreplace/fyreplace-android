@@ -53,6 +53,8 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = makeAdapter(view.context)
+        adapter.add(vm.items)
+        bd.emptyText.isVisible = vm.items.isEmpty()
         bd.recycler.adapter = adapter
         bd.swipe.setOnRefreshListener {
             adapter.clear()
