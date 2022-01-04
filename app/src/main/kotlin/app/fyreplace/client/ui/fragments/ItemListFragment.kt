@@ -69,6 +69,10 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
                 bd.swipe.isRefreshing = false
                 adapter.add(it)
             }
+
+            if (adapter.itemCount == 0) {
+                vm.fetchMore()
+            }
         }
     }
 

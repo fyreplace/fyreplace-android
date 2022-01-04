@@ -25,7 +25,6 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
 
     suspend fun startListing(): Flow<List<Item>> {
         maybePages.emit(page { header = header { forward = false; size = pageSize } })
-        fetchMore()
         return listItems()
             .onEach {
                 nextCursor = getNextCursor(it)
