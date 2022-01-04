@@ -10,16 +10,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.preference.EditTextPreference
-import androidx.preference.Preference
-import androidx.preference.PreferenceDataStore
-import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.*
 import app.fyreplace.client.R
 import app.fyreplace.client.ui.FailureHandler
 import app.fyreplace.client.ui.ImageSelector
+import app.fyreplace.client.ui.applySettings
 import app.fyreplace.client.viewmodels.CentralViewModel
 import app.fyreplace.client.viewmodels.SettingsViewModel
 import app.fyreplace.client.views.ImagePreference
@@ -36,6 +35,7 @@ import org.koin.core.parameter.parametersOf
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.max
 
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
     override var rootView: View? = null
@@ -72,9 +72,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 summary = user?.run {
                     getString(
                         R.string.settings_date_joined,
-                        DATE_FORMATTER.format(Date(dateJoined.seconds * 1000))
+                        dateFormatter.format(Date(dateJoined.seconds * 1000))
                     )
-                } ?: getString(R.string.settings_not_joined)
+                } ?: getString(R.string.settings_has_not_joined)
 
                 if (user != null) {
                     setOnPreferenceClickListener {
@@ -115,6 +115,18 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                     it.filters = arrayOf(InputFilter.LengthFilter(maxSize))
                     it.setText(user?.bio)
                 }
+            }
+
+            findPreference<ListPreference>("theme")?.run {
+                val themeValues = resources.getStringArray(R.array.settings_theme_values)
+                val themeNames = resources.getStringArray(R.array.settings_theme)
+                val themeValue = preferences.getString(
+                    "settings.theme",
+                    getString(R.string.settings_theme_auto_value)
+                )
+                val themeIndex = max(themeValues.indexOf(themeValue), 0)
+                value = themeValues[themeIndex]
+                summary = themeNames[themeIndex]
             }
 
             for (preference in listOf("register", "login")) {
@@ -250,7 +262,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     }
 
     private companion object {
-        val DATE_FORMATTER: DateFormat = SimpleDateFormat.getDateInstance()
+        val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
     }
 
     private inner class SettingsDataStore : PreferenceDataStore() {
@@ -270,6 +282,15 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "bio" -> {
                     vm.updateBio(value.orEmpty())
                     cvm.retrieveMe()
+                }
+                "theme" -> {
+                    preferences.edit { putString("settings.theme", value) }
+                    val themeIndex = resources
+                        .getStringArray(R.array.settings_theme_values)
+                        .indexOf(value)
+                    findPreference<ListPreference>("theme")?.summary =
+                        resources.getStringArray(R.array.settings_theme)[themeIndex]
+                    preferences.applySettings(requireContext())
                 }
                 else -> super.putString(key, value)
             }

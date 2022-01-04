@@ -4,7 +4,7 @@
         <app.fyreplace.client.views.ImagePreference
             app:icon="@drawable/ic_baseline_face"
             app:key="avatar"
-            app:summary="@string/settings_not_joined"
+            app:summary="@string/settings_has_not_joined"
             app:title="@string/settings_username" />
         <EditTextPreference
             app:dialogMessage="@string/settings_password_change_message"
@@ -26,6 +26,15 @@
             app:key="bio"
             app:summary="@string/settings_bio_desc"
             app:title="@string/settings_bio" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="@string/settings_interface">
+        <ListPreference
+            app:entries="@array/settings_theme"
+            app:entryValues="@array/settings_theme_values"
+            app:icon="@drawable/ic_baseline_brightness_medium"
+            app:key="theme"
+            app:summary="@string/settings_theme_auto"
+            app:title="@string/settings_theme" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/settings_account">
         <Preference

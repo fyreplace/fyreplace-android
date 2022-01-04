@@ -37,7 +37,7 @@
     <string name="settings_profile">Profile</string>
     <string name="settings_username">Guest</string>
     <string name="settings_date_joined">Joined %1$s</string>
-    <string name="settings_not_joined">Hasn\'t joined yet</string>
+    <string name="settings_has_not_joined">Hasn\'t joined yet</string>
     <string name="settings_avatar_desc">Avatar</string>
     <string name="settings_password">Mot de passe</string>
     <string name="settings_password_desc">**********</string>
@@ -50,6 +50,24 @@
     <string name="settings_email_change_success_message">A confirmation email has been sent to your new address.</string>
     <string name="settings_bio">Bio</string>
     <string name="settings_bio_desc">Empty</string>
+    <string name="settings_interface">Interface</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_auto">Follow battery saver</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string-array name="settings_theme">
+        <item>@string/settings_theme_auto</item>
+        <item>@string/settings_theme_light</item>
+        <item>@string/settings_theme_dark</item>
+    </string-array>
+    <string name="settings_theme_auto_value">auto</string>
+    <string name="settings_theme_light_value">light</string>
+    <string name="settings_theme_dark_value">dark</string>
+    <string-array name="settings_theme_values">
+        <item>@string/settings_theme_auto_value</item>
+        <item>@string/settings_theme_light_value</item>
+        <item>@string/settings_theme_dark_value</item>
+    </string-array>
     <string name="settings_account">Account</string>
     <string name="settings_register">Register</string>
     <string name="settings_register_desc">Create a new account</string>
