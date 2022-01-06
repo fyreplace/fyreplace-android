@@ -50,7 +50,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         }
 
         if (args.post.isPreview) {
-            launch { vm.retrievePost(args.post.id) }
+            launch { vm.retrieve(args.post.id) }
         }
     }
 
