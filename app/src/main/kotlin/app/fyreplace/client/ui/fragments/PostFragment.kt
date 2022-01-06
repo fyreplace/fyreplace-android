@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.client.R
@@ -86,13 +85,14 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         when (item.itemId) {
             R.id.subscribe -> launch { vm.updateSubscription(true) }
             R.id.unsubscribe -> launch { vm.updateSubscription(false) }
-            R.id.report -> launch { report() }
-            R.id.delete -> AlertDialog.Builder(requireContext())
-                .setTitle(R.string.post_delete_title)
-                .setMessage(R.string.post_delete_message)
-                .setPositiveButton(R.string.yes) { _, _ -> launch { delete() } }
-                .setNegativeButton(R.string.no, null)
-                .show()
+            R.id.report -> showChoiceAlert(
+                R.string.post_report_title,
+                R.string.post_report_message
+            ) { launch { report() } }
+            R.id.delete -> showChoiceAlert(
+                R.string.post_delete_title,
+                R.string.post_delete_message
+            ) { launch { delete() } }
             else -> return false
         }
 
@@ -101,7 +101,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
     private suspend fun report() {
         vm.report()
-        showBasicSnackbar(R.string.post_report_message)
+        showBasicSnackbar(R.string.post_report_success_message)
     }
 
     private suspend fun delete() {

@@ -2,6 +2,7 @@ package app.fyreplace.client.ui
 
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import app.fyreplace.client.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -15,6 +16,15 @@ interface BasePresenter {
             .setMessage(message)
             .setPositiveButton(R.string.ok, null)
             .run { if (error) setIcon(R.drawable.ic_baseline_error) else this }
+            .show()
+    }
+
+    fun showChoiceAlert(@StringRes title: Int, @StringRes message: Int, action: () -> Unit) {
+        AlertDialog.Builder(rootView?.context ?: return)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(R.string.yes) { _, _ -> action() }
+            .setNegativeButton(R.string.no, null)
             .show()
     }
 

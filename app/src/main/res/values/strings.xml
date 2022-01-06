@@ -30,7 +30,9 @@
     <string name="post_menu_action_unsubscribe">Unsubscribe</string>
     <string name="post_menu_action_report">Report</string>
     <string name="post_menu_action_delete">Delete</string>
-    <string name="post_report_message">Post reported!</string>
+    <string name="post_report_title">Report post?</string>
+    <string name="post_report_message" />
+    <string name="post_report_success_message">Post reported!</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
 
