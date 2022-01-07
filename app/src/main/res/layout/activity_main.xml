@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="app.fyreplace.client.viewmodels.MainViewModel" />
+            type="app.fyreplace.fyreplace.viewmodels.MainViewModel" />
     </data>
 
     <LinearLayout

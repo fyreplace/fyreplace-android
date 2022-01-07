@@ -6,27 +6,27 @@
     app:startDestination="@id/fragment_feed">
     <fragment
         android:id="@+id/fragment_feed"
-        android:name="app.fyreplace.client.ui.fragments.FeedFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.FeedFragment"
         android:label="@string/destination_feed"
         tools:layout="@layout/fragment_feed" />
     <fragment
         android:id="@+id/fragment_notifications"
-        android:name="app.fyreplace.client.ui.fragments.NotificationsFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.NotificationsFragment"
         android:label="@string/destination_notifications"
         tools:layout="@layout/fragment_notifications" />
     <fragment
         android:id="@+id/fragment_archive"
-        android:name="app.fyreplace.client.ui.fragments.ArchiveFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.ArchiveFragment"
         android:label="@string/destination_archive"
         tools:layout="@layout/fragment_item_list" />
     <fragment
         android:id="@+id/fragment_drafts"
-        android:name="app.fyreplace.client.ui.fragments.DraftsFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.DraftsFragment"
         android:label="@string/destination_drafts"
         tools:layout="@layout/fragment_drafts" />
     <fragment
         android:id="@+id/fragment_post"
-        android:name="app.fyreplace.client.ui.fragments.PostFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.PostFragment"
         android:label=""
         tools:layout="@layout/fragment_post">
         <argument
@@ -38,7 +38,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragment_settings"
-        android:name="app.fyreplace.client.ui.fragments.SettingsFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.SettingsFragment"
         android:label="@string/destination_settings">
         <argument
             android:name="path"
@@ -59,7 +59,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragment_login"
-        android:name="app.fyreplace.client.ui.fragments.LoginFragment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.LoginFragment"
         android:label=""
         tools:layout="@layout/fragment_login">
         <argument
