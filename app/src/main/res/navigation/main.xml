@@ -30,11 +30,11 @@
         android:label=""
         tools:layout="@layout/fragment_post">
         <argument
-            android:name="deletionNotifier"
-            app:argType="app.fyreplace.client.ui.fragments.DeletionNotifier" />
-        <argument
             android:name="post"
             app:argType="app.fyreplace.protos.Post" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/fragment_settings"

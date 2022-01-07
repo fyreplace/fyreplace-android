@@ -38,9 +38,10 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
     }
 
     fun launch(
+        scope: CoroutineScope = lifecycleScope,
         context: CoroutineContext = Dispatchers.Main.immediate,
         block: suspend CoroutineScope.() -> Unit
-    ) = lifecycleScope.launch(context) {
+    ) = scope.launch(context) {
         try {
             block()
         } catch (e: CancellationException) {
@@ -70,5 +71,8 @@ interface FailureHandler : BasePresenter, LifecycleOwner {
         }
     }
 
-    fun <T> Flow<T>.launchCollect(action: FlowCollector<T>) = launch { collect(action) }
+    fun <T> Flow<T>.launchCollect(
+        scope: CoroutineScope = lifecycleScope,
+        action: FlowCollector<T>
+    ) = launch(scope) { collect(action) }
 }

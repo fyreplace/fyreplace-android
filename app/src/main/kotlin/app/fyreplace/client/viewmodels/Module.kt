@@ -6,6 +6,7 @@ import org.koin.dsl.module
 val viewModelsModule = module {
     viewModel { MainViewModel() }
     viewModel { CentralViewModel(get(), get()) }
+    viewModel { ArchiveDeletionViewModel() }
     viewModel { FeedViewModel() }
     viewModel { NotificationsViewModel() }
     viewModel { ArchiveViewModel(get()) }

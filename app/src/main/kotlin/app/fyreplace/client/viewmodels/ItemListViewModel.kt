@@ -61,6 +61,10 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
         maybePages.emit(page { cursor = nextCursor })
     }
 
+    fun remove(position: Int) {
+        mItems.removeAt(position)
+    }
+
     companion object {
         const val pageSize = 12
     }
