@@ -1,5 +1,6 @@
 package app.fyreplace.fyreplace.ui
 
+import android.content.ComponentCallbacks
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
@@ -17,10 +18,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 import kotlin.coroutines.CoroutineContext
 
-interface FailureHandler : BasePresenter, LifecycleOwner {
-    val preferences: SharedPreferences
+interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
+    val preferences get() = get<SharedPreferences>()
 
     fun getFailureTexts(error: Status): Pair<Int, Int>? = null
 

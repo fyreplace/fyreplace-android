@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.viewmodels.NotificationsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NotificationsFragment : BaseFragment(R.layout.fragment_notifications) {
-    override val rootView get() = bd.root
+    override val rootView by lazy { bd.root }
     private val vm by viewModel<NotificationsViewModel>()
     private lateinit var bd: FragmentNotificationsBinding
 

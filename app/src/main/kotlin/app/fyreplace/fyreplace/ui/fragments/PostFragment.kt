@@ -20,7 +20,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class PostFragment : BaseFragment(R.layout.fragment_post) {
-    override val rootView get() = bd.root
+    override val rootView by lazy { bd.root }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val idvm by sharedViewModel<ArchiveDeletionViewModel>()
     private val vm by viewModel<PostViewModel> { parametersOf(args.post) }

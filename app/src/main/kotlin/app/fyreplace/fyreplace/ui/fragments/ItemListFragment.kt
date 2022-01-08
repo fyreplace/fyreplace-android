@@ -19,7 +19,7 @@ import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 abstract class ItemListFragment<Item : Any, Items : Any> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
-    override val rootView get() = bd.root
+    override val rootView by lazy { bd.root }
     protected abstract val idvm: ItemDeletionViewModel
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
@@ -93,7 +93,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
     override fun onChildViewAttachedToWindow(view: View) {
         val childPosition = bd.recycler.getChildAdapterPosition(view)
 
-        if (adapter.itemCount - childPosition < ItemListViewModel.pageSize) {
+        if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) {
             launch { vm.fetchMore() }
         }
     }

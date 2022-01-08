@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.viewmodels.FeedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FeedFragment : BaseFragment(R.layout.fragment_feed) {
-    override val rootView get() = bd.root
+    override val rootView by lazy { bd.root }
     private val vm by viewModel<FeedViewModel>()
     private lateinit var bd: FragmentFeedBinding
 

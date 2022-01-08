@@ -24,7 +24,7 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
     protected abstract fun getItemList(items: Items): List<Item>
 
     suspend fun startListing(): Flow<List<Item>> {
-        maybePages.emit(page { header = header { forward = false; size = pageSize } })
+        maybePages.emit(page { header = header { forward = false; size = PAGE_SIZE } })
         return listItems()
             .onEach {
                 nextCursor = getNextCursor(it)
@@ -66,6 +66,6 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
     }
 
     companion object {
-        const val pageSize = 12
+        const val PAGE_SIZE = 12
     }
 }

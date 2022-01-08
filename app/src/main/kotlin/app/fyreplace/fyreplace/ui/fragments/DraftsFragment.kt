@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.viewmodels.DraftsViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DraftsFragment : BaseFragment(R.layout.fragment_drafts) {
-    override val rootView get() = bd.root
+    override val rootView by lazy { bd.root }
     private val vm by viewModel<DraftsViewModel>()
     private lateinit var bd: FragmentDraftsBinding
 

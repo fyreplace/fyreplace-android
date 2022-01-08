@@ -12,9 +12,9 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ArchiveFragment : ItemListFragment<Post, Posts>() {
-    override val vm by viewModel<ArchiveViewModel>()
     override val idvm by sharedViewModel<ArchiveDeletionViewModel>()
-    override val emptyText get() = requireContext().getString(R.string.archive_empty)
+    override val vm by viewModel<ArchiveViewModel>()
+    override val emptyText by lazy { getString(R.string.archive_empty) }
 
     override fun makeAdapter(context: Context) = ArchiveAdapter(context).apply {
         setOnClickListener { post, position ->

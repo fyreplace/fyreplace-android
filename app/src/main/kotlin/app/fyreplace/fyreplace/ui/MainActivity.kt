@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -32,7 +31,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.tabs.TabLayout
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity :
@@ -41,8 +39,7 @@ class MainActivity :
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener,
     TabLayout.OnTabSelectedListener {
-    override val rootView get() = bd.root
-    override val preferences by inject<SharedPreferences>()
+    override val rootView by lazy { bd.root }
     private val vm by viewModel<MainViewModel>()
     private val cvm by viewModel<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
