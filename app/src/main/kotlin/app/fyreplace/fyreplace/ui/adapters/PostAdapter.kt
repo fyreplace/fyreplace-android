@@ -64,6 +64,7 @@ class PostAdapter(private var post: Post) : RecyclerView.Adapter<PostAdapter.Vie
 
             text.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
             text.text = chapter.text
+            text.setTextIsSelectable(true)
             TextViewCompat.setTextAppearance(text, style)
             text.layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
