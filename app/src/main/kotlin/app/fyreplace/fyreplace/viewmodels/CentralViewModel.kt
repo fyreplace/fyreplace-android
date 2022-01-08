@@ -13,8 +13,8 @@ class CentralViewModel(
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
 ) : BaseViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val mIsAuthenticated = MutableStateFlow(false)
-    private val mUser = MutableStateFlow<User?>(null)
-    val user: StateFlow<User?> = mUser
+    private val mCurrentUser = MutableStateFlow<User?>(null)
+    val currentUser: StateFlow<User?> = mCurrentUser
     val isAuthenticated: StateFlow<Boolean> = mIsAuthenticated
 
     init {
@@ -34,7 +34,7 @@ class CentralViewModel(
     }
 
     suspend fun retrieveMe() {
-        mUser.value =
+        mCurrentUser.value =
             if (isAuthenticated.value) userStub.retrieveMe(empty { }) else null
     }
 }

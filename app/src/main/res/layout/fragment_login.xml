@@ -38,7 +38,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="@dimen/login_form_width"
+                android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap"
                 android:hint="@string/login_email"
@@ -57,7 +57,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="@dimen/login_form_width"
+                android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username"
                 app:counterEnabled="true"
@@ -74,7 +74,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="@dimen/login_form_width"
+                android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap"
                 android:hint="@string/login_password"

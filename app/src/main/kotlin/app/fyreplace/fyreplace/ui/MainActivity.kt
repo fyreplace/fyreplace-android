@@ -10,6 +10,7 @@ import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
 import android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.children
@@ -23,10 +24,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.grpc.isAvailable
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
+import app.fyreplace.protos.Profile
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -124,7 +128,11 @@ class MainActivity :
         controller: NavController,
         destination: NavDestination,
         arguments: Bundle?
-    ) = setToolbarInfo(null, "", "")
+    ) {
+        if (destination.id in TOP_LEVEL_DESTINATIONS) {
+            setToolbarInfo(null, null)
+        }
+    }
 
     override fun onTabSelected(tab: TabLayout.Tab) {
         if (skipNextTabChange) {
@@ -143,15 +151,27 @@ class MainActivity :
 
     override fun onTabReselected(tab: TabLayout.Tab) = Unit
 
-    fun setToolbarInfo(title: String?, subtitle: String?, icon: String?) {
-        title?.let { bd.toolbar.title = getUsername(it) }
-        subtitle?.let { bd.toolbar.subtitle = it }
-        icon?.let {
-            if (it.isEmpty()) {
-                bd.toolbar.logo = null
-            } else {
-                val avatarSize = resources.getDimensionPixelSize(R.dimen.avatar_size)
-                Glide.with(this).loadAvatar(icon).into(LogoTarget(avatarSize))
+    fun setToolbarInfo(profile: Profile?, subtitle: String?) {
+        profile?.let { bd.toolbar.title = getUsername(it) }
+        bd.toolbar.subtitle = subtitle
+        val textViews = bd.toolbar.children.filterIsInstance<TextView>()
+
+        if (profile?.isAvailable == true) {
+            val avatarSize = resources.getDimensionPixelSize(R.dimen.avatar_size)
+            Glide.with(this)
+                .loadAvatar(profile.avatar.url)
+                .into(LogoTarget(avatarSize, profile))
+
+            for (view in textViews) {
+                view.setOnClickListener {
+                    navHost.navController.navigate(MainDirections.actionUser(profile = profile))
+                }
+            }
+        } else {
+            bd.toolbar.logo = null
+
+            for (view in textViews) {
+                view.setOnClickListener(null)
             }
         }
     }
@@ -190,7 +210,8 @@ class MainActivity :
         )
     }
 
-    private inner class LogoTarget(private val size: Int) : CustomTarget<Drawable>() {
+    private inner class LogoTarget(private val size: Int, private val profile: Profile) :
+        CustomTarget<Drawable>() {
         override fun onResourceReady(
             resource: Drawable,
             transition: Transition<in Drawable>?
@@ -212,6 +233,10 @@ class MainActivity :
                             true
                         )
                         setBackgroundResource(resourceId)
+                    }
+
+                    setOnClickListener {
+                        navHost.navController.navigate(MainDirections.actionUser(profile = profile))
                     }
                 }
         }

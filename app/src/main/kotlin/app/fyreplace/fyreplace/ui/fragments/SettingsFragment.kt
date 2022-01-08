@@ -65,7 +65,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleArgs()
-        cvm.user.launchCollect { user ->
+        cvm.currentUser.launchCollect { user ->
             findPreference<ImagePreference>("avatar")?.run {
                 imageUrl = user?.avatar?.url
                 title = user?.username ?: getString(R.string.settings_username)

@@ -40,16 +40,10 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setToolbarInfo(args.post.author, args.post.dateCreated.formatDate())
         val adapter = PostAdapter(args.post)
         bd.recycler.adapter = adapter
-        vm.post.launchCollect {
-            adapter.updatePost(it)
-            setToolbarInfo(
-                if (it.isAnonymous) "" else it.author.username,
-                it.dateCreated.formatDate(),
-                if (it.isAnonymous) "" else it.author.avatar.url
-            )
-        }
+        vm.post.launchCollect { adapter.updatePost(it) }
 
         if (args.post.isPreview) {
             launch { vm.retrieve(args.post.id) }
@@ -72,7 +66,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
             menu.findItem(R.id.unsubscribe).isVisible = subscribed
         }
 
-        cvm.user.combine(vm.post) { user, post -> post.hasAuthor() && post.author.id == user?.id }
+        cvm.currentUser.combine(vm.post) { user, post -> post.hasAuthor() && post.author.id == user?.id }
             .launchCollect { userOwnsPost ->
                 menu.findItem(R.id.report).isVisible = !userOwnsPost
                 menu.findItem(R.id.delete).isVisible = userOwnsPost

@@ -6,6 +6,7 @@
     <dimen name="corner_size">4dp</dimen>
     <dimen name="avatar_size">40dp</dimen>
     <dimen name="preference_image_size">50dp</dimen>
+    <dimen name="form_width">240dp</dimen>
     <dimen name="item_height">140dp</dimen>
-    <dimen name="login_form_width">240dp</dimen>
+    <dimen name="user_avatar_size">100dp</dimen>
 </resources>

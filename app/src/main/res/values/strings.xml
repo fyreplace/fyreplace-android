@@ -6,6 +6,8 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="anonymous"><i>Anonymous</i></string>
+    <string name="banned"><i>Banned user</i></string>
+    <string name="avatar">User avatar</string>
 
     <string name="error_title">Unknown error: %1$s</string>
     <string name="error_unavailable_title">Service unavailable</string>
@@ -36,9 +38,17 @@
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
 
+    <string name="user_menu_action_report">Report</string>
+    <string name="user_report_title">Report user?</string>
+    <string name="user_report_message" />
+    <string name="user_report_success_message">User reported!</string>
+    <string name="user_rank_superuser">Fyreplace team member</string>
+    <string name="user_rank_staff">Moderator</string>
+    <string name="user_date_joined">Joined on\n%1$s</string>
+
     <string name="settings_profile">Profile</string>
     <string name="settings_username">Guest</string>
-    <string name="settings_date_joined">Joined %1$s</string>
+    <string name="settings_date_joined">Joined on %1$s</string>
     <string name="settings_has_not_joined">Hasn\'t joined yet</string>
     <string name="settings_avatar_desc">Avatar</string>
     <string name="settings_password">Mot de passe</string>
