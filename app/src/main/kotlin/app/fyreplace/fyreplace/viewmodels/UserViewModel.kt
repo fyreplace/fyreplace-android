@@ -18,6 +18,6 @@ class UserViewModel(private val userStub: UserServiceGrpcKt.UserServiceCoroutine
     }
 
     suspend fun report() {
-        userStub.report(stringId { id = mUser.value?.id ?: return })
+        userStub.report(stringId { id = mUser.value?.profile?.id ?: return })
     }
 }

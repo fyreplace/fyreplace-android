@@ -66,7 +66,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
             menu.findItem(R.id.unsubscribe).isVisible = subscribed
         }
 
-        cvm.currentUser.combine(vm.post) { user, post -> post.hasAuthor() && post.author.id == user?.id }
+        cvm.currentUser.combine(vm.post) { u, p -> p.hasAuthor() && p.author.id == u?.profile?.id }
             .launchCollect { userOwnsPost ->
                 menu.findItem(R.id.report).isVisible = !userOwnsPost
                 menu.findItem(R.id.delete).isVisible = userOwnsPost

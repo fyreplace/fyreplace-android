@@ -75,7 +75,7 @@ class UserFragment : DialogFragment(), FailureHandler {
         if (args.profile.rank > Rank.RANK_CITIZEN) {
             bd.toolbar.menu.findItem(R.id.report).isVisible = false
         } else cvm.currentUser.launchCollect {
-            bd.toolbar.menu.findItem(R.id.report).isVisible = it?.id != args.profile.id
+            bd.toolbar.menu.findItem(R.id.report).isVisible = it?.profile?.id != args.profile.id
         }
     }
 

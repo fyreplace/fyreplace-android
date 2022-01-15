@@ -67,8 +67,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         handleArgs()
         cvm.currentUser.launchCollect { user ->
             findPreference<ImagePreference>("avatar")?.run {
-                imageUrl = user?.avatar?.url
-                title = user?.username ?: getString(R.string.settings_username)
+                imageUrl = user?.profile?.avatar?.url
+                title = user?.profile?.username ?: getString(R.string.settings_username)
                 summary = user?.run {
                     getString(
                         R.string.settings_date_joined,
