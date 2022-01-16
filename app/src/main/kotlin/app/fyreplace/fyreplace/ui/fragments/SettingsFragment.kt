@@ -138,13 +138,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
         }
 
-        for (pair in setOf(
+        for ((pref, registering) in setOf(
             findPreference<Preference>("register") to true,
             findPreference<Preference>("login") to false
         )) {
-            pair.first?.setOnPreferenceClickListener {
+            pref?.setOnPreferenceClickListener {
                 val directions = SettingsFragmentDirections
-                    .toFragmentLogin(isRegistering = pair.second)
+                    .toFragmentLogin(isRegistering = registering)
                 findNavController().navigate(directions)
                 return@setOnPreferenceClickListener true
             }
