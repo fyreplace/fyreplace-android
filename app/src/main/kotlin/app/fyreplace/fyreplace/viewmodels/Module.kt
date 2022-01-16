@@ -12,7 +12,7 @@ val viewModelsModule = module {
     viewModel { ArchiveViewModel(get()) }
     viewModel { DraftsViewModel() }
     viewModel { PostViewModel(it.get(), get()) }
-    viewModel { UserViewModel(get()) }
+    viewModel { UserViewModel(it.get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { ImageSelectorViewModel() }

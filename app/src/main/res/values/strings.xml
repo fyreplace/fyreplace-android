@@ -39,6 +39,8 @@
     <string name="post_delete_message">This action cannot be undone.</string>
 
     <string name="user_menu_action_report">Report</string>
+    <string name="user_menu_action_block">Block</string>
+    <string name="user_menu_action_unblock">Unblock</string>
     <string name="user_report_title">Report user?</string>
     <string name="user_report_message" />
     <string name="user_report_success_message">User reported!</string>

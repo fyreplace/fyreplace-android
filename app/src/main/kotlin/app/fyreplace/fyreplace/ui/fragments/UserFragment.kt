@@ -16,14 +16,16 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class UserFragment : DialogFragment(), FailureHandler {
     override val rootView by lazy { bd.root }
     private val cvm by sharedViewModel<CentralViewModel>()
-    private val vm by viewModel<UserViewModel>()
+    private val vm by viewModel<UserViewModel> { parametersOf(args.profile) }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
 
@@ -60,15 +62,13 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun setupMenu() {
         bd.toolbar.inflateMenu(R.menu.fragment_user)
         bd.toolbar.setOnMenuItemClickListener {
-            showChoiceAlert(
-                R.string.post_report_title,
-                R.string.post_report_message
-            ) {
-                launch {
-                    vm.report()
-                    showBasicSnackbar(R.string.user_report_success_message)
-                }
+            when (it.itemId) {
+                R.id.block -> launch { vm.updateBlock(true) }
+                R.id.unblock -> launch { vm.updateBlock(false) }
+                R.id.report -> report()
+                else -> return@setOnMenuItemClickListener false
             }
+
             return@setOnMenuItemClickListener true
         }
 
@@ -77,6 +77,12 @@ class UserFragment : DialogFragment(), FailureHandler {
         } else cvm.currentUser.launchCollect {
             bd.toolbar.menu.findItem(R.id.report).isVisible = it?.profile?.id != args.profile.id
         }
+
+        cvm.currentUser.combine(vm.blocked) { u, b -> (u?.profile?.id != args.profile.id) to b }
+            .launchCollect { (isNotCurrentUser, blocked) ->
+                bd.toolbar.menu.findItem(R.id.block).isVisible = !blocked && isNotCurrentUser
+                bd.toolbar.menu.findItem(R.id.unblock).isVisible = blocked && isNotCurrentUser
+            }
     }
 
     private fun setupContent() {
@@ -92,4 +98,12 @@ class UserFragment : DialogFragment(), FailureHandler {
 
         launch { vm.retrieve(args.profile.id) }
     }
+
+    private fun report() =
+        showChoiceAlert(R.string.post_report_title, R.string.post_report_message) {
+            launch {
+                vm.report()
+                showBasicSnackbar(R.string.user_report_success_message)
+            }
+        }
 }
