@@ -14,6 +14,7 @@ import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveDeletionViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
+import app.fyreplace.protos.Rank
 import kotlinx.coroutines.flow.combine
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -66,10 +67,14 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
             menu.findItem(R.id.unsubscribe).isVisible = subscribed
         }
 
-        cvm.currentUser.combine(vm.post) { u, p -> p.hasAuthor() && p.author.id == u?.profile?.id }
-            .launchCollect { userOwnsPost ->
-                menu.findItem(R.id.report).isVisible = !userOwnsPost
-                menu.findItem(R.id.delete).isVisible = userOwnsPost
+        cvm.currentUser.combine(vm.post) { u, p ->
+            val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
+            val currentUserIsAdmin = (u?.profile?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
+            return@combine currentUserOwnsPost || currentUserIsAdmin
+        }
+            .launchCollect { canDeletePost ->
+                menu.findItem(R.id.report).isVisible = !canDeletePost
+                menu.findItem(R.id.delete).isVisible = canDeletePost
             }
     }
 
