@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -216,6 +217,11 @@ class MainActivity :
             resource: Drawable,
             transition: Transition<in Drawable>?
         ) {
+            if (!profile.hasAvatar()) {
+                val tint = ContextCompat.getColor(this@MainActivity, R.color.on_primary)
+                resource.setTint(tint)
+            }
+
             bd.toolbar.logo = resource
             bd.toolbar.children
                 .filterIsInstance<ImageView>()
