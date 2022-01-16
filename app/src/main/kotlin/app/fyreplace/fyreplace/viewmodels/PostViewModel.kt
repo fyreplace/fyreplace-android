@@ -19,7 +19,9 @@ class PostViewModel(
     val subscribed: Flow<Boolean> = mSubscribed
 
     suspend fun retrieve(postId: String) {
-        mPost.value = postStub.retrieve(stringId { id = postId })
+        val newPost = postStub.retrieve(stringId { id = postId })
+        mPost.value = newPost
+        mSubscribed.value = newPost.isSubscribed
     }
 
     suspend fun updateSubscription(subscribed: Boolean) {
