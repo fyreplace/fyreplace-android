@@ -6,13 +6,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
-    protected val pages
-        get() = flow { maybePages.takeWhile { it != null }.mapNotNull { it }.collect(::emit) }
     private var maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var nextCursor = cursor { isNext = true }
     private var fetching = false
     private var endReached = false
     private val mItems = mutableListOf<Item>()
+    protected val pages
+        get() = flow { maybePages.takeWhile { it != null }.mapNotNull { it }.collect(::emit) }
+    protected open val forward = false
     val items: List<Item> = mItems
 
     protected abstract fun listItems(): Flow<Items>
@@ -24,7 +25,13 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
     protected abstract fun getItemList(items: Items): List<Item>
 
     suspend fun startListing(): Flow<List<Item>> {
-        maybePages.emit(page { header = header { forward = false; size = PAGE_SIZE } })
+        maybePages.emit(page {
+            header = header {
+                forward = this@ItemListViewModel.forward
+                size = PAGE_SIZE
+            }
+        })
+
         return listItems()
             .onEach {
                 nextCursor = getNextCursor(it)

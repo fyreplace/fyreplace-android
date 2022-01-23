@@ -6,14 +6,16 @@ import org.koin.dsl.module
 val viewModelsModule = module {
     viewModel { MainViewModel() }
     viewModel { CentralViewModel(get(), get()) }
-    viewModel { ArchiveDeletionViewModel() }
     viewModel { FeedViewModel() }
     viewModel { NotificationsViewModel() }
+    viewModel { ArchiveDeletionViewModel() }
     viewModel { ArchiveViewModel(get()) }
     viewModel { DraftsViewModel() }
     viewModel { PostViewModel(it.get(), get()) }
     viewModel { UserViewModel(it.get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get(), get(), get()) }
+    viewModel { BlockedUsersDeletionViewModel() }
+    viewModel { BlockedUsersViewModel(get()) }
     viewModel { ImageSelectorViewModel() }
 }

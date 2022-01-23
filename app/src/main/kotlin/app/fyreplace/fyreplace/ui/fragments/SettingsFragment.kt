@@ -129,13 +129,23 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 summary = themeNames[themeIndex]
             }
 
-            for (preference in listOf("register", "login")) {
-                findPreference<Preference>(preference)?.isVisible = user == null
+            for ((preference, needsUser) in mapOf(
+                "register" to false,
+                "login" to false,
+                "password" to true,
+                "email" to true,
+                "bio" to true,
+                "blocked_users" to true,
+                "logout" to true,
+                "delete" to true
+            )) {
+                findPreference<Preference>(preference)?.isVisible = (user != null) == needsUser
             }
+        }
 
-            for (preference in listOf("password", "email", "bio", "logout", "delete")) {
-                findPreference<Preference>(preference)?.isVisible = user != null
-            }
+        findPreference<Preference>("blocked_users")?.setOnPreferenceClickListener {
+            findNavController().navigate(SettingsFragmentDirections.actionBlockedUsers())
+            return@setOnPreferenceClickListener true
         }
 
         for ((pref, registering) in setOf(

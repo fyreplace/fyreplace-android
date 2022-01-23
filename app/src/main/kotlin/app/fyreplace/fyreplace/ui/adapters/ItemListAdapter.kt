@@ -68,15 +68,18 @@ abstract class ItemListAdapter<Item : Any>(context: Context) :
         const val TYPE_IMAGE = 2
     }
 
-    abstract class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val avatar: ImageView = itemView.findViewById(R.id.avatar)
-        val username: TextView = itemView.findViewById(R.id.username)
-        val date: TextView = itemView.findViewById(R.id.date)
+    open class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val avatar: ImageView? = itemView.findViewById(R.id.avatar)
+        val username: TextView? = itemView.findViewById(R.id.username)
+        val date: TextView? = itemView.findViewById(R.id.date)
 
-        fun setup(profile: Profile, timestamp: Timestamp) {
-            Glide.with(itemView.context).loadAvatar(profile).into(avatar)
-            username.setUsername(profile)
-            date.text = timestamp.formatDate(singleLine = false)
+        fun setup(profile: Profile, timestamp: Timestamp?) {
+            if (avatar != null) {
+                Glide.with(itemView.context).loadAvatar(profile).into(avatar)
+            }
+
+            username?.setUsername(profile)
+            date?.text = timestamp?.formatDate(singleLine = false)
         }
     }
 }

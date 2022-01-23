@@ -64,6 +64,9 @@
             app:action="ACTION_VIEW"
             app:uri="fyreplace.link/{path}#{token}"
             tools:ignore="UnusedAttribute" />
+        <action
+            android:id="@+id/action_blocked_users"
+            app:destination="@id/fragment_blocked_users" />
     </fragment>
     <fragment
         android:id="@+id/fragment_login"
@@ -74,6 +77,11 @@
             android:name="isRegistering"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/fragment_blocked_users"
+        android:name="app.fyreplace.fyreplace.ui.fragments.BlockedUsersFragment"
+        android:label="@string/destination_blocked_users"
+        tools:layout="@layout/fragment_item_list" />
     <action
         android:id="@+id/action_post"
         app:destination="@id/fragment_post" />
