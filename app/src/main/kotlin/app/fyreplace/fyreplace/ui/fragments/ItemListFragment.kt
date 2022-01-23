@@ -24,9 +24,9 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
     private lateinit var bd: FragmentItemListBinding
-    private lateinit var adapter: ItemListAdapter<Item, ItemListAdapter.Holder>
+    private lateinit var adapter: ItemListAdapter<Item>
 
-    abstract fun makeAdapter(context: Context): ItemListAdapter<Item, ItemListAdapter.Holder>
+    abstract fun makeAdapter(context: Context): ItemListAdapter<Item>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

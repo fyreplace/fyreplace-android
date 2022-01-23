@@ -15,8 +15,8 @@ import com.bumptech.glide.Glide
 import com.google.protobuf.Timestamp
 import java.util.*
 
-abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context: Context) :
-    RecyclerView.Adapter<VH>() {
+abstract class ItemListAdapter<Item : Any>(context: Context) :
+    RecyclerView.Adapter<ItemListAdapter.Holder>() {
     protected val textAppearanceNormal =
         context.theme.resolveTextAttribute(R.attr.textAppearanceBody1)
     protected val textAppearanceTitle =
@@ -36,7 +36,7 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
 
     override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
+    override fun onBindViewHolder(holder: Holder, position: Int) {
         holder.itemView.setOnClickListener { itemListener?.invoke(items[position], position) }
     }
 
