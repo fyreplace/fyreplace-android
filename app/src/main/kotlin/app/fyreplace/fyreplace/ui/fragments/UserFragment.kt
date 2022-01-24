@@ -63,8 +63,8 @@ class UserFragment : DialogFragment(), FailureHandler {
         bd.toolbar.inflateMenu(R.menu.fragment_user)
         bd.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.block -> launch { vm.updateBlock(true) }
-                R.id.unblock -> launch { vm.updateBlock(false) }
+                R.id.block -> block()
+                R.id.unblock -> unblock()
                 R.id.report -> report()
                 else -> return@setOnMenuItemClickListener false
             }
@@ -97,6 +97,14 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
 
         launch { vm.retrieve(args.profile.id) }
+    }
+
+    private fun block() = showChoiceAlert(R.string.user_block_title, null) {
+        launch { vm.updateBlock(blocked = true) }
+    }
+
+    private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
+        launch { vm.updateBlock(blocked = false) }
     }
 
     private fun report() = showChoiceAlert(R.string.post_report_title, null) {
