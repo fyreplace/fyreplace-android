@@ -86,11 +86,10 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupContent() {
-        Glide.with(this)
-            .loadAvatar(args.profile.avatar.url)
-            .into(bd.avatar)
+        Glide.with(this).loadAvatar(args.profile.avatar.url).into(bd.avatar)
 
         vm.user.filterNotNull().launchCollect { user ->
+            bd.dateJoined.isVisible = true
             bd.dateJoined.text = getString(R.string.user_date_joined, user.dateJoined.formatDate())
             bd.bio.isVisible = user.bio.isNotBlank()
             bd.bio.text = user.bio
