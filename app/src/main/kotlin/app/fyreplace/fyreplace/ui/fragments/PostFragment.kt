@@ -88,7 +88,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
             R.id.unsubscribe -> launch { vm.updateSubscription(false) }
             R.id.report -> showChoiceAlert(
                 R.string.post_report_title,
-                R.string.post_report_message
+                null
             ) { launch { report() } }
             R.id.delete -> showChoiceAlert(
                 R.string.post_delete_title,

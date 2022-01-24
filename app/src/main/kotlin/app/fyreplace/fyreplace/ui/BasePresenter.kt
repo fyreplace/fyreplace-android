@@ -10,19 +10,19 @@ import com.google.android.material.snackbar.Snackbar
 interface BasePresenter {
     val rootView: View?
 
-    fun showBasicAlert(@StringRes title: Int, @StringRes message: Int, error: Boolean = false) {
+    fun showBasicAlert(@StringRes title: Int, @StringRes message: Int?, error: Boolean = false) {
         MaterialAlertDialogBuilder(rootView?.context ?: return)
             .setTitle(title)
-            .setMessage(message)
+            .apply { message?.let { setMessage(it) } ?: setMessage(null) }
             .setPositiveButton(R.string.ok, null)
             .run { if (error) setIcon(R.drawable.ic_baseline_error) else this }
             .show()
     }
 
-    fun showChoiceAlert(@StringRes title: Int, @StringRes message: Int, action: () -> Unit) {
+    fun showChoiceAlert(@StringRes title: Int, @StringRes message: Int?, action: () -> Unit) {
         AlertDialog.Builder(rootView?.context ?: return)
             .setTitle(title)
-            .setMessage(message)
+            .apply { message?.let { setMessage(it) } ?: setMessage(null) }
             .setPositiveButton(R.string.yes) { _, _ -> action() }
             .setNegativeButton(R.string.no, null)
             .show()

@@ -99,11 +99,10 @@ class UserFragment : DialogFragment(), FailureHandler {
         launch { vm.retrieve(args.profile.id) }
     }
 
-    private fun report() =
-        showChoiceAlert(R.string.post_report_title, R.string.post_report_message) {
-            launch {
-                vm.report()
-                showBasicSnackbar(R.string.user_report_success_message)
-            }
+    private fun report() = showChoiceAlert(R.string.post_report_title, null) {
+        launch {
+            vm.report()
+            showBasicSnackbar(R.string.user_report_success_message)
         }
+    }
 }
