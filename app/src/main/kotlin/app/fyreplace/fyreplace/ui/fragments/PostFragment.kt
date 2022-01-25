@@ -11,7 +11,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentPostBinding
 import app.fyreplace.fyreplace.grpc.formatDate
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
-import app.fyreplace.fyreplace.viewmodels.ArchiveDeletionViewModel
+import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
 import app.fyreplace.protos.Rank
@@ -23,7 +23,7 @@ import org.koin.core.parameter.parametersOf
 class PostFragment : BaseFragment(R.layout.fragment_post) {
     override val rootView by lazy { bd.root }
     private val cvm by sharedViewModel<CentralViewModel>()
-    private val idvm by sharedViewModel<ArchiveDeletionViewModel>()
+    private val icvm by sharedViewModel<ArchiveChangeViewModel>()
     private val vm by viewModel<PostViewModel> { parametersOf(args.post) }
     private val args by navArgs<PostFragmentArgs>()
     private lateinit var bd: FragmentPostBinding
@@ -107,7 +107,11 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
     private suspend fun delete() {
         vm.delete()
-        idvm.delete(args.position)
+
+        if (args.position != -1) {
+            icvm.delete(args.position)
+        }
+
         findNavController().navigateUp()
     }
 }

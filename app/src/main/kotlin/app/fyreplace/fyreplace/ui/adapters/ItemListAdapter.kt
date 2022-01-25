@@ -52,6 +52,11 @@ abstract class ItemListAdapter<Item : Any>(context: Context) :
         notifyItemRangeInserted(start, items.size)
     }
 
+    fun add(position: Int, item: Item) {
+        items.add(position, item)
+        notifyItemInserted(position)
+    }
+
     fun remove(position: Int) {
         items.removeAt(position)
         notifyItemRemoved(position)

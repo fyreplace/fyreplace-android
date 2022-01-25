@@ -12,6 +12,7 @@ import app.fyreplace.fyreplace.grpc.formatDate
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.getUsername
 import app.fyreplace.fyreplace.ui.loadAvatar
+import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
@@ -25,6 +26,7 @@ import org.koin.core.parameter.parametersOf
 class UserFragment : DialogFragment(), FailureHandler {
     override val rootView by lazy { bd.root }
     private val cvm by sharedViewModel<CentralViewModel>()
+    private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
     private val vm by viewModel<UserViewModel> { parametersOf(args.profile) }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
@@ -99,11 +101,23 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
-        launch { vm.updateBlock(blocked = true) }
+        launch {
+            vm.updateBlock(blocked = true)
+
+            if (args.position != -1) {
+                icvm.add(args.position, args.profile)
+            }
+        }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
-        launch { vm.updateBlock(blocked = false) }
+        launch {
+            vm.updateBlock(blocked = false)
+
+            if (args.position != -1) {
+                icvm.delete(args.position)
+            }
+        }
     }
 
     private fun report() = showChoiceAlert(R.string.post_report_title, null) {

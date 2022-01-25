@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
-import app.fyreplace.fyreplace.viewmodels.ItemDeletionViewModel
+import app.fyreplace.fyreplace.viewmodels.ItemChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 
 abstract class ItemListFragment<Item : Any, Items : Any> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { bd.root }
-    protected abstract val idvm: ItemDeletionViewModel
+    protected abstract val icvm: ItemChangeViewModel<Item>
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
     private lateinit var bd: FragmentItemListBinding
@@ -30,7 +30,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        idvm.deletedPositions.launchCollect(fragmentLifecycleScope) { vm.remove(it) }
+        icvm.removedPositions.launchCollect(fragmentLifecycleScope) { vm.remove(it) }
     }
 
     override fun onCreateView(
@@ -80,7 +80,8 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
                 vm.fetchMore()
             }
 
-            idvm.deletedPositions.launchCollect { adapter.remove(it) }
+            icvm.addedItems.launchCollect { (p, i) -> adapter.add(p, i) }
+            icvm.removedPositions.launchCollect { adapter.remove(it) }
         }
     }
 

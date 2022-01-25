@@ -33,6 +33,7 @@
             app:argType="app.fyreplace.protos.Post" />
         <argument
             android:name="position"
+            android:defaultValue="-1"
             app:argType="integer" />
     </fragment>
     <dialog
@@ -43,6 +44,10 @@
         <argument
             android:name="profile"
             app:argType="app.fyreplace.protos.Profile" />
+        <argument
+            android:name="position"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </dialog>
     <fragment
         android:id="@+id/fragment_settings"
