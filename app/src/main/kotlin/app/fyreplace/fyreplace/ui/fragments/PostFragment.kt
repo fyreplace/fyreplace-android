@@ -84,8 +84,8 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         }
 
         when (item.itemId) {
-            R.id.subscribe -> launch { vm.updateSubscription(true) }
-            R.id.unsubscribe -> launch { vm.updateSubscription(false) }
+            R.id.subscribe -> updateSubscription(true)
+            R.id.unsubscribe -> updateSubscription(false)
             R.id.report -> showChoiceAlert(
                 R.string.post_report_title,
                 null
@@ -98,6 +98,18 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         }
 
         return true
+    }
+
+    private fun updateSubscription(subscribed: Boolean) {
+        launch {
+            vm.updateSubscription(subscribed)
+
+            if (subscribed) {
+                icvm.add(args.position, args.post)
+            } else {
+                icvm.delete(args.position)
+            }
+        }
     }
 
     private suspend fun report() {

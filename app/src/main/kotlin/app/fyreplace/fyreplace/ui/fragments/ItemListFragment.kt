@@ -30,7 +30,12 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        icvm.removedPositions.launchCollect(fragmentLifecycleScope) { vm.remove(it) }
+        icvm.addedItems.launchCollect(fragmentLifecycleScope) { (p, i) ->
+            vm.add(p, i)
+        }
+        icvm.removedPositions.launchCollect(fragmentLifecycleScope) {
+            vm.remove(it)
+        }
     }
 
     override fun onCreateView(
