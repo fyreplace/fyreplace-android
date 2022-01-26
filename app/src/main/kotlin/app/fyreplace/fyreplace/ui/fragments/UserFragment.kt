@@ -103,20 +103,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-
-            if (args.position != -1) {
-                icvm.add(args.position, args.profile)
-            }
+            icvm.add(args.position, args.profile)
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-
-            if (args.position != -1) {
-                icvm.delete(args.position)
-            }
+            icvm.delete(args.position)
         }
     }
 

@@ -107,11 +107,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
     private suspend fun delete() {
         vm.delete()
-
-        if (args.position != -1) {
-            icvm.delete(args.position)
-        }
-
+        icvm.delete(args.position)
         findNavController().navigateUp()
     }
 }
