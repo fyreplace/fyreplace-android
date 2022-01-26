@@ -64,11 +64,11 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = makeAdapter(view.context)
-        adapter.add(vm.items)
+        adapter.addAll(vm.items)
         bd.emptyText.isVisible = vm.items.isEmpty()
         bd.recycler.adapter = adapter
         bd.swipe.setOnRefreshListener {
-            adapter.clear()
+            adapter.removeAll()
             bd.emptyText.isVisible = true
             vm.reset()
             launch { vm.fetchMore() }
@@ -78,7 +78,7 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
             vm.startListing().launchCollect {
                 bd.emptyText.isVisible = it.isEmpty()
                 bd.swipe.isRefreshing = false
-                adapter.add(it)
+                adapter.addAll(it)
             }
 
             if (adapter.itemCount == 0) {

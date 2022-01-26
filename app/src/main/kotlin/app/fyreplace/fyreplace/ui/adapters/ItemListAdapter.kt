@@ -46,15 +46,15 @@ abstract class ItemListAdapter<Item : Any>(context: Context) :
         itemListener = listener
     }
 
-    fun add(items: List<Item>) {
-        val start = this.items.size
-        this.items += items
-        notifyItemRangeInserted(start, items.size)
-    }
-
     fun add(position: Int, item: Item) {
         items.add(position, item)
         notifyItemInserted(position)
+    }
+
+    fun addAll(items: List<Item>) {
+        val start = this.items.size
+        this.items += items
+        notifyItemRangeInserted(start, items.size)
     }
 
     fun remove(position: Int) {
@@ -62,7 +62,7 @@ abstract class ItemListAdapter<Item : Any>(context: Context) :
         notifyItemRemoved(position)
     }
 
-    fun clear() {
+    fun removeAll() {
         val count = items.size
         items.clear()
         notifyItemRangeRemoved(0, count)
