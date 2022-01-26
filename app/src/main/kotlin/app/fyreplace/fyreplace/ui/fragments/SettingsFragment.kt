@@ -38,7 +38,7 @@ import java.util.*
 import kotlin.math.max
 
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
-    override var rootView: View? = null
+    override lateinit var rootView: View
     override val preferences by inject<SharedPreferences>()
     private val cvm by sharedViewModel<CentralViewModel>()
     private val vm by viewModel<SettingsViewModel>()
@@ -55,10 +55,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         postponeEnterTransition()
         rootView = super.onCreateView(inflater, container, savedInstanceState)
-            ?.apply { doOnPreDraw { startPostponedEnterTransition() } }
+            .apply { doOnPreDraw { startPostponedEnterTransition() } }
         return rootView
     }
 
