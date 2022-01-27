@@ -14,12 +14,22 @@ class CentralViewModel(
 ) : BaseViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val mIsAuthenticated = MutableStateFlow(false)
     private val mCurrentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = mCurrentUser
+    private val mBlockedUsers = MutableStateFlow(0)
     val isAuthenticated: StateFlow<Boolean> = mIsAuthenticated
+    val currentUser: StateFlow<User?> = mCurrentUser
+    val blockedUsers: StateFlow<Int> = mBlockedUsers
 
     init {
         preferences.registerOnSharedPreferenceChangeListener(this)
         onSharedPreferenceChanged(preferences, "auth.token")
+    }
+
+    fun addBlockedUser() {
+        mBlockedUsers.value = mBlockedUsers.value + 1
+    }
+
+    fun removeBlockedUser() {
+        mBlockedUsers.value = mBlockedUsers.value - 1
     }
 
     override fun onCleared() {
@@ -36,5 +46,6 @@ class CentralViewModel(
     suspend fun retrieveMe() {
         mCurrentUser.value =
             if (isAuthenticated.value) userStub.retrieveMe(empty { }) else null
+        mBlockedUsers.value = currentUser.value?.blockedUsers ?: 0
     }
 }

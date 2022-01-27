@@ -30,7 +30,6 @@
             app:icon="@drawable/ic_baseline_block"
             app:isPreferenceVisible="false"
             app:key="blocked_users"
-            app:summary="@string/settings_blocked_users_desc"
             app:title="@string/settings_blocked_users" />
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/settings_interface">

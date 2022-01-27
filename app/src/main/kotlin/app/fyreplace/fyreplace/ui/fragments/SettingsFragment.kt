@@ -19,6 +19,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.applySettings
+import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
 import app.fyreplace.fyreplace.views.ImagePreference
@@ -41,6 +42,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override lateinit var rootView: View
     override val preferences by inject<SharedPreferences>()
     private val cvm by sharedViewModel<CentralViewModel>()
+    private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
     private val vm by viewModel<SettingsViewModel>()
     private val args by navArgs<SettingsFragmentArgs>()
     private val imageSelector by inject<ImageSelector<SettingsFragment>> { parametersOf(this, 1f) }
@@ -143,9 +145,12 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
         }
 
-        findPreference<Preference>("blocked_users")?.setOnPreferenceClickListener {
-            findNavController().navigate(SettingsFragmentDirections.actionBlockedUsers())
-            return@setOnPreferenceClickListener true
+        icvm.addedItems.launchCollect { cvm.addBlockedUser() }
+        icvm.removedPositions.launchCollect { cvm.removeBlockedUser() }
+
+        cvm.blockedUsers.launchCollect {
+            findPreference<Preference>("blocked_users")?.summary =
+                resources.getQuantityString(R.plurals.settings_blocked_users_desc, it, it)
         }
 
         for ((pref, registering) in setOf(
@@ -156,6 +161,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 val directions = SettingsFragmentDirections
                     .toFragmentLogin(isRegistering = registering)
                 findNavController().navigate(directions)
+                return@setOnPreferenceClickListener true
+            }
+        }
+
+        findPreference<Preference>("blocked_users")?.run {
+            setOnPreferenceClickListener {
+                findNavController().navigate(SettingsFragmentDirections.actionBlockedUsers())
                 return@setOnPreferenceClickListener true
             }
         }

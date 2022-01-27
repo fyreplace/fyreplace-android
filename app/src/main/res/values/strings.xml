@@ -66,7 +66,11 @@
     <string name="settings_bio">Bio</string>
     <string name="settings_bio_desc">Empty</string>
     <string name="settings_blocked_users">Blocked users</string>
-    <string name="settings_blocked_users_desc">See the users you have blocked</string>
+    <plurals name="settings_blocked_users_desc">
+        <item quantity="zero">No blocked users</item>
+        <item quantity="one">%1$d user blocked</item>
+        <item quantity="other">%1$d users blocked</item>
+    </plurals>
     <string name="settings_interface">Interface</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_auto">Follow battery saver</string>
