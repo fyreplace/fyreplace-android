@@ -11,7 +11,7 @@ import app.fyreplace.protos.Profiles
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class BlockedUsersFragment : ItemListFragment<Profile, Profiles>() {
+class BlockedUsersFragment : ItemListFragment<Profile, Profiles, BlockedUsersAdapter.Holder>() {
     override val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
     override val vm by viewModel<BlockedUsersViewModel>()
     override val emptyText by lazy { getString(R.string.blocked_users_empty) }
@@ -21,6 +21,15 @@ class BlockedUsersFragment : ItemListFragment<Profile, Profiles>() {
             val directions =
                 BlockedUsersFragmentDirections.actionUser(profile = profile, position = position)
             findNavController().navigate(directions)
+        }
+
+        setUnblockListener { profile, position ->
+            showChoiceAlert(R.string.user_unblock_title, null) {
+                launch {
+                    vm.unblock(profile.id)
+                    icvm.delete(position)
+                }
+            }
         }
     }
 }

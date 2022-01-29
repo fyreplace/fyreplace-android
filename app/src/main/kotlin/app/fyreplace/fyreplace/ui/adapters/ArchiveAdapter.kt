@@ -14,7 +14,7 @@ import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
-class ArchiveAdapter(context: Context) : ItemListAdapter<Post>(context) {
+class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.Holder>(context) {
     override fun getItemViewType(position: Int) =
         when (items[position].getChapters(0)?.text?.length) {
             null, 0 -> TYPE_IMAGE

@@ -16,7 +16,7 @@ import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.ItemChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 
-abstract class ItemListFragment<Item : Any, Items : Any> :
+abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Holder> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { bd.root }
@@ -24,9 +24,9 @@ abstract class ItemListFragment<Item : Any, Items : Any> :
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
     private lateinit var bd: FragmentItemListBinding
-    private lateinit var adapter: ItemListAdapter<Item>
+    private lateinit var adapter: ItemListAdapter<Item, VH>
 
-    abstract fun makeAdapter(context: Context): ItemListAdapter<Item>
+    abstract fun makeAdapter(context: Context): ItemListAdapter<Item, VH>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

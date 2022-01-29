@@ -145,6 +145,7 @@
 
     <string name="blocked_users_empty">No blocked users</string>
     <string name="blocked_users_avatar_desc">Avatar</string>
+    <string name="blocked_users_unblock">Unblock</string>
 
     <string name="image_selector_dialog_file">Pick a file</string>
     <string name="image_selector_dialog_photo">Take a picture</string>

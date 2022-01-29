@@ -1,10 +1,9 @@
 package app.fyreplace.fyreplace.viewmodels
 
-import app.fyreplace.protos.Cursor
-import app.fyreplace.protos.Profile
-import app.fyreplace.protos.Profiles
-import app.fyreplace.protos.UserServiceGrpcKt
+import android.annotation.SuppressLint
+import app.fyreplace.protos.*
 
+@SuppressLint("CheckResult")
 class BlockedUsersViewModel(private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub) :
     ItemListViewModel<Profile, Profiles>() {
     override val forward = true
@@ -16,4 +15,11 @@ class BlockedUsersViewModel(private val userStub: UserServiceGrpcKt.UserServiceC
     override fun getNextCursor(items: Profiles): Cursor = items.next
 
     override fun getItemList(items: Profiles): List<Profile> = items.profilesList
+
+    suspend fun unblock(userId: String) {
+        userStub.updateBlock(block {
+            id = userId
+            blocked = false
+        })
+    }
 }
