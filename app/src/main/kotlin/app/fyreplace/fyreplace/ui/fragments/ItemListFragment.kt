@@ -32,9 +32,11 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Ho
         super.onCreate(savedInstanceState)
         icvm.addedItems.launchCollect(fragmentLifecycleScope) { (p, i) ->
             vm.add(p, i)
+            adapter.add(p, i)
         }
         icvm.removedPositions.launchCollect(fragmentLifecycleScope) {
             vm.remove(it)
+            adapter.remove(it)
         }
     }
 
@@ -84,9 +86,6 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Ho
             if (adapter.itemCount == 0) {
                 vm.fetchMore()
             }
-
-            icvm.addedItems.launchCollect { (p, i) -> adapter.add(p, i) }
-            icvm.removedPositions.launchCollect { adapter.remove(it) }
         }
     }
 

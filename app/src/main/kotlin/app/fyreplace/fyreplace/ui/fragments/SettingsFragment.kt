@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.*
@@ -51,6 +52,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         super.onCreate(savedInstanceState)
         imageSelector.onCreate()
         setupTransitions()
+
+        icvm.addedItems.launchCollect { cvm.addBlockedUser() }
+        icvm.removedPositions.launchCollect { cvm.removeBlockedUser() }
     }
 
     override fun onCreateView(
@@ -67,7 +71,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         handleArgs()
-        cvm.currentUser.launchCollect { user ->
+        cvm.currentUser.launchCollect(viewLifecycleOwner.lifecycleScope) { user ->
             findPreference<ImagePreference>("avatar")?.run {
                 imageUrl = user?.profile?.avatar?.url
                 title = user?.profile?.username ?: getString(R.string.settings_username)
@@ -145,10 +149,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
         }
 
-        icvm.addedItems.launchCollect { cvm.addBlockedUser() }
-        icvm.removedPositions.launchCollect { cvm.removeBlockedUser() }
-
-        cvm.blockedUsers.launchCollect {
+        cvm.blockedUsers.launchCollect(viewLifecycleOwner.lifecycleScope) {
             findPreference<Preference>("blocked_users")?.summary =
                 resources.getQuantityString(R.plurals.settings_blocked_users_desc, it, it)
         }

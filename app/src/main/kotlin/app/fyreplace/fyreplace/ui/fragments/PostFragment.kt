@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
@@ -44,7 +45,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         setToolbarInfo(args.post.author, args.post.dateCreated.formatDate())
         val adapter = PostAdapter(args.post)
         bd.recycler.adapter = adapter
-        vm.post.launchCollect { adapter.updatePost(it) }
+        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { adapter.updatePost(it) }
 
         if (args.post.isPreview) {
             launch { vm.retrieve(args.post.id) }
@@ -62,7 +63,7 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
         }
         menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
 
-        vm.subscribed.launchCollect { subscribed ->
+        vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
             menu.findItem(R.id.subscribe).isVisible = !subscribed
             menu.findItem(R.id.unsubscribe).isVisible = subscribed
         }
@@ -71,11 +72,10 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
             val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
             val currentUserIsAdmin = (u?.profile?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
             return@combine currentUserOwnsPost || currentUserIsAdmin
+        }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
+            menu.findItem(R.id.report).isVisible = !canDeletePost
+            menu.findItem(R.id.delete).isVisible = canDeletePost
         }
-            .launchCollect { canDeletePost ->
-                menu.findItem(R.id.report).isVisible = !canDeletePost
-                menu.findItem(R.id.delete).isVisible = canDeletePost
-            }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
