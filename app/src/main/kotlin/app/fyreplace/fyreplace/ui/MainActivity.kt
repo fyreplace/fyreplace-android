@@ -1,19 +1,13 @@
 package app.fyreplace.fyreplace.ui
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.ViewGroup
-import android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
@@ -35,32 +29,28 @@ import app.fyreplace.protos.Profile
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.google.android.material.tabs.TabLayout
+import com.google.android.material.color.DynamicColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity :
     AppCompatActivity(R.layout.activity_main),
     FailureHandler,
     FragmentOnAttachListener,
-    NavController.OnDestinationChangedListener,
-    TabLayout.OnTabSelectedListener {
+    NavController.OnDestinationChangedListener {
     override val rootView by lazy { bd.root }
     private val vm by viewModel<MainViewModel>()
     private val cvm by viewModel<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
-    private var skipNextTabChange = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        window.setBackgroundDrawable(null)
+        setTheme(R.style.AppTheme)
+        DynamicColors.applyIfAvailable(this)
         super.onCreate(savedInstanceState)
-        bd = ActivityMainBinding.bind(findViewById(R.id.root)).also {
-            it.lifecycleOwner = this
-            it.vm = vm
-        }
+        bd = ActivityMainBinding.bind(findViewById(R.id.root))
+        bd.lifecycleOwner = this
 
         setSupportActionBar(bd.toolbar)
-        setupSystemBars()
 
         val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
         navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
@@ -69,26 +59,10 @@ class MainActivity :
 
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
-        bd.tabs.addOnTabSelectedListener(this)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        vm.pageState.launchCollect { state ->
-            skipNextTabChange = true
-            bd.tabs.removeAllTabs()
-
-            for (title in state.choices) {
-                val tab = bd.tabs.newTab()
-                bd.tabs.addTab(tab)
-                tab.setText(title)
-
-                if (tab.position == state.current) {
-                    bd.tabs.selectTab(tab)
-                }
-            }
-        }
-
         cvm.isAuthenticated.launchCollect { authenticated ->
             cvm.retrieveMe()
 
@@ -105,7 +79,6 @@ class MainActivity :
     override fun onDestroy() {
         navHost.childFragmentManager.removeFragmentOnAttachListener(this)
         navHost.navController.removeOnDestinationChangedListener(this)
-        bd.tabs.removeOnTabSelectedListener(this)
         super.onDestroy()
     }
 
@@ -118,8 +91,6 @@ class MainActivity :
         navHost.navController.navigateUp() || super.onSupportNavigateUp()
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
-        vm.setPageChoices(if (fragment is PageChoosing) fragment.pageChoices else emptyList())
-
         if (fragment is TitleChoosing) {
             bd.toolbar.setTitle(fragment.getTitle())
         }
@@ -134,23 +105,6 @@ class MainActivity :
             setToolbarInfo(null, null)
         }
     }
-
-    override fun onTabSelected(tab: TabLayout.Tab) {
-        if (skipNextTabChange) {
-            skipNextTabChange = false
-            return
-        }
-
-        vm.choosePage(tab.position)
-        navHost.childFragmentManager.fragments
-            .mapNotNull { it as? PageChoosing }
-            .last()
-            .choosePage(tab.position)
-    }
-
-    override fun onTabUnselected(tab: TabLayout.Tab) = Unit
-
-    override fun onTabReselected(tab: TabLayout.Tab) = Unit
 
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {
         profile?.let { bd.toolbar.title = getUsername(it) }
@@ -175,25 +129,9 @@ class MainActivity :
                 view.setOnClickListener(null)
             }
         }
-    }
 
-    private fun setupSystemBars() {
-        window.statusBarColor = ActivityCompat.getColor(this, R.color.primary_dark)
-        window.navigationBarColor = ActivityCompat.getColor(this, R.color.navigation)
-        val nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-
-        when {
-            nightMode == Configuration.UI_MODE_NIGHT_YES -> return
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R ->
-                bd.root.windowInsetsController?.setSystemBarsAppearance(
-                    APPEARANCE_LIGHT_NAVIGATION_BARS,
-                    APPEARANCE_LIGHT_NAVIGATION_BARS
-                )
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ->
-                @Suppress("deprecation")
-                bd.root.systemUiVisibility =
-                    bd.root.systemUiVisibility or SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-        }
+        bd.toolbar.isTitleCentered = profile == null
+        bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
     }
 
     private companion object {
@@ -217,11 +155,6 @@ class MainActivity :
             resource: Drawable,
             transition: Transition<in Drawable>?
         ) {
-            if (!profile.hasAvatar()) {
-                val tint = ContextCompat.getColor(this@MainActivity, R.color.on_primary)
-                resource.setTint(tint)
-            }
-
             bd.toolbar.logo = resource
             bd.toolbar.children
                 .filterIsInstance<ImageView>()

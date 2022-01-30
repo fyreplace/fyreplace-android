@@ -8,9 +8,9 @@
 
     <ImageView
         android:id="@+id/avatar"
-        android:contentDescription="@string/avatar"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
+        android:contentDescription="@string/avatar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,5 +36,5 @@
         android:layout_marginStart="@dimen/gap"
         android:lines="2"
         android:textAlignment="textEnd"
-        android:textAppearance="?attr/textAppearanceCaption" />
+        android:textAppearance="?attr/textAppearanceLabelMedium" />
 </LinearLayout>

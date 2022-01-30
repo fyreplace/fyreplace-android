@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -52,8 +51,6 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Ho
         }
         bd.lifecycleOwner = viewLifecycleOwner
         bd.emptyText.text = emptyText
-        val color = ResourcesCompat.getColor(resources, R.color.primary, context?.theme)
-        bd.swipe.setColorSchemeColors(color)
         bd.recycler.setHasFixedSize(true)
         bd.recycler.addOnChildAttachStateChangeListener(this)
         bd.recycler.addItemDecoration(

@@ -34,10 +34,9 @@
                 android:layout_marginBottom="@dimen/gap"
                 android:contentDescription="@string/login_logo_desc"
                 android:src="@drawable/logo"
-                app:tint="@color/primary" />
+                app:tint="@color/seed" />
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap"
@@ -56,7 +55,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username"
@@ -73,7 +71,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/gap"
@@ -92,7 +89,7 @@
 
             <Button
                 android:id="@+id/button"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                style="@style/Widget.Material3.Button.UnelevatedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.canProceed}"

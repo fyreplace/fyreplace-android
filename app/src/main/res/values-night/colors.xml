@@ -1,7 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">@color/main_light</color>
-    <color name="on_primary">@android:color/black</color>
-    <color name="primary_dark">@android:color/black</color>
-    <color name="splash">@android:color/black</color>
+    <color name="md_theme_primary">#FFB592</color>
+    <color name="md_theme_onPrimary">#581E00</color>
+    <color name="md_theme_primaryContainer">#7C2D00</color>
+    <color name="md_theme_onPrimaryContainer">#FFDBCB</color>
+    <color name="md_theme_secondary">#FFB592</color>
+    <color name="md_theme_onSecondary">#581E00</color>
+    <color name="md_theme_secondaryContainer">#7C2D00</color>
+    <color name="md_theme_onSecondaryContainer">#FFDBCB</color>
+    <color name="md_theme_tertiary">#FFB592</color>
+    <color name="md_theme_onTertiary">#581E00</color>
+    <color name="md_theme_tertiaryContainer">#7C2D00</color>
+    <color name="md_theme_onTertiaryContainer">#FFDBCB</color>
+    <color name="md_theme_error">#FFB4A9</color>
+    <color name="md_theme_errorContainer">#930006</color>
+    <color name="md_theme_onError">#680003</color>
+    <color name="md_theme_onErrorContainer">#FFDAD4</color>
+    <color name="md_theme_background">#191C1D</color>
+    <color name="md_theme_onBackground">#E0E3E3</color>
+    <color name="md_theme_surface">#191C1D</color>
+    <color name="md_theme_onSurface">#E0E3E3</color>
+    <color name="md_theme_surfaceVariant">#53443D</color>
+    <color name="md_theme_onSurfaceVariant">#D7C2BA</color>
+    <color name="md_theme_outline">#A08D85</color>
+    <color name="md_theme_inverseOnSurface">#191C1D</color>
+    <color name="md_theme_inverseSurface">#E0E3E3</color>
+    <color name="md_theme_primaryInverse">#A33F00</color>
+    <color name="status">@android:color/transparent</color>
+    <color name="navigation">@android:color/black</color>
+    <color name="splash">@color/md_theme_background</color>
 </resources>

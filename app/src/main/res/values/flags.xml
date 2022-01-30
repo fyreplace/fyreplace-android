@@ -2,5 +2,7 @@
 <resources>
     <bool name="clear_text_communication">false</bool>
     <bool name="link_auto_verify">true</bool>
-    <bool name="light_navigation">false</bool>
+    <bool name="light_status">true</bool>
+    <bool name="light_navigation">true</bool>
+    <bool name="light_navigation_splash">false</bool>
 </resources>

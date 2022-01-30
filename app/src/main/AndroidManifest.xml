@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Fyreplace.Launcher"
+        android:theme="@style/AppTheme.Launcher"
         android:usesCleartextTraffic="@bool/clear_text_communication"
         tools:targetApi="m">
 

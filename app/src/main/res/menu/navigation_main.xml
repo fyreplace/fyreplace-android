@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/fragment_feed"
-        android:icon="@drawable/ic_baseline_grid_view"
+        android:icon="@drawable/ic_dynamic_grid_view"
         android:title="@string/destination_feed" />
     <item
         android:id="@+id/fragment_notifications"
-        android:icon="@drawable/ic_baseline_notifications"
+        android:icon="@drawable/ic_dynamic_notifications"
         android:title="@string/destination_notifications" />
     <item
         android:id="@+id/fragment_archive"
@@ -14,10 +14,10 @@
         android:title="@string/destination_archive" />
     <item
         android:id="@+id/fragment_drafts"
-        android:icon="@drawable/ic_baseline_note_add"
+        android:icon="@drawable/ic_dynamic_note_add"
         android:title="@string/destination_drafts" />
     <item
         android:id="@+id/fragment_settings"
-        android:icon="@drawable/ic_baseline_account_circle"
+        android:icon="@drawable/ic_dynamic_account_circle"
         android:title="@string/destination_settings" />
 </menu>

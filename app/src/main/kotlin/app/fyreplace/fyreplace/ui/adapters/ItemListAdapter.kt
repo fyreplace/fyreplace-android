@@ -18,9 +18,9 @@ import java.util.*
 abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context: Context) :
     RecyclerView.Adapter<VH>() {
     protected val textAppearanceNormal =
-        context.theme.resolveTextAttribute(R.attr.textAppearanceBody1)
+        context.theme.resolveTextAttribute(R.attr.textAppearanceBodyLarge)
     protected val textAppearanceTitle =
-        context.theme.resolveTextAttribute(R.attr.textAppearanceHeadline5)
+        context.theme.resolveTextAttribute(R.attr.textAppearanceHeadlineSmall)
     protected val textMaxLines = context.resources.getInteger(R.integer.item_list_text_max_lines)
     protected val items = mutableListOf<Item>()
     private var itemListener: ((item: Item, position: Int) -> Unit)? = null

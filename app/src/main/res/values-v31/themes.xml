@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash">@color/navigation</color>
+
+    <style name="AppTheme.Launcher" parent="AppThemeBase" />
+
 </resources>

@@ -59,8 +59,8 @@ class PostAdapter(private var post: Post) : RecyclerView.Adapter<PostAdapter.Vie
 
         private fun makeTextView(chapter: Chapter): View {
             val text = TextView(itemView.context)
-            val style = if (chapter.isTitle) R.style.TextAppearance_AppCompat_Title
-            else R.style.TextAppearance_AppCompat_Body1
+            val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
+            else R.style.TextAppearance_Material3_BodyLarge
 
             text.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
             text.text = chapter.text
