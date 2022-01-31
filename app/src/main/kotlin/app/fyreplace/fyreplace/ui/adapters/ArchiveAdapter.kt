@@ -57,6 +57,11 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.H
 
     override fun getItemId(item: Post): String = item.id
 
+    companion object {
+        const val TYPE_TEXT = 1
+        const val TYPE_IMAGE = 2
+    }
+
     class TextHolder(itemView: View) : ItemListAdapter.Holder(itemView) {
         val preview: TextView = itemView.findViewById(R.id.text_preview)
     }

@@ -21,7 +21,8 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
         context.theme.resolveTextAttribute(R.attr.textAppearanceBodyLarge)
     protected val textAppearanceTitle =
         context.theme.resolveTextAttribute(R.attr.textAppearanceHeadlineSmall)
-    protected val textMaxLines = context.resources.getInteger(R.integer.item_list_text_max_lines)
+    protected val textMaxLines =
+        context.resources.getInteger(R.integer.item_list_text_max_lines)
     protected val items = mutableListOf<Item>()
     private var itemListener: ((item: Item, position: Int) -> Unit)? = null
 
@@ -36,9 +37,8 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
 
     override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(holder: VH, position: Int) {
+    override fun onBindViewHolder(holder: VH, position: Int) =
         holder.itemView.setOnClickListener { itemListener?.invoke(items[position], position) }
-    }
 
     abstract fun getItemId(item: Item): String
 
@@ -66,11 +66,6 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
         val count = items.size
         items.clear()
         notifyItemRangeRemoved(0, count)
-    }
-
-    companion object {
-        const val TYPE_TEXT = 1
-        const val TYPE_IMAGE = 2
     }
 
     open class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
