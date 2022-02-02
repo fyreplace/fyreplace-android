@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
 import app.fyreplace.protos.*
+import com.google.protobuf.ByteString
 
 @SuppressLint("CheckResult")
 class BlockedUsersViewModel(private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub) :
@@ -16,7 +17,7 @@ class BlockedUsersViewModel(private val userStub: UserServiceGrpcKt.UserServiceC
 
     override fun getItemList(items: Profiles): List<Profile> = items.profilesList
 
-    suspend fun unblock(userId: String) {
+    suspend fun unblock(userId: ByteString) {
         userStub.updateBlock(block {
             id = userId
             blocked = false

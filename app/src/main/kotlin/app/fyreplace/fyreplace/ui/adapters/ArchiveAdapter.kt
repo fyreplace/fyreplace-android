@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.protobuf.ByteString
 
 class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.Holder>(context) {
     override fun getItemViewType(position: Int) =
@@ -55,7 +56,7 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.H
         }
     }
 
-    override fun getItemId(item: Post): String = item.id
+    override fun getItemId(item: Post): ByteString = item.id
 
     companion object {
         const val TYPE_TEXT = 1

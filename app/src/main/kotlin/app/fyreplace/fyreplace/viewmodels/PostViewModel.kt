@@ -3,8 +3,9 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.stringId
+import app.fyreplace.protos.id
 import app.fyreplace.protos.subscription
+import com.google.protobuf.ByteString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -18,8 +19,8 @@ class PostViewModel(
     val post: Flow<Post> = mPost
     val subscribed: Flow<Boolean> = mSubscribed
 
-    suspend fun retrieve(postId: String) {
-        val newPost = postStub.retrieve(stringId { id = postId })
+    suspend fun retrieve(postId: ByteString) {
+        val newPost = postStub.retrieve(id { id = postId })
         mPost.value = newPost
         mSubscribed.value = newPost.isSubscribed
     }
@@ -33,10 +34,10 @@ class PostViewModel(
     }
 
     suspend fun report() {
-        postStub.report(stringId { id = mPost.value.id })
+        postStub.report(id { id = mPost.value.id })
     }
 
     suspend fun delete() {
-        postStub.delete(stringId { id = mPost.value.id })
+        postStub.delete(id { id = mPost.value.id })
     }
 }

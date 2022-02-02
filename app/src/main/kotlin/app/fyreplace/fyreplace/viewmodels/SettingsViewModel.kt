@@ -43,7 +43,7 @@ class SettingsViewModel(
     }
 
     suspend fun logout() {
-        accountStub.disconnect(stringId { })
+        accountStub.disconnect(id { })
         preferences.edit { putString("auth.token", "") }
     }
 

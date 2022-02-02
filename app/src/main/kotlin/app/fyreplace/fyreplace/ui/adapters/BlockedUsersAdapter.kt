@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Profile
+import com.google.protobuf.ByteString
 
 class BlockedUsersAdapter(context: Context) :
     ItemListAdapter<Profile, BlockedUsersAdapter.Holder>(context) {
@@ -24,7 +25,7 @@ class BlockedUsersAdapter(context: Context) :
         holder.unblock.setOnClickListener { unblockListener?.invoke(items[position], position) }
     }
 
-    override fun getItemId(item: Profile): String = item.id
+    override fun getItemId(item: Profile): ByteString = item.id
 
     fun setUnblockListener(listener: ((profile: Profile, position: Int) -> Unit)) {
         unblockListener = listener
