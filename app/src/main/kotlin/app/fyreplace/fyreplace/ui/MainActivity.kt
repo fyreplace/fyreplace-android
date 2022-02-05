@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
+import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity :
@@ -74,6 +75,8 @@ class MainActivity :
                 navHost.navController.navigate(R.id.fragment_settings)
             }
         }
+
+        handleIntent(intent)
     }
 
     override fun onDestroy() {
@@ -82,9 +85,9 @@ class MainActivity :
         super.onDestroy()
     }
 
-    override fun onNewIntent(intent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        navHost.navController.handleDeepLink(intent)
+        handleIntent(intent)
     }
 
     override fun onSupportNavigateUp() =
@@ -104,6 +107,19 @@ class MainActivity :
         if (destination.id in TOP_LEVEL_DESTINATIONS) {
             setToolbarInfo(null, null)
         }
+    }
+
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.UNAUTHENTICATED -> when (error.description) {
+            "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
+            "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
+            else -> R.string.error_authentication_title to R.string.error_authentication_message
+        }
+        Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
+            else -> R.string.error_permission_title to R.string.error_permission_message
+        }
+        else -> null
     }
 
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {
@@ -132,6 +148,39 @@ class MainActivity :
 
         bd.toolbar.isTitleCentered = profile == null
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val token = uri.fragment ?: ""
+        this.intent = null
+
+        when (uri.path) {
+            "" -> return
+            getString(R.string.link_path_account_confirm_activation) -> confirmActivation(token)
+            getString(R.string.link_path_account_confirm_connection) -> confirmConnection(token)
+            getString(R.string.link_path_user_confirm_email_update) -> confirmEmailUpdate(token)
+            else -> showBasicAlert(
+                R.string.main_error_malformed_url_title,
+                R.string.main_error_malformed_url_message,
+                error = true
+            )
+        }
+    }
+
+    private fun confirmActivation(token: String) = launch {
+        vm.confirmActivation(token)
+        showBasicSnackbar(R.string.main_account_activated_message)
+    }
+
+    private fun confirmConnection(token: String) = launch {
+        vm.confirmConnection(token)
+    }
+
+    private fun confirmEmailUpdate(token: String) = launch {
+        vm.confirmEmailUpdate(token)
+        cvm.retrieveMe()
+        showBasicSnackbar(R.string.main_user_email_changed_message)
     }
 
     private companion object {

@@ -26,6 +26,17 @@
     <string name="destination_settings">Settings</string>
     <string name="destination_blocked_users">Blocked users</string>
 
+    <string name="main_account_activated_message">Account activated!</string>
+    <string name="main_user_email_changed_message">Email updated!</string>
+    <string name="main_error_malformed_url_title">Cannot open URL</string>
+    <string name="main_error_malformed_url_message">The URL is malformed and cannot be used.</string>
+    <string name="main_error_timestamp_exceeded_title">Outdated URL</string>
+    <string name="main_error_timestamp_exceeded_message">This URL has expired.</string>
+    <string name="main_error_invalid_token_title">Invalid token</string>
+    <string name="main_error_invalid_token_message">The token in the URL is not correctly formed.</string>
+    <string name="main_error_user_not_pending_title">Account already activated</string>
+    <string name="main_error_user_not_pending_message">This account has already been activated.</string>
+
     <string name="archive_empty">No subscribed posts</string>
 
     <string name="post_menu_action_share">Share</string>
@@ -99,16 +110,6 @@
     <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards.\n\nAre you sure you want to go through with this?</string>
     <string name="settings_account_deletion_success_title">Account deleted</string>
     <string name="settings_account_deletion_success_message">Your account has been deleted, your posts and comments will be fully removed as well within the next minutes.\n\nGoodbye! 👋</string>
-    <string name="settings_user_email_changed_message">Email updated!</string>
-    <string name="settings_account_activated_message">Account activated!</string>
-    <string name="settings_error_malformed_url_title">Cannot open URL</string>
-    <string name="settings_error_malformed_url_message">The URL is malformed and cannot be used.</string>
-    <string name="settings_error_timestamp_exceeded_title">Outdated URL</string>
-    <string name="settings_error_timestamp_exceeded_message">This URL has expired.</string>
-    <string name="settings_error_invalid_token_title">Invalid token</string>
-    <string name="settings_error_invalid_token_message">The token in the URL is not correctly formed.</string>
-    <string name="settings_error_user_not_pending_title">Account already activated</string>
-    <string name="settings_error_user_not_pending_message">This account has already been activated.</string>
     <string name="settings_error_bio_too_long_title">Invalid bio</string>
     <string name="settings_error_bio_too_long_message">Your bio is too long.</string>
 

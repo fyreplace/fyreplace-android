@@ -30,7 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <nav-graph android:value="@navigation/main" />
+            <intent-filter android:autoVerify="@bool/link_auto_verify">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="fyreplace.link"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
 
         <provider

@@ -53,22 +53,9 @@
         android:id="@+id/fragment_settings"
         android:name="app.fyreplace.fyreplace.ui.fragments.SettingsFragment"
         android:label="@string/destination_settings">
-        <argument
-            android:name="path"
-            android:defaultValue=""
-            app:argType="string" />
-        <argument
-            android:name="token"
-            android:defaultValue=""
-            app:argType="string" />
         <action
             android:id="@+id/to_fragment_login"
             app:destination="@id/fragment_login" />
-        <deepLink
-            android:autoVerify="@bool/link_auto_verify"
-            app:action="ACTION_VIEW"
-            app:uri="fyreplace.link/{path}#{token}"
-            tools:ignore="UnusedAttribute" />
         <action
             android:id="@+id/action_blocked_users"
             app:destination="@id/fragment_blocked_users" />
