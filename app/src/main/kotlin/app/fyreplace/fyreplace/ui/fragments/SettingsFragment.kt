@@ -209,10 +209,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             "user_not_pending" -> R.string.settings_error_user_not_pending_title to R.string.settings_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
-        Status.Code.ALREADY_EXISTS -> R.string.login_error_existing_email_title to R.string.login_error_existing_email_message
+        Status.Code.ALREADY_EXISTS -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
-            "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
             else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
         }
         else -> null
@@ -221,8 +220,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private fun handleArgs() {
         when (args.path) {
             "" -> return
-            getString(R.string.link_path_account_confirm_account) -> confirmActivation(args.token)
-            getString(R.string.link_path_user_confirm_email) -> confirmEmailUpdate(args.token)
+            getString(R.string.link_path_account_confirm_activation) -> confirmActivation(args.token)
+            getString(R.string.link_path_account_confirm_connection) -> confirmConnection(args.token)
+            getString(R.string.link_path_user_confirm_email_update) -> confirmEmailUpdate(args.token)
             else -> showBasicAlert(
                 R.string.settings_error_malformed_url_title,
                 R.string.settings_error_malformed_url_message,
@@ -234,6 +234,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private fun confirmActivation(token: String) = launch {
         vm.confirmActivation(token)
         showBasicSnackbar(R.string.settings_account_activated_message)
+    }
+
+    private fun confirmConnection(token: String) = launch {
+        vm.confirmConnection(token)
     }
 
     private fun confirmEmailUpdate(token: String) = launch {
@@ -291,10 +295,6 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private inner class SettingsDataStore : PreferenceDataStore() {
         override fun putString(key: String, value: String?) = launch {
             when (key) {
-                "password" -> {
-                    vm.updatePassword(value.orEmpty())
-                    showBasicSnackbar(R.string.settings_password_change_success_message)
-                }
                 "email" -> {
                     vm.sendEmailUpdateEmail(value.orEmpty())
                     showBasicAlert(

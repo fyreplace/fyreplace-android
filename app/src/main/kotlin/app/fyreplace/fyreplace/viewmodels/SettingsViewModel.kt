@@ -14,20 +14,14 @@ class SettingsViewModel(
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
 ) : BaseViewModel() {
-    suspend fun confirmActivation(tokenValue: String) {
-        val response = accountStub.confirmActivation(connectionToken {
-            token = tokenValue
-            client = defaultClient
-        })
-        preferences.edit { putString("auth.token", response.token) }
-    }
+    suspend fun confirmActivation(tokenValue: String) =
+        storeToken(accountStub.confirmActivation(makeConnectionToken(tokenValue)))
+
+    suspend fun confirmConnection(tokenValue: String) =
+        storeToken(accountStub.confirmConnection(makeConnectionToken(tokenValue)))
 
     suspend fun updateAvatar(image: ByteArray?) {
         userStub.updateAvatar(image.imageChunkFlow())
-    }
-
-    suspend fun updatePassword(passwordValue: String) {
-        userStub.updatePassword(password { password = passwordValue })
     }
 
     suspend fun sendEmailUpdateEmail(address: String) {
@@ -51,4 +45,11 @@ class SettingsViewModel(
         accountStub.delete(empty { })
         preferences.edit { putString("auth.token", "") }
     }
+
+    private fun makeConnectionToken(tokenValue: String) = connectionToken {
+        token = tokenValue
+        client = defaultClient
+    }
+
+    private fun storeToken(token: Token) = preferences.edit { putString("auth.token", token.token) }
 }

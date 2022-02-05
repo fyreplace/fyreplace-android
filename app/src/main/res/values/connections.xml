@@ -3,6 +3,7 @@
     <string name="file_provider_authority" translatable="false">app.fyreplace.fyreplace.provider</string>
     <string name="api_host" translatable="false">api.fyreplace.app</string>
     <integer name="api_port">50051</integer>
-    <string name="link_path_account_confirm_account">AccountService.ConfirmActivation</string>
-    <string name="link_path_user_confirm_email">UserService.ConfirmEmailUpdate</string>
+    <string name="link_path_account_confirm_activation">AccountService.ConfirmActivation</string>
+    <string name="link_path_account_confirm_connection">AccountService.ConfirmConnection</string>
+    <string name="link_path_user_confirm_email_update">UserService.ConfirmEmailUpdate</string>
 </resources>

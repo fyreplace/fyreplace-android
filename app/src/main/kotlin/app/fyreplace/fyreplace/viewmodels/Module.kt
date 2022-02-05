@@ -14,7 +14,7 @@ val viewModelsModule = module {
     viewModel { PostViewModel(it.get(), get()) }
     viewModel { UserViewModel(it.get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }
-    viewModel { LoginViewModel(get(), get(), get()) }
+    viewModel { LoginViewModel(get(), get()) }
     viewModel { BlockedUsersChangeViewModel() }
     viewModel { BlockedUsersViewModel(get()) }
     viewModel { ImageSelectorViewModel() }

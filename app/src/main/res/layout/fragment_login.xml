@@ -31,6 +31,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
                 android:layout_marginBottom="@dimen/gap"
                 android:contentDescription="@string/login_logo_desc"
                 android:src="@drawable/logo"
@@ -41,7 +42,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap"
                 android:hint="@string/login_email"
-                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}"
                 app:counterEnabled="true"
                 app:counterMaxLength="@integer/login_email_max_size"
                 app:endIconMode="clear_text">
@@ -58,6 +58,7 @@
                 android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}"
                 app:counterEnabled="true"
                 app:counterMaxLength="@integer/login_username_max_size"
                 app:endIconMode="clear_text">
@@ -68,23 +69,6 @@
                     android:inputType="text"
                     android:maxLength="@integer/login_username_max_size"
                     android:text="@={vm.username}" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="@dimen/form_width"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/gap"
-                android:hint="@string/login_password"
-                app:counterEnabled="true"
-                app:counterMaxLength="@integer/login_password_max_size"
-                app:endIconMode="clear_text">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLength="@integer/login_password_max_size"
-                    android:text="@={vm.password}" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button

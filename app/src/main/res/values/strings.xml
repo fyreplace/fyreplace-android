@@ -54,10 +54,6 @@
     <string name="settings_date_joined">Joined on %1$s</string>
     <string name="settings_has_not_joined">Hasn\'t joined yet</string>
     <string name="settings_avatar_desc">Avatar</string>
-    <string name="settings_password">Mot de passe</string>
-    <string name="settings_password_desc">**********</string>
-    <string name="settings_password_change_message">What\'s your new password?</string>
-    <string name="settings_password_change_success_message">Password updated!</string>
     <string name="settings_email">Email</string>
     <string name="settings_email_desc">email@example.org</string>
     <string name="settings_email_change_message">What\'s your new email address?</string>
@@ -118,12 +114,15 @@
 
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>
-    <string name="login_password">Password</string>
     <string name="login_logo_desc">Logo</string>
     <string name="login_register_title">Check your email</string>
     <string name="login_register_message">A confirmation email has been sent to your address. It contains a link that will allow you to confirm your registration.</string>
-    <string name="login_error_existing_email_title">Email taken</string>
-    <string name="login_error_existing_email_message">This email is already used in another account.</string>
+    <string name="login_login_title">Check your email</string>
+    <string name="login_login_message">A connection email has been sent to your address. It contains a link to connect to your account.</string>
+    <string name="login_error_email_not_found_title">Incorrect email</string>
+    <string name="login_error_email_not_found_message">This email is not associated to any account.</string>
+    <string name="login_error_email_already_exists_title">Email taken</string>
+    <string name="login_error_email_already_exists_message">This email is already used in another account.</string>
     <string name="login_error_existing_username_title">Username taken</string>
     <string name="login_error_existing_username_message">This username is already used in another account.</string>
     <string name="login_error_caller_pending_title">Account not activated</string>
@@ -131,17 +130,15 @@
     <string name="login_error_caller_deleted_title">Account deleted</string>
     <string name="login_error_caller_deleted_message">This account has been deleted. You cannot use a deleted account, and it cannot be recovered.</string>
     <string name="login_error_caller_banned_title">Account banned</string>
-    <string name="login_error_caller_banned_message">This account has been banned permanently.</string>
+    <string name="login_error_caller_banned_message">This account has been banned temporarily.</string>
+    <string name="login_error_caller_banned_permanently_title">Account banned</string>
+    <string name="login_error_caller_banned_permanently_message">This account has been banned permanently.</string>
     <string name="login_error_username_reserved_title">Username unavailable</string>
     <string name="login_error_username_reserved_message">This username is not available.</string>
-    <string name="login_error_invalid_credentials_title">Invalid credentials</string>
-    <string name="login_error_invalid_credentials_message">Username or password incorrect.</string>
     <string name="login_error_invalid_email_title">Invalid email address</string>
     <string name="login_error_invalid_email_message">This email address is not valid.</string>
     <string name="login_error_invalid_username_title">Invalid username</string>
     <string name="login_error_invalid_username_message">This username is not valid. Usernames can contain letters, numbers, and @/./+/-/_ characters.</string>
-    <string name="login_error_invalid_password_title">Weak password</string>
-    <string name="login_error_invalid_password_message">This password is too weak.</string>
 
     <string name="blocked_users_empty">No blocked users</string>
     <string name="blocked_users_avatar_desc">Avatar</string>
