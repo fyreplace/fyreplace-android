@@ -27,6 +27,5 @@
     <color name="md_theme_inverseSurface">#E0E3E3</color>
     <color name="md_theme_primaryInverse">#A33F00</color>
     <color name="status">@android:color/transparent</color>
-    <color name="navigation">@android:color/black</color>
     <color name="splash">@color/md_theme_background</color>
 </resources>
