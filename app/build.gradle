@@ -33,7 +33,7 @@ android {
 
     flavorDimensions "freedom"
     productFlavors {
-        vanilla {
+        google {
             dimension "freedom"
         }
 
@@ -103,6 +103,6 @@ dependencies {
     implementation libraries.koin
     implementation libraries.material
     implementation libraries.protobuf
-    vanillaImplementation libraries.play.basement
+    googleImplementation libraries.play.basement
     libreImplementation libraries.conscrypt
 }
