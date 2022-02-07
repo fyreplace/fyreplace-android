@@ -33,6 +33,10 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Ho
             vm.add(p, i)
             adapter.add(p, i)
         }
+        icvm.updatedItems.launchCollect(fragmentLifecycleScope) { (p, i) ->
+            vm.update(p, i)
+            adapter.update(p, i)
+        }
         icvm.removedPositions.launchCollect(fragmentLifecycleScope) {
             vm.remove(it)
             adapter.remove(it)

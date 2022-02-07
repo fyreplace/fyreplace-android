@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/block"
-        android:title="@string/user_menu_action_block" />
+        android:title="@string/user_menu_action_block"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/unblock"
-        android:title="@string/user_menu_action_unblock" />
+        android:title="@string/user_menu_action_unblock"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
     <item
         android:id="@+id/report"
-        android:title="@string/user_menu_action_report" />
+        android:title="@string/user_menu_action_report"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/ban"
+        android:title="@string/user_menu_action_ban"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
 </menu>

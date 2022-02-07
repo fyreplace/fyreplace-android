@@ -10,10 +10,10 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
 import app.fyreplace.fyreplace.grpc.formatDate
 import app.fyreplace.fyreplace.ui.FailureHandler
-import app.fyreplace.fyreplace.ui.getUsername
 import app.fyreplace.fyreplace.ui.loadAvatar
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
+import app.fyreplace.fyreplace.viewmodels.Sentence
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
 import com.bumptech.glide.Glide
@@ -53,7 +53,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupToolbar() {
-        bd.toolbar.title = requireContext().getUsername(args.profile)
+        bd.toolbar.title = args.profile.username
         bd.toolbar.subtitle = when (args.profile.rank) {
             Rank.RANK_SUPERUSER -> getString(R.string.user_rank_superuser)
             Rank.RANK_STAFF -> getString(R.string.user_rank_staff)
@@ -68,16 +68,11 @@ class UserFragment : DialogFragment(), FailureHandler {
                 R.id.block -> block()
                 R.id.unblock -> unblock()
                 R.id.report -> report()
+                R.id.ban -> ban()
                 else -> return@setOnMenuItemClickListener false
             }
 
             return@setOnMenuItemClickListener true
-        }
-
-        if (args.profile.rank > Rank.RANK_CITIZEN) {
-            bd.toolbar.menu.findItem(R.id.report).isVisible = false
-        } else cvm.currentUser.launchCollect {
-            bd.toolbar.menu.findItem(R.id.report).isVisible = it?.profile?.id != args.profile.id
         }
 
         cvm.currentUser.combine(vm.blocked) { u, b -> (u?.profile?.id != args.profile.id) to b }
@@ -85,6 +80,19 @@ class UserFragment : DialogFragment(), FailureHandler {
                 bd.toolbar.menu.findItem(R.id.block).isVisible = !blocked && isNotCurrentUser
                 bd.toolbar.menu.findItem(R.id.unblock).isVisible = blocked && isNotCurrentUser
             }
+
+        cvm.currentUser.launchCollect {
+            val isNotCurrentUser = it?.profile?.id != args.profile.id
+            val currentRank = it?.profile?.rank ?: Rank.RANK_UNSPECIFIED
+            bd.toolbar.menu.findItem(R.id.report).isVisible =
+                args.profile.rank == currentRank && isNotCurrentUser
+        }
+
+        cvm.currentUser.combine(vm.banned) { currentUser, banned ->
+            val isNotCurrentUser = currentUser?.profile?.id != args.profile.id
+            val currentRank = currentUser?.profile?.rank ?: Rank.RANK_UNSPECIFIED
+            return@combine args.profile.rank < currentRank && isNotCurrentUser && !banned
+        }.launchCollect { canBan -> bd.toolbar.menu.findItem(R.id.ban).isVisible = canBan }
     }
 
     private fun setupContent() {
@@ -119,5 +127,34 @@ class UserFragment : DialogFragment(), FailureHandler {
             vm.report()
             showBasicSnackbar(R.string.user_report_success_message)
         }
+    }
+
+    private fun ban() = AlertDialog.Builder(requireContext())
+        .setTitle(R.string.user_ban_title)
+        .setItems(R.array.user_ban_actions) { _, i ->
+            when (i) {
+                0 -> launch {
+                    vm.ban(Sentence.WEEK)
+                    finishBan()
+                }
+                1 -> launch {
+                    vm.ban(Sentence.MONTH)
+                    finishBan()
+                }
+                else -> showChoiceAlert(R.string.user_ban_permanently_title, null) {
+                    launch {
+                        vm.ban(Sentence.PERMANENTLY)
+                        finishBan()
+                    }
+                }
+            }
+        }
+        .create()
+        .show()
+
+    private suspend fun finishBan() {
+        showBasicSnackbar(R.string.user_ban_success_message)
+        bd.toolbar.menu.findItem(R.id.ban).isVisible = false
+        icvm.update(args.position, args.profile.toBuilder().setIsBanned(true).build())
     }
 }

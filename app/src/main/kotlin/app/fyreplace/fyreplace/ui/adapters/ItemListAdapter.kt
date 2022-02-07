@@ -56,6 +56,11 @@ abstract class ItemListAdapter<Item : Any, VH : ItemListAdapter.Holder>(context:
         notifyItemRangeInserted(start, items.size)
     }
 
+    fun update(position: Int, item: Item) {
+        items[position] = item
+        notifyItemChanged(position)
+    }
+
     fun remove(position: Int) {
         items.removeAt(position)
         notifyItemRemoved(position)

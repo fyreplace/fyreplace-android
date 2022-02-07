@@ -64,6 +64,10 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
         mItems.add(position, item)
     }
 
+    fun update(position: Int, item: Item) {
+        mItems[position] = item
+    }
+
     fun remove(position: Int) {
         mItems.removeAt(position)
     }
