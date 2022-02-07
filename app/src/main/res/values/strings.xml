@@ -145,9 +145,9 @@
     <string name="blocked_users_avatar_desc">Avatar</string>
     <string name="blocked_users_unblock">Unblock</string>
 
-    <string name="image_selector_dialog_file">Pick a file</string>
-    <string name="image_selector_dialog_photo">Take a picture</string>
-    <string name="image_selector_dialog_remove">Remove</string>
+    <string name="image_selector_action_file">Pick a file</string>
+    <string name="image_selector_action_photo">Take a picture</string>
+    <string name="image_selector_action_remove">Remove</string>
     <string name="image_selector_snackbar_upload">Uploading…</string>
     <string name="image_failure_unknown_type">Unknown file type</string>
     <string name="image_failure_file_size">Image file too large</string>

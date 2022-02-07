@@ -64,12 +64,12 @@ class ImageSelector<F>(
 
     fun showImageChooser(@StringRes title: Int, canRemove: Boolean) {
         val items = mutableListOf(
-            R.string.image_selector_dialog_file,
-            R.string.image_selector_dialog_photo
+            R.string.image_selector_action_file,
+            R.string.image_selector_action_photo
         )
 
         if (canRemove) {
-            items += R.string.image_selector_dialog_remove
+            items += R.string.image_selector_action_remove
         }
 
         MaterialAlertDialogBuilder(fragment.requireContext())
@@ -77,9 +77,9 @@ class ImageSelector<F>(
             .setItems(items.map { fragment.resources.getString(it) }.toTypedArray()) { _, i ->
                 fragment.launch {
                     when (items[i]) {
-                        R.string.image_selector_dialog_remove -> fragment.onImageRemoved()
-                        R.string.image_selector_dialog_file -> selectImage(false)
-                        R.string.image_selector_dialog_photo -> selectImage(true)
+                        R.string.image_selector_action_remove -> fragment.onImageRemoved()
+                        R.string.image_selector_action_file -> selectImage(false)
+                        R.string.image_selector_action_photo -> selectImage(true)
                         else -> throw IllegalArgumentException()
                     }
                 }
