@@ -34,6 +34,8 @@
     <string name="main_error_timestamp_exceeded_message">This URL has expired.</string>
     <string name="main_error_invalid_token_title">Invalid token</string>
     <string name="main_error_invalid_token_message">The token in the URL is not correctly formed.</string>
+    <string name="main_error_invalid_connection_token_title">Invalid connection token</string>
+    <string name="main_error_invalid_connection_token_message">The connection token is not valid; maybe it has already been used.</string>
     <string name="main_error_user_not_pending_title">Account already activated</string>
     <string name="main_error_user_not_pending_message">This account has already been activated.</string>
 

@@ -116,6 +116,7 @@ class MainActivity :
             else -> R.string.error_authentication_title to R.string.error_authentication_message
         }
         Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
             "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
