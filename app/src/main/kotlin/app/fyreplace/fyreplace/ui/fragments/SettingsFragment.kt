@@ -80,10 +80,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
                 if (user != null) {
                     setOnPreferenceClickListener {
-                        imageSelector.showImageChooser(
-                            R.string.settings_avatar_desc,
-                            canRemove = true
-                        )
+                        imageSelector.showImageChooser(R.string.avatar, canRemove = true)
                         return@setOnPreferenceClickListener true
                     }
                 } else {

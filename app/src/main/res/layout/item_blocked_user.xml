@@ -12,7 +12,7 @@
         android:layout_marginStart="@dimen/gap"
         android:layout_marginTop="@dimen/gap_narrow"
         android:layout_marginBottom="@dimen/gap_narrow"
-        android:contentDescription="@string/blocked_users_avatar_desc"
+        android:contentDescription="@string/avatar"
         android:src="@drawable/ic_baseline_account_circle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
