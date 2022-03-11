@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
+import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.ItemChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 
-abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemListAdapter.Holder> :
+abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { bd.root }

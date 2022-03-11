@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.ClipDescription
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -9,43 +10,39 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.databinding.FragmentPostBinding
 import app.fyreplace.fyreplace.grpc.formatDate
+import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
+import app.fyreplace.protos.Comment
+import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Rank
 import kotlinx.coroutines.flow.combine
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PostFragment : BaseFragment(R.layout.fragment_post) {
-    override val rootView by lazy { bd.root }
+class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>() {
+    override val vm by viewModel<PostViewModel> { parametersOf(args.post) }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<ArchiveChangeViewModel>()
-    private val vm by viewModel<PostViewModel> { parametersOf(args.post) }
     private val args by navArgs<PostFragmentArgs>()
-    private lateinit var bd: FragmentPostBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = super.onCreateView(inflater, container, savedInstanceState)?.also {
-        bd = FragmentPostBinding.bind(it)
-        bd.lifecycleOwner = viewLifecycleOwner
-        bd.recycler.setHasFixedSize(true)
         setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setToolbarInfo(args.post.author, args.post.dateCreated.formatDate())
-        val adapter = PostAdapter(args.post)
-        bd.recycler.adapter = adapter
-        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { adapter.updatePost(it) }
+        val postAdapter = adapter as PostAdapter
+        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
 
         if (args.post.isPreview) {
             launch { vm.retrieve(args.post.id) }
@@ -99,6 +96,8 @@ class PostFragment : BaseFragment(R.layout.fragment_post) {
 
         return true
     }
+
+    override fun makeAdapter(context: Context) = PostAdapter(args.post)
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {

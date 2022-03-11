@@ -11,7 +11,7 @@ val viewModelsModule = module {
     viewModel { ArchiveChangeViewModel() }
     viewModel { ArchiveViewModel(get()) }
     viewModel { DraftsViewModel() }
-    viewModel { PostViewModel(it.get(), get()) }
+    viewModel { PostViewModel(it.get(), get(), get()) }
     viewModel { UserViewModel(it.get(), get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { LoginViewModel(get(), get()) }

@@ -15,14 +15,14 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.protobuf.ByteString
 
-class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.Holder>(context) {
+class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemHolder>(context) {
     override fun getItemViewType(position: Int) =
         when (items[position].getChapters(0)?.text?.length) {
             null, 0 -> TYPE_IMAGE
             else -> TYPE_TEXT
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TEXT -> TextHolder(inflater.inflate(R.layout.item_post_text, parent, false))
@@ -31,7 +31,7 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.H
         }
     }
 
-    override fun onBindViewHolder(holder: Holder, position: Int) {
+    override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         val post = items[position]
         val chapter = post.getChapters(0)
@@ -48,6 +48,7 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.H
                     if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
                 )
             }
+
             is ImageHolder -> Glide.with(context)
                 .load(chapter.image.url)
                 .transform(CenterCrop(), RoundedCorners(cornerSize))
@@ -63,11 +64,11 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemListAdapter.H
         const val TYPE_IMAGE = 2
     }
 
-    class TextHolder(itemView: View) : ItemListAdapter.Holder(itemView) {
+    class TextHolder(itemView: View) : ItemHolder(itemView) {
         val preview: TextView = itemView.findViewById(R.id.text_preview)
     }
 
-    class ImageHolder(itemView: View) : ItemListAdapter.Holder(itemView) {
+    class ImageHolder(itemView: View) : ItemHolder(itemView) {
         val preview: ImageView = itemView.findViewById(R.id.image_preview)
     }
 }

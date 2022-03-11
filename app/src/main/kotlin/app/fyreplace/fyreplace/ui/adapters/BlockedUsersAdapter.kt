@@ -31,7 +31,7 @@ class BlockedUsersAdapter(context: Context) :
         unblockListener = listener
     }
 
-    class Holder(itemView: View) : ItemListAdapter.Holder(itemView) {
+    class Holder(itemView: View) : ItemHolder(itemView) {
         val unblock: Button = itemView.findViewById(R.id.unblock)
     }
 }

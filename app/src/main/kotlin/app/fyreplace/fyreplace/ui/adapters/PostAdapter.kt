@@ -3,38 +3,47 @@ package app.fyreplace.fyreplace.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.view.doOnLayout
-import androidx.core.view.updateLayoutParams
-import androidx.core.widget.ContentLoadingProgressBar
-import androidx.core.widget.TextViewCompat
-import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.res.ResourcesCompat
 import app.fyreplace.fyreplace.R
-import app.fyreplace.protos.Chapter
+import app.fyreplace.fyreplace.ui.views.ChaptersView
+import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
-import com.bumptech.glide.Glide
+import app.fyreplace.protos.Profile
+import com.google.protobuf.Timestamp
 
-class PostAdapter(private var post: Post) : RecyclerView.Adapter<PostAdapter.ViewHolder>() {
-    override fun getItemCount() = 1
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return ViewHolder(inflater.inflate(R.layout.item_post_chapters, parent, false))
+class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
+    override fun getItemViewType(position: Int) = when {
+        position == 0 -> TYPE_CHAPTERS
+        items.containsKey(position - 1) -> TYPE_COMMENT
+        else -> TYPE_COMMENT_LOADER
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val context = holder.itemView.context
-        holder.container.removeAllViews()
-
-        if (post.isPreview) {
-            val loader = ContentLoadingProgressBar(context)
-            loader.isIndeterminate = true
-            return holder.container.addView(loader)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (viewType) {
+            TYPE_CHAPTERS -> ChaptersHolder(
+                inflater.inflate(R.layout.item_chapters, parent, false)
+            )
+            TYPE_COMMENT -> CommentHolder(
+                inflater.inflate(R.layout.item_comment, parent, false)
+            )
+            TYPE_COMMENT_LOADER -> ItemHolder(
+                inflater.inflate(R.layout.item_comment_loader, parent, false)
+            )
+            else -> throw RuntimeException()
         }
+    }
 
-        post.chaptersList.forEach(holder::addChapter)
+    override fun onBindViewHolder(holder: ItemHolder, position: Int) {
+        when (holder) {
+            is ChaptersHolder -> holder.chapters.setPost(post)
+            is CommentHolder -> {
+                val comment = items[position - 1] ?: return
+                holder.setup(comment.author, comment.dateCreated)
+                holder.content.text = comment.text
+            }
+        }
     }
 
     fun updatePost(post: Post) {
@@ -42,59 +51,28 @@ class PostAdapter(private var post: Post) : RecyclerView.Adapter<PostAdapter.Vie
         notifyItemChanged(0)
     }
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val container: LinearLayout = itemView.findViewById(R.id.container)
+    companion object {
+        const val TYPE_CHAPTERS = 1
+        const val TYPE_COMMENT = 2
+        const val TYPE_COMMENT_LOADER = 3
+    }
 
-        fun addChapter(chapter: Chapter) {
-            val view = if (chapter.hasImage()) makeImageView(chapter)
-            else makeTextView(chapter)
+    private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
+        val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
+    }
 
-            view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                topMargin = itemView.resources.getDimensionPixelSize(R.dimen.gap_narrow)
-                bottomMargin = topMargin
-            }
+    private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
+        val content: TextView = itemView.findViewById(R.id.content)
 
-            container.addView(view)
-        }
-
-        private fun makeTextView(chapter: Chapter): View {
-            val text = TextView(itemView.context)
-            val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
-            else R.style.TextAppearance_Material3_BodyLarge
-
-            text.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-            text.text = chapter.text
-            text.setTextIsSelectable(true)
-            TextViewCompat.setTextAppearance(text, style)
-            text.layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                marginStart = itemView.resources.getDimensionPixelSize(R.dimen.gap)
-                marginEnd = marginStart
-            }
-
-            return text
-        }
-
-        private fun makeImageView(chapter: Chapter): View {
-            val image = ImageView(itemView.context)
-            Glide.with(itemView.context)
-                .load(chapter.image.url)
-                .into(image)
-
-            image.layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+        override fun setup(profile: Profile, timestamp: Timestamp?) {
+            super.setup(profile, timestamp)
+            username?.setTextColor(
+                ResourcesCompat.getColor(
+                    itemView.resources,
+                    if (profile.id == post.author.id) R.color.seed else R.color.md_theme_onBackground,
+                    itemView.context.theme
+                )
             )
-
-            container.doOnLayout {
-                val width = container.measuredWidth
-                val height = width * chapter.image.height / chapter.image.width
-                image.updateLayoutParams { this.height = height }
-            }
-
-            return image
         }
     }
 }

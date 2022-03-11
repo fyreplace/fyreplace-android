@@ -6,12 +6,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
 abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
-    private var maybePages = MutableSharedFlow<Page?>(replay = 10)
+    private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var nextCursor = cursor { isNext = true }
     private var state = ItemsState.INCOMPLETE
     private val mItems = mutableListOf<Item>()
-    protected val pages
-        get() = flow { maybePages.takeWhile { it != null }.mapNotNull { it }.collect(::emit) }
+    protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     protected open val forward = false
     val items: List<Item> = mItems
 

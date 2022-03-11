@@ -27,7 +27,7 @@
     <fragment
         android:id="@+id/fragment_post"
         android:name="app.fyreplace.fyreplace.ui.fragments.PostFragment"
-        tools:layout="@layout/fragment_post">
+        tools:layout="@layout/fragment_item_random_access_list">
         <argument
             android:name="post"
             app:argType="app.fyreplace.protos.Post" />
