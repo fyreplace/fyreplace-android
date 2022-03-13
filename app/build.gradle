@@ -6,6 +6,47 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
 }
 
+def getVersionNumber = { ->
+    def versionNumber = new ByteArrayOutputStream()
+    def branch = new ByteArrayOutputStream()
+    def versionNumberSuffix = '3'
+
+    exec {
+        commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+        standardOutput = branch
+    }
+
+    exec {
+        commandLine 'git', 'rev-list', '--count', 'HEAD'
+        standardOutput = versionNumber
+    }
+
+    switch (branch.toString().split('/')[0].trim()) {
+        case 'develop':
+            versionNumberSuffix = '0'
+            break
+        case 'hotfix':
+            versionNumberSuffix = '1'
+            break
+        case 'release':
+            versionNumberSuffix = '2'
+            break
+    }
+
+    return Integer.parseInt(versionNumber.toString().trim() + versionNumberSuffix)
+}
+
+def getVersionString = { ->
+    def versionString = new ByteArrayOutputStream()
+
+    exec {
+        commandLine 'git', 'describe', '--tags', '--dirty'
+        standardOutput = versionString
+    }
+
+    return versionString.toString().substring(1).trim()
+}
+
 android {
     compileSdk configuration.compileSdk
 
@@ -13,14 +54,13 @@ android {
         applicationId "app.fyreplace.fyreplace"
         minSdk configuration.minSdk
         targetSdk configuration.targetSdk
-        versionCode 1
-        versionName "0.0.1"
+        versionCode getVersionNumber()
+        versionName getVersionString()
         vectorDrawables.useSupportLibrary true
     }
 
     buildTypes {
         debug {
-            versionNameSuffix "-dev"
             applicationIdSuffix ".dev"
         }
 
