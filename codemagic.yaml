@@ -1,0 +1,27 @@
+workflows:
+  build-main:
+    name: Build
+    instance_type: mac_mini
+    triggering:
+      events:
+        - push
+        - tag
+      branch_patterns:
+        - include: true
+          pattern: develop
+        - include: true
+          pattern: hotfix/*
+        - include: true
+          pattern: release/*
+    environment:
+      groups:
+        - keystore
+    scripts:
+      - name: Unshallow repository
+        script: git fetch --unshallow
+      - name: Set up keystore
+        script: echo $KEYSTORE | base64 --decode > $KEYSTORE_PATH
+      - name: Build bundle
+        script: ./gradlew bundleGoogleMainRelease
+    artifacts:
+      - app/build/outputs/**/**/*.aab
