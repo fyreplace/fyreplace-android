@@ -16,6 +16,7 @@ workflows:
     environment:
       groups:
         - keystore
+        - google-cloud
     scripts:
       - name: Unshallow repository
         script: git fetch --unshallow
@@ -25,3 +26,7 @@ workflows:
         script: ./gradlew bundleGoogleMainRelease
     artifacts:
       - app/build/outputs/**/**/*.aab
+    publishing:
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: alpha
