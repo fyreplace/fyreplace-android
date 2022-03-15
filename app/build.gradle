@@ -40,7 +40,7 @@ def getVersionString = { ->
     def versionString = new ByteArrayOutputStream()
 
     exec {
-        commandLine 'git', 'describe', '--tags', '--dirty'
+        commandLine 'git', 'describe', '--tags'
         standardOutput = versionString
     }
 
