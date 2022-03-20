@@ -34,6 +34,23 @@
             app:summary="@string/settings_theme_auto"
             app:title="@string/settings_theme" />
     </PreferenceCategory>
+    <PreferenceCategory
+        app:isPreferenceVisible="false"
+        app:key="information"
+        app:title="@string/settings_information">
+        <Preference
+            app:icon="@drawable/ic_baseline_shield"
+            app:isPreferenceVisible="false"
+            app:key="privacy_policy"
+            app:summary="@string/settings_privacy_policy_desc"
+            app:title="@string/legal_privacy_policy" />
+        <Preference
+            app:icon="@drawable/ic_baseline_gavel"
+            app:isPreferenceVisible="false"
+            app:key="terms_of_service"
+            app:summary="@string/settings_terms_of_service_desc"
+            app:title="@string/legal_terms_of_service" />
+    </PreferenceCategory>
     <PreferenceCategory app:title="@string/settings_account">
         <Preference
             app:icon="@drawable/ic_baseline_how_to_reg"

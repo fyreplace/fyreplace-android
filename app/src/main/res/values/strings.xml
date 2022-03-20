@@ -8,6 +8,10 @@
     <string name="anonymous"><i>Anonymous</i></string>
     <string name="banned"><i>Banned user</i></string>
     <string name="avatar">User avatar</string>
+    <string name="legal_privacy_policy">Privacy policy</string>
+    <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.app/privacy-policy.html</string>
+    <string name="legal_terms_of_service">Terms of service</string>
+    <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.app/terms-of-service.html</string>
 
     <string name="error_title">Unknown error: %1$s</string>
     <string name="error_unavailable_title">Service unavailable</string>
@@ -106,6 +110,9 @@
         <item>@string/settings_theme_light_value</item>
         <item>@string/settings_theme_dark_value</item>
     </string-array>
+    <string name="settings_information">Information</string>
+    <string name="settings_privacy_policy_desc">See how your data is used</string>
+    <string name="settings_terms_of_service_desc">See the rules of the app</string>
     <string name="settings_account">Account</string>
     <string name="settings_register">Register</string>
     <string name="settings_register_desc">Create a new account</string>

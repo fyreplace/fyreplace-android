@@ -34,6 +34,8 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         super.onViewCreated(view, savedInstanceState)
         vm.setIsRegistering(args.isRegistering)
         bd.button.setOnClickListener { registerOrLogin() }
+        bd.privacyPolicy.setOnClickListener { browse(R.string.legal_privacy_policy_url) }
+        bd.termsOfService.setOnClickListener { browse(R.string.legal_terms_of_service_url) }
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {

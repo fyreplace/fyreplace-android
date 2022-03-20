@@ -84,6 +84,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:orientation="horizontal"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}">
+
+                <Button
+                    android:id="@+id/privacy_policy"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/legal_privacy_policy" />
+
+                <Button
+                    android:id="@+id/terms_of_service"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/legal_terms_of_service" />
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 </layout>

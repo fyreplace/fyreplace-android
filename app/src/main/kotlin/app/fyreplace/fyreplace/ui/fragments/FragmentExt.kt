@@ -1,5 +1,8 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import android.content.Intent
+import android.net.Uri
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.protos.Profile
@@ -15,3 +18,6 @@ fun Fragment.setupTransitions() {
 fun Fragment.setToolbarInfo(profile: Profile, subtitle: String) {
     (activity as? MainActivity)?.setToolbarInfo(profile, subtitle)
 }
+
+fun Fragment.browse(@StringRes resId: Int) =
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(resId))))
