@@ -1,5 +1,9 @@
+# Conscrypt
+-dontwarn org.conscrypt.**
+
 # gRPC/javax
 -dontwarn javax.naming.**
+-keep public class app.fyreplace.protos.**
 
 # Glide
 
