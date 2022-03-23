@@ -17,6 +17,9 @@ workflows:
       groups:
         - keystore
         - google-cloud
+    cache:
+      cache_paths:
+        - ~/.gradle/caches
     scripts:
       - name: Unshallow repository
         script: git fetch --unshallow
