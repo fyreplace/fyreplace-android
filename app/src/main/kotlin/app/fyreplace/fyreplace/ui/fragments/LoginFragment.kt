@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
@@ -55,9 +57,31 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             "invalid_username" -> R.string.login_error_invalid_username_title to R.string.login_error_invalid_username_message
+            "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
             else -> R.string.error_validation_title to R.string.error_validation_message
         }
         else -> null
+    }
+
+    override fun onFailure(failure: Throwable) {
+        val error = Status.fromThrowable(failure)
+
+        if (error.code == Status.Code.CANCELLED) {
+            val passwordLayout = layoutInflater.inflate(R.layout.login_password_input, null, false)
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.login_password)
+                .setView(passwordLayout)
+                .setPositiveButton(R.string.ok) { _, _ ->
+                    launch {
+                        vm.login(passwordLayout.findViewById<EditText>(R.id.password).text.toString())
+                        findNavController().navigateUp()
+                    }
+                }
+                .setNegativeButton(R.string.cancel, null)
+                .show()
+        } else {
+            super.onFailure(failure)
+        }
     }
 
     override fun getTitle() =

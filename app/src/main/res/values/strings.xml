@@ -132,6 +132,7 @@
 
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>
+    <string name="login_password">Password</string>
     <string name="login_logo_desc">Logo</string>
     <string name="login_register_title">Check your email</string>
     <string name="login_register_message">A confirmation email has been sent to your address. It contains a link that will allow you to confirm your registration.</string>
@@ -157,6 +158,8 @@
     <string name="login_error_invalid_email_message">This email address is not valid.</string>
     <string name="login_error_invalid_username_title">Invalid username</string>
     <string name="login_error_invalid_username_message">This username is not valid. Usernames can contain letters, numbers, and @/./+/-/_ characters.</string>
+    <string name="login_error_invalid_password_title">Invalid password</string>
+    <string name="login_error_invalid_password_message">This password does not match the email.</string>
 
     <string name="blocked_users_empty">No blocked users</string>
     <string name="blocked_users_unblock">Unblock</string>

@@ -1,9 +1,13 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.annotation.IntegerRes
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.data.storeAuthToken
+import app.fyreplace.fyreplace.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpcKt
+import app.fyreplace.protos.connectionCredentials
 import app.fyreplace.protos.email
 import app.fyreplace.protos.userCreation
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +16,7 @@ import kotlinx.coroutines.flow.combine
 
 class LoginViewModel(
     private val resources: Resources,
+    private val preferences: SharedPreferences,
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub
 ) : BaseViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
@@ -53,6 +58,17 @@ class LoginViewModel(
             accountStub.sendConnectionEmail(email {
                 email = this@LoginViewModel.email.value
             })
+        }
+    }
+
+    suspend fun login(password: String) {
+        executeWhileLoading {
+            val token = accountStub.connect(connectionCredentials {
+                email = this@LoginViewModel.email.value
+                this.password = password
+                client = defaultClient
+            })
+            preferences.storeAuthToken(token)
         }
     }
 
