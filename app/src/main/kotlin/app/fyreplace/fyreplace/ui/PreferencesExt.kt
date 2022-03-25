@@ -15,7 +15,7 @@ fun SharedPreferences.applySettings(context: Context) {
         context.getString(R.string.settings_theme_light_value) -> AppCompatDelegate.MODE_NIGHT_NO
         context.getString(R.string.settings_theme_dark_value) -> AppCompatDelegate.MODE_NIGHT_YES
         else -> when {
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.P -> AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
             else -> AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
         }
     }
