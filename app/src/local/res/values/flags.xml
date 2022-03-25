@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <bool name="link_auto_verify">false</bool>
+    <bool name="clear_text_communication">true</bool>
 </resources>

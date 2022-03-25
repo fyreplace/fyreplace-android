@@ -93,8 +93,10 @@ android {
     productFlavors {
         google { dimension "freedom" }
         libre { dimension "freedom" }
-        dev { dimension "environment" }
-        main { dimension "environment" }
+
+        local { dimension "environment" }
+        development { dimension "environment" }
+        production { dimension "environment" }
     }
 
     buildFeatures {

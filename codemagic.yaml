@@ -26,7 +26,7 @@ workflows:
       - name: Set up keystore
         script: echo $KEYSTORE | base64 --decode > $KEYSTORE_PATH
       - name: Build bundle
-        script: ./gradlew bundleGoogleMainRelease
+        script: ./gradlew bundleGoogleProductionRelease
     artifacts:
       - app/build/outputs/**/**/*.aab
     publishing:
