@@ -39,6 +39,10 @@
                 <data
                     android:host="fyreplace.link"
                     android:scheme="https" />
+
+                <data
+                    android:host="*"
+                    android:scheme="fyreplace" />
             </intent-filter>
         </activity>
 
