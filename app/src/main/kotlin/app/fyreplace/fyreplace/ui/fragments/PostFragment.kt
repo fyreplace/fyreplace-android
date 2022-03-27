@@ -3,13 +3,13 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.content.ClipDescription
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.*
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.data.makeShareUri
 import app.fyreplace.fyreplace.grpc.formatDate
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
@@ -52,13 +52,14 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_post, menu)
-
-        val postUri = "https://fyreplace.link/posts/${args.post.id}"
-        val shareIntent = Intent(Intent.ACTION_SEND).apply {
-            type = ClipDescription.MIMETYPE_TEXT_PLAIN
-            putExtra(Intent.EXTRA_TEXT, Uri.parse(postUri))
+        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
+            val postUri = makeShareUri(resources, "p", post.id)
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = ClipDescription.MIMETYPE_TEXT_PLAIN
+                putExtra(Intent.EXTRA_TEXT, postUri)
+            }
+            menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
         }
-        menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
 
         vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
             menu.findItem(R.id.subscribe).isVisible = !subscribed
