@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.github.triplet.play' version '3.7.0'
 }
 
 def getVersionNumber = { ->
@@ -132,6 +133,10 @@ protobuf {
             }
         }
     }
+}
+
+play {
+    serviceAccountCredentials.set(file("google-service-account.json"))
 }
 
 dependencies {

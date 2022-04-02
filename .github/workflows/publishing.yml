@@ -1,0 +1,93 @@
+name: Publishing
+
+on:
+  push:
+    branches:
+      - develop
+      - hotfix/*
+      - release/*
+    tags:
+      - v*.*.*
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    environment: main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Cache gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: echo $KEYSTORE_B64 | base64 --decode > /tmp/fyreplace.keystore
+
+      - name: Build APK
+        env:
+          KEYSTORE_PATH: /tmp/fyreplace.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: app.fyreplace.fyreplace
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleLibreProductionRelease
+
+      - name: Build bundle
+        env:
+          KEYSTORE_PATH: /tmp/fyreplace.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: app.fyreplace.fyreplace
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew bundleGoogleProductionRelease
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Fyreplace.apk
+          path: app/build/outputs/apk/libreProduction/release/*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Fyreplace.aab
+          path: app/build/outputs/bundle/googleProductionRelease/*.aab
+          if-no-files-found: error
+
+  publish:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    environment: main
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Set up artifact directory
+        run: mkdir /tmp/fyreplace
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: Fyreplace.aab
+          path: /tmp/fyreplace
+
+      - name: Set up Google service account
+        env:
+          GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 }}
+        run: echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 | base64 --decode > app/google-service-account.json
+
+      - name: Upload bundle to Google Play
+        run: ./gradlew --no-daemon publishBundle --artifact-dir /tmp/fyreplace
