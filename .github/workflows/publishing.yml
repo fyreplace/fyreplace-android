@@ -42,7 +42,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: app.fyreplace.fyreplace
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleLibreProductionRelease
+        run: ./gradlew assembleLibreRelease
 
       - name: Build bundle
         env:
@@ -50,18 +50,18 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: app.fyreplace.fyreplace
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleGoogleProductionRelease
+        run: ./gradlew bundleGoogleRelease
 
       - uses: actions/upload-artifact@v3
         with:
           name: Fyreplace.apk
-          path: app/build/outputs/apk/libreProduction/release/*.apk
+          path: app/build/outputs/apk/libre/release/*.apk
           if-no-files-found: error
 
       - uses: actions/upload-artifact@v3
         with:
           name: Fyreplace.aab
-          path: app/build/outputs/bundle/googleProductionRelease/*.aab
+          path: app/build/outputs/bundle/googleRelease/*.aab
           if-no-files-found: error
 
   publish:

@@ -75,7 +75,14 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix ".dbg"
+        }
+
+        development {
             applicationIdSuffix ".dev"
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         release {
@@ -89,15 +96,11 @@ android {
         }
     }
 
-    flavorDimensions "freedom", "environment"
+    flavorDimensions "freedom"
 
     productFlavors {
         google { dimension "freedom" }
         libre { dimension "freedom" }
-
-        local { dimension "environment" }
-        development { dimension "environment" }
-        production { dimension "environment" }
     }
 
     buildFeatures {
