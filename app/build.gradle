@@ -26,10 +26,10 @@ def getVersionNumber = { ->
         case 'develop':
             versionNumberSuffix = '0'
             break
-        case 'hotfix':
+        case 'release':
             versionNumberSuffix = '1'
             break
-        case 'release':
+        case 'hotfix':
             versionNumberSuffix = '2'
             break
     }
