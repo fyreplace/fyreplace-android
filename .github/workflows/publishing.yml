@@ -36,25 +36,31 @@ jobs:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
         run: echo $KEYSTORE_B64 | base64 --decode > /tmp/fyreplace.keystore
 
-      - name: Build APK
+      - name: Build APKs
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: app.fyreplace.fyreplace
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew assembleLibreRelease
+        run: ./gradlew assembleRelease
 
-      - name: Build bundle
+      - name: Build bundles
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: app.fyreplace.fyreplace
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleGoogleRelease
+        run: ./gradlew bundleRelease
 
       - uses: actions/upload-artifact@v3
         with:
           name: Fyreplace.apk
+          path: app/build/outputs/apk/google/release/*.apk
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Fyreplace-libre.apk
           path: app/build/outputs/apk/libre/release/*.apk
           if-no-files-found: error
 
@@ -62,6 +68,12 @@ jobs:
         with:
           name: Fyreplace.aab
           path: app/build/outputs/bundle/googleRelease/*.aab
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Fyreplace-libre.aab
+          path: app/build/outputs/bundle/libreRelease/*.aab
           if-no-files-found: error
 
   publish:
@@ -90,4 +102,4 @@ jobs:
         run: echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 | base64 --decode > app/google-service-account.json
 
       - name: Upload bundle to Google Play
-        run: ./gradlew --no-daemon publishBundle --artifact-dir /tmp/fyreplace
+        run: ./gradlew --no-daemon publishGoogleReleaseBundle --artifact-dir /tmp/fyreplace
