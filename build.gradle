@@ -24,7 +24,7 @@ buildscript {
                 ],
                 conscrypt: '2.5.2',
                 glide    : '4.13.1',
-                gradle   : '7.1.2',
+                gradle   : '7.1.3',
                 grpc     : [
                         base  : '1.45.1',
                         kotlin: '1.2.1',
