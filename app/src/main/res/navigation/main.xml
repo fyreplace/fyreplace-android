@@ -23,7 +23,7 @@
         android:id="@+id/fragment_drafts"
         android:name="app.fyreplace.fyreplace.ui.fragments.DraftsFragment"
         android:label="@string/destination_drafts"
-        tools:layout="@layout/fragment_drafts" />
+        tools:layout="@layout/fragment_item_list" />
     <fragment
         android:id="@+id/fragment_post"
         android:name="app.fyreplace.fyreplace.ui.fragments.PostFragment"

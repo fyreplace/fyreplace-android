@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.ui.resolveTextAttribute
+import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
@@ -15,14 +17,13 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.protobuf.ByteString
 
-class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemHolder>(context) {
+class ArchiveAdapter(context: Context) :
+    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(context) {
     override fun getItemViewType(position: Int) =
-        when (items[position].getChapters(0)?.text?.length) {
-            null, 0 -> TYPE_IMAGE
-            else -> TYPE_TEXT
-        }
+        if (items[position].getChapters(0).text.isEmpty()) TYPE_IMAGE
+        else TYPE_TEXT
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChapterHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_TEXT -> TextHolder(inflater.inflate(R.layout.item_post_text, parent, false))
@@ -31,30 +32,12 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemHolder>(conte
         }
     }
 
-    override fun onBindViewHolder(holder: ItemHolder, position: Int) {
+    override fun onBindViewHolder(holder: ChapterHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         val post = items[position]
         val chapter = post.getChapters(0)
-        val context = holder.itemView.context
         holder.setup(post.author, post.dateCreated)
-        val cornerSize = context.resources.getDimensionPixelSize(R.dimen.corner_size)
-
-        when (holder) {
-            is TextHolder -> {
-                holder.preview.text = chapter.text
-                holder.preview.setLines(if (chapter.isTitle) 1 else textMaxLines)
-                TextViewCompat.setTextAppearance(
-                    holder.preview,
-                    if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
-                )
-            }
-
-            is ImageHolder -> Glide.with(context)
-                .load(chapter.image.url)
-                .transform(CenterCrop(), RoundedCorners(cornerSize))
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .into(holder.preview)
-        }
+        holder.setup(chapter)
     }
 
     override fun getItemId(item: Post): ByteString = item.id
@@ -64,11 +47,41 @@ class ArchiveAdapter(context: Context) : ItemListAdapter<Post, ItemHolder>(conte
         const val TYPE_IMAGE = 2
     }
 
-    class TextHolder(itemView: View) : ItemHolder(itemView) {
-        val preview: TextView = itemView.findViewById(R.id.text_preview)
+    abstract class ChapterHolder(itemView: View) : ItemHolder(itemView) {
+        protected val textAppearanceNormal =
+            itemView.context.theme.resolveTextAttribute(R.attr.textAppearanceBodyLarge)
+        protected val textAppearanceTitle =
+            itemView.context.theme.resolveTextAttribute(R.attr.textAppearanceHeadlineSmall)
+        protected val textMaxLines =
+            itemView.context.resources.getInteger(R.integer.item_list_text_max_lines)
+
+        abstract fun setup(chapter: Chapter)
     }
 
-    class ImageHolder(itemView: View) : ItemHolder(itemView) {
+    open class TextHolder(itemView: View) : ChapterHolder(itemView) {
+        val preview: TextView = itemView.findViewById(R.id.text_preview)
+
+        override fun setup(chapter: Chapter) {
+            preview.text = chapter.text
+            preview.setLines(if (chapter.isTitle) 1 else textMaxLines)
+            TextViewCompat.setTextAppearance(
+                preview,
+                if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
+            )
+        }
+    }
+
+    open class ImageHolder(itemView: View) : ChapterHolder(itemView) {
         val preview: ImageView = itemView.findViewById(R.id.image_preview)
+        protected val cornerSize =
+            itemView.context.resources.getDimensionPixelSize(R.dimen.corner_size)
+
+        override fun setup(chapter: Chapter) {
+            Glide.with(itemView.context)
+                .load(chapter.image.url)
+                .transform(CenterCrop(), RoundedCorners(cornerSize))
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(preview)
+        }
     }
 }

@@ -2,18 +2,10 @@ package app.fyreplace.fyreplace.ui.adapters
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
-import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.resolveTextAttribute
 import com.google.protobuf.ByteString
 
 abstract class ItemListAdapter<Item : Any, VH : ItemHolder>(context: Context) :
     RecyclerView.Adapter<VH>() {
-    protected val textAppearanceNormal =
-        context.theme.resolveTextAttribute(R.attr.textAppearanceBodyLarge)
-    protected val textAppearanceTitle =
-        context.theme.resolveTextAttribute(R.attr.textAppearanceHeadlineSmall)
-    protected val textMaxLines =
-        context.resources.getInteger(R.integer.item_list_text_max_lines)
     protected val items = mutableListOf<Item>()
     private var itemListener: ((item: Item, position: Int) -> Unit)? = null
 
