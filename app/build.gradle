@@ -1,36 +1,36 @@
 plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
-    id 'androidx.navigation.safeargs.kotlin'
-    id 'com.google.protobuf'
-    id 'com.github.triplet.play'
+    id "com.android.application"
+    id "kotlin-android"
+    id "kotlin-kapt"
+    id "androidx.navigation.safeargs.kotlin"
+    id "com.google.protobuf"
+    id "com.github.triplet.play"
 }
 
 def getVersionNumber = { ->
     def versionNumber = new ByteArrayOutputStream()
     def branch = new ByteArrayOutputStream()
-    def versionNumberSuffix = '3'
+    def versionNumberSuffix = "3"
 
     exec {
-        commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
+        commandLine "git", "rev-parse", "--abbrev-ref", "HEAD"
         standardOutput = branch
     }
 
     exec {
-        commandLine 'git', 'rev-list', '--count', 'HEAD'
+        commandLine "git", "rev-list", "--count", "HEAD"
         standardOutput = versionNumber
     }
 
-    switch (branch.toString().split('/')[0].trim()) {
-        case 'develop':
-            versionNumberSuffix = '0'
+    switch (branch.toString().split("/")[0].trim()) {
+        case "develop":
+            versionNumberSuffix = "0"
             break
-        case 'release':
-            versionNumberSuffix = '1'
+        case "release":
+            versionNumberSuffix = "1"
             break
-        case 'hotfix':
-            versionNumberSuffix = '2'
+        case "hotfix":
+            versionNumberSuffix = "2"
             break
     }
 
@@ -41,7 +41,7 @@ def getVersionString = { ->
     def versionString = new ByteArrayOutputStream()
 
     exec {
-        commandLine 'git', 'describe', '--tags'
+        commandLine "git", "describe", "--tags"
         standardOutput = versionString
     }
 
@@ -82,13 +82,13 @@ android {
             applicationIdSuffix ".dev"
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
 
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 
             if (System.getenv()["KEYSTORE_PATH"]) {
                 signingConfig signingConfigs.release
@@ -110,16 +110,16 @@ android {
 
 protobuf {
     protoc {
-        artifact = libraries.protoc
+        artifact = libs.protobuf.protoc.get()
     }
 
     plugins {
         grpc {
-            artifact = libraries.grpc.protoc
+            artifact = libs.grpc.protoc.java.get()
         }
 
         grpckt {
-            artifact = libraries.grpc.protocKotlin
+            artifact = libs.grpc.protoc.kotlin.get()
         }
     }
 
@@ -143,31 +143,26 @@ play {
 }
 
 dependencies {
-    kapt processors.glide
-    implementation libraries.kotlinx.coroutines
-    implementation libraries.androidx.appCompat
-    implementation libraries.androidx.constraintLayout
-    implementation libraries.androidx.coordinatorLayout
-    implementation libraries.androidx.core
-    implementation libraries.androidx.fragment
-    implementation libraries.androidx.lifecycle.runtime
-    implementation libraries.androidx.lifecycle.viewModel
-    implementation libraries.androidx.navigation.fragment
-    implementation libraries.androidx.navigation.ui
-    implementation libraries.androidx.paging
-    implementation libraries.androidx.preference
-    implementation libraries.androidx.security
-    implementation libraries.androidx.swipeRefreshLayout
-    implementation libraries.glide.base
-    implementation libraries.glide.okHttp
-    implementation libraries.grpc.okHttp
-    implementation libraries.grpc.protobuf
-    implementation libraries.grpc.stub
-    implementation libraries.grpc.stubKotlin
-    implementation libraries.javax.annotation
-    implementation libraries.koin
-    implementation libraries.material
-    implementation libraries.protobuf
-    googleImplementation libraries.play.basement
-    libreImplementation libraries.conscrypt
+    implementation libs.bundles.androidx.lifecycle
+    implementation libs.bundles.androidx.navigation
+    implementation libs.bundles.androidx.recyclerview
+    implementation libs.bundles.glide
+    implementation libs.bundles.grpc
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintlayout
+    implementation libs.androidx.coordinatorlayout
+    implementation libs.androidx.core
+    implementation libs.androidx.exifinterface
+    implementation libs.androidx.fragment
+    implementation libs.androidx.paging
+    implementation libs.androidx.preference
+    implementation libs.androidx.security
+    implementation libs.androidx.swiperefreshlayout
+    implementation libs.google.material
+    implementation libs.javax.annotation
+    implementation libs.koin
+    implementation libs.kotlinx.coroutines
+    googleImplementation libs.google.play.services
+    libreImplementation libs.conscrypt
+    kapt libs.glide.glide.compiler
 }
