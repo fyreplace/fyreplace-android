@@ -36,9 +36,8 @@ class DraftsAdapter(context: Context) :
     override fun onBindViewHolder(holder: ArchiveAdapter.ChapterHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         val post = items[position]
-        holder.itemView.isClickable = post.chaptersCount > 0
 
-        if (holder.itemView.isClickable) {
+        if (post.chaptersCount > 0) {
             holder.setup(post.getChapters(0))
             (holder as DraftHolder).setup(post)
         }
