@@ -39,7 +39,7 @@ dependencyResolutionManagement {
             library("grpc.protoc-java", "io.grpc", "protoc-gen-grpc-java").versionRef("grpc")
             library("grpc.protoc-kotlin", "io.grpc", "protoc-gen-grpc-kotlin").version("1.2.1:jdk7@jar")
             library("javax.annotation", "javax.annotation:javax.annotation-api:1.3.2")
-            library("koin", "io.insert-koin:koin-android:3.1.5")
+            library("koin", "io.insert-koin:koin-android:3.1.6")
             library("kotlinx.coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1-native-mt")
             library("protobuf.protobuf-kotlin", "com.google.protobuf", "protobuf-kotlin").versionRef("protobuf")
             library("protobuf.protoc", "com.google.protobuf", "protoc").versionRef("protobuf")
