@@ -96,15 +96,15 @@ android {
         }
     }
 
+    buildFeatures {
+        dataBinding true
+    }
+
     flavorDimensions "freedom"
 
     productFlavors {
         google { dimension "freedom" }
         libre { dimension "freedom" }
-    }
-
-    buildFeatures {
-        dataBinding true
     }
 }
 
