@@ -49,6 +49,7 @@ def getVersionString = { ->
 }
 
 android {
+    namespace 'app.fyreplace.fyreplace'
     compileSdk configuration.compileSdk
 
     defaultConfig {
@@ -74,12 +75,9 @@ android {
     }
 
     buildTypes {
-        debug {
-            applicationIdSuffix ".dbg"
-        }
+        debug {}
 
         development {
-            applicationIdSuffix ".dev"
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -96,9 +94,7 @@ android {
         }
     }
 
-    buildFeatures {
-        dataBinding true
-    }
+    buildFeatures { dataBinding true }
 
     flavorDimensions "freedom"
 
