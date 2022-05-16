@@ -1,11 +1,13 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
@@ -13,6 +15,7 @@ import app.fyreplace.fyreplace.databinding.FragmentLoginBinding
 import app.fyreplace.fyreplace.ui.TitleChoosing
 import app.fyreplace.fyreplace.ui.hideSoftKeyboard
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
+import com.google.android.material.color.MaterialColors
 import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -30,6 +33,9 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         bd = FragmentLoginBinding.bind(it)
         bd.lifecycleOwner = viewLifecycleOwner
         bd.vm = vm
+        val seed = ResourcesCompat.getColor(resources, R.color.seed, it.context.theme)
+        bd.logo.imageTintList =
+            ColorStateList.valueOf(MaterialColors.harmonizeWithPrimary(it.context, seed))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
