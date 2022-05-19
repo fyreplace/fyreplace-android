@@ -23,7 +23,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
     protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
 
-    abstract fun makeAdapter(context: Context): ItemRandomAccessListAdapter<Item, VH>
+    abstract fun makeAdapter(): ItemRandomAccessListAdapter<Item, VH>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +47,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = makeAdapter(view.context)
+        adapter = makeAdapter()
         adapter.resetTo(vm.items)
         bd.recycler.adapter = adapter
         vm.totalSize.launchCollect(viewLifecycleOwner.lifecycleScope, adapter::setTotalSize)

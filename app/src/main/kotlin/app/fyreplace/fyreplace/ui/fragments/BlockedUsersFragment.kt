@@ -16,7 +16,7 @@ class BlockedUsersFragment : ItemListFragment<Profile, Profiles, BlockedUsersAda
     override val vm by viewModel<BlockedUsersViewModel>()
     override val emptyText by lazy { getString(R.string.blocked_users_empty) }
 
-    override fun makeAdapter(context: Context) = BlockedUsersAdapter(context).apply {
+    override fun makeAdapter() = BlockedUsersAdapter().apply {
         setOnClickListener { profile, position ->
             val directions =
                 BlockedUsersFragmentDirections.actionUser(profile = profile, position = position)

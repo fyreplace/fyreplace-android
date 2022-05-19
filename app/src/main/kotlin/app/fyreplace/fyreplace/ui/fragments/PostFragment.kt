@@ -98,7 +98,7 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         return true
     }
 
-    override fun makeAdapter(context: Context) = PostAdapter(args.post)
+    override fun makeAdapter() = PostAdapter(args.post)
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {

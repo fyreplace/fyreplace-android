@@ -16,5 +16,5 @@ class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolde
     override val vm by viewModel<DraftsViewModel>()
     override val emptyText by lazy { getString(R.string.drafts_empty) }
 
-    override fun makeAdapter(context: Context) = DraftsAdapter(context)
+    override fun makeAdapter() = DraftsAdapter()
 }

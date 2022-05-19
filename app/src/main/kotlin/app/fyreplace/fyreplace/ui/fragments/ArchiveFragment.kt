@@ -16,7 +16,7 @@ class ArchiveFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHold
     override val vm by viewModel<ArchiveViewModel>()
     override val emptyText by lazy { getString(R.string.archive_empty) }
 
-    override fun makeAdapter(context: Context) = ArchiveAdapter(context).apply {
+    override fun makeAdapter() = ArchiveAdapter().apply {
         setOnClickListener { post, position ->
             val directions = ArchiveFragmentDirections.actionPost(post = post, position = position)
             findNavController().navigate(directions)

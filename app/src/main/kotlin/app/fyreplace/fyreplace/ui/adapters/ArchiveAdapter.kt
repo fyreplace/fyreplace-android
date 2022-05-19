@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.ui.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +16,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.protobuf.ByteString
 
-class ArchiveAdapter(context: Context) :
-    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(context) {
+class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
     override fun getItemViewType(position: Int) =
         if (items[position].getChapters(0).text.isEmpty()) TYPE_IMAGE
         else TYPE_TEXT

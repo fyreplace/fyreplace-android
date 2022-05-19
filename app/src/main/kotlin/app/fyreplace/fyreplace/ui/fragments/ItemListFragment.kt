@@ -26,7 +26,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     private lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
 
-    abstract fun makeAdapter(context: Context): ItemListAdapter<Item, VH>
+    abstract fun makeAdapter(): ItemListAdapter<Item, VH>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = makeAdapter(view.context)
+        adapter = makeAdapter()
         adapter.addAll(vm.items)
         bd.emptyText.isVisible = vm.items.isEmpty()
         bd.recycler.adapter = adapter

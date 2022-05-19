@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.ui.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,8 +9,7 @@ import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
 
-class DraftsAdapter(context: Context) :
-    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(context) {
+class DraftsAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
     override fun getItemViewType(position: Int): Int {
         val post = items[position]
         return when (post.chaptersCount) {

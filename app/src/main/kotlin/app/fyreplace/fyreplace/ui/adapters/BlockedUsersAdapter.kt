@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.ui.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,8 +8,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Profile
 import com.google.protobuf.ByteString
 
-class BlockedUsersAdapter(context: Context) :
-    ItemListAdapter<Profile, BlockedUsersAdapter.Holder>(context) {
+class BlockedUsersAdapter : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>() {
     private var unblockListener: ((profile: Profile, position: Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
