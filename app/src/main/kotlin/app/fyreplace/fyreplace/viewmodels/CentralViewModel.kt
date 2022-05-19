@@ -2,8 +2,10 @@ package app.fyreplace.fyreplace.viewmodels
 
 import android.content.SharedPreferences
 import app.fyreplace.fyreplace.isNotNullOrBlank
+import app.fyreplace.protos.Image
 import app.fyreplace.protos.User
 import app.fyreplace.protos.UserServiceGrpcKt
+import app.fyreplace.protos.copy
 import com.google.protobuf.empty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,14 +26,6 @@ class CentralViewModel(
         onSharedPreferenceChanged(preferences, "auth.token")
     }
 
-    fun addBlockedUser() {
-        mBlockedUsers.value = mBlockedUsers.value + 1
-    }
-
-    fun removeBlockedUser() {
-        mBlockedUsers.value = mBlockedUsers.value - 1
-    }
-
     override fun onCleared() {
         super.onCleared()
         preferences.unregisterOnSharedPreferenceChangeListener(this)
@@ -47,5 +41,17 @@ class CentralViewModel(
         mCurrentUser.value =
             if (isAuthenticated.value) userStub.retrieveMe(empty { }) else null
         mBlockedUsers.value = currentUser.value?.blockedUsers ?: 0
+    }
+
+    fun setAvatar(image: Image) {
+        mCurrentUser.value = mCurrentUser.value?.copy { profile = profile.copy { avatar = image } }
+    }
+
+    fun addBlockedUser() {
+        mBlockedUsers.value = mBlockedUsers.value + 1
+    }
+
+    fun removeBlockedUser() {
+        mBlockedUsers.value = mBlockedUsers.value - 1
     }
 }

@@ -196,7 +196,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     }
 
     override suspend fun onImage(image: ByteArray) {
-        vm.updateAvatar(image)
+        cvm.setAvatar(vm.updateAvatar(image))
         cvm.retrieveMe()
     }
 
