@@ -17,6 +17,7 @@ import app.fyreplace.fyreplace.viewmodels.Sentence
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -129,7 +130,7 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
     }
 
-    private fun ban() = AlertDialog.Builder(requireContext())
+    private fun ban() = MaterialAlertDialogBuilder(requireContext())
         .setTitle(R.string.user_ban_title)
         .setItems(R.array.user_ban_actions) { _, i ->
             when (i) {

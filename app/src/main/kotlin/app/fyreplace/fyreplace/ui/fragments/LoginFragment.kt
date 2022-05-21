@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,6 +15,7 @@ import app.fyreplace.fyreplace.ui.TitleChoosing
 import app.fyreplace.fyreplace.ui.hideSoftKeyboard
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -74,7 +74,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
 
         if (error.code == Status.Code.CANCELLED) {
             val passwordLayout = layoutInflater.inflate(R.layout.login_password_input, null, false)
-            AlertDialog.Builder(requireContext())
+            MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.login_password)
                 .setView(passwordLayout)
                 .setPositiveButton(R.string.ok) { _, _ ->

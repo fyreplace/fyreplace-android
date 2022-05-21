@@ -9,7 +9,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +23,7 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
 import app.fyreplace.fyreplace.views.ImagePreference
 import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.grpc.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -192,7 +192,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         preferenceManager.preferenceDataStore = SettingsDataStore()
-        setPreferencesFromResource(R.xml.preference_settings, rootKey)
+        setPreferencesFromResource(R.xml.preferences_settings, rootKey)
     }
 
     override suspend fun onImage(image: ByteArray) {
@@ -220,7 +220,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     }
 
     private fun startDelete() {
-        val alert = AlertDialog.Builder(requireContext())
+        val alert = MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.settings_account_deletion_title)
             .setMessage(R.string.settings_account_deletion_message)
             .setPositiveButton(R.string.settings_delete) { _, _ -> delete() }
