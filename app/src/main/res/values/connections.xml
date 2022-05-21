@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="file_provider_authority" translatable="false">app.fyreplace.fyreplace.provider</string>
     <integer name="api_port">50051</integer>
     <string name="link_host" translatable="false">fyreplace.link</string>
     <string name="link_path_account_confirm_activation">/AccountService.ConfirmActivation</string>
