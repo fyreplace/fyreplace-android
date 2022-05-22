@@ -72,7 +72,7 @@ class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
     open class ImageHolder(itemView: View) : ChapterHolder(itemView) {
         private val preview: ImageView = itemView.findViewById(R.id.image_preview)
         private val cornerSize =
-            itemView.context.resources.getDimensionPixelSize(R.dimen.corner_size)
+            itemView.context.resources.getDimensionPixelSize(R.dimen.image_corner_radius)
 
         override fun setup(chapter: Chapter) {
             Glide.with(itemView.context)

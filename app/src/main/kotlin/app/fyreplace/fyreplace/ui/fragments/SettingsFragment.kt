@@ -3,9 +3,6 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.text.InputFilter
-import android.text.InputType
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,15 +10,18 @@ import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.preference.*
+import androidx.preference.Preference
+import androidx.preference.PreferenceDataStore
+import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.applySettings
+import app.fyreplace.fyreplace.ui.views.BioPreference
+import app.fyreplace.fyreplace.ui.views.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
-import app.fyreplace.fyreplace.views.ImagePreference
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.grpc.Status
@@ -36,7 +36,6 @@ import org.koin.core.parameter.parametersOf
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.max
 
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
     override lateinit var rootView: View
@@ -88,50 +87,16 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 }
             }
 
-            findPreference<EditTextPreference>("password")?.run {
-                setOnBindEditTextListener {
-                    it.inputType =
-                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                    it.setText("")
-                }
-            }
+            findPreference<Preference>("email")?.run { summary = user?.email }
 
-            findPreference<EditTextPreference>("email")?.run {
-                summary = user?.email
-                setOnBindEditTextListener {
-                    it.inputType =
-                        InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
-                    it.setText("")
-                }
-            }
-
-            findPreference<EditTextPreference>("bio")?.run {
+            findPreference<BioPreference>("bio")?.run {
                 summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
-                setOnBindEditTextListener {
-                    val maxSize = resources.getInteger(R.integer.settings_bio_max_size)
-                    it.minLines = resources.getInteger(R.integer.settings_bio_min_lines)
-                    it.gravity = Gravity.TOP or Gravity.START
-                    it.filters = arrayOf(InputFilter.LengthFilter(maxSize))
-                    it.setText(user?.bio)
-                }
-            }
-
-            findPreference<ListPreference>("theme")?.run {
-                val themeValues = resources.getStringArray(R.array.settings_theme_values)
-                val themeNames = resources.getStringArray(R.array.settings_theme)
-                val themeValue = preferences.getString(
-                    "settings.theme",
-                    getString(R.string.settings_theme_auto_value)
-                )
-                val themeIndex = max(themeValues.indexOf(themeValue), 0)
-                value = themeValues[themeIndex]
-                summary = themeNames[themeIndex]
+                setInitialText(user?.bio ?: "")
             }
 
             for ((preference, needsUser) in mapOf(
                 "register" to false,
                 "login" to false,
-                "password" to true,
                 "email" to true,
                 "bio" to true,
                 "blocked_users" to true,
@@ -261,6 +226,14 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     }
 
     private inner class SettingsDataStore : PreferenceDataStore() {
+        override fun getString(key: String?, defValue: String?) = when (key) {
+            "theme" -> preferences.getString(
+                "settings.theme",
+                getString(R.string.settings_theme_auto_value)
+            )
+            else -> super.getString(key, defValue)
+        }
+
         override fun putString(key: String, value: String?) = launch {
             when (key) {
                 "email" -> {
@@ -276,11 +249,6 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 }
                 "theme" -> {
                     preferences.edit { putString("settings.theme", value) }
-                    val themeIndex = resources
-                        .getStringArray(R.array.settings_theme_values)
-                        .indexOf(value)
-                    findPreference<ListPreference>("theme")?.summary =
-                        resources.getStringArray(R.array.settings_theme)[themeIndex]
                     preferences.applySettings(requireContext())
                 }
                 else -> super.putString(key, value)

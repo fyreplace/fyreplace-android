@@ -3,7 +3,7 @@
     <dimen name="gap">16dp</dimen>
     <dimen name="gap_narrow">8dp</dimen>
     <dimen name="gap_wide">32dp</dimen>
-    <dimen name="corner_size">4dp</dimen>
+    <dimen name="image_corner_radius">4dp</dimen>
     <dimen name="avatar_size">40dp</dimen>
     <dimen name="preference_image_size">50dp</dimen>
     <dimen name="form_width">240dp</dimen>

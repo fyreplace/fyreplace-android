@@ -28,14 +28,14 @@ class LoginViewModel(
     val canProceed = isRegistering
         .combine(username) { registering, username ->
             !registering || username.between(
-                R.integer.login_username_min_size,
-                R.integer.login_username_max_size
+                R.integer.username_min_size,
+                R.integer.username_max_size
             )
         }
         .combine(email) { res, email ->
             res && email.between(
-                R.integer.login_email_min_size,
-                R.integer.login_email_max_size
+                R.integer.email_min_size,
+                R.integer.email_max_size
             )
         }
         .asState(false)

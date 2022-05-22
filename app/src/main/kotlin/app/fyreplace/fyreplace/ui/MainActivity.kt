@@ -93,6 +93,22 @@ class MainActivity :
     override fun onSupportNavigateUp() =
         navHost.navController.navigateUp() || super.onSupportNavigateUp()
 
+    override fun getContext() = this
+
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.UNAUTHENTICATED -> when (error.description) {
+            "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
+            "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
+            else -> R.string.error_authentication_title to R.string.error_authentication_message
+        }
+        Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
+            "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
+            else -> R.string.error_permission_title to R.string.error_permission_message
+        }
+        else -> null
+    }
+
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
             bd.toolbar.setTitle(fragment.getTitle())
@@ -107,20 +123,6 @@ class MainActivity :
         if (destination.id in TOP_LEVEL_DESTINATIONS) {
             setToolbarInfo(null, null)
         }
-    }
-
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.UNAUTHENTICATED -> when (error.description) {
-            "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
-            "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
-            else -> R.string.error_authentication_title to R.string.error_authentication_message
-        }
-        Status.Code.PERMISSION_DENIED -> when (error.description) {
-            "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
-            "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
-            else -> R.string.error_permission_title to R.string.error_permission_message
-        }
-        else -> null
     }
 
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {

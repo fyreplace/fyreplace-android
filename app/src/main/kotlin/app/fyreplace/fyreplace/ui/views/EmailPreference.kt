@@ -1,13 +1,19 @@
-package app.fyreplace.fyreplace.views
+package app.fyreplace.fyreplace.ui.views
 
 import android.content.Context
-import android.text.TextUtils
+import android.text.InputType
 import android.util.AttributeSet
-import android.widget.TextView
-import androidx.preference.EditTextPreference
-import androidx.preference.PreferenceViewHolder
+import app.fyreplace.fyreplace.R
 
-class TextBlockPreference : EditTextPreference {
+class EmailPreference : TextInputPreference {
+    override val dialogTitle = R.string.settings_email
+    override val textInputConfig by lazy {
+        TextInputConfig(
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            context.resources.getInteger(R.integer.email_max_size)
+        )
+    }
+
     @Suppress("unused")
     constructor(context: Context) : super(context)
 
@@ -28,12 +34,4 @@ class TextBlockPreference : EditTextPreference {
         defStyleAttr: Int,
         defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
-
-    override fun onBindViewHolder(holder: PreferenceViewHolder) {
-        super.onBindViewHolder(holder)
-        (holder.findViewById(android.R.id.summary) as? TextView)?.run {
-            maxLines = 3
-            ellipsize = TextUtils.TruncateAt.END
-        }
-    }
 }

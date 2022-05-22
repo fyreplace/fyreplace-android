@@ -44,14 +44,14 @@
                 android:layout_marginTop="@dimen/gap"
                 android:hint="@string/login_email"
                 app:counterEnabled="true"
-                app:counterMaxLength="@integer/login_email_max_size"
+                app:counterMaxLength="@integer/email_max_size"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:maxLength="@integer/login_email_max_size"
+                    android:maxLength="@integer/email_max_size"
                     android:text="@={vm.email}" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,14 +61,14 @@
                 android:hint="@string/login_username"
                 android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}"
                 app:counterEnabled="true"
-                app:counterMaxLength="@integer/login_username_max_size"
+                app:counterMaxLength="@integer/username_max_size"
                 app:endIconMode="clear_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:maxLength="@integer/login_username_max_size"
+                    android:maxLength="@integer/username_max_size"
                     android:text="@={vm.username}" />
             </com.google.android.material.textfield.TextInputLayout>
 
