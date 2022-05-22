@@ -74,7 +74,7 @@
 
             <Button
                 android:id="@+id/button"
-                style="@style/Widget.Material3.Button.UnelevatedButton"
+                style="?attr/materialButtonStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.canProceed}"
@@ -95,14 +95,14 @@
 
                 <Button
                     android:id="@+id/privacy_policy"
-                    style="@style/Widget.Material3.Button.TextButton"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/legal_privacy_policy" />
 
                 <Button
                     android:id="@+id/terms_of_service"
-                    style="@style/Widget.Material3.Button.TextButton"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/legal_terms_of_service" />

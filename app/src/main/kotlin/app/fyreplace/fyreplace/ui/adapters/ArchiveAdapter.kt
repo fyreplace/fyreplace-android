@@ -57,7 +57,7 @@ class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
     }
 
     open class TextHolder(itemView: View) : ChapterHolder(itemView) {
-        val preview: TextView = itemView.findViewById(R.id.text_preview)
+        private val preview: TextView = itemView.findViewById(R.id.text_preview)
 
         override fun setup(chapter: Chapter) {
             preview.text = chapter.text
@@ -70,8 +70,8 @@ class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
     }
 
     open class ImageHolder(itemView: View) : ChapterHolder(itemView) {
-        val preview: ImageView = itemView.findViewById(R.id.image_preview)
-        protected val cornerSize =
+        private val preview: ImageView = itemView.findViewById(R.id.image_preview)
+        private val cornerSize =
             itemView.context.resources.getDimensionPixelSize(R.dimen.corner_size)
 
         override fun setup(chapter: Chapter) {

@@ -15,6 +15,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 @Suppress("unused")
 class ChaptersView : LinearLayout {
@@ -87,6 +88,7 @@ class ChaptersView : LinearLayout {
         val image = ImageView(context)
         Glide.with(context)
             .load(chapter.image.url)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(image)
 
         image.layoutParams = LayoutParams(

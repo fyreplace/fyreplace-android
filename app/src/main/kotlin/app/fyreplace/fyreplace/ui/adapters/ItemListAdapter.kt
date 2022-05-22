@@ -3,8 +3,7 @@ package app.fyreplace.fyreplace.ui.adapters
 import androidx.recyclerview.widget.RecyclerView
 import com.google.protobuf.ByteString
 
-abstract class ItemListAdapter<Item : Any, VH : ItemHolder> :
-    RecyclerView.Adapter<VH>() {
+abstract class ItemListAdapter<Item : Any, VH : ItemHolder> : RecyclerView.Adapter<VH>() {
     protected val items = mutableListOf<Item>()
     private var itemListener: ((item: Item, position: Int) -> Unit)? = null
 

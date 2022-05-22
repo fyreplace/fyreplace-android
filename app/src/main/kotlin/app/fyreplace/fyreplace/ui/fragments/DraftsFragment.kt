@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import android.content.Context
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.DraftsAdapter
