@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.ClipDescription
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*

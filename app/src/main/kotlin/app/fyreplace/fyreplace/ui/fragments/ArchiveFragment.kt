@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import android.content.Context
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
