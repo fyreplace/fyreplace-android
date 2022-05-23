@@ -11,20 +11,18 @@ import app.fyreplace.protos.connectionCredentials
 import app.fyreplace.protos.email
 import app.fyreplace.protos.userCreation
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 
 class LoginViewModel(
     private val resources: Resources,
     private val preferences: SharedPreferences,
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub
-) : BaseViewModel() {
+) : LoadingViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
-    private val mIsLoading = MutableStateFlow(false)
-    val isRegistering: StateFlow<Boolean> = mIsRegistering
+    val isRegistering = mIsRegistering.asStateFlow()
     val email = MutableStateFlow("")
     val username = MutableStateFlow("")
-    val isLoading: StateFlow<Boolean> = mIsLoading
     val canProceed = isRegistering
         .combine(username) { registering, username ->
             !registering || username.between(
@@ -44,41 +42,26 @@ class LoginViewModel(
         mIsRegistering.value = registering
     }
 
-    suspend fun register() {
-        executeWhileLoading {
-            accountStub.create(userCreation {
-                email = this@LoginViewModel.email.value
-                username = this@LoginViewModel.username.value
-            })
-        }
+    suspend fun register(): Unit = whileLoading {
+        accountStub.create(userCreation {
+            email = this@LoginViewModel.email.value
+            username = this@LoginViewModel.username.value
+        })
     }
 
-    suspend fun login() {
-        executeWhileLoading {
-            accountStub.sendConnectionEmail(email {
-                email = this@LoginViewModel.email.value
-            })
-        }
+    suspend fun login(): Unit = whileLoading {
+        accountStub.sendConnectionEmail(email {
+            email = this@LoginViewModel.email.value
+        })
     }
 
-    suspend fun login(password: String) {
-        executeWhileLoading {
-            val token = accountStub.connect(connectionCredentials {
-                email = this@LoginViewModel.email.value
-                this.password = password
-                client = defaultClient
-            })
-            preferences.storeAuthToken(token)
-        }
-    }
-
-    private suspend fun executeWhileLoading(block: suspend () -> Unit) {
-        try {
-            mIsLoading.value = true
-            block()
-        } finally {
-            mIsLoading.value = false
-        }
+    suspend fun login(password: String): Unit = whileLoading {
+        val token = accountStub.connect(connectionCredentials {
+            email = this@LoginViewModel.email.value
+            this.password = password
+            client = defaultClient
+        })
+        preferences.storeAuthToken(token)
     }
 
     private fun String.between(@IntegerRes a: Int, @IntegerRes b: Int) =

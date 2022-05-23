@@ -4,9 +4,11 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.updateLayoutParams
@@ -123,6 +125,8 @@ class MainActivity :
         if (destination.id in TOP_LEVEL_DESTINATIONS) {
             setToolbarInfo(null, null)
         }
+
+        bd.primaryAction.hide()
     }
 
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {
@@ -151,6 +155,12 @@ class MainActivity :
 
         bd.toolbar.isTitleCentered = profile == null
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
+    }
+
+    fun setPrimaryAction(@DrawableRes icon: Int, listener: View.OnClickListener) {
+        bd.primaryAction.setImageResource(icon)
+        bd.primaryAction.setOnClickListener(listener)
+        bd.primaryAction.show()
     }
 
     private fun handleIntent(intent: Intent?) {

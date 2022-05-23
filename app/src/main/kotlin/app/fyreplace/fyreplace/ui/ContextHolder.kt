@@ -31,6 +31,17 @@ interface ContextHolder {
             .show()
     }
 
+    fun showSelectionAlert(@ArrayRes choices: Int, action: (selected: Int) -> Unit) {
+        val choicesList = getContext()?.resources?.getStringArray(choices) ?: return
+        showSelectionAlert(choicesList, action)
+    }
+
+    fun showSelectionAlert(choices: Array<String>, action: (selected: Int) -> Unit) {
+        MaterialAlertDialogBuilder(getContext() ?: return)
+            .setItems(choices) { _, choice -> action(choice) }
+            .show()
+    }
+
     fun showSingleChoiceAlert(
         @StringRes title: Int,
         @ArrayRes choices: Int,

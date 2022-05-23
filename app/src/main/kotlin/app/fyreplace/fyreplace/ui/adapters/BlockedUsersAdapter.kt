@@ -20,7 +20,12 @@ class BlockedUsersAdapter : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>
     override fun onBindViewHolder(holder: Holder, position: Int) {
         super.onBindViewHolder(holder, position)
         holder.setup(items[position], null)
-        holder.unblock.setOnClickListener { unblockListener?.invoke(items[position], position) }
+        holder.unblock.setOnClickListener {
+            unblockListener?.invoke(
+                items[holder.bindingAdapterPosition],
+                holder.bindingAdapterPosition
+            )
+        }
     }
 
     override fun getItemId(item: Profile): ByteString = item.id

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="app.fyreplace.fyreplace.viewmodels.MainViewModel" />
+    </data>
 
     <LinearLayout
         android:id="@+id/root"
@@ -38,6 +48,15 @@
                 app:defaultNavHost="true"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:navGraph="@navigation/main" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/primary_action"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="@dimen/gap"
+                android:clipToOutline="true"
+                tools:ignore="UnusedAttribute" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView

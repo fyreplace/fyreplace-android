@@ -23,11 +23,28 @@
         android:id="@+id/fragment_drafts"
         android:name="app.fyreplace.fyreplace.ui.fragments.DraftsFragment"
         android:label="@string/destination_drafts"
-        tools:layout="@layout/fragment_item_list" />
+        tools:layout="@layout/fragment_item_list">
+        <action
+            android:id="@+id/action_draft"
+            app:destination="@id/fragment_draft" />
+    </fragment>
     <fragment
         android:id="@+id/fragment_post"
         android:name="app.fyreplace.fyreplace.ui.fragments.PostFragment"
         tools:layout="@layout/fragment_item_random_access_list">
+        <argument
+            android:name="post"
+            app:argType="app.fyreplace.protos.Post" />
+        <argument
+            android:name="position"
+            android:defaultValue="-1"
+            app:argType="integer" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_draft"
+        android:name="app.fyreplace.fyreplace.ui.fragments.DraftFragment"
+        android:label=""
+        tools:layout="@layout/fragment_draft">
         <argument
             android:name="post"
             app:argType="app.fyreplace.protos.Post" />

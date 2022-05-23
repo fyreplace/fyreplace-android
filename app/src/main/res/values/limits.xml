@@ -9,4 +9,5 @@
     <integer name="username_max_size">50</integer>
     <integer name="password_min_size">8</integer>
     <integer name="password_max_size">100</integer>
+    <integer name="chapter_text_max_size">500</integer>
 </resources>

@@ -9,6 +9,7 @@ import app.fyreplace.protos.copy
 import com.google.protobuf.empty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class CentralViewModel(
     private val preferences: SharedPreferences,
@@ -17,9 +18,9 @@ class CentralViewModel(
     private val mIsAuthenticated = MutableStateFlow(false)
     private val mCurrentUser = MutableStateFlow<User?>(null)
     private val mBlockedUsers = MutableStateFlow(0)
-    val isAuthenticated: StateFlow<Boolean> = mIsAuthenticated
-    val currentUser: StateFlow<User?> = mCurrentUser
-    val blockedUsers: StateFlow<Int> = mBlockedUsers
+    val isAuthenticated = mIsAuthenticated.asStateFlow()
+    val currentUser = mCurrentUser.asStateFlow()
+    val blockedUsers = mBlockedUsers.asStateFlow()
 
     init {
         preferences.registerOnSharedPreferenceChangeListener(this)

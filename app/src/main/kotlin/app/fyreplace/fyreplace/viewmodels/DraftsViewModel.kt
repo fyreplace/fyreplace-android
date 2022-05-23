@@ -1,9 +1,8 @@
 package app.fyreplace.fyreplace.viewmodels
 
-import app.fyreplace.protos.Cursor
-import app.fyreplace.protos.Post
-import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.Posts
+import app.fyreplace.protos.*
+import com.google.protobuf.ByteString
+import com.google.protobuf.Empty
 
 class DraftsViewModel(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
     ItemListViewModel<Post, Posts>() {
@@ -14,4 +13,8 @@ class DraftsViewModel(private val postStub: PostServiceGrpcKt.PostServiceCorouti
     override fun getNextCursor(items: Posts): Cursor = items.next
 
     override fun getItemList(items: Posts): List<Post> = items.postsList
+
+    suspend fun create() = postStub.create(Empty.getDefaultInstance())
+
+    suspend fun delete(postId: ByteString) = postStub.delete(id { id = postId })
 }

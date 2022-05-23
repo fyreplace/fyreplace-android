@@ -56,8 +56,8 @@ class DraftsAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
             val parts = parts ?: return
             parts.text = parts.resources.getQuantityString(
                 R.plurals.drafts_item_parts,
-                post.chaptersCount,
-                post.chaptersCount
+                post.chapterCount,
+                post.chapterCount
             )
         }
     }

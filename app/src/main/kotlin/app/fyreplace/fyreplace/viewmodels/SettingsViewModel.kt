@@ -13,7 +13,7 @@ class SettingsViewModel(
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
 ) : BaseViewModel() {
-    suspend fun updateAvatar(image: ByteArray?) = userStub.updateAvatar(image.imageChunkFlow())
+    suspend fun updateAvatar(image: ByteArray?) = userStub.updateAvatar(image.imageChunkFlow)
 
     suspend fun sendEmailUpdateEmail(address: String) {
         userStub.sendEmailUpdateEmail(email { email = address })

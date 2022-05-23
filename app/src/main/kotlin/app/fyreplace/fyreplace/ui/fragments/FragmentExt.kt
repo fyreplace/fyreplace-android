@@ -15,9 +15,5 @@ fun Fragment.setupTransitions() {
     reenterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, false)
 }
 
-fun Fragment.setToolbarInfo(profile: Profile, subtitle: String) {
-    (activity as? MainActivity)?.setToolbarInfo(profile, subtitle)
-}
-
 fun Fragment.browse(@StringRes resId: Int) =
     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(getString(resId))))

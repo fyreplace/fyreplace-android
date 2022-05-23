@@ -5,7 +5,7 @@ import com.google.protobuf.ByteString
 
 abstract class ItemListAdapter<Item : Any, VH : ItemHolder> : RecyclerView.Adapter<VH>() {
     protected val items = mutableListOf<Item>()
-    private var itemListener: ((item: Item, position: Int) -> Unit)? = null
+    private var itemListener: ItemClickListener<Item>? = null
 
     init {
         setHasStableIds(true)
@@ -17,12 +17,25 @@ abstract class ItemListAdapter<Item : Any, VH : ItemHolder> : RecyclerView.Adapt
 
     override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(holder: VH, position: Int) =
-        holder.itemView.setOnClickListener { itemListener?.invoke(items[position], position) }
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        holder.itemView.setOnClickListener {
+            itemListener?.onItemClick(
+                items[holder.bindingAdapterPosition],
+                holder.bindingAdapterPosition
+            )
+        }
+        holder.itemView.setOnLongClickListener {
+            itemListener?.onItemLongClick(
+                items[holder.bindingAdapterPosition],
+                holder.bindingAdapterPosition
+            )
+            return@setOnLongClickListener itemListener != null
+        }
+    }
 
     abstract fun getItemId(item: Item): ByteString
 
-    fun setOnClickListener(listener: (item: Item, position: Int) -> Unit) {
+    fun setOnClickListener(listener: ItemClickListener<Item>) {
         itemListener = listener
     }
 
@@ -42,14 +55,21 @@ abstract class ItemListAdapter<Item : Any, VH : ItemHolder> : RecyclerView.Adapt
         notifyItemChanged(position)
     }
 
-    fun remove(position: Int) {
-        items.removeAt(position)
+    fun remove(position: Int): Item {
+        val item = items.removeAt(position)
         notifyItemRemoved(position)
+        return item
     }
 
     fun removeAll() {
         val count = items.size
         items.clear()
         notifyItemRangeRemoved(0, count)
+    }
+
+    interface ItemClickListener<Item> {
+        fun onItemClick(item: Item, position: Int)
+
+        fun onItemLongClick(item: Item, position: Int) = Unit
     }
 }

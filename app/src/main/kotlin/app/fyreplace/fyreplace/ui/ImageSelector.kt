@@ -202,9 +202,11 @@ class ImageSelector<F>(
     }
 
     interface Listener {
-        suspend fun onImage(image: ByteArray) = Unit
+        suspend fun onImage(image: ByteArray)
 
         suspend fun onImageRemoved() = Unit
+
+        suspend fun onImageSelectionCancelled() = Unit
     }
 }
 

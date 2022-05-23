@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.makeShareUri
 import app.fyreplace.fyreplace.grpc.formatDate
+import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
@@ -39,7 +40,10 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setToolbarInfo(args.post.author, args.post.dateCreated.formatDate())
+        (activity as MainActivity).setToolbarInfo(
+            args.post.author,
+            args.post.dateCreated.formatDate()
+        )
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
 

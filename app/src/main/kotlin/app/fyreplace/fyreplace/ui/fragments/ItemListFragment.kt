@@ -22,7 +22,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     protected abstract val icvm: ItemChangeViewModel<Item>
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
-    private lateinit var bd: FragmentItemListBinding
+    protected lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>

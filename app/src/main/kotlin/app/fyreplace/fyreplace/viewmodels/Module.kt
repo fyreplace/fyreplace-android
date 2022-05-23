@@ -15,6 +15,7 @@ val viewModelsModule = module {
     viewModel { DraftsViewModel(get()) }
     viewModel { SettingsViewModel(get(), get(), get()) }
     viewModel { PostViewModel(it.get(), get(), get()) }
+    viewModel { DraftViewModel(it.get(), get(), get()) }
     viewModel { UserViewModel(it.get(), get()) }
     viewModel { LoginViewModel(get(), get(), get()) }
     viewModel { BlockedUsersChangeViewModel() }
