@@ -10,9 +10,11 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
     private var nextCursor = cursor { isNext = true }
     private var state = ItemsState.INCOMPLETE
     private val mItems = mutableListOf<Item>()
+    private val mIsEmpty = MutableStateFlow(true)
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     protected open val forward = false
     val items: List<Item> = mItems
+    val isEmpty = mIsEmpty.asStateFlow()
 
     protected abstract fun listItems(): Flow<Items>
 
@@ -36,7 +38,10 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
                 state = if (hasNextCursor(it)) ItemsState.INCOMPLETE else ItemsState.COMPLETE
             }
             .map { getItemList(it) }
-            .onEach { mItems += it }
+            .onEach {
+                mItems += it
+                mIsEmpty.value = items.isEmpty()
+            }
             .flowOn(Dispatchers.Main.immediate)
     }
 
@@ -50,6 +55,7 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
         nextCursor = cursor { isNext = true }
         state = ItemsState.INCOMPLETE
         mItems.clear()
+        mIsEmpty.value = true
     }
 
     suspend fun fetchMore() {
@@ -61,6 +67,7 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
 
     fun add(position: Int, item: Item) {
         mItems.add(position, item)
+        mIsEmpty.value = false
     }
 
     fun update(position: Int, item: Item) {
@@ -69,6 +76,7 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
 
     fun remove(position: Int) {
         mItems.removeAt(position)
+        mIsEmpty.value = items.isEmpty()
     }
 
     companion object {

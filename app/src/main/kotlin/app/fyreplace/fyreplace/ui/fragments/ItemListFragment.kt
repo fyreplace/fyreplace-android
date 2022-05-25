@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
@@ -54,6 +53,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
             bd = FragmentItemListBinding.bind(it)
         }
         bd.lifecycleOwner = viewLifecycleOwner
+        bd.isEmpty = vm.isEmpty
         bd.emptyText.text = emptyText
         bd.recycler.setHasFixedSize(true)
         bd.recycler.addOnChildAttachStateChangeListener(this)
@@ -68,18 +68,15 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         super.onViewCreated(view, savedInstanceState)
         adapter = makeAdapter()
         adapter.addAll(vm.items)
-        bd.emptyText.isVisible = vm.items.isEmpty()
         bd.recycler.adapter = adapter
         bd.swipe.setOnRefreshListener {
             adapter.removeAll()
-            bd.emptyText.isVisible = true
             vm.reset()
             launch { vm.fetchMore() }
         }
 
         launch {
             vm.startListing().launchCollect {
-                bd.emptyText.isVisible = it.isEmpty()
                 bd.swipe.isRefreshing = false
                 adapter.addAll(it)
             }
