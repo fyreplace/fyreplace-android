@@ -168,7 +168,7 @@ class ImageSelector<F>(
 
             if (isTooBig) {
                 coroutineContext.ensureActive()
-                rotatedBitmap = downscaleBitmap(rotatedBitmap)
+                rotatedBitmap = rotatedBitmap.downscaled()
                 quality = 50
             }
 
@@ -226,18 +226,18 @@ private suspend fun extractTransformations(source: InputStream) = withContext(Di
     return@withContext transformations
 }
 
-private fun downscaleBitmap(bitmap: Bitmap): Bitmap {
-    val areaFactor = (bitmap.width * bitmap.height).toFloat() / ImageSelector.IMAGE_MAX_AREA
+private fun Bitmap.downscaled(): Bitmap {
+    val areaFactor = (width * height).toFloat() / ImageSelector.IMAGE_MAX_AREA
 
-    if (areaFactor > 1) {
-        val sideFactor = sqrt(areaFactor)
-        return Bitmap.createScaledBitmap(
-            bitmap,
-            (bitmap.width / sideFactor).toInt(),
-            (bitmap.height / sideFactor).toInt(),
-            true
-        )
+    if (areaFactor <= 1) {
+        return this
     }
 
-    return bitmap
+    val sideFactor = sqrt(areaFactor)
+    return Bitmap.createScaledBitmap(
+        this,
+        (width / sideFactor).toInt(),
+        (height / sideFactor).toInt(),
+        true
+    )
 }
