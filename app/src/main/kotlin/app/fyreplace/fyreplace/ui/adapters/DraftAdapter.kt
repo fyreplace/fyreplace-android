@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemChapterButtonsBinding
+import app.fyreplace.fyreplace.ui.translucent
 import app.fyreplace.protos.Chapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -74,7 +76,9 @@ class DraftAdapter(
         val text: TextView = itemView.findViewById(R.id.text)
 
         override fun setup(chapter: Chapter) {
-            text.text = chapter.text
+            val color = ContextCompat.getColor(itemView.context, R.color.md_theme_onSurface)
+            text.text = chapter.text.ifEmpty { itemView.context.getString(R.string.draft_empty) }
+            text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
         }
     }
 

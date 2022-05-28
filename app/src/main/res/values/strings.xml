@@ -132,6 +132,7 @@
     <string name="draft_menu_action_delete">Delete</string>
     <string name="draft_delete_title">Delete this draft?</string>
     <string name="draft_delete_message">This action cannot be undone.</string>
+    <string name="draft_empty">Enter some text…</string>
     <string name="draft_add_text">Add text</string>
     <string name="draft_add_image">Add image</string>
     <string name="draft_update_text">Update text</string>
