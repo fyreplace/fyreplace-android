@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingTop="@dimen/gap">
+        android:paddingTop="@dimen/gap"
+        android:paddingBottom="@dimen/gap">
 
         <Button
             android:id="@+id/text"
