@@ -53,7 +53,14 @@ class DraftAdapter(
 
     override fun onBindViewHolder(holder: ChapterHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        holder.setup(items.getOrNull(position) ?: Chapter.getDefaultInstance())
+
+        if (position >= items.size) {
+            holder.itemView.setOnClickListener(null)
+            holder.itemView.setOnLongClickListener(null)
+            holder.setup(Chapter.getDefaultInstance())
+        } else {
+            holder.setup(items[position])
+        }
     }
 
     override fun getItemId(item: Chapter): ByteString = ByteString.EMPTY
