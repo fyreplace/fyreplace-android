@@ -3,6 +3,7 @@
 
 # gRPC
 -keep public class app.fyreplace.protos.**
+-keep class app.fyreplace.fyreplace.grpc.** implements android.os.Parcelable
 -dontwarn javax.naming.**
 
 # Glide
