@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
@@ -22,7 +23,7 @@ class ArchiveFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHold
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = ArchiveFragmentDirections.actionPost(post = item, position = position)
+        val directions = ArchiveFragmentDirections.actionPost(post = item.p, position = position)
         findNavController().navigate(directions)
     }
 }

@@ -25,6 +25,7 @@ import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
 import app.fyreplace.fyreplace.grpc.isAvailable
+import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import app.fyreplace.protos.Profile
@@ -142,7 +143,7 @@ class MainActivity :
 
             for (view in textViews) {
                 view.setOnClickListener {
-                    navHost.navController.navigate(MainDirections.actionUser(profile = profile))
+                    navHost.navController.navigate(MainDirections.actionUser(profile = profile.p))
                 }
             }
         } else {
@@ -237,7 +238,7 @@ class MainActivity :
                     }
 
                     setOnClickListener {
-                        navHost.navController.navigate(MainDirections.actionUser(profile = profile))
+                        navHost.navController.navigate(MainDirections.actionUser(profile = profile.p))
                     }
                 }
         }

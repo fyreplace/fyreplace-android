@@ -34,7 +34,7 @@
         tools:layout="@layout/fragment_item_random_access_list">
         <argument
             android:name="post"
-            app:argType="app.fyreplace.protos.Post" />
+            app:argType="app.fyreplace.fyreplace.grpc.ParcelablePost" />
         <argument
             android:name="position"
             android:defaultValue="-1"
@@ -47,7 +47,7 @@
         tools:layout="@layout/fragment_draft">
         <argument
             android:name="post"
-            app:argType="app.fyreplace.protos.Post" />
+            app:argType="app.fyreplace.fyreplace.grpc.ParcelablePost" />
         <argument
             android:name="position"
             android:defaultValue="-1"
@@ -60,7 +60,7 @@
         tools:layout="@layout/fragment_user">
         <argument
             android:name="profile"
-            app:argType="app.fyreplace.protos.Profile" />
+            app:argType="app.fyreplace.fyreplace.grpc.ParcelableProfile" />
         <argument
             android:name="position"
             android:defaultValue="-1"

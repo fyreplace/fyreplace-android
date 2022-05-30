@@ -25,7 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>() {
-    override val vm by viewModel<PostViewModel> { parametersOf(args.post) }
+    override val vm by viewModel<PostViewModel> { parametersOf(args.post.v) }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<ArchiveChangeViewModel>()
     private val args by navArgs<PostFragmentArgs>()
@@ -101,14 +101,14 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         return true
     }
 
-    override fun makeAdapter() = PostAdapter(args.post)
+    override fun makeAdapter() = PostAdapter(args.post.v)
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {
             vm.updateSubscription(subscribed)
 
             if (subscribed) {
-                icvm.add(args.position, args.post)
+                icvm.add(args.position, args.post.v)
             } else {
                 icvm.delete(args.position)
             }

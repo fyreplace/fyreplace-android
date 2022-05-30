@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.DraftsAdapter
@@ -28,7 +29,7 @@ class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolde
         (activity as MainActivity).setPrimaryAction(R.drawable.ic_baseline_add) {
             launch {
                 val directions = DraftsFragmentDirections.actionDraft(
-                    post = createPost(),
+                    post = createPost().p,
                     position = 0
                 )
                 findNavController().navigate(directions)
@@ -41,7 +42,7 @@ class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolde
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = DraftsFragmentDirections.actionDraft(post = item, position = position)
+        val directions = DraftsFragmentDirections.actionDraft(post = item.p, position = position)
         findNavController().navigate(directions)
     }
 

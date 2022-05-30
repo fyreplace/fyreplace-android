@@ -28,7 +28,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     override val rootView by lazy { bd.root }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
-    private val vm by viewModel<UserViewModel> { parametersOf(args.profile) }
+    private val vm by viewModel<UserViewModel> { parametersOf(args.profile.v) }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
 
@@ -112,7 +112,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            icvm.add(args.position, args.profile)
+            icvm.add(args.position, args.profile.v)
         }
     }
 
@@ -156,6 +156,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     private suspend fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        icvm.update(args.position, args.profile.toBuilder().setIsBanned(true).build())
+        icvm.update(args.position, args.profile.v.toBuilder().setIsBanned(true).build())
     }
 }

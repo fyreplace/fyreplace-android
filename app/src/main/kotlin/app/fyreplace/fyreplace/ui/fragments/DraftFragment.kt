@@ -26,7 +26,7 @@ class DraftFragment :
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener {
     override val rootView by lazy { bd.root }
-    private val vm by viewModel<DraftViewModel> { parametersOf(args.post) }
+    private val vm by viewModel<DraftViewModel> { parametersOf(args.post.v) }
     private val icvm by sharedViewModel<DraftsChangeViewModel>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter

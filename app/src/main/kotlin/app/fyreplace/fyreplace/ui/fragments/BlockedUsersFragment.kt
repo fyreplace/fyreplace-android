@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.BlockedUsersAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
@@ -31,7 +32,7 @@ class BlockedUsersFragment : ItemListFragment<Profile, Profiles, BlockedUsersAda
 
     override fun onItemClick(item: Profile, position: Int) {
         val directions =
-            BlockedUsersFragmentDirections.actionUser(profile = item, position = position)
+            BlockedUsersFragmentDirections.actionUser(profile = item.p, position = position)
         findNavController().navigate(directions)
     }
 }
