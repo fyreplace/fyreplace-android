@@ -15,6 +15,7 @@ import app.fyreplace.fyreplace.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftsChangeViewModel
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.chapter
+import io.grpc.Status
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -83,6 +84,11 @@ class DraftFragment :
         }
 
         return true
+    }
+
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.INVALID_ARGUMENT -> R.string.draft_chapter_too_long_title to R.string.draft_chapter_too_long_message
+        else -> null
     }
 
     override suspend fun onImage(image: ByteArray) {

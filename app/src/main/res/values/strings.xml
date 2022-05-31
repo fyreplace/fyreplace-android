@@ -144,6 +144,8 @@
         <item>Edit</item>
         <item>Delete</item>
     </string-array>
+    <string name="draft_chapter_too_long_title">Invalid text</string>
+    <string name="draft_chapter_too_long_message">This text is too long.</string>
 
     <string name="user_menu_action_block">Block</string>
     <string name="user_menu_action_unblock">Unblock</string>
