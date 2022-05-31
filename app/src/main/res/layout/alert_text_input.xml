@@ -7,7 +7,8 @@
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/text_input"
-        android:gravity="start|top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="start|top"
+        android:maxLines="@integer/chapter_text_max_lines" />
 </com.google.android.material.textfield.TextInputLayout>
