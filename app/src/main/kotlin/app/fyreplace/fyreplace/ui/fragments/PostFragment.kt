@@ -8,8 +8,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.makeShareUri
 import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.makeShareUri
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
@@ -40,14 +40,10 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setToolbarInfo(
-            args.post.author,
-            args.post.dateCreated.formatDate()
-        )
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
 
-        if (args.post.isPreview) {
+        if (args.post.isPreview || args.post.chapterCount == 0) {
             launch { vm.retrieve(args.post.id) }
         }
     }
@@ -56,6 +52,7 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_post, menu)
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
+            (activity as MainActivity).setToolbarInfo(post.author, post.dateCreated.formatDate())
             val postUri = makeShareUri(resources, "p", post.id)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = ClipDescription.MIMETYPE_TEXT_PLAIN
@@ -101,16 +98,16 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         return true
     }
 
-    override fun makeAdapter() = PostAdapter(args.post.v)
+    override fun makeAdapter() = PostAdapter(vm.post.value)
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {
             vm.updateSubscription(subscribed)
 
-            if (subscribed) {
-                icvm.add(args.position, args.post.v)
-            } else {
-                icvm.delete(args.position)
+            when {
+                args.position == -1 -> return@launch
+                subscribed -> icvm.add(args.position, vm.post.value)
+                else -> icvm.delete(args.position)
             }
         }
     }
@@ -122,7 +119,11 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
 
     private suspend fun delete() {
         vm.delete()
-        icvm.delete(args.position)
+
+        if (args.position != -1) {
+            icvm.delete(args.position)
+        }
+
         findNavController().navigateUp()
     }
 }

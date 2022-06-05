@@ -8,6 +8,5 @@ import com.google.protobuf.ByteString
 
 fun makeShareUri(resources: Resources, type: String, id: ByteString): Uri {
     val host = resources.getString(R.string.link_host)
-    val encodedId = Base64.encodeToString(id.toByteArray(), Base64.NO_PADDING)
-    return Uri.parse("https://$host/$type/$encodedId")
+    return Uri.parse("https://$host/$type/${id.base64ShortString}")
 }

@@ -24,13 +24,15 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.extensions.byteString
 import app.fyreplace.fyreplace.extensions.getUsername
-import app.fyreplace.fyreplace.extensions.loadAvatar
 import app.fyreplace.fyreplace.extensions.isAvailable
+import app.fyreplace.fyreplace.extensions.loadAvatar
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import app.fyreplace.protos.Profile
+import app.fyreplace.protos.post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -171,16 +173,18 @@ class MainActivity :
         val token = uri.fragment ?: ""
         this.intent = null
 
-        when (uri.path) {
-            "" -> return
+        when (val path = uri.path ?: return) {
             getString(R.string.link_path_account_confirm_activation) -> confirmActivation(token)
             getString(R.string.link_path_account_confirm_connection) -> confirmConnection(token)
             getString(R.string.link_path_user_confirm_email_update) -> confirmEmailUpdate(token)
-            else -> showBasicAlert(
-                R.string.main_error_malformed_url_title,
-                R.string.main_error_malformed_url_message,
-                error = true
-            )
+            else -> when {
+                path.startsWith("/p/") -> showPost(path.drop(3))
+                else -> showBasicAlert(
+                    R.string.main_error_malformed_url_title,
+                    R.string.main_error_malformed_url_message,
+                    error = true
+                )
+            }
         }
     }
 
@@ -197,6 +201,12 @@ class MainActivity :
         vm.confirmEmailUpdate(token)
         cvm.retrieveMe()
         showBasicSnackbar(R.string.main_user_email_changed_message)
+    }
+
+    private fun showPost(postIdShortString: String) {
+        val post = post { id = byteString(postIdShortString) }
+        val directions = MainDirections.actionPost(post = post.p)
+        navHost.navController.navigate(directions)
     }
 
     private companion object {
