@@ -18,7 +18,7 @@ abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
     private val mTotalSize = MutableStateFlow(0)
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     val items: Map<Int, Item> = mItems
-    val totalSize: Flow<Int> = mTotalSize
+    val totalSize = mTotalSize.asStateFlow()
 
     protected abstract fun listItems(): Flow<Items>
 

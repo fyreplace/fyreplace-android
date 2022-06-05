@@ -3,8 +3,8 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @SuppressLint("CheckResult")
 class UserViewModel(
@@ -15,9 +15,9 @@ class UserViewModel(
     private val mUser = MutableStateFlow<User?>(null)
     private val mBlocked = MutableStateFlow(initialProfile.isBlocked)
     private val mBanned = MutableStateFlow(initialProfile.isBanned)
-    val user: Flow<User?> = mUser
-    val blocked: Flow<Boolean> = mBlocked
-    val banned: Flow<Boolean> = mBanned
+    val user = mUser.asStateFlow()
+    val blocked = mBlocked.asStateFlow()
+    val banned = mBanned.asStateFlow()
 
     suspend fun retrieve(userId: ByteString) {
         val newUser = userStub.retrieve(id { id = userId })

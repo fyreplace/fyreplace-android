@@ -3,8 +3,8 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @SuppressLint("CheckResult")
 class PostViewModel(
@@ -14,8 +14,8 @@ class PostViewModel(
 ) : ItemRandomAccessListViewModel<Comment, Comments>(initialPost.id) {
     private val mPost = MutableStateFlow(initialPost)
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
-    val post: Flow<Post> = mPost
-    val subscribed: Flow<Boolean> = mSubscribed
+    val post = mPost.asStateFlow()
+    val subscribed = mSubscribed.asStateFlow()
 
     override fun listItems() = commentStub.list(pages)
 
