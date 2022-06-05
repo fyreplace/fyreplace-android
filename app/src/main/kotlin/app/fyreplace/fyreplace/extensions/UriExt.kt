@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.data
+package app.fyreplace.fyreplace.extensions
 
 import android.content.res.Resources
 import android.net.Uri

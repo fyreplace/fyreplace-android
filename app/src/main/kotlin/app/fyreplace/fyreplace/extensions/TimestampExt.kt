@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.grpc
+package app.fyreplace.fyreplace.extensions
 
 import com.google.protobuf.Timestamp
 import java.text.DateFormat

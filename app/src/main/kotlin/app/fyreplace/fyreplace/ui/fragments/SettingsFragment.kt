@@ -16,7 +16,9 @@ import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
-import app.fyreplace.fyreplace.ui.applySettings
+import app.fyreplace.fyreplace.extensions.applySettings
+import app.fyreplace.fyreplace.extensions.browse
+import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.views.BioPreference
 import app.fyreplace.fyreplace.ui.views.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel

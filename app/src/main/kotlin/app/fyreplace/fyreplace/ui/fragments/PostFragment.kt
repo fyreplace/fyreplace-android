@@ -8,8 +8,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.data.makeShareUri
-import app.fyreplace.fyreplace.grpc.formatDate
+import app.fyreplace.fyreplace.extensions.makeShareUri
+import app.fyreplace.fyreplace.extensions.formatDate
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter

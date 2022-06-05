@@ -8,9 +8,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
-import app.fyreplace.fyreplace.grpc.formatDate
+import app.fyreplace.fyreplace.extensions.formatDate
 import app.fyreplace.fyreplace.ui.FailureHandler
-import app.fyreplace.fyreplace.ui.loadAvatar
+import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.Sentence

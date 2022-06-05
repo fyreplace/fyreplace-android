@@ -6,7 +6,7 @@ import android.widget.ImageView
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.loadAvatar
+import app.fyreplace.fyreplace.extensions.loadAvatar
 import com.bumptech.glide.Glide
 
 class ImagePreference : Preference {

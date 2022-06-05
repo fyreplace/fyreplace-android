@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.grpc
+package app.fyreplace.fyreplace.extensions
 
 import app.fyreplace.protos.Profile
 

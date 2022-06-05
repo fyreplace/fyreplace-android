@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.resolveTextAttribute
+import app.fyreplace.fyreplace.extensions.resolveTextAttribute
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide

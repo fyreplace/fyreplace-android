@@ -24,7 +24,9 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
-import app.fyreplace.fyreplace.grpc.isAvailable
+import app.fyreplace.fyreplace.extensions.getUsername
+import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.isAvailable
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel

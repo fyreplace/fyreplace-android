@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui
+package app.fyreplace.fyreplace.extensions
 
 import android.content.Context
 import android.content.SharedPreferences

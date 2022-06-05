@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui.fragments
+package app.fyreplace.fyreplace.extensions
 
 import android.content.Intent
 import android.net.Uri

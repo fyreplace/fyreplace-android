@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui
+package app.fyreplace.fyreplace.extensions
 
 import android.view.View
 import android.view.inputmethod.InputMethodManager

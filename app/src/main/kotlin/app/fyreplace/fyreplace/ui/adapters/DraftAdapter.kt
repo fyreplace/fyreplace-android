@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemChapterButtonsBinding
-import app.fyreplace.fyreplace.ui.translucent
+import app.fyreplace.fyreplace.extensions.translucent
 import app.fyreplace.protos.Chapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions

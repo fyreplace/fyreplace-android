@@ -2,7 +2,7 @@ package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import app.fyreplace.fyreplace.data.storeAuthToken
+import app.fyreplace.fyreplace.extensions.storeAuthToken
 import app.fyreplace.fyreplace.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpcKt
 import app.fyreplace.protos.UserServiceGrpcKt

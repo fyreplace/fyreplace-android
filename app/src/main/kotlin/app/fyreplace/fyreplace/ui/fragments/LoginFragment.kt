@@ -11,8 +11,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentLoginBinding
+import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.ui.TitleChoosing
-import app.fyreplace.fyreplace.ui.hideSoftKeyboard
+import app.fyreplace.fyreplace.extensions.hideSoftKeyboard
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder

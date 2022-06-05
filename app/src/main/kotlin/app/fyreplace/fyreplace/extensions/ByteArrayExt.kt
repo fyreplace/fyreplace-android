@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.data
+package app.fyreplace.fyreplace.extensions
 
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.protos.ImageChunk

@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.moveTo
 import org.koin.dsl.module
 
 val dataModule = module {

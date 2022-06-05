@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.annotation.IntegerRes
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.data.storeAuthToken
+import app.fyreplace.fyreplace.extensions.storeAuthToken
 import app.fyreplace.fyreplace.grpc.defaultClient
 import app.fyreplace.protos.AccountServiceGrpcKt
 import app.fyreplace.protos.connectionCredentials

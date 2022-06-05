@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui
+package app.fyreplace.fyreplace.extensions
 
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Profile

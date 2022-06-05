@@ -5,9 +5,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.grpc.formatDate
-import app.fyreplace.fyreplace.ui.loadAvatar
-import app.fyreplace.fyreplace.ui.setUsername
+import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.setUsername
 import app.fyreplace.protos.Profile
 import com.bumptech.glide.Glide
 import com.google.protobuf.Timestamp

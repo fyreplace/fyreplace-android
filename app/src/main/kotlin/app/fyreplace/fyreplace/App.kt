@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace
 import android.content.SharedPreferences
 import app.fyreplace.fyreplace.data.dataModule
 import app.fyreplace.fyreplace.grpc.grpcModule
-import app.fyreplace.fyreplace.ui.applySettings
+import app.fyreplace.fyreplace.extensions.applySettings
 import app.fyreplace.fyreplace.ui.fragmentsModule
 import app.fyreplace.fyreplace.viewmodels.viewModelsModule
 import org.koin.android.ext.koin.androidContext

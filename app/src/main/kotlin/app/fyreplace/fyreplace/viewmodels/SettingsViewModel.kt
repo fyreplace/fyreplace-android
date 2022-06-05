@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import app.fyreplace.fyreplace.data.imageChunkFlow
+import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
 import com.google.protobuf.empty
 

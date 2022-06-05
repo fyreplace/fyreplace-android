@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
-import app.fyreplace.fyreplace.data.imageChunkFlow
+import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.flow.*
