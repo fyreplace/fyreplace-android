@@ -18,6 +18,7 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
+import app.fyreplace.protos.Profile
 import app.fyreplace.protos.Rank
 import kotlinx.coroutines.flow.combine
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -52,7 +53,10 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_post, menu)
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
-            (activity as MainActivity).setToolbarInfo(post.author, post.dateCreated.formatDate())
+            (activity as MainActivity).setToolbarInfo(
+                if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
+                post.dateCreated.formatDate()
+            )
             val postUri = makeShareUri(resources, "p", post.id)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = ClipDescription.MIMETYPE_TEXT_PLAIN
