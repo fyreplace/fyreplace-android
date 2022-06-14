@@ -19,6 +19,7 @@
         android:layout_height="match_parent"
         android:ellipsize="end"
         android:gravity="center_vertical"
+        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent" />
 
