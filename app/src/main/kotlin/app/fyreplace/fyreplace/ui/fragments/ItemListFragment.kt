@@ -28,18 +28,9 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        icvm.addedItems.launchCollect(fragmentLifecycleScope) { (p, i) ->
-            vm.add(p, i)
-            adapter.add(p, i)
-        }
-        icvm.updatedItems.launchCollect(fragmentLifecycleScope) { (p, i) ->
-            vm.update(p, i)
-            adapter.update(p, i)
-        }
-        icvm.removedPositions.launchCollect(fragmentLifecycleScope) {
-            vm.remove(it)
-            adapter.remove(it)
-        }
+        icvm.addedItems.launchCollect(fragmentLifecycleScope) { (p, i) -> vm.add(p, i) }
+        icvm.updatedItems.launchCollect(fragmentLifecycleScope) { (p, i) -> vm.update(p, i) }
+        icvm.removedPositions.launchCollect(fragmentLifecycleScope) { vm.remove(it) }
     }
 
     override fun onCreateView(
@@ -74,6 +65,10 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
             vm.reset()
             launch { vm.fetchMore() }
         }
+
+        icvm.addedItems.launchCollect { (p, i) -> adapter.add(p, i) }
+        icvm.updatedItems.launchCollect { (p, i) -> adapter.update(p, i) }
+        icvm.removedPositions.launchCollect { adapter.remove(it) }
 
         launch {
             vm.startListing().launchCollect {
