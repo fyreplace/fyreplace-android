@@ -82,6 +82,11 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        vm.reset()
+    }
+
     override fun onDestroyView() {
         bd.recycler.removeOnChildAttachStateChangeListener(this)
         vm.stopListing()
