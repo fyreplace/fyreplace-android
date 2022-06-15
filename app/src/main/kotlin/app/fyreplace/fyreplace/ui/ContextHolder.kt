@@ -31,14 +31,23 @@ interface ContextHolder {
             .show()
     }
 
-    fun showSelectionAlert(@ArrayRes choices: Int, action: (selected: Int) -> Unit) {
+    fun showSelectionAlert(
+        @StringRes title: Int?,
+        @ArrayRes choices: Int,
+        action: (selected: Int) -> Unit
+    ) {
         val choicesList = getContext()?.resources?.getStringArray(choices) ?: return
-        showSelectionAlert(choicesList, action)
+        showSelectionAlert(title, choicesList, action)
     }
 
-    fun showSelectionAlert(choices: Array<String>, action: (selected: Int) -> Unit) {
+    fun showSelectionAlert(
+        @StringRes title: Int?,
+        choices: Array<String>,
+        action: (selected: Int) -> Unit
+    ) {
         MaterialAlertDialogBuilder(getContext() ?: return)
             .setItems(choices) { _, choice -> action(choice) }
+            .apply { title?.let { setTitle(it) } }
             .show()
     }
 

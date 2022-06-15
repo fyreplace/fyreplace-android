@@ -9,16 +9,15 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
 import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.extensions.loadAvatar
 import app.fyreplace.fyreplace.extensions.setupTransitions
+import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.Sentence
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
 import com.bumptech.glide.Glide
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -131,28 +130,27 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
     }
 
-    private fun ban() = MaterialAlertDialogBuilder(requireContext())
-        .setTitle(R.string.user_ban_title)
-        .setItems(R.array.user_ban_actions) { _, i ->
-            when (i) {
-                0 -> launch {
-                    vm.ban(Sentence.WEEK)
+    private fun ban() = showSelectionAlert(
+        R.string.user_ban_title,
+        R.array.user_ban_choices
+    ) { choice ->
+        when (choice) {
+            0 -> launch {
+                vm.ban(Sentence.WEEK)
+                finishBan()
+            }
+            1 -> launch {
+                vm.ban(Sentence.MONTH)
+                finishBan()
+            }
+            else -> showChoiceAlert(R.string.user_ban_permanently_title, null) {
+                launch {
+                    vm.ban(Sentence.PERMANENTLY)
                     finishBan()
-                }
-                1 -> launch {
-                    vm.ban(Sentence.MONTH)
-                    finishBan()
-                }
-                else -> showChoiceAlert(R.string.user_ban_permanently_title, null) {
-                    launch {
-                        vm.ban(Sentence.PERMANENTLY)
-                        finishBan()
-                    }
                 }
             }
         }
-        .create()
-        .show()
+    }
 
     private suspend fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)

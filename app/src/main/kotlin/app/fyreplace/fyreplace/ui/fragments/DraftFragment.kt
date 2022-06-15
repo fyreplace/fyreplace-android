@@ -129,7 +129,7 @@ class DraftFragment :
             firstAction = secondAction
         }
 
-        showSelectionAlert(choices.toTypedArray()) { choice ->
+        showSelectionAlert(null, choices.toTypedArray()) { choice ->
             when (choice) {
                 choices.size - 1 -> deleteChapter(position)
                 choices.size - 2 -> onItemClick(item, position)

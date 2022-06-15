@@ -137,7 +137,6 @@
     <string name="draft_add_image">Add image</string>
     <string name="draft_update_text">Update text</string>
     <string name="draft_update_image">Update image</string>
-    <string name="draft_delete_chapter">Delete this chapter?</string>
     <string-array name="draft_item_choices">
         <item>Move up</item>
         <item>Move down</item>
@@ -156,7 +155,7 @@
     <string name="user_report_title">Report user?</string>
     <string name="user_report_success_message">User reported</string>
     <string name="user_ban_title">Ban for:</string>
-    <string-array name="user_ban_actions">
+    <string-array name="user_ban_choices">
         <item>Week</item>
         <item>Month</item>
         <item>Permanently</item>

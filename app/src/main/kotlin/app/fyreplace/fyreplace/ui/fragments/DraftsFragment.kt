@@ -47,7 +47,7 @@ class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolde
     }
 
     override fun onItemLongClick(item: Post, position: Int) {
-        showSelectionAlert(R.array.drafts_item_choices) { choice ->
+        showSelectionAlert(null, R.array.drafts_item_choices) { choice ->
             when (choice) {
                 0 -> onItemClick(item, position)
                 1 -> launch { deletePost(item.id, position) }
