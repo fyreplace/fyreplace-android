@@ -3,6 +3,8 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.os.Bundle
 import android.text.InputType
 import android.view.*
+import android.widget.Button
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
@@ -11,6 +13,7 @@ import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
+import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftsChangeViewModel
 import app.fyreplace.protos.Chapter
@@ -29,6 +32,7 @@ class DraftFragment :
     override val rootView by lazy { bd.root }
     private val vm by viewModel<DraftViewModel> { parametersOf(args.post.v) }
     private val icvm by sharedViewModel<DraftsChangeViewModel>()
+    private val pcvm by sharedViewModel<ArchiveChangeViewModel>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val args by navArgs<DraftFragmentArgs>()
@@ -68,6 +72,10 @@ class DraftFragment :
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.fragment_draft, menu)
+        val publish = menu.findItem(R.id.publish)
+        val publishButton = publish.actionView.findViewById<Button>(R.id.button)
+        publishButton.setOnClickListener { onOptionsItemSelected(publish) }
+        vm.canPublish.launchCollect(lifecycleScope, publishButton::setEnabled)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -76,10 +84,16 @@ class DraftFragment :
         }
 
         when (item.itemId) {
+            R.id.publish -> showSelectionAlert(
+                R.string.draft_publish_title,
+                R.array.draft_publish_choices
+            ) { launch { publish(it != 0) } }
+
             R.id.delete -> showChoiceAlert(
                 R.string.draft_delete_title,
                 R.string.draft_delete_message
             ) { launch { delete() } }
+
             else -> return false
         }
 
@@ -87,7 +101,11 @@ class DraftFragment :
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> R.string.draft_chapter_too_long_title to R.string.draft_chapter_too_long_message
+        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
+            "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
+            else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
+        }
         else -> null
     }
 
@@ -157,6 +175,13 @@ class DraftFragment :
                 DraftAdapter.TYPE_IMAGE -> updateImageChapter(new = true)
             }
         }
+    }
+
+    private suspend fun publish(anonymously: Boolean) {
+        vm.publish(anonymously)
+        icvm.delete(args.position)
+        pcvm.add(args.position, vm.makePreview())
+        findNavController().navigateUp()
     }
 
     private suspend fun delete() {

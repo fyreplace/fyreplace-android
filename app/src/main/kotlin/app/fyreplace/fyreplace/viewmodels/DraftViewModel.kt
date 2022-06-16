@@ -17,6 +17,7 @@ class DraftViewModel(
     val canAddChapter = post
         .combine(isLoading) { post, isLoading -> post.chapterCount < 10 && !isLoading }
         .asState(false)
+    val canPublish = post.map { it.chapterCount > 0 }.asState(false)
 
     suspend fun retrieve(postId: ByteString) {
         mPost.value = postStub.retrieve(id { id = postId })
@@ -24,6 +25,13 @@ class DraftViewModel(
 
     suspend fun delete() {
         postStub.delete(id { id = post.value.id })
+    }
+
+    suspend fun publish(anonymously: Boolean) {
+        postStub.publish(publication {
+            id = post.value.id
+            anonymous = anonymously
+        })
     }
 
     suspend fun createChapter(): Unit = whileLoading {
@@ -83,4 +91,10 @@ class DraftViewModel(
             .addChapters(toPosition, post.value.chaptersList[fromPosition])
             .build()
     }
+
+    fun makePreview(): Post = Post.newBuilder(post.value)
+        .clearChapters()
+        .apply { post.value.chaptersList.getOrNull(0)?.let { addChapters(it) } }
+        .setIsPreview(true)
+        .build()
 }

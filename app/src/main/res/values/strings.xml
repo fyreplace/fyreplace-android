@@ -129,7 +129,13 @@
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
 
+    <string name="draft_menu_action_publish">Publish</string>
     <string name="draft_menu_action_delete">Delete</string>
+    <string name="draft_publish_title">Publish this post…</string>
+    <string-array name="draft_publish_choices">
+        <item>Publicly</item>
+        <item>Anonymously</item>
+    </string-array>
     <string name="draft_delete_title">Delete this draft?</string>
     <string name="draft_delete_message">This action cannot be undone.</string>
     <string name="draft_empty">Enter some text…</string>
@@ -143,8 +149,12 @@
         <item>Edit</item>
         <item>Delete</item>
     </string-array>
-    <string name="draft_chapter_too_long_title">Invalid text</string>
-    <string name="draft_chapter_too_long_message">This text is too long.</string>
+    <string name="draft_error_chapter_too_long_title">Invalid text</string>
+    <string name="draft_error_chapter_too_long_message">This text is too long.</string>
+    <string name="draft_error_chapter_empty_title">Empty text section</string>
+    <string name="draft_error_chapter_empty_message">Posts can\'t have text section left empty.</string>
+    <string name="draft_error_post_empty_title">Empty post</string>
+    <string name="draft_error_post_empty_message">Empty posts can\'t be published.</string>
 
     <string name="user_menu_action_block">Block</string>
     <string name="user_menu_action_unblock">Unblock</string>
