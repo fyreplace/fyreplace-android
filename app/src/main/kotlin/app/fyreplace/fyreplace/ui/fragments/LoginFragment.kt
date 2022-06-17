@@ -13,7 +13,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentLoginBinding
 import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.ui.TitleChoosing
-import app.fyreplace.fyreplace.extensions.hideSoftKeyboard
+import app.fyreplace.fyreplace.extensions.hideSoftInput
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -95,7 +95,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         if (args.isRegistering) R.string.settings_register else R.string.settings_login
 
     private fun registerOrLogin() = launch {
-        view?.hideSoftKeyboard()
+        view?.hideSoftInput()
 
         if (args.isRegistering) {
             vm.register()

@@ -5,6 +5,7 @@ import android.text.InputType
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.showSoftInput
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -94,5 +95,7 @@ interface ContextHolder {
                 minLines = 3
             }
         }
+
+        alert.showSoftInput()
     }
 }
