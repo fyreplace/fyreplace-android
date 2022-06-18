@@ -112,7 +112,7 @@ class DraftFragment :
             "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
             else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
         }
-        else -> null
+        else -> super.getFailureTexts(error)
     }
 
     override suspend fun onImage(image: ByteArray) {

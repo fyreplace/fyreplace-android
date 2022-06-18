@@ -113,7 +113,7 @@ class MainActivity :
             "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
-        else -> null
+        else -> super.getFailureTexts(error)
     }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {

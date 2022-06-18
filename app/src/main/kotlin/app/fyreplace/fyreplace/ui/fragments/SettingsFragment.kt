@@ -178,7 +178,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
         }
-        else -> null
+        else -> super.getFailureTexts(error)
     }
 
     private fun logout() = launch {

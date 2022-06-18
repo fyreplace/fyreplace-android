@@ -67,7 +67,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
             "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
             else -> R.string.error_validation_title to R.string.error_validation_message
         }
-        else -> null
+        else -> super.getFailureTexts(error)
     }
 
     override fun onFailure(failure: Throwable) {
