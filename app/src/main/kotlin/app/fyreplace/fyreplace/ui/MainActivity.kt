@@ -134,6 +134,17 @@ class MainActivity :
         bd.primaryAction.hide()
     }
 
+    fun setToolbarInfo(title: String?) = bd.toolbar.run {
+        this.title = title
+        isTitleCentered = false
+        subtitle = null
+        logo = null
+
+        for (view in children.filterIsInstance<TextView>()) {
+            view.setOnClickListener(null)
+        }
+    }
+
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {
         profile?.let { bd.toolbar.title = getUsername(it) }
         bd.toolbar.subtitle = subtitle

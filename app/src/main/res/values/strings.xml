@@ -138,6 +138,7 @@
     </string-array>
     <string name="draft_delete_title">Delete this draft?</string>
     <string name="draft_delete_message">This action cannot be undone.</string>
+    <string name="draft_length">%1$d/10 items</string>
     <string name="draft_empty">Enter some text…</string>
     <string name="draft_add_text">Add text</string>
     <string name="draft_add_image">Add image</string>

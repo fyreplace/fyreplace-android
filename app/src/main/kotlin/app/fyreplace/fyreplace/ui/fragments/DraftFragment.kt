@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
 import app.fyreplace.fyreplace.ui.ImageSelector
+import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
@@ -62,7 +63,12 @@ class DraftFragment :
         bd.recycler.adapter = adapter
         launch {
             vm.retrieve(args.post.id)
-            vm.post.launchCollect { icvm.update(args.position, it) }
+            vm.post.launchCollect {
+                icvm.update(args.position, it)
+                (activity as MainActivity).setToolbarInfo(
+                    getString(R.string.draft_length, it.chapterCount)
+                )
+            }
             adapter.setOnClickListener(this@DraftFragment)
             adapter.setChapterChangeListener(this@DraftFragment)
             adapter.addAll(vm.post.value.chaptersList)
