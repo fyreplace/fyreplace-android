@@ -128,6 +128,8 @@
     <string name="post_report_success_message">Post reported</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
+    <string name="post_error_not_found_title">Post not found</string>
+    <string name="post_error_not_found_message">This post does not exist, or it has been deleted.</string>
 
     <string name="draft_menu_action_publish">Publish</string>
     <string name="draft_menu_action_delete">Delete</string>

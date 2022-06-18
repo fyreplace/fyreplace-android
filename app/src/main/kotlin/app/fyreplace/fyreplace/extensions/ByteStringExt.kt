@@ -7,4 +7,10 @@ val ByteString.base64ShortString: String
     get() = Base64.encodeToString(toByteArray(), Base64.NO_PADDING)
 
 fun byteString(base64ShortString: String): ByteString =
-    ByteString.copyFrom(Base64.decode(base64ShortString, Base64.NO_PADDING))
+    ByteString.copyFrom(
+        try {
+            Base64.decode(base64ShortString, Base64.NO_PADDING)
+        } catch (e: IllegalArgumentException) {
+            byteArrayOf()
+        }
+    )

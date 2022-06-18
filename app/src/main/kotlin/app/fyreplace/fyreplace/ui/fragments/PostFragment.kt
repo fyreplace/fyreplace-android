@@ -20,6 +20,7 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.Rank
+import io.grpc.Status
 import kotlinx.coroutines.flow.combine
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +31,7 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<ArchiveChangeViewModel>()
     private val args by navArgs<PostFragmentArgs>()
+    private var errored = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -100,6 +102,25 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         }
 
         return true
+    }
+
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+        else -> super.getFailureTexts(error)
+    }
+
+    override fun onFailure(failure: Throwable) {
+        if (errored) {
+            return
+        }
+
+        errored = true
+        super.onFailure(failure)
+        val error = Status.fromThrowable(failure)
+
+        if (error.code in setOf(Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND)) {
+            findNavController().navigateUp()
+        }
     }
 
     override fun makeAdapter() = PostAdapter(vm.post.value)
