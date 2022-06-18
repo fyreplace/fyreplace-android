@@ -28,7 +28,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
 
     fun onFailure(failure: Throwable) {
         val error = Status.fromThrowable(failure)
-        val (title, message) = getFailureTexts(error) ?: return rootView?.context?.run {
+        val (title, message) = getFailureTexts(error) ?: return getContext()?.run {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())
             Toast.makeText(
                 this,

@@ -45,7 +45,7 @@ class MainActivity :
     FailureHandler,
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener {
-    override val rootView by lazy { bd.root }
+    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
     private val vm by viewModel<MainViewModel>()
     private val cvm by viewModel<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding

@@ -21,7 +21,7 @@ import io.grpc.Status
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
-    override val rootView by lazy { bd.root }
+    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
     private val vm by viewModel<LoginViewModel>()
     private val args by navArgs<LoginFragmentArgs>()
     private lateinit var bd: FragmentLoginBinding

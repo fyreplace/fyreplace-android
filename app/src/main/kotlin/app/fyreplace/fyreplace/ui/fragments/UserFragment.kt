@@ -25,7 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 class UserFragment : DialogFragment(), FailureHandler {
-    override val rootView by lazy { bd.root }
+    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
     private val vm by viewModel<UserViewModel> { parametersOf(args.profile.v) }

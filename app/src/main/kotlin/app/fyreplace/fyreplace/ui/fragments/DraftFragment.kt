@@ -29,7 +29,7 @@ class DraftFragment :
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener {
-    override val rootView by lazy { bd.root }
+    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
     private val vm by viewModel<DraftViewModel> { parametersOf(args.post.v) }
     private val icvm by sharedViewModel<DraftsChangeViewModel>()
     private val pcvm by sharedViewModel<ArchiveChangeViewModel>()
