@@ -77,7 +77,10 @@ interface ContextHolder {
         val alert = MaterialAlertDialogBuilder(getContext() ?: return)
             .setTitle(title)
             .setView(R.layout.alert_text_input)
-            .setPositiveButton(R.string.ok) { _, _ -> action(textInput?.text.toString()) }
+            .setPositiveButton(R.string.ok) { _, _ ->
+                val text = textInput?.text ?: ""
+                action(text.trim().toString())
+            }
             .setNegativeButton(R.string.cancel, null)
             .show()
         inputLayout = alert.findViewById(R.id.text_input_layout)
