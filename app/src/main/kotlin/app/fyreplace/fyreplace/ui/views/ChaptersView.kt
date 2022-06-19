@@ -1,12 +1,14 @@
 package app.fyreplace.fyreplace.ui.views
 
 import android.content.Context
+import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.ContentLoadingProgressBar
@@ -73,6 +75,7 @@ class ChaptersView : LinearLayout {
         text.text = chapter.text
         text.setTextIsSelectable(true)
         TextViewCompat.setTextAppearance(text, style)
+        LinkifyCompat.addLinks(text, Linkify.ALL)
         text.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
