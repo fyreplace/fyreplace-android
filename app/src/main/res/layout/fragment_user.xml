@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:id="@+id/container"
@@ -23,10 +22,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:animateLayoutChanges="true">
+                android:animateLayoutChanges="true"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
                 <ImageView
                     android:id="@+id/avatar"
@@ -34,10 +35,7 @@
                     android:layout_height="@dimen/user_avatar_size"
                     android:layout_marginTop="@dimen/gap_wide"
                     android:contentDescription="@string/avatar"
-                    android:src="@drawable/ic_baseline_account_circle"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:src="@drawable/ic_baseline_account_circle" />
 
                 <TextView
                     android:id="@+id/date_joined"
@@ -46,24 +44,17 @@
                     android:layout_marginTop="@dimen/gap"
                     android:textAlignment="center"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/avatar" />
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/bio"
                     android:layout_width="@dimen/form_width"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/gap"
-                    android:layout_marginTop="@dimen/gap_wide"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textIsSelectable="true"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/date_joined" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:visibility="gone" />
+            </LinearLayout>
         </ScrollView>
     </LinearLayout>
 </layout>
