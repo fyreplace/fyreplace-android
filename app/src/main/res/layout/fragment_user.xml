@@ -50,7 +50,7 @@
                     android:id="@+id/bio"
                     android:layout_width="@dimen/form_width"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/gap"
+                    android:padding="@dimen/gap"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textIsSelectable="true"
                     android:visibility="gone" />
