@@ -62,7 +62,7 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
             val postUri = makeShareUri(resources, "p", post.id)
             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                 type = ClipDescription.MIMETYPE_TEXT_PLAIN
-                putExtra(Intent.EXTRA_TEXT, postUri)
+                putExtra(Intent.EXTRA_TEXT, postUri.toString())
             }
             menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
         }
