@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.extensions
 
 import android.content.res.Resources
 import android.net.Uri
-import android.util.Base64
 import app.fyreplace.fyreplace.R
 import com.google.protobuf.ByteString
 
