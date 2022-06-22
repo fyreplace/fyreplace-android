@@ -6,9 +6,8 @@ import app.fyreplace.protos.Image
 import app.fyreplace.protos.User
 import app.fyreplace.protos.UserServiceGrpcKt
 import app.fyreplace.protos.copy
-import com.google.protobuf.empty
+import com.google.protobuf.Empty
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class CentralViewModel(
@@ -40,7 +39,7 @@ class CentralViewModel(
 
     suspend fun retrieveMe() {
         mCurrentUser.value =
-            if (isAuthenticated.value) userStub.retrieveMe(empty { }) else null
+            if (isAuthenticated.value) userStub.retrieveMe(Empty.getDefaultInstance()) else null
         mBlockedUsers.value = currentUser.value?.blockedUsers ?: 0
     }
 

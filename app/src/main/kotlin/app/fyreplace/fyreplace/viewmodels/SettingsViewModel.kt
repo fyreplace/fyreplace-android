@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
-import com.google.protobuf.empty
+import com.google.protobuf.Empty
 
 @SuppressLint("CheckResult")
 class SettingsViewModel(
@@ -29,7 +29,7 @@ class SettingsViewModel(
     }
 
     suspend fun delete() {
-        accountStub.delete(empty { })
+        accountStub.delete(Empty.getDefaultInstance())
         preferences.edit { putString("auth.token", "") }
     }
 }
