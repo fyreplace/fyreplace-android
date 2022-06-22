@@ -53,7 +53,7 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
-        DynamicColors.applyIfAvailable(this)
+        DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
         bd = ActivityMainBinding.bind(findViewById(R.id.root))
         bd.lifecycleOwner = this
