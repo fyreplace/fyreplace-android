@@ -42,6 +42,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     fun launch(
         scope: CoroutineScope = lifecycleScope,
         context: CoroutineContext = Dispatchers.Main.immediate,
+        autoDisconnect: Boolean = true,
         block: suspend CoroutineScope.() -> Unit
     ) = scope.launch(context) {
         try {
@@ -49,15 +50,15 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
         } catch (e: CancellationException) {
             // Cancellation is a normal occurrence
         } catch (e: StatusException) {
-            onGrpcFailure(StatusRuntimeException(e.status))
+            onGrpcFailure(StatusRuntimeException(e.status), autoDisconnect)
         } catch (e: StatusRuntimeException) {
-            onGrpcFailure(e)
+            onGrpcFailure(e, autoDisconnect)
         } catch (e: Exception) {
             onFailure(e)
         }
     }
 
-    private fun onGrpcFailure(e: StatusRuntimeException) {
+    private fun onGrpcFailure(e: StatusRuntimeException, autoDisconnect: Boolean) {
         val isAuthenticated = preferences.getString("auth.token", null).isNotNullOrBlank()
 
         when {
@@ -67,7 +68,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
                 error = true
             )
             e.status.code == Status.Code.UNAUTHENTICATED
-                    && e.status.description !in setOf("timestamp_exceeded", "invalid_token")
+                    && autoDisconnect
                     && isAuthenticated -> preferences.edit { putString("auth.token", "") }
             else -> onFailure(e)
         }

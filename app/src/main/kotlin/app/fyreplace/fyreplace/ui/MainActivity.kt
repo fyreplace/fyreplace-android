@@ -72,8 +72,6 @@ class MainActivity :
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         cvm.isAuthenticated.launchCollect { authenticated ->
-            cvm.retrieveMe()
-
             for (destination in AUTHENTICATED_DESTINATIONS) {
                 bd.bottomNavigation.menu.findItem(destination).isEnabled = authenticated
             }
@@ -81,6 +79,8 @@ class MainActivity :
             if (!authenticated && navHost.navController.currentDestination?.id in AUTHENTICATED_DESTINATIONS) {
                 navHost.navController.navigate(R.id.fragment_settings)
             }
+
+            launch { cvm.retrieveMe() }
         }
 
         handleIntent(intent)
@@ -199,16 +199,16 @@ class MainActivity :
         }
     }
 
-    private fun confirmActivation(token: String) = launch {
+    private fun confirmActivation(token: String) = launch(autoDisconnect = false) {
         vm.confirmActivation(token)
         showBasicSnackbar(R.string.main_account_activated_message)
     }
 
-    private fun confirmConnection(token: String) = launch {
+    private fun confirmConnection(token: String) = launch(autoDisconnect = false) {
         vm.confirmConnection(token)
     }
 
-    private fun confirmEmailUpdate(token: String) = launch {
+    private fun confirmEmailUpdate(token: String) = launch(autoDisconnect = false) {
         vm.confirmEmailUpdate(token)
         cvm.retrieveMe()
         showBasicSnackbar(R.string.main_user_email_changed_message)
