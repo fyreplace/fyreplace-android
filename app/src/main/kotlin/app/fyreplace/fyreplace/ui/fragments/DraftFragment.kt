@@ -70,7 +70,7 @@ class DraftFragment :
                 )
             }
             adapter.setOnClickListener(this@DraftFragment)
-            adapter.setChapterChangeListener(this@DraftFragment)
+            adapter.setChapterListener(this@DraftFragment)
             adapter.addAll(vm.post.value.chaptersList)
         }
     }

@@ -13,6 +13,8 @@ import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 
 class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
+    private var commentListener: CommentListener? = null
+
     override fun getItemViewType(position: Int) = when {
         position == 0 -> TYPE_CHAPTERS
         items.containsKey(position - 1) -> TYPE_COMMENT
@@ -46,6 +48,10 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
         }
     }
 
+    fun setCommentListener(listener: CommentListener) {
+        commentListener = listener
+    }
+
     fun updatePost(post: Post) {
         this.post = post
         notifyItemChanged(0)
@@ -57,6 +63,10 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
         const val TYPE_COMMENT_LOADER = 3
     }
 
+    interface CommentListener {
+        fun onProfileClicked(profile: Profile)
+    }
+
     private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
         val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
     }
@@ -66,6 +76,8 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
 
         override fun setup(profile: Profile, timestamp: Timestamp?) {
             super.setup(profile, timestamp)
+            avatar?.setOnClickListener { commentListener?.onProfileClicked(profile) }
+            username?.setOnClickListener { commentListener?.onProfileClicked(profile) }
             username?.setTextColor(
                 ResourcesCompat.getColor(
                     itemView.resources,

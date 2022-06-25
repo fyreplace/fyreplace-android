@@ -12,6 +12,7 @@
         android:id="@+id/avatar"
         android:layout_width="@dimen/avatar_size"
         android:layout_height="@dimen/avatar_size"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/avatar"
         android:src="@drawable/ic_baseline_account_circle"
         app:layout_constraintStart_toStartOf="parent"

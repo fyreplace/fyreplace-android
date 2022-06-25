@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.formatDate
 import app.fyreplace.fyreplace.extensions.makeShareUri
+import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
@@ -26,7 +27,9 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>() {
+class PostFragment :
+    ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
+    PostAdapter.CommentListener {
     override val vm by viewModel<PostViewModel> { parametersOf(args.post.v) }
     private val cvm by sharedViewModel<CentralViewModel>()
     private val icvm by sharedViewModel<ArchiveChangeViewModel>()
@@ -123,7 +126,14 @@ class PostFragment : ItemRandomAccessListFragment<Comment, Comments, ItemHolder>
         }
     }
 
-    override fun makeAdapter() = PostAdapter(vm.post.value)
+    override fun makeAdapter() = PostAdapter(vm.post.value).apply {
+        setCommentListener(this@PostFragment)
+    }
+
+    override fun onProfileClicked(profile: Profile) {
+        val directions = PostFragmentDirections.actionUser(profile = profile.p)
+        findNavController().navigate(directions)
+    }
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {

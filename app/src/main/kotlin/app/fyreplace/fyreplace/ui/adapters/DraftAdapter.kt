@@ -65,7 +65,7 @@ class DraftAdapter(
 
     override fun getItemId(item: Chapter): ByteString = ByteString.EMPTY
 
-    fun setChapterChangeListener(listener: ChapterListener) {
+    fun setChapterListener(listener: ChapterListener) {
         chapterListener = listener
     }
 
