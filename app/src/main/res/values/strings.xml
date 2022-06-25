@@ -9,9 +9,9 @@
     <string name="banned"><i>Banned user</i></string>
     <string name="avatar">Avatar</string>
     <string name="legal_privacy_policy">Privacy policy</string>
-    <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.app/privacy-policy.html</string>
+    <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.app/privacy-policy</string>
     <string name="legal_terms_of_service">Terms of service</string>
-    <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.app/terms-of-service.html</string>
+    <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.app/terms-of-service</string>
 
     <string name="error_title">Unknown error: %1$s</string>
     <string name="error_unavailable_title">Service unavailable</string>
