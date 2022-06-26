@@ -90,7 +90,7 @@ class DraftAdapter(
     }
 
     class ImageChapterHolder(itemView: View) : ChapterHolder(itemView) {
-        val image: ImageView = itemView.findViewById(R.id.image)
+        private val image: ImageView = itemView.findViewById(R.id.image)
 
         override fun setup(chapter: Chapter) {
             Glide.with(itemView.context)

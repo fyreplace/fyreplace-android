@@ -39,12 +39,8 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
 
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         when (holder) {
-            is ChaptersHolder -> holder.chapters.setPost(post)
-            is CommentHolder -> {
-                val comment = items[position - 1] ?: return
-                holder.setup(comment.author, comment.dateCreated)
-                holder.content.text = comment.text
-            }
+            is ChaptersHolder -> holder.setup(post)
+            is CommentHolder -> holder.setup(items[position - 1] ?: return)
         }
     }
 
@@ -68,11 +64,13 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
     }
 
     private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
-        val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
+        private val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
+
+        fun setup(post: Post) = chapters.setPost(post)
     }
 
     private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
-        val content: TextView = itemView.findViewById(R.id.content)
+        private val content: TextView = itemView.findViewById(R.id.content)
 
         override fun setup(profile: Profile, timestamp: Timestamp?) {
             super.setup(profile, timestamp)
@@ -85,6 +83,11 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
                     itemView.context.theme
                 )
             )
+        }
+
+        fun setup(comment: Comment) {
+            setup(comment.author, comment.dateCreated)
+            content.text = comment.text
         }
     }
 }
