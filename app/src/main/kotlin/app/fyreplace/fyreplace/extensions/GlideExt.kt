@@ -10,4 +10,5 @@ fun RequestManager.loadAvatar(url: String?) = load(url)
     .circleCrop()
     .transition(DrawableTransitionOptions.withCrossFade())
 
-fun RequestManager.loadAvatar(profile: Profile?) = loadAvatar(profile?.avatar?.url)
+fun RequestManager.loadAvatar(profile: Profile?) =
+    loadAvatar(if (profile?.isBanned != true) profile?.avatar?.url else "")

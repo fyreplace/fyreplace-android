@@ -11,7 +11,8 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
 import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.getUsername
+import app.fyreplace.fyreplace.extensions.setAvatar
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
@@ -19,7 +20,6 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.Sentence
 import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.protos.Rank
-import com.bumptech.glide.Glide
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -56,7 +56,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupToolbar() {
-        bd.toolbar.title = args.profile.username
+        bd.toolbar.title = args.profile.v.getUsername(requireContext())
         bd.toolbar.subtitle = when (args.profile.rank) {
             Rank.RANK_SUPERUSER -> getString(R.string.user_rank_superuser)
             Rank.RANK_STAFF -> getString(R.string.user_rank_staff)
@@ -99,7 +99,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupContent() {
-        Glide.with(this).loadAvatar(args.profile.avatar.url).into(bd.avatar)
+        bd.avatar.setAvatar(args.profile.v)
 
         vm.user.filterNotNull().launchCollect { user ->
             bd.dateJoined.isVisible = true

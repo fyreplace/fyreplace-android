@@ -153,7 +153,7 @@ class MainActivity :
         if (profile?.isAvailable == true) {
             val avatarSize = resources.getDimensionPixelSize(R.dimen.avatar_size)
             Glide.with(this)
-                .loadAvatar(profile.avatar.url)
+                .loadAvatar(profile)
                 .into(LogoTarget(avatarSize, profile))
 
             for (view in textViews) {

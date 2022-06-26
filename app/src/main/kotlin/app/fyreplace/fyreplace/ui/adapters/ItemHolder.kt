@@ -6,10 +6,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.setAvatar
 import app.fyreplace.fyreplace.extensions.setUsername
 import app.fyreplace.protos.Profile
-import com.bumptech.glide.Glide
 import com.google.protobuf.Timestamp
 
 open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -18,10 +17,7 @@ open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val date: TextView? = itemView.findViewById(R.id.date)
 
     open fun setup(profile: Profile, timestamp: Timestamp?) {
-        if (avatar != null) {
-            Glide.with(itemView.context).loadAvatar(profile).into(avatar)
-        }
-
+        avatar?.setAvatar(profile)
         username?.setUsername(profile)
         date?.text = timestamp?.formatDate(singleLine = false)
     }
