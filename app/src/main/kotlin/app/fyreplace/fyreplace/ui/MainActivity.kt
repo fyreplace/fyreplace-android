@@ -146,7 +146,7 @@ class MainActivity :
     }
 
     fun setToolbarInfo(profile: Profile?, subtitle: String?) {
-        profile?.let { bd.toolbar.title = getUsername(it) }
+        profile?.let { bd.toolbar.title = it.getUsername(this) }
         bd.toolbar.subtitle = subtitle
         val textViews = bd.toolbar.children.filterIsInstance<TextView>()
 

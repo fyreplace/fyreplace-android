@@ -5,5 +5,5 @@ import app.fyreplace.fyreplace.extensions.getUsername
 import app.fyreplace.protos.Profile
 
 fun TextView.setUsername(profile: Profile) {
-    text = context.getUsername(profile)
+    text = profile.getUsername(context)
 }
