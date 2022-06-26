@@ -11,9 +11,9 @@
     <string name="legal_terms_of_service">Terms of service</string>
     <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.app/terms-of-service</string>
 
-    <string name="anonymous"><i>Anonymous</i></string>
-    <string name="banned"><i>User banned</i></string>
-    <string name="avatar">Avatar</string>
+    <string name="profile_anonymous"><i>Anonymous</i></string>
+    <string name="profile_banned"><i>User banned</i></string>
+    <string name="profile_avatar">Avatar</string>
 
     <string name="comment_deleted"><i>Comment deleted</i></string>
 
