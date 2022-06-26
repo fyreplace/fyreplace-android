@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.resolveTextAttribute
+import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
@@ -47,9 +47,9 @@ class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
 
     abstract class ChapterHolder(itemView: View) : ItemHolder(itemView) {
         protected val textAppearanceNormal =
-            itemView.context.theme.resolveTextAttribute(R.attr.textAppearanceBodyLarge)
+            itemView.context.theme.resolveStyleAttribute(R.attr.textAppearanceBodyLarge)
         protected val textAppearanceTitle =
-            itemView.context.theme.resolveTextAttribute(R.attr.textAppearanceHeadlineSmall)
+            itemView.context.theme.resolveStyleAttribute(R.attr.textAppearanceHeadlineSmall)
         protected val textMaxLines =
             itemView.context.resources.getInteger(R.integer.item_list_text_max_lines)
 

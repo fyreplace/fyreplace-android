@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.setComment
 import app.fyreplace.fyreplace.ui.views.ChaptersView
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
@@ -87,7 +88,7 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
 
         fun setup(comment: Comment) {
             setup(comment.author, comment.dateCreated)
-            content.text = comment.text
+            content.setComment(comment)
         }
     }
 }

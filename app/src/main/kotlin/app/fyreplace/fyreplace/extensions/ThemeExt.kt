@@ -6,7 +6,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StyleRes
 
 @StyleRes
-fun Resources.Theme.resolveTextAttribute(@AttrRes attr: Int): Int {
+fun Resources.Theme.resolveStyleAttribute(@AttrRes attr: Int): Int {
     val typedValue = TypedValue()
     resolveAttribute(attr, typedValue, true)
     return typedValue.data
