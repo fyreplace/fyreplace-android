@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -127,7 +128,9 @@ class MainActivity :
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        if (destination.id in TOP_LEVEL_DESTINATIONS) {
+        bd.bottomNavigation.isVisible = destination.id in TOP_LEVEL_DESTINATIONS
+
+        if (bd.bottomNavigation.isVisible) {
             setToolbarInfo(null, null)
         }
 
