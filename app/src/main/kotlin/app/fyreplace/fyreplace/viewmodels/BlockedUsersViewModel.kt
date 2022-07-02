@@ -3,9 +3,12 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
+@HiltViewModel
 @SuppressLint("CheckResult")
-class BlockedUsersViewModel(private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub) :
+class BlockedUsersViewModel @Inject constructor(private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub) :
     ItemListViewModel<Profile, Profiles>() {
     override val forward = true
 

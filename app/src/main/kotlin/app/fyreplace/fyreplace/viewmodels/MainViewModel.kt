@@ -8,9 +8,12 @@ import app.fyreplace.protos.AccountServiceGrpcKt
 import app.fyreplace.protos.UserServiceGrpcKt
 import app.fyreplace.protos.connectionToken
 import app.fyreplace.protos.token
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
+@HiltViewModel
 @SuppressLint("CheckResult")
-class MainViewModel(
+class MainViewModel @Inject constructor(
     private val preferences: SharedPreferences,
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub

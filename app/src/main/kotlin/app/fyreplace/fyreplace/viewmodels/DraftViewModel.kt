@@ -1,14 +1,18 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
 
 @SuppressLint("CheckResult")
-class DraftViewModel(
-    initialPost: Post,
+class DraftViewModel @AssistedInject constructor(
+    @Assisted initialPost: Post,
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
     private val chapterStub: ChapterServiceGrpcKt.ChapterServiceCoroutineStub
 ) : LoadingViewModel() {
@@ -97,4 +101,14 @@ class DraftViewModel(
         .apply { post.value.chaptersList.getOrNull(0)?.let { addChapters(it) } }
         .setIsPreview(true)
         .build()
+
+    companion object {
+        fun provideFactory(
+            assistedFactory: DraftViewModelFactory,
+            post: Post
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                assistedFactory.create(post) as T
+        }
+    }
 }

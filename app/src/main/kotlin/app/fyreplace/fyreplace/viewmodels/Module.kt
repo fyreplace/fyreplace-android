@@ -1,23 +1,23 @@
 package app.fyreplace.fyreplace.viewmodels
 
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import app.fyreplace.protos.Post
+import app.fyreplace.protos.Profile
+import dagger.assisted.AssistedFactory
 
-val viewModelsModule = module {
-    viewModel { ImageSelectorViewModel() }
-    viewModel { MainViewModel(get(), get(), get()) }
-    viewModel { CentralViewModel(get(), get()) }
-    viewModel { FeedViewModel() }
-    viewModel { NotificationsViewModel() }
-    viewModel { ArchiveChangeViewModel() }
-    viewModel { ArchiveViewModel(get()) }
-    viewModel { DraftsChangeViewModel() }
-    viewModel { DraftsViewModel(get()) }
-    viewModel { SettingsViewModel(get(), get(), get()) }
-    viewModel { PostViewModel(it.get(), get(), get()) }
-    viewModel { DraftViewModel(it.get(), get(), get()) }
-    viewModel { UserViewModel(it.get(), get()) }
-    viewModel { LoginViewModel(get(), get(), get()) }
-    viewModel { BlockedUsersChangeViewModel() }
-    viewModel { BlockedUsersViewModel(get()) }
+@AssistedFactory
+@Suppress("unused")
+interface PostViewModelFactory {
+    fun create(post: Post): PostViewModel
+}
+
+@AssistedFactory
+@Suppress("unused")
+interface DraftViewModelFactory {
+    fun create(post: Post): DraftViewModel
+}
+
+@AssistedFactory
+@Suppress("unused")
+interface UserViewModelFactory {
+    fun create(profile: Profile): UserViewModel
 }

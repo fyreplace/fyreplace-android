@@ -1,13 +1,13 @@
 package app.fyreplace.fyreplace.ui
 
 import android.content.ComponentCallbacks
-import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.mainPreferences
 import app.fyreplace.fyreplace.isNotNullOrBlank
 import io.grpc.Status
 import io.grpc.StatusException
@@ -18,11 +18,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.get
 import kotlin.coroutines.CoroutineContext
 
 interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
-    val preferences get() = get<SharedPreferences>()
+    val preferences get() = getContext()?.mainPreferences
 
     fun getFailureTexts(error: Status): Pair<Int, Int>? = null
 
@@ -59,7 +58,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     }
 
     private fun onGrpcFailure(e: StatusRuntimeException, autoDisconnect: Boolean) {
-        val isAuthenticated = preferences.getString("auth.token", null).isNotNullOrBlank()
+        val isAuthenticated = preferences?.getString("auth.token", null).isNotNullOrBlank()
 
         when {
             e.status.code == Status.Code.UNAVAILABLE -> showBasicAlert(
@@ -69,7 +68,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
             )
             e.status.code == Status.Code.UNAUTHENTICATED
                     && autoDisconnect
-                    && isAuthenticated -> preferences.edit { putString("auth.token", "") }
+                    && isAuthenticated -> preferences?.edit { putString("auth.token", "") }
             else -> onFailure(e)
         }
     }

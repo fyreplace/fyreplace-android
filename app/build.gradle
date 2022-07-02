@@ -2,8 +2,9 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "kotlin-kapt"
-    id "androidx.navigation.safeargs.kotlin"
     id "com.google.protobuf"
+    id "androidx.navigation.safeargs.kotlin"
+    id "dagger.hilt.android.plugin"
     id "com.github.triplet.play"
 }
 
@@ -155,10 +156,15 @@ dependencies {
     implementation libs.androidx.security
     implementation libs.androidx.swiperefreshlayout
     implementation libs.google.material
+    implementation libs.hilt.hilt
     implementation libs.javax.annotation
-    implementation libs.koin
     implementation libs.kotlinx.coroutines
     googleImplementation libs.google.play.services
     libreImplementation libs.conscrypt
     kapt libs.glide.glide.compiler
+    kapt libs.hilt.hilt.compiler
+}
+
+kapt {
+    correctErrorTypes = true
 }

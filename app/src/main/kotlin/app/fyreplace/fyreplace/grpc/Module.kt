@@ -1,37 +1,62 @@
 package app.fyreplace.fyreplace.grpc
 
-import android.content.res.Resources
+import android.content.Context
+import android.content.SharedPreferences
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.*
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import io.grpc.Channel
-import io.grpc.ClientInterceptor
 import io.grpc.ManagedChannelBuilder
-import org.koin.dsl.module
 
-val grpcModule = module {
-    single<List<ClientInterceptor>> { listOf(AuthenticationInterceptor(get())) }
-
-    single<Channel> {
-        val resources = get<Resources>()
+@Module
+@InstallIn(SingletonComponent::class)
+@Suppress("unused")
+object GrpcModule {
+    @Provides
+    fun provideChannel(
+        @ApplicationContext context: Context,
+        preferences: SharedPreferences
+    ): Channel {
         val channel = ManagedChannelBuilder.forAddress(
-            resources.getString(R.string.api_host),
-            resources.getInteger(R.integer.api_port)
+            context.resources.getString(R.string.api_host),
+            context.resources.getInteger(R.integer.api_port)
         )
 
-        if (resources.getBoolean(R.bool.clear_text_communication)) {
+        if (context.resources.getBoolean(R.bool.clear_text_communication)) {
             channel.usePlaintext()
         }
 
-        return@single channel
+        return channel
             .enableRetry()
-            .intercept(get<List<ClientInterceptor>>())
+            .intercept(listOf(AuthenticationInterceptor(preferences)))
             .build()
     }
 
-    factory { AccountServiceGrpcKt.AccountServiceCoroutineStub(get()) }
-    factory { UserServiceGrpcKt.UserServiceCoroutineStub(get()) }
-    factory { PostServiceGrpcKt.PostServiceCoroutineStub(get()) }
-    factory { ChapterServiceGrpcKt.ChapterServiceCoroutineStub(get()) }
-    factory { CommentServiceGrpcKt.CommentServiceCoroutineStub(get()) }
-    factory { NotificationServiceGrpcKt.NotificationServiceCoroutineStub(get()) }
+    @Provides
+    fun provideAccountServiceStub(channel: Channel) =
+        AccountServiceGrpcKt.AccountServiceCoroutineStub(channel)
+
+    @Provides
+    fun provideUserServiceStub(channel: Channel) =
+        UserServiceGrpcKt.UserServiceCoroutineStub(channel)
+
+    @Provides
+    fun providePostServiceStub(channel: Channel) =
+        PostServiceGrpcKt.PostServiceCoroutineStub(channel)
+
+    @Provides
+    fun provideChapterServiceStub(channel: Channel) =
+        ChapterServiceGrpcKt.ChapterServiceCoroutineStub(channel)
+
+    @Provides
+    fun provideCommentServiceStub(channel: Channel) =
+        CommentServiceGrpcKt.CommentServiceCoroutineStub(channel)
+
+    @Provides
+    fun provideNotificationServiceStub(channel: Channel) =
+        NotificationServiceGrpcKt.NotificationServiceCoroutineStub(channel)
 }

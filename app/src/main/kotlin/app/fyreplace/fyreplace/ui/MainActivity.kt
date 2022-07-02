@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
@@ -38,17 +39,18 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
+import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class MainActivity :
     AppCompatActivity(R.layout.activity_main),
     FailureHandler,
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener {
     override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
-    private val vm by viewModel<MainViewModel>()
-    private val cvm by viewModel<CentralViewModel>()
+    private val vm by viewModels<MainViewModel>()
+    private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
 

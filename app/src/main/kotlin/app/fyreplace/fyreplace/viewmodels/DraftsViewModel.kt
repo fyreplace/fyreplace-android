@@ -3,8 +3,11 @@ package app.fyreplace.fyreplace.viewmodels
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import com.google.protobuf.Empty
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class DraftsViewModel(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
+@HiltViewModel
+class DraftsViewModel @Inject constructor(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
     ItemListViewModel<Post, Posts>() {
     override fun listItems() = postStub.listDrafts(pages)
 

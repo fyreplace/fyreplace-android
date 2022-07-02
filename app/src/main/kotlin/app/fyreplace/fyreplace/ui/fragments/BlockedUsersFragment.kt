@@ -1,5 +1,7 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.grpc.p
@@ -9,13 +11,13 @@ import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersViewModel
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.Profiles
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class BlockedUsersFragment : ItemListFragment<Profile, Profiles, BlockedUsersAdapter.Holder>(),
     ItemListAdapter.ItemClickListener<Profile> {
-    override val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
-    override val vm by viewModel<BlockedUsersViewModel>()
+    override val icvm by activityViewModels<BlockedUsersChangeViewModel>()
+    override val vm by viewModels<BlockedUsersViewModel>()
     override val emptyText by lazy { getString(R.string.blocked_users_empty) }
 
     override fun makeAdapter() = BlockedUsersAdapter().apply {

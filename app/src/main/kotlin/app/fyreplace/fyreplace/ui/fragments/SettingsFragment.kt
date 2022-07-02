@@ -1,24 +1,26 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.FailureHandler
-import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.extensions.applySettings
 import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.extensions.setupTransitions
+import app.fyreplace.fyreplace.ui.FailureHandler
+import app.fyreplace.fyreplace.ui.ImageSelector
+import app.fyreplace.fyreplace.ui.ImageSelectorFactory
 import app.fyreplace.fyreplace.ui.views.BioPreference
 import app.fyreplace.fyreplace.ui.views.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
@@ -26,26 +28,27 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
+    @Inject
+    lateinit var imageSelectorFactory: ImageSelectorFactory
+
     override lateinit var rootView: View
-    override val preferences by inject<SharedPreferences>()
-    private val cvm by sharedViewModel<CentralViewModel>()
-    private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
-    private val vm by viewModel<SettingsViewModel>()
-    private val imageSelector by inject<ImageSelector<SettingsFragment>> { parametersOf(this, 1f) }
+    private val cvm by activityViewModels<CentralViewModel>()
+    private val icvm by activityViewModels<BlockedUsersChangeViewModel>()
+    private val vm by viewModels<SettingsViewModel>()
+    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1f) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -229,7 +232,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     private inner class SettingsDataStore : PreferenceDataStore() {
         override fun getString(key: String?, defValue: String?) = when (key) {
-            "theme" -> preferences.getString(
+            "theme" -> preferences?.getString(
                 "settings.theme",
                 getString(R.string.settings_theme_auto_value)
             )
@@ -250,8 +253,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                     cvm.retrieveMe()
                 }
                 "theme" -> {
-                    preferences.edit { putString("settings.theme", value) }
-                    preferences.applySettings(requireContext())
+                    preferences?.edit { putString("settings.theme", value) }
+                    preferences?.applySettings(requireContext())
                 }
                 else -> super.putString(key, value)
             }

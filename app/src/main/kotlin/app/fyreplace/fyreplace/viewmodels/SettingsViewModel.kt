@@ -6,9 +6,12 @@ import androidx.core.content.edit
 import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
 import com.google.protobuf.Empty
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
+@HiltViewModel
 @SuppressLint("CheckResult")
-class SettingsViewModel(
+class SettingsViewModel @Inject constructor(
     private val preferences: SharedPreferences,
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub

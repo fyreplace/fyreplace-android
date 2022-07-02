@@ -4,8 +4,11 @@ import app.fyreplace.protos.Cursor
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.PostServiceGrpcKt
 import app.fyreplace.protos.Posts
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ArchiveViewModel(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
+@HiltViewModel
+class ArchiveViewModel @Inject constructor(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
     ItemListViewModel<Post, Posts>() {
     override fun listItems() = postStub.listArchive(pages)
 

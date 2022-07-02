@@ -1,17 +1,20 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 @SuppressLint("CheckResult")
-class UserViewModel(
-    initialProfile: Profile,
+class UserViewModel @AssistedInject constructor(
+    @Assisted initialProfile: Profile,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
-) :
-    BaseViewModel() {
+) : BaseViewModel() {
     private val mUser = MutableStateFlow<User?>(null)
     private val mBlocked = MutableStateFlow(initialProfile.isBlocked)
     private val mBanned = MutableStateFlow(initialProfile.isBanned)
@@ -48,6 +51,16 @@ class UserViewModel(
             }
         })
         mBanned.value = true
+    }
+
+    companion object {
+        fun provideFactory(
+            assistedFactory: UserViewModelFactory,
+            profile: Profile
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                assistedFactory.create(profile) as T
+        }
     }
 }
 

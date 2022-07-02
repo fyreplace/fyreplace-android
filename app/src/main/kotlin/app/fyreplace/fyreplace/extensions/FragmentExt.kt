@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
-import app.fyreplace.fyreplace.ui.MainActivity
-import app.fyreplace.protos.Profile
 import com.google.android.material.transition.MaterialSharedAxis
 
 fun Fragment.setupTransitions() {

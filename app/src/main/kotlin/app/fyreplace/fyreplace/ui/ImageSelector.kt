@@ -12,15 +12,17 @@ import androidx.core.content.FileProvider.getUriForFile
 import androidx.exifinterface.media.ExifInterface
 import androidx.exifinterface.media.ExifInterface.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.viewmodels.ImageSelectorViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -29,11 +31,13 @@ import kotlin.coroutines.coroutineContext
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
-class ImageSelector<F>(
-    private val fragment: F,
-    maxImageSize: Float
-) where F : Fragment, F : FailureHandler, F : ImageSelector.Listener {
-    private val vm by fragment.viewModel<ImageSelectorViewModel>()
+class ImageSelector @AssistedInject constructor(
+    @Assisted private val fragment: Fragment,
+    @Assisted private val failureHandler: FailureHandler,
+    @Assisted private val listener: Listener,
+    @Assisted maxImageSize: Float
+) {
+    private val vm by fragment.viewModels<ImageSelectorViewModel>()
     private val imagesDirectory = File(fragment.requireContext().filesDir, "images")
     private val photoImageFile = File(imagesDirectory, "image.data")
     private val maxImageByteSize = (maxImageSize * 1024 * 1024).roundToInt()
@@ -44,7 +48,7 @@ class ImageSelector<F>(
     fun onCreate() {
         val getContentContract = ActivityResultContracts.GetContent()
         getContentLauncher = fragment.registerForActivityResult(getContentContract) {
-            it?.let { fragment.launch { useImageUri(it) } }
+            it?.let { failureHandler.launch { useImageUri(it) } }
         }
 
         val takePictureContract = ActivityResultContracts.TakePicture()
@@ -53,7 +57,7 @@ class ImageSelector<F>(
                 return@registerForActivityResult
             }
 
-            fragment.launch {
+            failureHandler.launch {
                 vm.pop().let { uri ->
                     useImageUri(uri)
                     photoImageFile.delete()
@@ -75,9 +79,9 @@ class ImageSelector<F>(
         MaterialAlertDialogBuilder(fragment.requireContext())
             .setTitle(title)
             .setItems(items.map { fragment.resources.getString(it) }.toTypedArray()) { _, i ->
-                fragment.launch {
+                failureHandler.launch {
                     when (items[i]) {
-                        R.string.image_selector_action_remove -> fragment.onImageRemoved()
+                        R.string.image_selector_action_remove -> listener.onImageRemoved()
                         R.string.image_selector_action_file -> selectImage(false)
                         R.string.image_selector_action_photo -> selectImage(true)
                         else -> throw IllegalArgumentException()
@@ -193,7 +197,7 @@ class ImageSelector<F>(
             throw IOException(fragment.resources.getString(R.string.image_failure_file_size))
         }
 
-        withContext(Dispatchers.Main) { fragment.onImage(compressedBytes) }
+        withContext(Dispatchers.Main) { listener.onImage(compressedBytes) }
     }
 
     companion object {

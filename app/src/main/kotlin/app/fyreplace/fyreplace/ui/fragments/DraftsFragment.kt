@@ -2,6 +2,8 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.grpc.p
@@ -15,13 +17,13 @@ import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import app.fyreplace.protos.post
 import com.google.protobuf.ByteString
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
     ItemListAdapter.ItemClickListener<Post> {
-    override val icvm by sharedViewModel<DraftsChangeViewModel>()
-    override val vm by viewModel<DraftsViewModel>()
+    override val icvm by activityViewModels<DraftsChangeViewModel>()
+    override val vm by viewModels<DraftsViewModel>()
     override val emptyText by lazy { getString(R.string.drafts_empty) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

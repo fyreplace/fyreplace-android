@@ -4,6 +4,8 @@ import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -17,22 +19,28 @@ import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
+import app.fyreplace.fyreplace.viewmodels.PostViewModelFactory
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.Rank
+import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.flow.combine
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
     PostAdapter.CommentListener {
-    override val vm by viewModel<PostViewModel> { parametersOf(args.post.v) }
-    private val cvm by sharedViewModel<CentralViewModel>()
-    private val icvm by sharedViewModel<ArchiveChangeViewModel>()
+    @Inject
+    lateinit var vmFactory: PostViewModelFactory
+
+    override val vm by viewModels<PostViewModel> {
+        PostViewModel.provideFactory(vmFactory, args.post.v)
+    }
+    private val cvm by activityViewModels<CentralViewModel>()
+    private val icvm by activityViewModels<ArchiveChangeViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
 

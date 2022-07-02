@@ -4,40 +4,51 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.widget.Button
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
 import app.fyreplace.fyreplace.ui.ImageSelector
+import app.fyreplace.fyreplace.ui.ImageSelectorFactory
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModel
+import app.fyreplace.fyreplace.viewmodels.DraftViewModelFactory
 import app.fyreplace.fyreplace.viewmodels.DraftsChangeViewModel
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.chapter
+import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
-import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class DraftFragment :
     BaseFragment(R.layout.fragment_draft),
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener {
+    @Inject
+    lateinit var vmFactory: DraftViewModelFactory
+
+    @Inject
+    lateinit var imageSelectorFactory: ImageSelectorFactory
+
     override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
-    private val vm by viewModel<DraftViewModel> { parametersOf(args.post.v) }
-    private val icvm by sharedViewModel<DraftsChangeViewModel>()
-    private val pcvm by sharedViewModel<ArchiveChangeViewModel>()
+    private val vm by viewModels<DraftViewModel> {
+        DraftViewModel.provideFactory(vmFactory, args.post.v)
+    }
+    private val icvm by activityViewModels<DraftsChangeViewModel>()
+    private val pcvm by activityViewModels<ArchiveChangeViewModel>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val args by navArgs<DraftFragmentArgs>()
-    private val imageSelector by inject<ImageSelector<DraftFragment>> { parametersOf(this, 0.5f) }
+    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 0.5f) }
     private var currentChapterPosition = -1
     private val chapterTextMaxSize by lazy { requireContext().resources.getInteger(R.integer.chapter_text_max_size) }
 

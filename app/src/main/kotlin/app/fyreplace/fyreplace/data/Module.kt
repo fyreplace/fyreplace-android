@@ -1,32 +1,21 @@
 package app.fyreplace.fyreplace.data
 
 import android.content.Context
-import android.os.Build
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
-import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.moveTo
-import org.koin.dsl.module
+import android.content.res.Resources
+import app.fyreplace.fyreplace.extensions.mainPreferences
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
-val dataModule = module {
-    single {
-        get<Context>().run {
-            val plainTextPrefs = getSharedPreferences(
-                getString(R.string.app_name),
-                Context.MODE_PRIVATE
-            )
+@Module
+@InstallIn(SingletonComponent::class)
+@Suppress("unused")
+object DataModule {
+    @Provides
+    fun provideSharedPreferences(@ApplicationContext context: Context) = context.mainPreferences
 
-            return@run if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                EncryptedSharedPreferences.create(
-                    packageName,
-                    MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-                    this,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                ).also { plainTextPrefs.moveTo(it) }
-            } else {
-                plainTextPrefs
-            }
-        }
-    }
+    @Provides
+    fun provideResources(@ApplicationContext context: Context): Resources = context.resources
 }

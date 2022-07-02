@@ -1,5 +1,7 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.grpc.p
@@ -9,13 +11,13 @@ import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.ArchiveViewModel
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ArchiveFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
     ItemListAdapter.ItemClickListener<Post> {
-    override val icvm by sharedViewModel<ArchiveChangeViewModel>()
-    override val vm by viewModel<ArchiveViewModel>()
+    override val icvm by activityViewModels<ArchiveChangeViewModel>()
+    override val vm by viewModels<ArchiveViewModel>()
     override val emptyText by lazy { getString(R.string.archive_empty) }
 
     override fun makeAdapter() = ArchiveAdapter().apply {

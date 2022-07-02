@@ -7,10 +7,13 @@ import app.fyreplace.protos.User
 import app.fyreplace.protos.UserServiceGrpcKt
 import app.fyreplace.protos.copy
 import com.google.protobuf.Empty
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
 
-class CentralViewModel(
+@HiltViewModel
+class CentralViewModel @Inject constructor(
     private val preferences: SharedPreferences,
     private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
 ) : BaseViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {

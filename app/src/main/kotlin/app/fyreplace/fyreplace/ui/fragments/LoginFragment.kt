@@ -7,22 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentLoginBinding
 import app.fyreplace.fyreplace.extensions.browse
-import app.fyreplace.fyreplace.ui.TitleChoosing
 import app.fyreplace.fyreplace.extensions.hideSoftInput
+import app.fyreplace.fyreplace.ui.TitleChoosing
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
     override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
-    private val vm by viewModel<LoginViewModel>()
+    private val vm by viewModels<LoginViewModel>()
     private val args by navArgs<LoginFragmentArgs>()
     private lateinit var bd: FragmentLoginBinding
 

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
@@ -15,22 +16,24 @@ import app.fyreplace.fyreplace.extensions.getUsername
 import app.fyreplace.fyreplace.extensions.setAvatar
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
-import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
-import app.fyreplace.fyreplace.viewmodels.CentralViewModel
-import app.fyreplace.fyreplace.viewmodels.Sentence
-import app.fyreplace.fyreplace.viewmodels.UserViewModel
+import app.fyreplace.fyreplace.viewmodels.*
 import app.fyreplace.protos.Rank
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.parameter.parametersOf
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class UserFragment : DialogFragment(), FailureHandler {
+    @Inject
+    lateinit var vmFactory: UserViewModelFactory
+
     override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
-    private val cvm by sharedViewModel<CentralViewModel>()
-    private val icvm by sharedViewModel<BlockedUsersChangeViewModel>()
-    private val vm by viewModel<UserViewModel> { parametersOf(args.profile.v) }
+    private val cvm by viewModels<CentralViewModel>()
+    private val icvm by viewModels<BlockedUsersChangeViewModel>()
+    private val vm by viewModels<UserViewModel> {
+        UserViewModel.provideFactory(vmFactory, args.profile.v)
+    }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
 

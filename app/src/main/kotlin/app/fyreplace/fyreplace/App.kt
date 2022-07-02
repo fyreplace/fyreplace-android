@@ -1,22 +1,17 @@
 package app.fyreplace.fyreplace
 
 import android.content.SharedPreferences
-import app.fyreplace.fyreplace.data.dataModule
-import app.fyreplace.fyreplace.grpc.grpcModule
 import app.fyreplace.fyreplace.extensions.applySettings
-import app.fyreplace.fyreplace.ui.fragmentsModule
-import app.fyreplace.fyreplace.viewmodels.viewModelsModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.context.startKoin
+import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
-@Suppress("unused")
+@HiltAndroidApp
 class App : BaseApp() {
+    @Inject
+    lateinit var preferences: SharedPreferences
+
     override fun onCreate() {
         super.onCreate()
-        val koinApp = startKoin {
-            androidContext(this@App)
-            modules(appModule, fragmentsModule, viewModelsModule, grpcModule, dataModule)
-        }
-        koinApp.koin.get<SharedPreferences>().applySettings(koinApp.koin.get())
+        preferences.applySettings(this)
     }
 }

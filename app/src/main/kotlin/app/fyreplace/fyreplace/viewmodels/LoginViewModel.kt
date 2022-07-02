@@ -10,11 +10,14 @@ import app.fyreplace.protos.AccountServiceGrpcKt
 import app.fyreplace.protos.connectionCredentials
 import app.fyreplace.protos.email
 import app.fyreplace.protos.userCreation
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val resources: Resources,
     private val preferences: SharedPreferences,
     private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub
