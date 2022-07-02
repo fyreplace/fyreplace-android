@@ -1,3 +1,3 @@
-package app.fyreplace.fyreplace
+package app.fyreplace.fyreplace.extensions
 
 fun String?.isNotNullOrBlank() = !isNullOrBlank()

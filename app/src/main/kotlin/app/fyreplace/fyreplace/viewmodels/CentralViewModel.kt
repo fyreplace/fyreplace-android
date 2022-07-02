@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import android.content.SharedPreferences
-import app.fyreplace.fyreplace.isNotNullOrBlank
+import app.fyreplace.fyreplace.extensions.isNotNullOrBlank
 import app.fyreplace.protos.Image
 import app.fyreplace.protos.User
 import app.fyreplace.protos.UserServiceGrpcKt

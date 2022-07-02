@@ -8,7 +8,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.mainPreferences
-import app.fyreplace.fyreplace.isNotNullOrBlank
+import app.fyreplace.fyreplace.extensions.isNotNullOrBlank
 import io.grpc.Status
 import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
