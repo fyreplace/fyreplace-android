@@ -49,6 +49,20 @@ class PostViewModel @AssistedInject constructor(
         postStub.delete(id { id = mPost.value.id })
     }
 
+    suspend fun reportComment(commentId: ByteString) {
+        commentStub.report(id { id = commentId })
+    }
+
+    suspend fun deleteComment(position: Int, commentId: ByteString) {
+        commentStub.delete(id { id = commentId })
+        makeDeletedComment(position)?.let { update(position, it) }
+    }
+
+    fun makeDeletedComment(position: Int) = items[position]?.copy {
+        isDeleted = true
+        text = ""
+    }
+
     companion object {
         fun provideFactory(
             assistedFactory: PostViewModelFactory,

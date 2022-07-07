@@ -61,7 +61,9 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
     }
 
     interface CommentListener {
-        fun onProfileClicked(profile: Profile)
+        fun onCommentProfileClicked(view: View, position: Int, profile: Profile)
+
+        fun onCommentOptionsClicked(view: View, position: Int, comment: Comment)
     }
 
     private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
@@ -72,11 +74,16 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
 
     private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
         private val content: TextView = itemView.findViewById(R.id.content)
+        private val more: View = itemView.findViewById(R.id.more)
+        private val commentPosition get() = bindingAdapterPosition - 1
 
         override fun setup(profile: Profile, timestamp: Timestamp?) {
             super.setup(profile, timestamp)
-            avatar?.setOnClickListener { commentListener?.onProfileClicked(profile) }
-            username?.setOnClickListener { commentListener?.onProfileClicked(profile) }
+            val onProfileClicked = { view: View ->
+                commentListener?.onCommentProfileClicked(view, commentPosition, profile) ?: Unit
+            }
+            avatar?.setOnClickListener(onProfileClicked)
+            username?.setOnClickListener(onProfileClicked)
             username?.setTextColor(
                 ResourcesCompat.getColor(
                     itemView.resources,
@@ -89,6 +96,10 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
         fun setup(comment: Comment) {
             setup(comment.author, comment.dateCreated)
             content.setComment(comment)
+            more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
+            more.setOnClickListener {
+                commentListener?.onCommentOptionsClicked(it, commentPosition, comment)
+            }
         }
     }
 }

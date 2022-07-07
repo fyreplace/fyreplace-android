@@ -4,6 +4,7 @@ import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -138,9 +139,38 @@ class PostFragment :
         setCommentListener(this@PostFragment)
     }
 
-    override fun onProfileClicked(profile: Profile) {
+    override fun onCommentProfileClicked(view: View, position: Int, profile: Profile) {
         val directions = PostFragmentDirections.actionUser(profile = profile.p)
         findNavController().navigate(directions)
+    }
+
+    override fun onCommentOptionsClicked(view: View, position: Int, comment: Comment) {
+        val popup = PopupMenu(requireContext(), view)
+        popup.inflate(R.menu.item_comment)
+        popup.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.report -> showChoiceAlert(
+                    R.string.post_comment_report_title,
+                    null
+                ) { launch { reportComment(comment) } }
+                R.id.delete -> showChoiceAlert(
+                    R.string.post_comment_delete_title,
+                    R.string.post_comment_delete_message
+                ) { launch { deleteComment(position, comment) } }
+                else -> return@setOnMenuItemClickListener false
+            }
+
+            return@setOnMenuItemClickListener true
+        }
+
+        cvm.currentUser.launchCollect { user ->
+            val currentUserIsAdmin = (user?.profile?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
+            val canDelete = currentUserIsAdmin || comment.author.id == user?.profile?.id
+            popup.menu.findItem(R.id.report).isVisible = !canDelete
+            popup.menu.findItem(R.id.delete).isVisible = canDelete
+        }
+
+        popup.show()
     }
 
     private fun updateSubscription(subscribed: Boolean) {
@@ -168,5 +198,15 @@ class PostFragment :
         }
 
         findNavController().navigateUp()
+    }
+
+    private suspend fun reportComment(comment: Comment) {
+        vm.reportComment(comment.id)
+        showBasicSnackbar(R.string.post_comment_report_success_message)
+    }
+
+    private suspend fun deleteComment(position: Int, comment: Comment) {
+        vm.deleteComment(position, comment.id)
+        vm.makeDeletedComment(position)?.let { adapter.update(position, it) }
     }
 }

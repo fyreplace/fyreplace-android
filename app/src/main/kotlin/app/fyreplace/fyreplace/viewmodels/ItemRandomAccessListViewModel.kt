@@ -67,6 +67,10 @@ abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
         maybePages.emit(page { offset = startIndex })
     }
 
+    fun update(position: Int, item: Item) {
+        mItems[position] = item
+    }
+
     companion object {
         const val PAGE_SIZE = 12
     }

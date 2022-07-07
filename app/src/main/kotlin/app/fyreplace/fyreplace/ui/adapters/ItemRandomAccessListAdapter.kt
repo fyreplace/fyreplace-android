@@ -34,4 +34,9 @@ abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private 
         this.items[itemPosition] = item
         notifyItemChanged(itemPosition + offset)
     }
+
+    fun update(position: Int, item: Item) {
+        items[position] = item
+        notifyItemChanged(position + offset)
+    }
 }
