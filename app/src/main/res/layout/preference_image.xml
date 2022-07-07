@@ -5,9 +5,9 @@
 
     <ImageView
         android:id="@+id/image"
-        android:contentDescription="@string/profile_avatar"
         android:layout_width="@dimen/preference_image_size"
         android:layout_height="@dimen/preference_image_size"
         android:layout_gravity="center"
+        android:contentDescription="@string/profile_avatar"
         android:src="@drawable/ic_baseline_account_circle" />
 </FrameLayout>
