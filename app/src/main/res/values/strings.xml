@@ -128,7 +128,7 @@
     <string name="post_menu_action_unsubscribe">Unsubscribe</string>
     <string name="post_menu_action_report">Report</string>
     <string name="post_menu_action_delete">Delete</string>
-    <string name="post_report_title">Report post?</string>
+    <string name="post_report_title">Report this post?</string>
     <string name="post_report_success_message">Post reported</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
@@ -167,9 +167,9 @@
     <string name="user_menu_action_unblock">Unblock</string>
     <string name="user_menu_action_report">Report</string>
     <string name="user_menu_action_ban">Ban</string>
-    <string name="user_block_title">Block user?</string>
-    <string name="user_unblock_title">Unblock user?</string>
-    <string name="user_report_title">Report user?</string>
+    <string name="user_block_title">Block this user?</string>
+    <string name="user_unblock_title">Unblock this user?</string>
+    <string name="user_report_title">Report this user?</string>
     <string name="user_report_success_message">User reported</string>
     <string name="user_ban_title">Ban for:</string>
     <string-array name="user_ban_choices">
@@ -177,7 +177,7 @@
         <item>Month</item>
         <item>Permanently</item>
     </string-array>
-    <string name="user_ban_permanently_title">Ban user permanently?</string>
+    <string name="user_ban_permanently_title">Ban this user permanently?</string>
     <string name="user_ban_success_message">User banned</string>
     <string name="user_rank_superuser">Fyreplace team member</string>
     <string name="user_rank_staff">Moderator</string>
