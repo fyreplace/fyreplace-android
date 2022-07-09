@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.InputType
 import android.view.*
 import android.widget.Button
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -30,6 +31,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DraftFragment :
     BaseFragment(R.layout.fragment_draft),
+    MenuProvider,
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener {
@@ -65,7 +67,6 @@ class DraftFragment :
         bd = FragmentDraftBinding.bind(it)
         bd.lifecycleOwner = viewLifecycleOwner
         bd.recycler.setHasFixedSize(true)
-        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -86,21 +87,16 @@ class DraftFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.fragment_draft, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.fragment_draft, menu)
         val publish = menu.findItem(R.id.publish)
         val publishButton = publish.actionView.findViewById<Button>(R.id.button)
-        publishButton.setOnClickListener { onOptionsItemSelected(publish) }
+        publishButton.setOnClickListener { onMenuItemSelected(publish) }
         vm.canPublish.launchCollect(lifecycleScope, publishButton::setEnabled)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-
-        when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.publish -> showSelectionAlert(
                 R.string.draft_publish_title,
                 R.array.draft_publish_choices

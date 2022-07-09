@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -33,6 +34,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
+    MenuProvider,
     PostAdapter.CommentListener {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
@@ -45,14 +47,6 @@ class PostFragment :
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ) = super.onCreateView(inflater, container, savedInstanceState)?.also {
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val postAdapter = adapter as PostAdapter
@@ -63,9 +57,8 @@ class PostFragment :
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.fragment_post, menu)
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.fragment_post, menu)
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
             (activity as MainActivity).setToolbarInfo(
                 if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
@@ -94,12 +87,8 @@ class PostFragment :
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (super.onOptionsItemSelected(item)) {
-            return true
-        }
-
-        when (item.itemId) {
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
             R.id.subscribe -> updateSubscription(true)
             R.id.unsubscribe -> updateSubscription(false)
             R.id.report -> showChoiceAlert(

@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -122,6 +123,10 @@ class MainActivity :
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
             bd.toolbar.setTitle(fragment.getTitle())
+        }
+
+        if (fragment is MenuProvider) {
+            addMenuProvider(fragment, fragment)
         }
     }
 
