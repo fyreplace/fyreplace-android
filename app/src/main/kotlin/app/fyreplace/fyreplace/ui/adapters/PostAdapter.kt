@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.extensions.setComment
 import app.fyreplace.fyreplace.ui.views.ChaptersView
 import app.fyreplace.protos.Comment
@@ -73,6 +73,10 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
     }
 
     private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
+        private val primaryColor =
+            itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimary)
+        private val textColor =
+            itemView.context.theme.resolveStyleAttribute(R.attr.colorOnSurface)
         private val content: TextView = itemView.findViewById(R.id.content)
         private val more: View = itemView.findViewById(R.id.more)
         private val commentPosition get() = bindingAdapterPosition - 1
@@ -84,13 +88,7 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
             }
             avatar?.setOnClickListener(onProfileClicked)
             username?.setOnClickListener(onProfileClicked)
-            username?.setTextColor(
-                ResourcesCompat.getColor(
-                    itemView.resources,
-                    if (profile.id == post.author.id) R.color.seed else R.color.md_theme_onBackground,
-                    itemView.context.theme
-                )
-            )
+            username?.setTextColor(if (profile.id == post.author.id) primaryColor else textColor)
         }
 
         fun setup(comment: Comment) {
