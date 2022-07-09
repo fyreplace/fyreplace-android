@@ -142,6 +142,10 @@ class MainActivity :
         }
 
         bd.primaryAction.hide()
+
+        for (menuProvider in navHost.childFragmentManager.fragments.filterIsInstance<MenuProvider>()) {
+            removeMenuProvider(menuProvider)
+        }
     }
 
     fun setToolbarInfo(title: String?) = bd.toolbar.run {
