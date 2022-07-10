@@ -87,6 +87,15 @@ class DraftFragment :
         }
     }
 
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
+            "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
+            else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
+        }
+        else -> super.getFailureTexts(error)
+    }
+
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_draft, menu)
         val publish = menu.findItem(R.id.publish)
@@ -111,15 +120,6 @@ class DraftFragment :
         }
 
         return true
-    }
-
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> when (error.description) {
-            "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
-            "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
-            else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
-        }
-        else -> super.getFailureTexts(error)
     }
 
     override suspend fun onImage(image: ByteArray) {

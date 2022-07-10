@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.protos.Page
+import app.fyreplace.protos.cursor
 import app.fyreplace.protos.header
 import app.fyreplace.protos.page
 import com.google.protobuf.ByteString
@@ -38,13 +39,21 @@ abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
         return listItems()
             .onEach {
                 mTotalSize.value = getTotalSize(it)
-                state = if (items.size < mTotalSize.value) ItemListViewModel.ItemsState.INCOMPLETE
-                else ItemListViewModel.ItemsState.COMPLETE
+                state = when {
+                    indexes.size > 1 -> ItemListViewModel.ItemsState.FETCHING
+                    items.size < mTotalSize.value -> ItemListViewModel.ItemsState.INCOMPLETE
+                    else -> ItemListViewModel.ItemsState.COMPLETE
+                }
             }
             .map { getItemList(it) }
             .map {
                 val index = indexes.removeFirst()
                 it.forEachIndexed { i, item -> mItems[index + i] = item }
+
+                if (indexes.isNotEmpty()) {
+                    maybePages.emit(page { offset = indexes.first() })
+                }
+
                 return@map index to it
             }
             .flowOn(Dispatchers.Main.immediate)
@@ -56,15 +65,25 @@ abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
         maybePages.resetReplayCache()
     }
 
+    open fun reset() {
+        state = ItemListViewModel.ItemsState.INCOMPLETE
+        mItems.clear()
+        indexes.clear()
+        mTotalSize.value = 0
+    }
+
     suspend fun fetchAround(index: Int) {
-        if (state != ItemListViewModel.ItemsState.INCOMPLETE) {
+        if (state == ItemListViewModel.ItemsState.COMPLETE) {
             return
         }
 
-        val startIndex = index - (index % 12)
-        state = ItemListViewModel.ItemsState.FETCHING
+        val startIndex = index - (index % PAGE_SIZE)
         indexes.add(startIndex)
-        maybePages.emit(page { offset = startIndex })
+
+        if (state == ItemListViewModel.ItemsState.INCOMPLETE) {
+            state = ItemListViewModel.ItemsState.FETCHING
+            maybePages.emit(page { offset = startIndex })
+        }
     }
 
     fun update(position: Int, item: Item) {

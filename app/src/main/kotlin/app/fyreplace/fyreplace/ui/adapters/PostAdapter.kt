@@ -1,9 +1,11 @@
 package app.fyreplace.fyreplace.ui.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.extensions.setComment
@@ -13,7 +15,8 @@ import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 
-class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
+class PostAdapter(private var post: Post, private val selectedComment: Int?) :
+    ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var commentListener: CommentListener? = null
 
     override fun getItemViewType(position: Int) = when {
@@ -31,7 +34,7 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
             TYPE_COMMENT -> CommentHolder(
                 inflater.inflate(R.layout.item_comment, parent, false)
             )
-            TYPE_COMMENT_LOADER -> ItemHolder(
+            TYPE_COMMENT_LOADER -> CommentLoaderHolder(
                 inflater.inflate(R.layout.item_comment_loader, parent, false)
             )
             else -> throw RuntimeException()
@@ -42,6 +45,7 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
         when (holder) {
             is ChaptersHolder -> holder.setup(post)
             is CommentHolder -> holder.setup(items[position - 1] ?: return)
+            is CommentLoaderHolder -> holder.setup()
         }
     }
 
@@ -61,6 +65,8 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
     }
 
     interface CommentListener {
+        fun onCommentDisplayed(view: View, position: Int, comment: Comment?)
+
         fun onCommentProfileClicked(view: View, position: Int, profile: Profile)
 
         fun onCommentOptionsClicked(view: View, position: Int, comment: Comment)
@@ -77,6 +83,8 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimary)
         private val textColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorOnSurface)
+        private val selectedContainerColor =
+            itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
         private val content: TextView = itemView.findViewById(R.id.content)
         private val more: View = itemView.findViewById(R.id.more)
         private val commentPosition get() = bindingAdapterPosition - 1
@@ -93,11 +101,23 @@ class PostAdapter(private var post: Post) : ItemRandomAccessListAdapter<Comment,
 
         fun setup(comment: Comment) {
             setup(comment.author, comment.dateCreated)
+            itemView.setBackgroundColor(
+                if (commentPosition == selectedComment) selectedContainerColor
+                else Color.TRANSPARENT
+            )
             content.setComment(comment)
             more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             more.setOnClickListener {
                 commentListener?.onCommentOptionsClicked(it, commentPosition, comment)
             }
+
+            commentListener?.onCommentDisplayed(itemView, commentPosition, comment)
+        }
+    }
+
+    private inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
+        fun setup() {
+            commentListener?.onCommentDisplayed(itemView, bindingAdapterPosition - 1, null)
         }
     }
 }

@@ -1,34 +1,38 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import android.content.ClipDescription
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.LinearLayoutManager
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.extensions.makeShareUri
+import app.fyreplace.fyreplace.extensions.makeShareIntent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
-import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
-import app.fyreplace.fyreplace.viewmodels.CentralViewModel
-import app.fyreplace.fyreplace.viewmodels.PostViewModel
-import app.fyreplace.fyreplace.viewmodels.PostViewModelFactory
+import app.fyreplace.fyreplace.viewmodels.*
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.Rank
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,15 +50,43 @@ class PostFragment :
     private val icvm by activityViewModels<ArchiveChangeViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
+    private val commentPosition get() = args.commentPosition.takeIf { it >= 0 }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
 
+        if (commentPosition == null) {
+            vm.setScrolledToComment()
+        }
+
         if (args.post.isPreview || args.post.chapterCount == 0) {
             launch { vm.retrieve(args.post.id) }
         }
+    }
+
+    override fun getFailureTexts(error: Status) = when (error.code) {
+        Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+        else -> super.getFailureTexts(error)
+    }
+
+    override fun onFailure(failure: Throwable) {
+        if (errored) {
+            return
+        }
+
+        errored = true
+        super.onFailure(failure)
+        val error = Status.fromThrowable(failure)
+
+        if (error.code in setOf(Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND)) {
+            findNavController().navigateUp()
+        }
+    }
+
+    override fun makeAdapter() = PostAdapter(vm.post.value, commentPosition).apply {
+        setCommentListener(this@PostFragment)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -64,11 +96,7 @@ class PostFragment :
                 if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
                 post.dateCreated.formatDate()
             )
-            val postUri = makeShareUri(resources, "p", post.id)
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = ClipDescription.MIMETYPE_TEXT_PLAIN
-                putExtra(Intent.EXTRA_TEXT, postUri.toString())
-            }
+            val shareIntent = context?.makeShareIntent("p", post.id)
             menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
         }
 
@@ -105,27 +133,27 @@ class PostFragment :
         return true
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
-        else -> super.getFailureTexts(error)
-    }
+    override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
+        val viewPosition = (commentPosition ?: return) + 1
+        val layoutManager = bd.recycler.layoutManager as LinearLayoutManager
 
-    override fun onFailure(failure: Throwable) {
-        if (errored) {
+        if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
             return
         }
 
-        errored = true
-        super.onFailure(failure)
-        val error = Status.fromThrowable(failure)
-
-        if (error.code in setOf(Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND)) {
-            findNavController().navigateUp()
+        fun scheduleScroll() {
+            launch {
+                delay(300)
+                layoutManager.scrollToPositionWithOffset(viewPosition, 0)
+            }
         }
-    }
 
-    override fun makeAdapter() = PostAdapter(vm.post.value).apply {
-        setCommentListener(this@PostFragment)
+        if (position == commentPosition && comment != null) {
+            vm.setScrolledToComment()
+            scheduleScroll()
+        } else if (position == commentPosition || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
+            scheduleScroll()
+        }
     }
 
     override fun onCommentProfileClicked(view: View, position: Int, profile: Profile) {
@@ -136,6 +164,8 @@ class PostFragment :
     override fun onCommentOptionsClicked(view: View, position: Int, comment: Comment) {
         val popup = PopupMenu(requireContext(), view)
         popup.inflate(R.menu.item_comment)
+        val shareIntent = context?.makeShareIntent("p", comment.id, position)
+        popup.menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.report -> showChoiceAlert(

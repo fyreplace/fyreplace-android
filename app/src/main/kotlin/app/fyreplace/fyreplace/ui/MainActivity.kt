@@ -203,7 +203,10 @@ class MainActivity :
             getString(R.string.link_path_account_confirm_connection) -> confirmConnection(token)
             getString(R.string.link_path_user_confirm_email_update) -> confirmEmailUpdate(token)
             else -> when {
-                path.startsWith("/p/") -> showPost(path.drop(3))
+                path.startsWith("/p/") -> {
+                    val parts = path.drop(3).split('/')
+                    showPost(parts.first(), parts.getOrNull(1)?.toInt())
+                }
                 else -> showBasicAlert(
                     R.string.main_error_malformed_url_title,
                     R.string.main_error_malformed_url_message,
@@ -228,9 +231,10 @@ class MainActivity :
         showBasicSnackbar(R.string.main_user_email_changed_message)
     }
 
-    private fun showPost(postIdShortString: String) {
+    private fun showPost(postIdShortString: String, commentPosition: Int? = null) {
         val post = post { id = byteString(postIdShortString) }
-        val directions = MainDirections.actionPost(post = post.p)
+        val directions =
+            MainDirections.actionPost(post = post.p, commentPosition = commentPosition ?: -1)
         navHost.navController.navigate(directions)
     }
 

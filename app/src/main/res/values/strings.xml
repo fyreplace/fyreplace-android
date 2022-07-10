@@ -132,6 +132,7 @@
     <string name="post_report_success_message">Post reported</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
+    <string name="post_comment_menu_action_share">Share</string>
     <string name="post_comment_menu_action_report">Report</string>
     <string name="post_comment_menu_action_delete">Delete</string>
     <string name="post_comment_report_title">Report comment?</string>

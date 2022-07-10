@@ -39,6 +39,10 @@
             android:name="position"
             android:defaultValue="-1"
             app:argType="integer" />
+        <argument
+            android:name="commentPosition"
+            android:defaultValue="-1"
+            app:argType="integer" />
     </fragment>
     <fragment
         android:id="@+id/fragment_draft"
