@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.protos.Page
-import app.fyreplace.protos.cursor
 import app.fyreplace.protos.header
 import app.fyreplace.protos.page
 import com.google.protobuf.ByteString
