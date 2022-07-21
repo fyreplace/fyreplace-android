@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
@@ -29,8 +30,8 @@ class UserFragment : DialogFragment(), FailureHandler {
     lateinit var vmFactory: UserViewModelFactory
 
     override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
-    private val cvm by viewModels<CentralViewModel>()
-    private val icvm by viewModels<BlockedUsersChangeViewModel>()
+    private val cvm by activityViewModels<CentralViewModel>()
+    private val icvm by activityViewModels<BlockedUsersChangeViewModel>()
     private val vm by viewModels<UserViewModel> {
         UserViewModel.provideFactory(vmFactory, args.profile.v)
     }
