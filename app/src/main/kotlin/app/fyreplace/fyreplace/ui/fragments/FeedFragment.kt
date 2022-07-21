@@ -11,7 +11,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class FeedFragment : BaseFragment(R.layout.fragment_feed) {
-    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
+    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val vm by viewModels<FeedViewModel>()
     private lateinit var bd: FragmentFeedBinding
 

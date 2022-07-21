@@ -29,7 +29,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     @Inject
     lateinit var vmFactory: UserViewModelFactory
 
-    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
+    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val cvm by activityViewModels<CentralViewModel>()
     private val icvm by activityViewModels<BlockedUsersChangeViewModel>()
     private val vm by viewModels<UserViewModel> {

@@ -41,7 +41,7 @@ class DraftFragment :
     @Inject
     lateinit var imageSelectorFactory: ImageSelectorFactory
 
-    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
+    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }

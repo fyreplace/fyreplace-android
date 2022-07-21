@@ -17,7 +17,7 @@ import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     BaseFragment(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
-    override val rootView by lazy { if (this::bd.isInitialized) bd.root else null }
+    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     protected abstract val icvm: ItemChangeViewModel<Item>
     protected abstract val vm: ItemListViewModel<Item, Items>
     protected abstract val emptyText: String
