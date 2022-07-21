@@ -29,10 +29,14 @@ abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private 
         notifyItemRangeInserted(offset, totalSize)
     }
 
-    fun insert(position: Int, items: List<Item>) = items.forEachIndexed { i, item ->
-        val itemPosition = position + i
-        this.items[itemPosition] = item
-        notifyItemChanged(itemPosition + offset)
+    fun insert(item: Item) {
+        items[totalSize] = item
+        totalSize++
+        notifyItemInserted(totalSize + offset - 1)
+    }
+
+    fun update(position: Int, items: List<Item>) = items.forEachIndexed { i, item ->
+        update(position + i, item)
     }
 
     fun update(position: Int, item: Item) {

@@ -52,7 +52,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
         vm.totalSize.launchCollect(viewLifecycleOwner.lifecycleScope, adapter::setTotalSize)
 
         launch {
-            vm.startListing().launchCollect { (index, items) -> adapter.insert(index, items) }
+            vm.startListing().launchCollect { (index, items) -> adapter.update(index, items) }
 
             if (adapter.itemCount <= 1) {
                 vm.fetchAround(0)

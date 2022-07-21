@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -16,16 +17,15 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makeShareIntent
 import app.fyreplace.fyreplace.grpc.p
-import app.fyreplace.fyreplace.ui.MainActivity
+import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
+import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.*
-import app.fyreplace.protos.Comment
-import app.fyreplace.protos.Comments
-import app.fyreplace.protos.Profile
-import app.fyreplace.protos.Rank
+import app.fyreplace.protos.*
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
@@ -36,6 +36,7 @@ import javax.inject.Inject
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
     MenuProvider,
+    PrimaryActionProvider,
     PostAdapter.CommentListener {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
@@ -64,7 +65,12 @@ class PostFragment :
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+        Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+        Status.Code.PERMISSION_DENIED -> R.string.post_error_blocked_title to R.string.post_error_blocked_message
+        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "invalid_uuid" -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+            else -> R.string.post_error_comment_too_long_title to R.string.post_error_comment_too_long_message
+        }
         else -> super.getFailureTexts(error)
     }
 
@@ -89,7 +95,7 @@ class PostFragment :
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_post, menu)
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
-            (activity as MainActivity).setToolbarInfo(
+            mainActivity.setToolbarInfo(
                 if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
                 post.dateCreated.formatDate()
             )
@@ -128,6 +134,21 @@ class PostFragment :
         }
 
         return true
+    }
+
+    override fun getPrimaryActionText() = R.string.post_primary_action_comment
+
+    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
+
+    override fun onPrimaryAction() {
+        showTextInputAlert(
+            R.string.post_comment_title,
+            TextInputConfig(
+                inputType = INPUT_TYPE,
+                maxLength = resources.getInteger(R.integer.comment_text_max_size),
+                allowEmpty = false
+            )
+        ) { launch { createComment(it) } }
     }
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
@@ -216,6 +237,14 @@ class PostFragment :
         findNavController().navigateUp()
     }
 
+    private suspend fun createComment(text: String) {
+        adapter.insert(comment {
+            id = vm.createComment(text).id
+            this.text = text
+            author = cvm.currentUser.value!!.profile
+        })
+    }
+
     private suspend fun reportComment(comment: Comment) {
         vm.reportComment(comment.id)
         showBasicSnackbar(R.string.post_comment_report_success_message)
@@ -224,5 +253,10 @@ class PostFragment :
     private suspend fun deleteComment(position: Int, comment: Comment) {
         vm.deleteComment(position, comment.id)
         vm.makeDeletedComment(position)?.let { adapter.update(position, it) }
+    }
+
+    private companion object {
+        const val INPUT_TYPE =
+            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE or InputType.TYPE_TEXT_FLAG_MULTI_LINE
     }
 }

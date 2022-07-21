@@ -12,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
+import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
-import app.fyreplace.fyreplace.ui.MainActivity
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
@@ -77,9 +77,7 @@ class DraftFragment :
             vm.retrieve(args.post.id)
             vm.post.launchCollect {
                 icvm.update(args.position, it)
-                (activity as MainActivity).setToolbarInfo(
-                    getString(R.string.draft_length, it.chapterCount)
-                )
+                mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.setOnClickListener(this@DraftFragment)
             adapter.setChapterListener(this@DraftFragment)
@@ -214,7 +212,11 @@ class DraftFragment :
         val title = if (new) R.string.draft_add_text else R.string.draft_update_text
         showTextInputAlert(
             title,
-            TextInputConfig(INPUT_TYPE, chapterTextMaxSize, chapter.text)
+            TextInputConfig(
+                inputType = INPUT_TYPE,
+                maxLength = chapterTextMaxSize,
+                text = chapter.text
+            )
         ) {
             launch {
                 vm.updateChapterText(currentChapterPosition, it)

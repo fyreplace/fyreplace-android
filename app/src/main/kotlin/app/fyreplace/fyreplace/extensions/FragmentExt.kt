@@ -4,7 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
+import app.fyreplace.fyreplace.ui.MainActivity
 import com.google.android.material.transition.MaterialSharedAxis
+
+val Fragment.mainActivity get() = activity as MainActivity
 
 fun Fragment.setupTransitions() {
     enterTransition = MaterialSharedAxis(MaterialSharedAxis.Z, true)

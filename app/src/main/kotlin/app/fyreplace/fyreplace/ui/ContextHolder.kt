@@ -1,10 +1,15 @@
 package app.fyreplace.fyreplace.ui
 
 import android.content.Context
+import android.content.DialogInterface
+import android.text.Editable
 import android.text.InputType
+import android.text.TextWatcher
+import android.widget.Button
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.isNotNullOrBlank
 import app.fyreplace.fyreplace.extensions.showSoftInput
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -72,27 +77,33 @@ interface ContextHolder {
         config: TextInputConfig,
         action: (text: String) -> Unit
     ) {
-        val inputLayout: TextInputLayout?
-        var textInput: TextInputEditText? = null
+        lateinit var textInput: TextInputEditText
+        lateinit var textWatcher: TextWatcher
         val alert = MaterialAlertDialogBuilder(getContext() ?: return)
             .setTitle(title)
             .setView(R.layout.alert_text_input)
             .setPositiveButton(R.string.ok) { _, _ ->
-                val text = textInput?.text ?: ""
+                val text = textInput.text ?: ""
                 action(text.trim().toString())
             }
             .setNegativeButton(R.string.cancel, null)
+            .setOnDismissListener { textInput.removeTextChangedListener(textWatcher) }
             .show()
-        inputLayout = alert.findViewById(R.id.text_input_layout)
-        inputLayout?.run {
+
+        alert.findViewById<TextInputLayout>(R.id.text_input_layout)?.run {
             isCounterEnabled = true
             counterMaxLength = config.maxLength
         }
-        textInput = alert.findViewById(R.id.text_input)
-        textInput?.run {
+
+        val positiveButton = alert.getButton(DialogInterface.BUTTON_POSITIVE)
+        positiveButton.isEnabled = config.allowEmpty
+        textInput = alert.findViewById(R.id.text_input)!!
+        textWatcher = ButtonToggleWatcher(textInput, positiveButton)
+        with(textInput) {
             inputType = config.inputType
             setText(config.text)
             requestFocus()
+            addTextChangedListener(textWatcher)
 
             if (config.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE > 0) {
                 minLines = 3
@@ -100,5 +111,18 @@ interface ContextHolder {
         }
 
         alert.showSoftInput()
+    }
+
+    private class ButtonToggleWatcher(
+        private val textInput: TextInputEditText,
+        private val button: Button
+    ) : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            button.isEnabled = textInput.text.isNotNullOrBlank()
+        }
+
+        override fun afterTextChanged(s: Editable?) = Unit
     }
 }

@@ -1,13 +1,11 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.grpc.p
-import app.fyreplace.fyreplace.ui.MainActivity
+import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.DraftsAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -20,27 +18,28 @@ import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DraftsFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
+class DraftsFragment :
+    ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
+    PrimaryActionProvider,
     ItemListAdapter.ItemClickListener<Post> {
     override val icvm by activityViewModels<DraftsChangeViewModel>()
     override val vm by viewModels<DraftsViewModel>()
     override val emptyText by lazy { getString(R.string.drafts_empty) }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (activity as MainActivity).setPrimaryAction(R.drawable.ic_baseline_add) {
-            launch {
-                val directions = DraftsFragmentDirections.actionDraft(
-                    post = createPost().p,
-                    position = 0
-                )
-                findNavController().navigate(directions)
-            }
-        }
-    }
-
     override fun makeAdapter() = DraftsAdapter().apply {
         setOnClickListener(this@DraftsFragment)
+    }
+
+    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_add
+
+    override fun onPrimaryAction() {
+        launch {
+            val directions = DraftsFragmentDirections.actionDraft(
+                post = createPost().p,
+                position = 0
+            )
+            findNavController().navigate(directions)
+        }
     }
 
     override fun onItemClick(item: Post, position: Int) {

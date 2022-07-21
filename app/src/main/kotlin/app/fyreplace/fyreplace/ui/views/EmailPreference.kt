@@ -9,8 +9,8 @@ class EmailPreference : TextInputPreference {
     override val dialogTitle = R.string.settings_email
     override val textInputConfig by lazy {
         TextInputConfig(
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
-            context.resources.getInteger(R.integer.email_max_size)
+            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            maxLength = context.resources.getInteger(R.integer.email_max_size)
         )
     }
 

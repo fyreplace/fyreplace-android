@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.core.view.children
@@ -48,6 +49,7 @@ import io.grpc.Status
 class MainActivity :
     AppCompatActivity(R.layout.activity_main),
     FailureHandler,
+    FragmentManager.OnBackStackChangedListener,
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener {
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
@@ -65,16 +67,16 @@ class MainActivity :
         bd.lifecycleOwner = this
         bd.root.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
-        setSupportActionBar(bd.toolbar)
+        navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+        navHost.childFragmentManager.addOnBackStackChangedListener(this)
+        navHost.childFragmentManager.addFragmentOnAttachListener(this)
+        navHost.navController.addOnDestinationChangedListener(this)
 
         val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
-        navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
+        setSupportActionBar(bd.toolbar)
         setupActionBarWithNavController(navHost.navController, appBarConfiguration)
         bd.bottomNavigation.setupWithNavController(navHost.navController)
         bd.bottomNavigation.doOnLayout { bottomBarHeight = it.height }
-
-        navHost.childFragmentManager.addFragmentOnAttachListener(this)
-        navHost.navController.addOnDestinationChangedListener(this)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -95,6 +97,7 @@ class MainActivity :
     }
 
     override fun onDestroy() {
+        navHost.childFragmentManager.removeOnBackStackChangedListener(this)
         navHost.childFragmentManager.removeFragmentOnAttachListener(this)
         navHost.navController.removeOnDestinationChangedListener(this)
         super.onDestroy()
@@ -124,6 +127,18 @@ class MainActivity :
         else -> super.getFailureTexts(error)
     }
 
+    override fun onBackStackChanged() {
+        val fragment = navHost.childFragmentManager.fragments.last()
+
+        if (fragment is PrimaryActionProvider) {
+            setPrimaryAction(fragment.getPrimaryActionText(), fragment.getPrimaryActionIcon()) {
+                fragment.onPrimaryAction()
+            }
+        } else {
+            removePrimaryAction()
+        }
+    }
+
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
             bd.toolbar.setTitle(fragment.getTitle())
@@ -149,8 +164,6 @@ class MainActivity :
         if (isTopLevel) {
             setToolbarInfo(null, null)
         }
-
-        bd.primaryAction.hide()
 
         for (menuProvider in navHost.childFragmentManager.fragments.filterIsInstance<MenuProvider>()) {
             removeMenuProvider(menuProvider)
@@ -196,10 +209,27 @@ class MainActivity :
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
     }
 
-    fun setPrimaryAction(@DrawableRes icon: Int, listener: View.OnClickListener) {
-        bd.primaryAction.setImageResource(icon)
-        bd.primaryAction.setOnClickListener(listener)
-        bd.primaryAction.show()
+    private fun setPrimaryAction(
+        @StringRes text: Int?,
+        @DrawableRes icon: Int,
+        listener: View.OnClickListener
+    ) = with(bd.primaryAction) {
+        setIconResource(icon)
+        setOnClickListener(listener)
+
+        if (text != null) {
+            setText(text)
+            extend()
+        } else {
+            shrink()
+        }
+
+        show()
+    }
+
+    private fun removePrimaryAction() = with(bd.primaryAction) {
+        shrink()
+        hide()
     }
 
     private fun handleIntent(intent: Intent?) {
