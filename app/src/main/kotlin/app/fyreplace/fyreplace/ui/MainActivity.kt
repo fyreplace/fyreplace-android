@@ -214,7 +214,7 @@ class MainActivity :
             else -> when {
                 path.startsWith("/p/") -> {
                     val parts = path.drop(3).split('/')
-                    showPost(parts.first(), parts.getOrNull(1)?.toInt())
+                    showPost(parts.first(), parts.getOrNull(1)?.toIntOrNull())
                 }
                 else -> showBasicAlert(
                     R.string.main_error_malformed_url_title,
