@@ -1,5 +1,6 @@
 package app.fyreplace.fyreplace.ui
 
+import android.animation.LayoutTransition
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -13,7 +14,7 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.core.view.children
-import androidx.core.view.isVisible
+import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -54,6 +55,7 @@ class MainActivity :
     private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
+    private var bottomBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -61,6 +63,7 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         bd = ActivityMainBinding.bind(findViewById(R.id.root))
         bd.lifecycleOwner = this
+        bd.root.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
         setSupportActionBar(bd.toolbar)
 
@@ -68,6 +71,7 @@ class MainActivity :
         navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         setupActionBarWithNavController(navHost.navController, appBarConfiguration)
         bd.bottomNavigation.setupWithNavController(navHost.navController)
+        bd.bottomNavigation.doOnLayout { bottomBarHeight = it.height }
 
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
@@ -135,9 +139,14 @@ class MainActivity :
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        bd.bottomNavigation.isVisible = destination.id in TOP_LEVEL_DESTINATIONS
+        val isTopLevel = destination.id in TOP_LEVEL_DESTINATIONS
+        bd.bottomNavigation.doOnLayout {
+            bd.bottomNavigation.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                bottomMargin = if (isTopLevel) 0 else -bottomBarHeight
+            }
+        }
 
-        if (bd.bottomNavigation.isVisible) {
+        if (isTopLevel) {
             setToolbarInfo(null, null)
         }
 
