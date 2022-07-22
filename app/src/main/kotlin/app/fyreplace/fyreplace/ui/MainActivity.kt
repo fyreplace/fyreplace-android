@@ -94,6 +94,7 @@ class MainActivity :
             launch { cvm.retrieveMe() }
         }
 
+        refreshPrimaryButton()
         handleIntent(intent)
     }
 
@@ -128,17 +129,7 @@ class MainActivity :
         else -> super.getFailureTexts(error)
     }
 
-    override fun onBackStackChanged() {
-        val fragment = navHost.childFragmentManager.fragments.last()
-
-        if (fragment is PrimaryActionProvider) {
-            setPrimaryAction(fragment.getPrimaryActionText(), fragment.getPrimaryActionIcon()) {
-                fragment.onPrimaryAction()
-            }
-        } else {
-            removePrimaryAction()
-        }
-    }
+    override fun onBackStackChanged() = refreshPrimaryButton()
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
@@ -204,6 +195,18 @@ class MainActivity :
 
         bd.toolbar.isTitleCentered = profile == null
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
+    }
+
+    private fun refreshPrimaryButton() {
+        val fragment = navHost.childFragmentManager.fragments.last()
+
+        if (fragment is PrimaryActionProvider) {
+            setPrimaryAction(fragment.getPrimaryActionText(), fragment.getPrimaryActionIcon()) {
+                fragment.onPrimaryAction()
+            }
+        } else {
+            removePrimaryAction()
+        }
     }
 
     private fun setPrimaryAction(
