@@ -1,12 +1,13 @@
 package app.fyreplace.fyreplace.ui
 
-import android.animation.LayoutTransition
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.viewModels
@@ -44,6 +45,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity :
@@ -65,7 +67,6 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         bd = ActivityMainBinding.bind(findViewById(R.id.root))
         bd.lifecycleOwner = this
-        bd.root.layoutTransition.enableTransitionType(LayoutTransition.CHANGING)
 
         navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         navHost.childFragmentManager.addOnBackStackChangedListener(this)
@@ -155,11 +156,7 @@ class MainActivity :
         arguments: Bundle?
     ) {
         val isTopLevel = destination.id in TOP_LEVEL_DESTINATIONS
-        bd.bottomNavigation.doOnLayout {
-            bd.bottomNavigation.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                bottomMargin = if (isTopLevel) 0 else -bottomBarHeight
-            }
-        }
+        moveBottomNavigation(isTopLevel)
 
         if (isTopLevel) {
             setToolbarInfo(null, null)
@@ -230,6 +227,25 @@ class MainActivity :
     private fun removePrimaryAction() = with(bd.primaryAction) {
         shrink()
         hide()
+    }
+
+    private fun moveBottomNavigation(isTopLevel: Boolean) = bd.bottomNavigation.doOnLayout {
+        val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams
+        val isBottomNavigationVisible = params.bottomMargin == 0
+
+        if (isTopLevel == isBottomNavigationVisible) {
+            return@doOnLayout
+        }
+
+        val animation = object : Animation() {
+            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+                val factor = if (isTopLevel) interpolatedTime - 1 else -interpolatedTime
+                params.bottomMargin = (bottomBarHeight * factor).roundToInt()
+                bd.bottomNavigation.layoutParams = params
+            }
+        }
+        animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        bd.bottomNavigation.startAnimation(animation)
     }
 
     private fun handleIntent(intent: Intent?) {
