@@ -105,8 +105,8 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     override fun onChildViewAttachedToWindow(view: View) {
         val childPosition = bd.recycler.getChildAdapterPosition(view)
 
-        if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) {
-            launch { vm.fetchMore() }
+        if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) launch {
+            vm.fetchMore()
         }
     }
 

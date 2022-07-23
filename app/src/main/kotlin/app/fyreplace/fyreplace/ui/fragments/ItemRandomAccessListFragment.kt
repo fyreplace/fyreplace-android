@@ -60,9 +60,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
     override fun onStart() {
         super.onStart()
         launch {
-            vm.startListing().launchCollect { (index, items) ->
-                adapter.update(index, items)
-            }
+            vm.startListing().launchCollect { (index, items) -> adapter.update(index, items) }
 
             if (adapter.itemCount <= 1) {
                 vm.fetchAround(0)
@@ -78,11 +76,10 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
     override fun onChildViewAttachedToWindow(view: View) {
         val itemPosition = bd.recycler.getChildAdapterPosition(view) - 1
 
-        if (vm.items[itemPosition] == null) {
-            launch { vm.fetchAround(itemPosition) }
+        if (vm.items[itemPosition] == null) launch {
+            vm.fetchAround(itemPosition)
         }
     }
 
-    override fun onChildViewDetachedFromWindow(view: View) {
-    }
+    override fun onChildViewDetachedFromWindow(view: View) = Unit
 }
