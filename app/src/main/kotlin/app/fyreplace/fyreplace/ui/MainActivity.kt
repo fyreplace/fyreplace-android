@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
@@ -189,7 +190,7 @@ class MainActivity :
     }
 
     private fun refreshPrimaryButton() {
-        val fragment = navHost.childFragmentManager.fragments.last()
+        val fragment = navHost.childFragmentManager.fragments.last { it !is DialogFragment }
 
         if (fragment is PrimaryActionProvider) {
             setPrimaryAction(fragment.getPrimaryActionText(), fragment.getPrimaryActionIcon()) {
