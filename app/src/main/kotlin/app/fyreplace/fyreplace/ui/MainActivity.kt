@@ -14,7 +14,6 @@ import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.MenuProvider
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
@@ -135,10 +134,6 @@ class MainActivity :
         if (fragment is TitleChoosing) {
             bd.toolbar.setTitle(fragment.getTitle())
         }
-
-        if (fragment is MenuProvider) {
-            addMenuProvider(fragment, fragment)
-        }
     }
 
     override fun onDestinationChanged(
@@ -151,10 +146,6 @@ class MainActivity :
 
         if (isTopLevel) {
             setToolbarInfo(null, null)
-        }
-
-        for (menuProvider in navHost.childFragmentManager.fragments.filterIsInstance<MenuProvider>()) {
-            removeMenuProvider(menuProvider)
         }
     }
 
