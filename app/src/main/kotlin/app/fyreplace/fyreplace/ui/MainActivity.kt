@@ -240,6 +240,7 @@ class MainActivity :
             }
         }
         animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        bd.bottomNavigation.clearAnimation()
         bd.bottomNavigation.startAnimation(animation)
     }
 

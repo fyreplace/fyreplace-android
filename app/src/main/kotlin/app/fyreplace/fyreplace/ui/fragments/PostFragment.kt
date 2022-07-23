@@ -83,11 +83,11 @@ class PostFragment :
             return
         }
 
-        errored = true
         super.onFailure(failure)
         val error = Status.fromThrowable(failure)
 
         if (error.code in setOf(Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND)) {
+            errored = true
             findNavController().navigateUp()
         }
     }
