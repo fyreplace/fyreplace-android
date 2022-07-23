@@ -75,7 +75,7 @@ class DraftFragment :
         bd.recycler.adapter = adapter
         launch {
             vm.retrieve(args.post.id)
-            vm.post.launchCollect {
+            vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
                 icvm.update(args.position, it)
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
@@ -99,7 +99,7 @@ class DraftFragment :
         val publish = menu.findItem(R.id.publish)
         val publishButton = publish.actionView.findViewById<Button>(R.id.button)
         publishButton.setOnClickListener { onMenuItemSelected(publish) }
-        vm.canPublish.launchCollect(lifecycleScope, publishButton::setEnabled)
+        vm.canPublish.launchCollect(viewLifecycleOwner.lifecycleScope, publishButton::setEnabled)
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

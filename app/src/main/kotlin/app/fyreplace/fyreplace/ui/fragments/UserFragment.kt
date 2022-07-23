@@ -2,7 +2,9 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
 import android.text.util.Linkify
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isVisible
@@ -20,6 +22,7 @@ import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.*
 import app.fyreplace.protos.Rank
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
@@ -37,10 +40,24 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
+    private lateinit var viewLifecycleScope: CoroutineScope
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setupTransitions()
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ) = super.onCreateView(inflater, container, savedInstanceState).also {
+        viewLifecycleScope = CoroutineScope(Dispatchers.Main.immediate) + SupervisorJob()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewLifecycleScope.cancel()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?) = AlertDialog
@@ -83,12 +100,12 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
 
         cvm.currentUser.combine(vm.blocked) { u, b -> (u?.profile?.id != args.profile.id) to b }
-            .launchCollect { (isNotCurrentUser, blocked) ->
+            .launchCollect(viewLifecycleScope) { (isNotCurrentUser, blocked) ->
                 bd.toolbar.menu.findItem(R.id.block).isVisible = !blocked && isNotCurrentUser
                 bd.toolbar.menu.findItem(R.id.unblock).isVisible = blocked && isNotCurrentUser
             }
 
-        cvm.currentUser.launchCollect {
+        cvm.currentUser.launchCollect(viewLifecycleScope) {
             val isNotCurrentUser = it?.profile?.id != args.profile.id
             val currentRank = it?.profile?.rank ?: Rank.RANK_UNSPECIFIED
             bd.toolbar.menu.findItem(R.id.report).isVisible =
@@ -99,13 +116,13 @@ class UserFragment : DialogFragment(), FailureHandler {
             val isNotCurrentUser = currentUser?.profile?.id != args.profile.id
             val currentRank = currentUser?.profile?.rank ?: Rank.RANK_UNSPECIFIED
             return@combine args.profile.rank < currentRank && isNotCurrentUser && !banned
-        }.launchCollect { canBan -> bd.toolbar.menu.findItem(R.id.ban).isVisible = canBan }
+        }.launchCollect(viewLifecycleScope, bd.toolbar.menu.findItem(R.id.ban)::setVisible)
     }
 
     private fun setupContent() {
         bd.avatar.setAvatar(args.profile.v)
 
-        vm.user.filterNotNull().launchCollect { user ->
+        vm.user.filterNotNull().launchCollect(viewLifecycleScope) { user ->
             bd.dateJoined.isVisible = true
             bd.dateJoined.text = getString(R.string.user_date_joined, user.dateJoined.formatDate())
             bd.bio.isVisible = user.bio.isNotBlank()

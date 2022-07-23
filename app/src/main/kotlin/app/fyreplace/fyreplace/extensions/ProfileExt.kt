@@ -3,6 +3,9 @@ package app.fyreplace.fyreplace.extensions
 import android.content.Context
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Profile
+import app.fyreplace.protos.Rank
+
+val Profile?.isAdmin get() = (this?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
 
 val Profile.isAvailable get() = !isBanned && username.isNotEmpty()
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
@@ -28,9 +29,9 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        icvm.addedItems.launchCollect(fragmentLifecycleScope) { (p, i) -> vm.add(p, i) }
-        icvm.updatedItems.launchCollect(fragmentLifecycleScope) { (p, i) -> vm.update(p, i) }
-        icvm.removedPositions.launchCollect(fragmentLifecycleScope) { vm.remove(it) }
+        icvm.addedItems.launchCollect { (p, i) -> vm.add(p, i) }
+        icvm.updatedItems.launchCollect { (p, i) -> vm.update(p, i) }
+        icvm.removedPositions.launchCollect { vm.remove(it) }
     }
 
     override fun onCreateView(
@@ -66,10 +67,24 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
             launch { vm.fetchMore() }
         }
 
-        icvm.addedItems.launchCollect { (p, i) -> adapter.add(p, i) }
-        icvm.updatedItems.launchCollect { (p, i) -> adapter.update(p, i) }
-        icvm.removedPositions.launchCollect { adapter.remove(it) }
+        icvm.addedItems.launchCollect(viewLifecycleOwner.lifecycleScope) { (p, i) ->
+            adapter.add(p, i)
+        }
+        icvm.updatedItems.launchCollect(viewLifecycleOwner.lifecycleScope) { (p, i) ->
+            adapter.update(p, i)
+        }
+        icvm.removedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            adapter.remove(it)
+        }
+    }
 
+    override fun onDestroyView() {
+        bd.recycler.removeOnChildAttachStateChangeListener(this)
+        super.onDestroyView()
+    }
+
+    override fun onStart() {
+        super.onStart()
         launch {
             vm.startListing().launchCollect {
                 bd.swipe.isRefreshing = false
@@ -82,15 +97,9 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        vm.reset()
-    }
-
-    override fun onDestroyView() {
-        bd.recycler.removeOnChildAttachStateChangeListener(this)
+    override fun onStop() {
+        super.onStop()
         vm.stopListing()
-        super.onDestroyView()
     }
 
     override fun onChildViewAttachedToWindow(view: View) {

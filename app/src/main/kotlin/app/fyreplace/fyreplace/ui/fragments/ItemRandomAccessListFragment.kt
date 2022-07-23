@@ -50,9 +50,19 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
         adapter.resetTo(vm.items)
         bd.recycler.adapter = adapter
         vm.totalSize.launchCollect(viewLifecycleOwner.lifecycleScope, adapter::setTotalSize)
+    }
 
+    override fun onDestroyView() {
+        bd.recycler.removeOnChildAttachStateChangeListener(this)
+        super.onDestroyView()
+    }
+
+    override fun onStart() {
+        super.onStart()
         launch {
-            vm.startListing().launchCollect { (index, items) -> adapter.update(index, items) }
+            vm.startListing().launchCollect { (index, items) ->
+                adapter.update(index, items)
+            }
 
             if (adapter.itemCount <= 1) {
                 vm.fetchAround(0)
@@ -60,15 +70,9 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        vm.reset()
-    }
-
-    override fun onDestroyView() {
-        bd.recycler.removeOnChildAttachStateChangeListener(this)
+    override fun onStop() {
+        super.onStop()
         vm.stopListing()
-        super.onDestroyView()
     }
 
     override fun onChildViewAttachedToWindow(view: View) {

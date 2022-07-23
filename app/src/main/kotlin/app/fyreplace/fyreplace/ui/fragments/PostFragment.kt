@@ -17,6 +17,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makeShareIntent
 import app.fyreplace.fyreplace.grpc.p
@@ -25,7 +26,10 @@ import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.*
-import app.fyreplace.protos.*
+import app.fyreplace.protos.Comment
+import app.fyreplace.protos.Comments
+import app.fyreplace.protos.Profile
+import app.fyreplace.protos.comment
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
@@ -110,8 +114,7 @@ class PostFragment :
 
         cvm.currentUser.combine(vm.post) { u, p ->
             val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
-            val currentUserIsAdmin = (u?.profile?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
-            return@combine currentUserOwnsPost || currentUserIsAdmin
+            return@combine currentUserOwnsPost || u?.profile.isAdmin
         }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
             menu.findItem(R.id.report).isVisible = !canDeletePost
             menu.findItem(R.id.delete).isVisible = canDeletePost
@@ -200,13 +203,10 @@ class PostFragment :
             return@setOnMenuItemClickListener true
         }
 
-        cvm.currentUser.launchCollect { user ->
-            val currentUserIsAdmin = (user?.profile?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZEN
-            val canDelete = currentUserIsAdmin || comment.author.id == user?.profile?.id
-            popup.menu.findItem(R.id.report).isVisible = !canDelete
-            popup.menu.findItem(R.id.delete).isVisible = canDelete
-        }
-
+        val user = cvm.currentUser.value
+        val canDelete = user?.profile.isAdmin || comment.author.id == user?.profile?.id
+        popup.menu.findItem(R.id.report).isVisible = !canDelete
+        popup.menu.findItem(R.id.delete).isVisible = canDelete
         popup.show()
     }
 
