@@ -56,19 +56,17 @@ class PostViewModel @AssistedInject constructor(
         postStub.delete(id { id = mPost.value.id })
     }
 
-    suspend fun createComment(text: String) =
-        commentStub.create(commentCreation {
-            postId = post.value.id
-            this.text = text
-        })
+    suspend fun createComment(text: String) = commentStub.create(commentCreation {
+        postId = post.value.id
+        this.text = text
+    })
 
     suspend fun reportComment(commentId: ByteString) {
         commentStub.report(id { id = commentId })
     }
 
-    suspend fun deleteComment(position: Int, commentId: ByteString) {
+    suspend fun deleteComment(commentId: ByteString) {
         commentStub.delete(id { id = commentId })
-        makeDeletedComment(position)?.let { update(position, it) }
     }
 
     fun setScrolledToComment() {

@@ -85,6 +85,11 @@ abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
         }
     }
 
+    fun insert(item: Item) {
+        mItems[totalSize.value] = item
+        mTotalSize.value++
+    }
+
     fun update(position: Int, item: Item) {
         mItems[position] = item
     }

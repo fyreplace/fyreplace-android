@@ -240,11 +240,13 @@ class PostFragment :
     }
 
     private suspend fun createComment(text: String) {
-        adapter.insert(comment {
+        val comment = comment {
             id = vm.createComment(text).id
             this.text = text
             author = cvm.currentUser.value!!.profile
-        })
+        }
+        adapter.insert(comment)
+        vm.insert(comment)
     }
 
     private suspend fun reportComment(comment: Comment) {
@@ -253,8 +255,11 @@ class PostFragment :
     }
 
     private suspend fun deleteComment(position: Int, comment: Comment) {
-        vm.deleteComment(position, comment.id)
-        vm.makeDeletedComment(position)?.let { adapter.update(position, it) }
+        vm.deleteComment(comment.id)
+        vm.makeDeletedComment(position)?.let {
+            adapter.update(position, it)
+            vm.update(position, it)
+        }
     }
 
     private companion object {
