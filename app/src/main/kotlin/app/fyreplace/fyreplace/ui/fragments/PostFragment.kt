@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.InputType
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -206,7 +205,6 @@ class PostFragment :
     override fun onNewComment() = showTextInputAlert(
         R.string.post_comment_title,
         TextInputConfig(
-            inputType = INPUT_TYPE,
             maxLength = resources.getInteger(R.integer.comment_text_max_size),
             allowEmpty = false
         )
@@ -260,10 +258,5 @@ class PostFragment :
             adapter.update(position, it)
             vm.update(position, it)
         }
-    }
-
-    private companion object {
-        const val INPUT_TYPE =
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE or InputType.TYPE_TEXT_FLAG_MULTI_LINE
     }
 }

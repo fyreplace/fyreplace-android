@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui.views
 
 import android.content.Context
-import android.text.InputType
 import android.util.AttributeSet
 import app.fyreplace.fyreplace.R
 
@@ -9,7 +8,6 @@ class BioPreference : TextInputPreference {
     override val dialogTitle = R.string.settings_bio
     override val textInputConfig
         get() = TextInputConfig(
-            inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE or InputType.TYPE_TEXT_FLAG_MULTI_LINE,
             maxLength = context.resources.getInteger(R.integer.bio_max_size),
             text = initialText
         )

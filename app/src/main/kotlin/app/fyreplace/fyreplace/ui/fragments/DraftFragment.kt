@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.*
 import android.widget.Button
 import androidx.core.view.MenuProvider
@@ -212,11 +211,7 @@ class DraftFragment :
         val title = if (new) R.string.draft_add_text else R.string.draft_update_text
         showTextInputAlert(
             title,
-            TextInputConfig(
-                inputType = INPUT_TYPE,
-                maxLength = chapterTextMaxSize,
-                text = chapter.text
-            )
+            TextInputConfig(maxLength = chapterTextMaxSize, text = chapter.text)
         ) {
             launch {
                 vm.updateChapterText(currentChapterPosition, it)
@@ -235,10 +230,5 @@ class DraftFragment :
             vm.moveChapter(fromPosition, toPosition)
             adapter.add(toPosition, adapter.remove(fromPosition))
         }
-    }
-
-    private companion object {
-        const val INPUT_TYPE =
-            InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_LONG_MESSAGE or InputType.TYPE_TEXT_FLAG_MULTI_LINE
     }
 }
