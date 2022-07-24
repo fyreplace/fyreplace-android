@@ -5,13 +5,14 @@ import androidx.recyclerview.widget.RecyclerView
 abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private val offset: Int) :
     RecyclerView.Adapter<VH>() {
     protected val items = mutableMapOf<Int, Item>()
-    private var totalSize = 0
+    private var mTotalSize = 0
+    protected val totalSize get() = mTotalSize
 
-    override fun getItemCount() = totalSize + offset
+    override fun getItemCount() = mTotalSize + offset
 
     fun setTotalSize(size: Int) {
         val diff = totalSize - size
-        totalSize = size
+        mTotalSize = size
 
         if (diff < 0) {
             notifyItemRangeRemoved(totalSize + offset, -diff)
@@ -22,7 +23,7 @@ abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private 
 
     fun resetTo(items: Map<Int, Item>) {
         val oldTotalSize = totalSize
-        totalSize = items.size
+        mTotalSize = items.size
         this.items.clear()
         notifyItemRangeRemoved(offset, oldTotalSize)
         this.items.putAll(items)
@@ -31,7 +32,7 @@ abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private 
 
     fun insert(item: Item) {
         items[totalSize] = item
-        totalSize++
+        mTotalSize++
         notifyItemInserted(totalSize + offset - 1)
     }
 

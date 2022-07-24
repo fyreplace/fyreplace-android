@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
@@ -18,8 +19,11 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
     ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var commentListener: CommentListener? = null
 
+    override fun getItemCount() = super.getItemCount() + 1
+
     override fun getItemViewType(position: Int) = when {
         position == 0 -> TYPE_CHAPTERS
+        position > totalSize -> TYPE_NEW_COMMENT
         items.containsKey(position - 1) -> TYPE_COMMENT
         else -> TYPE_COMMENT_LOADER
     }
@@ -36,6 +40,9 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
             TYPE_COMMENT_LOADER -> CommentLoaderHolder(
                 inflater.inflate(R.layout.item_comment_loader, parent, false)
             )
+            TYPE_NEW_COMMENT -> NewCommentHolder(
+                inflater.inflate(R.layout.item_new_comment, parent, false)
+            )
             else -> throw RuntimeException()
         }
     }
@@ -45,6 +52,7 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
             is ChaptersHolder -> holder.setup(post)
             is CommentHolder -> holder.setup(items[position - 1] ?: return)
             is CommentLoaderHolder -> holder.setup()
+            is NewCommentHolder -> holder.setup()
         }
     }
 
@@ -61,6 +69,7 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
         const val TYPE_CHAPTERS = 1
         const val TYPE_COMMENT = 2
         const val TYPE_COMMENT_LOADER = 3
+        const val TYPE_NEW_COMMENT = 4
     }
 
     interface CommentListener {
@@ -69,6 +78,8 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
         fun onCommentProfileClicked(view: View, position: Int, profile: Profile)
 
         fun onCommentOptionsClicked(view: View, position: Int, comment: Comment)
+
+        fun onNewComment()
     }
 
     private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
@@ -118,5 +129,11 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
         fun setup() {
             commentListener?.onCommentDisplayed(itemView, bindingAdapterPosition - 1, null)
         }
+    }
+
+    private inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {
+        private val button: Button = itemView.findViewById(R.id.button)
+
+        fun setup() = button.setOnClickListener { commentListener?.onNewComment() }
     }
 }

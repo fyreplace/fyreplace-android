@@ -94,7 +94,7 @@ class MainActivity :
             launch { cvm.retrieveMe() }
         }
 
-        refreshPrimaryButton()
+        refreshPrimaryAction()
         handleIntent(intent)
     }
 
@@ -129,7 +129,7 @@ class MainActivity :
         else -> super.getFailureTexts(error)
     }
 
-    override fun onBackStackChanged() = refreshPrimaryButton()
+    override fun onBackStackChanged() = refreshPrimaryAction()
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
@@ -189,24 +189,29 @@ class MainActivity :
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
     }
 
-    private fun refreshPrimaryButton() {
-        val fragment = navHost.childFragmentManager.fragments.last { it !is DialogFragment }
+    fun refreshPrimaryAction(style: PrimaryActionStyle = PrimaryActionStyle.EXTENDED) {
+        val fragment =
+            navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
+        val text =
+            if (style == PrimaryActionStyle.EXTENDED) fragment?.getPrimaryActionText()
+            else null
+        val icon =
+            if (style != PrimaryActionStyle.NONE) fragment?.getPrimaryActionIcon()
+            else null
 
-        if (fragment is PrimaryActionProvider) {
-            setPrimaryAction(fragment.getPrimaryActionText(), fragment.getPrimaryActionIcon()) {
-                fragment.onPrimaryAction()
-            }
-        } else {
+        if (text == null && icon == null) {
             removePrimaryAction()
+        } else {
+            setPrimaryAction(text, icon) { fragment?.onPrimaryAction() }
         }
     }
 
     private fun setPrimaryAction(
         @StringRes text: Int?,
-        @DrawableRes icon: Int,
+        @DrawableRes icon: Int?,
         listener: View.OnClickListener
     ) = with(bd.primaryAction) {
-        setIconResource(icon)
+        icon?.let { setIconResource(it) }
         setOnClickListener(listener)
 
         if (text != null) {
@@ -302,6 +307,12 @@ class MainActivity :
             R.id.fragment_archive,
             R.id.fragment_drafts,
         )
+    }
+
+    enum class PrimaryActionStyle {
+        EXTENDED,
+        SHRUNK,
+        NONE
     }
 
     private inner class LogoTarget(private val size: Int, private val profile: Profile) :

@@ -48,6 +48,8 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
+    override val recyclerView by lazy { bd.recycler }
+    override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
     private val icvm by activityViewModels<ArchiveChangeViewModel>()
     private val args by navArgs<PostFragmentArgs>()
@@ -143,20 +145,11 @@ class PostFragment :
 
     override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
 
-    override fun onPrimaryAction() {
-        showTextInputAlert(
-            R.string.post_comment_title,
-            TextInputConfig(
-                inputType = INPUT_TYPE,
-                maxLength = resources.getInteger(R.integer.comment_text_max_size),
-                allowEmpty = false
-            )
-        ) { launch { createComment(it) } }
-    }
+    override fun onPrimaryAction() = onNewComment()
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
         val viewPosition = (commentPosition ?: return) + 1
-        val layoutManager = bd.recycler.layoutManager as LinearLayoutManager
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
 
         if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
             return
@@ -209,6 +202,15 @@ class PostFragment :
         popup.menu.findItem(R.id.delete).isVisible = canDelete
         popup.show()
     }
+
+    override fun onNewComment() = showTextInputAlert(
+        R.string.post_comment_title,
+        TextInputConfig(
+            inputType = INPUT_TYPE,
+            maxLength = resources.getInteger(R.integer.comment_text_max_size),
+            allowEmpty = false
+        )
+    ) { launch { createComment(it) } }
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {
