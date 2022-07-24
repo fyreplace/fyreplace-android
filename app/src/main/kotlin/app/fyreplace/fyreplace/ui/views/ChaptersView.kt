@@ -11,13 +11,13 @@ import android.widget.TextView
 import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
-import androidx.core.widget.ContentLoadingProgressBar
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.android.material.progressindicator.CircularProgressIndicator
 
 @Suppress("unused")
 class ChaptersView : LinearLayout {
@@ -46,12 +46,10 @@ class ChaptersView : LinearLayout {
         removeAllViews()
 
         if (post.isPreview) {
-            val loader = ContentLoadingProgressBar(context)
-            loader.isIndeterminate = true
-            return addView(loader)
+            addView(CircularProgressIndicator(context).apply { isIndeterminate = true })
+        } else for (chapter in post.chaptersList) {
+            addChapter(chapter)
         }
-
-        post.chaptersList.forEach(::addChapter)
     }
 
     private fun addChapter(chapter: Chapter) {
