@@ -89,6 +89,7 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
     }
 
     private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
+        override val shortDate = true
         private val primaryColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimary)
         private val textColor =

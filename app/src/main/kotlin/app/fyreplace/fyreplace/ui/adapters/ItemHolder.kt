@@ -12,13 +12,14 @@ import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 
 open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    val avatar: ImageView? = itemView.findViewById(R.id.avatar)
-    val username: TextView? = itemView.findViewById(R.id.username)
-    val date: TextView? = itemView.findViewById(R.id.date)
+    protected val avatar: ImageView? = itemView.findViewById(R.id.avatar)
+    protected val username: TextView? = itemView.findViewById(R.id.username)
+    protected val date: TextView? = itemView.findViewById(R.id.date)
+    protected open val shortDate = false
 
     open fun setup(profile: Profile, timestamp: Timestamp?) {
         avatar?.setAvatar(profile)
         username?.setUsername(profile)
-        date?.text = timestamp?.formatDate(singleLine = false)
+        date?.text = timestamp?.formatDate(singleLine = shortDate, short = shortDate)
     }
 }
