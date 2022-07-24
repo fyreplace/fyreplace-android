@@ -9,4 +9,5 @@
     <dimen name="form_width">240dp</dimen>
     <dimen name="item_height">140dp</dimen>
     <dimen name="user_avatar_size">100dp</dimen>
+    <dimen name="comment_height">60dp</dimen>
 </resources>
