@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.ui.views
 import android.content.Context
 import android.text.util.Linkify
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -40,6 +41,7 @@ class ChaptersView : LinearLayout {
 
     init {
         orientation = VERTICAL
+        gravity = Gravity.CENTER_HORIZONTAL
     }
 
     fun setPost(post: Post) {
