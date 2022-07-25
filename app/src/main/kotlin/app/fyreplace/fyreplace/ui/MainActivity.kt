@@ -289,9 +289,25 @@ class MainActivity :
 
     private fun showPost(postIdShortString: String, commentPosition: Int? = null) {
         val post = post { id = byteString(postIdShortString) }
-        val directions =
-            MainDirections.actionPost(post = post.p, commentPosition = commentPosition ?: -1)
-        navHost.navController.navigate(directions)
+
+        when {
+            post.id.isEmpty -> showBasicAlert(
+                R.string.main_error_malformed_url_title,
+                R.string.main_error_malformed_url_message,
+                error = true
+            )
+            !cvm.isAuthenticated.value -> showBasicAlert(
+                R.string.error_authentication_title,
+                R.string.error_authentication_message,
+                error = true
+            )
+            else -> navHost.navController.navigate(
+                MainDirections.actionPost(
+                    post = post.p,
+                    commentPosition = commentPosition ?: -1
+                )
+            )
+        }
     }
 
     private companion object {
