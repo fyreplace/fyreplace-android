@@ -35,11 +35,14 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
             bd = FragmentItemRandomAccessListBinding.bind(it)
         }
         bd.lifecycleOwner = viewLifecycleOwner
-        bd.recycler.setHasFixedSize(true)
-        bd.recycler.addOnChildAttachStateChangeListener(this)
-        bd.recycler.addItemDecoration(
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        )
+
+        with (bd.recyclerView) {
+            setHasFixedSize(true)
+            addOnChildAttachStateChangeListener(this@ItemRandomAccessListFragment)
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            )
+        }
 
         return view
     }
@@ -48,12 +51,12 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
         super.onViewCreated(view, savedInstanceState)
         adapter = makeAdapter()
         adapter.resetTo(vm.items)
-        bd.recycler.adapter = adapter
+        bd.recyclerView.adapter = adapter
         vm.totalSize.launchCollect(viewLifecycleOwner.lifecycleScope, adapter::setTotalSize)
     }
 
     override fun onDestroyView() {
-        bd.recycler.removeOnChildAttachStateChangeListener(this)
+        bd.recyclerView.removeOnChildAttachStateChangeListener(this)
         super.onDestroyView()
     }
 
@@ -74,7 +77,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
     }
 
     override fun onChildViewAttachedToWindow(view: View) {
-        val itemPosition = bd.recycler.getChildAdapterPosition(view) - 1
+        val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1
 
         if (vm.items[itemPosition] == null) launch {
             vm.fetchAround(itemPosition)

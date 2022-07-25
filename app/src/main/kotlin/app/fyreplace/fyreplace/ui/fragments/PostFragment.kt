@@ -47,7 +47,7 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
-    override val recyclerView by lazy { bd.recycler }
+    override val recyclerView by lazy { bd.recyclerView }
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
     private val icvm by activityViewModels<ArchiveChangeViewModel>()

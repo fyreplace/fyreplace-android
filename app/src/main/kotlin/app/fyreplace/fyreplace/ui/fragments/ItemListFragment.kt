@@ -47,11 +47,14 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         bd.lifecycleOwner = viewLifecycleOwner
         bd.isEmpty = vm.isEmpty
         bd.emptyText.text = emptyText
-        bd.recycler.setHasFixedSize(true)
-        bd.recycler.addOnChildAttachStateChangeListener(this)
-        bd.recycler.addItemDecoration(
-            DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-        )
+
+        with (bd.recyclerView) {
+            setHasFixedSize(true)
+            addOnChildAttachStateChangeListener(this@ItemListFragment)
+            addItemDecoration(
+                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
+            )
+        }
 
         return view
     }
@@ -60,7 +63,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         super.onViewCreated(view, savedInstanceState)
         adapter = makeAdapter()
         adapter.addAll(vm.items)
-        bd.recycler.adapter = adapter
+        bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
             adapter.removeAll()
             vm.reset()
@@ -79,7 +82,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     }
 
     override fun onDestroyView() {
-        bd.recycler.removeOnChildAttachStateChangeListener(this)
+        bd.recyclerView.removeOnChildAttachStateChangeListener(this)
         super.onDestroyView()
     }
 
@@ -103,7 +106,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
     }
 
     override fun onChildViewAttachedToWindow(view: View) {
-        val childPosition = bd.recycler.getChildAdapterPosition(view)
+        val childPosition = bd.recyclerView.getChildAdapterPosition(view)
 
         if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) launch {
             vm.fetchMore()

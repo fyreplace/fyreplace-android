@@ -65,13 +65,13 @@ class DraftFragment :
     ) = super.onCreateView(inflater, container, savedInstanceState)?.also {
         bd = FragmentDraftBinding.bind(it)
         bd.lifecycleOwner = viewLifecycleOwner
-        bd.recycler.setHasFixedSize(true)
+        bd.recyclerView.setHasFixedSize(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = DraftAdapter(viewLifecycleOwner, vm.canAddChapter)
-        bd.recycler.adapter = adapter
+        bd.recyclerView.adapter = adapter
         launch {
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {

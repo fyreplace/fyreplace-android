@@ -21,6 +21,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
+import androidx.lifecycle.whenStarted
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -45,6 +46,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -129,7 +131,15 @@ class MainActivity :
         else -> super.getFailureTexts(error)
     }
 
-    override fun onBackStackChanged() = refreshPrimaryAction()
+    override fun onBackStackChanged() {
+        refreshPrimaryAction()
+        launch {
+            supportFragmentManager.fragments.last().whenStarted {
+                delay(100)
+                bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
+            }
+        }
+    }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
         if (fragment is TitleChoosing) {
