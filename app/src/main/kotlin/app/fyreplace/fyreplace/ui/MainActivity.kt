@@ -189,20 +189,23 @@ class MainActivity :
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
     }
 
-    fun refreshPrimaryAction(style: PrimaryActionStyle = PrimaryActionStyle.EXTENDED) {
+    fun refreshPrimaryAction() {
         val fragment =
             navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
+                ?: return removePrimaryAction()
+
+        val style = fragment.getPrimaryActionStyle()
         val text =
-            if (style == PrimaryActionStyle.EXTENDED) fragment?.getPrimaryActionText()
+            if (style == PrimaryActionStyle.EXTENDED) fragment.getPrimaryActionText()
             else null
         val icon =
-            if (style != PrimaryActionStyle.NONE) fragment?.getPrimaryActionIcon()
+            if (style != PrimaryActionStyle.NONE) fragment.getPrimaryActionIcon()
             else null
 
         if (text == null && icon == null) {
             removePrimaryAction()
         } else {
-            setPrimaryAction(text, icon) { fragment?.onPrimaryAction() }
+            setPrimaryAction(text, icon) { fragment.onPrimaryAction() }
         }
     }
 
@@ -323,12 +326,6 @@ class MainActivity :
             R.id.fragment_archive,
             R.id.fragment_drafts,
         )
-    }
-
-    enum class PrimaryActionStyle {
-        EXTENDED,
-        SHRUNK,
-        NONE
     }
 
     private inner class LogoTarget(private val size: Int, private val profile: Profile) :

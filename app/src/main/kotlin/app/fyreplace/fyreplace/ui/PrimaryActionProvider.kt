@@ -5,5 +5,13 @@ interface PrimaryActionProvider {
 
     fun getPrimaryActionIcon(): Int? = null
 
+    fun getPrimaryActionStyle(): PrimaryActionStyle = PrimaryActionStyle.EXTENDED
+
     fun onPrimaryAction()
+}
+
+enum class PrimaryActionStyle {
+    EXTENDED,
+    SHRUNK,
+    NONE
 }

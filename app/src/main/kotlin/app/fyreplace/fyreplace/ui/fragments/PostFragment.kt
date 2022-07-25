@@ -20,7 +20,6 @@ import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makeShareIntent
 import app.fyreplace.fyreplace.grpc.p
-import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
@@ -41,7 +40,6 @@ import javax.inject.Inject
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
     MenuProvider,
-    PrimaryActionProvider,
     PostAdapter.CommentListener {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
