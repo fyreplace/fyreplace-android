@@ -233,7 +233,7 @@ class MainActivity :
         val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams
         val isBottomNavigationVisible = params.bottomMargin == 0
 
-        if (isTopLevel == isBottomNavigationVisible) {
+        if (isTopLevel == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {
             return@doOnLayout
         }
 
