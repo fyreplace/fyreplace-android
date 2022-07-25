@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.MenuProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.extensions.mainActivity
