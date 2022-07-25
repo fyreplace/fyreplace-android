@@ -29,10 +29,12 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.comment
+import com.google.protobuf.timestamp
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -242,6 +244,7 @@ class PostFragment :
             id = vm.createComment(text).id
             this.text = text
             author = cvm.currentUser.value!!.profile
+            dateCreated = timestamp { seconds = Date().time / 1000 }
         }
         adapter.insert(comment)
         vm.insert(comment)
