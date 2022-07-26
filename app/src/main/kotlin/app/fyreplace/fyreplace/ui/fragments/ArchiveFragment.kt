@@ -14,15 +14,14 @@ import app.fyreplace.protos.Posts
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ArchiveFragment : ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
+class ArchiveFragment :
+    ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
     ItemListAdapter.ItemClickListener<Post> {
     override val icvm by activityViewModels<ArchiveChangeViewModel>()
     override val vm by viewModels<ArchiveViewModel>()
     override val emptyText by lazy { getString(R.string.archive_empty) }
 
-    override fun makeAdapter() = ArchiveAdapter().apply {
-        setOnClickListener(this@ArchiveFragment)
-    }
+    override fun makeAdapter() = ArchiveAdapter(this)
 
     override fun onItemClick(item: Post, position: Int) {
         val directions = ArchiveFragmentDirections.actionPost(post = item.p, position = position)

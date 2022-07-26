@@ -1,64 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="@dimen/comment_height"
-    android:paddingStart="@dimen/gap"
-    android:paddingTop="@dimen/gap_narrow"
-    android:paddingEnd="@dimen/gap_narrow"
-    android:paddingBottom="@dimen/gap_narrow">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <ImageView
-        android:id="@+id/avatar"
-        android:layout_width="@dimen/avatar_size"
-        android:layout_height="@dimen/avatar_size"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/profile_avatar"
-        android:src="@drawable/ic_baseline_account_circle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <TextView
-        android:id="@+id/username"
-        android:layout_width="0dp"
+        <variable
+            name="holder"
+            type="app.fyreplace.fyreplace.ui.adapters.PostAdapter.CommentHolder" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/gap_narrow"
-        android:layout_marginEnd="@dimen/gap"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@id/date"
-        app:layout_constraintStart_toEndOf="@id/avatar"
-        app:layout_constraintTop_toTopOf="@id/avatar" />
+        android:minHeight="@dimen/comment_height"
+        android:paddingStart="@dimen/gap"
+        android:paddingTop="@dimen/gap_narrow"
+        android:paddingEnd="@dimen/gap_narrow"
+        android:paddingBottom="@dimen/gap_narrow">
 
-    <ImageView
-        android:id="@+id/more"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:src="@drawable/ic_baseline_more_vert"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/username" />
+        <ImageView
+            android:id="@+id/avatar"
+            android:layout_width="@dimen/avatar_size"
+            android:layout_height="@dimen/avatar_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/profile_avatar"
+            android:onClick="@{holder::onProfileClicked}"
+            android:src="@drawable/ic_baseline_account_circle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/gap_narrow"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        app:layout_constraintEnd_toStartOf="@id/more"
-        app:layout_constraintTop_toTopOf="@id/username" />
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/gap_narrow"
+            android:layout_marginEnd="@dimen/gap"
+            android:onClick="@{holder::onProfileClicked}"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/date"
+            app:layout_constraintStart_toEndOf="@id/avatar"
+            app:layout_constraintTop_toTopOf="@id/avatar" />
 
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textIsSelectable="true"
-        app:layout_constraintBaseline_toBottomOf="@id/avatar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/date"
-        app:layout_constraintStart_toStartOf="@id/username" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{holder::onMoreClicked}"
+            android:src="@drawable/ic_baseline_more_vert"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/username" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/gap_narrow"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            app:layout_constraintEnd_toStartOf="@id/more"
+            app:layout_constraintTop_toTopOf="@id/username" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textIsSelectable="true"
+            app:layout_constraintBaseline_toBottomOf="@id/avatar"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/date"
+            app:layout_constraintStart_toStartOf="@id/username" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

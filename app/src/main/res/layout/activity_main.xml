@@ -8,8 +8,8 @@
         <import type="android.view.View" />
 
         <variable
-            name="vm"
-            type="app.fyreplace.fyreplace.viewmodels.MainViewModel" />
+            name="ui"
+            type="app.fyreplace.fyreplace.ui.MainActivity" />
     </data>
 
     <LinearLayout
@@ -56,6 +56,7 @@
                 android:layout_gravity="end|bottom"
                 android:layout_margin="@dimen/gap"
                 android:clipToOutline="true"
+                android:onClick="@{ui::onPrimaryActionClicked}"
                 android:text="@string/app_name"
                 android:visibility="gone"
                 tools:ignore="UnusedAttribute" />

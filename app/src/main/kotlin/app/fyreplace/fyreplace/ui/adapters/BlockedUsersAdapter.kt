@@ -8,9 +8,11 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Profile
 import com.google.protobuf.ByteString
 
-class BlockedUsersAdapter : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>() {
-    private var unblockListener: ((profile: Profile, position: Int) -> Unit)? = null
-
+class BlockedUsersAdapter(
+    private val unblockListener: UnblockListener,
+    itemListener: ItemClickListener<Profile>
+) :
+    ItemListAdapter<Profile, BlockedUsersAdapter.Holder>(itemListener) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_blocked_user, parent, false)
@@ -21,7 +23,7 @@ class BlockedUsersAdapter : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>
         super.onBindViewHolder(holder, position)
         holder.setup(items[position], null)
         holder.unblock.setOnClickListener {
-            unblockListener?.invoke(
+            unblockListener.onUnblock(
                 items[holder.bindingAdapterPosition],
                 holder.bindingAdapterPosition
             )
@@ -30,11 +32,11 @@ class BlockedUsersAdapter : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>
 
     override fun getItemId(item: Profile): ByteString = item.id
 
-    fun setUnblockListener(listener: ((profile: Profile, position: Int) -> Unit)) {
-        unblockListener = listener
-    }
-
     class Holder(itemView: View) : ItemHolder(itemView) {
         val unblock: Button = itemView.findViewById(R.id.unblock)
+    }
+
+    interface UnblockListener {
+        fun onUnblock(profile: Profile, position: Int)
     }
 }

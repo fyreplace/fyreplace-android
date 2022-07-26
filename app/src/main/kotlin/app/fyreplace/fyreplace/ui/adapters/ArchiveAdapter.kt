@@ -16,7 +16,8 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.protobuf.ByteString
 
-class ArchiveAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
+class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
+    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(itemListener) {
     override fun getItemViewType(position: Int) =
         if (items[position].getChapters(0).text.isEmpty()) TYPE_IMAGE
         else TYPE_TEXT

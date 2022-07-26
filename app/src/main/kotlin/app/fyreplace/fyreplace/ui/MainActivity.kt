@@ -67,8 +67,10 @@ class MainActivity :
         setTheme(R.style.AppTheme)
         DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
-        bd = ActivityMainBinding.bind(findViewById(R.id.root))
-        bd.lifecycleOwner = this
+        bd = ActivityMainBinding.bind(findViewById(R.id.root)).apply {
+            lifecycleOwner = this@MainActivity
+            ui = this@MainActivity
+        }
 
         navHost = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         navHost.childFragmentManager.addOnBackStackChangedListener(this)
@@ -160,6 +162,11 @@ class MainActivity :
         }
     }
 
+    @Suppress("UNUSED_PARAMETER")
+    fun onPrimaryActionClicked(view: View) {
+        getPrimaryActionProvider()?.onPrimaryAction()
+    }
+
     fun setToolbarInfo(title: String?) = bd.toolbar.run {
         this.title = title
         isTitleCentered = false
@@ -200,10 +207,7 @@ class MainActivity :
     }
 
     fun refreshPrimaryAction() {
-        val fragment =
-            navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
-                ?: return removePrimaryAction()
-
+        val fragment = getPrimaryActionProvider() ?: return removePrimaryAction()
         val style = fragment.getPrimaryActionStyle()
         val text =
             if (style == PrimaryActionStyle.EXTENDED) fragment.getPrimaryActionText()
@@ -215,17 +219,15 @@ class MainActivity :
         if (text == null && icon == null) {
             removePrimaryAction()
         } else {
-            setPrimaryAction(text, icon) { fragment.onPrimaryAction() }
+            setPrimaryAction(text, icon)
         }
     }
 
     private fun setPrimaryAction(
         @StringRes text: Int?,
-        @DrawableRes icon: Int?,
-        listener: View.OnClickListener
+        @DrawableRes icon: Int?
     ) = with(bd.primaryAction) {
         icon?.let { setIconResource(it) }
-        setOnClickListener(listener)
 
         if (text != null) {
             setText(text)
@@ -241,6 +243,9 @@ class MainActivity :
         shrink()
         hide()
     }
+
+    private fun getPrimaryActionProvider() =
+        navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
 
     private fun moveBottomNavigation(isTopLevel: Boolean) = bd.bottomNavigation.doOnLayout {
         val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams

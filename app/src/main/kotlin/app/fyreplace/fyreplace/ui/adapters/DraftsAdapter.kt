@@ -9,7 +9,8 @@ import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
 
-class DraftsAdapter : ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>() {
+class DraftsAdapter(itemListener: ItemClickListener<Post>) :
+    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(itemListener) {
     override fun getItemViewType(position: Int): Int {
         val post = items[position]
         return when (post.chaptersCount) {

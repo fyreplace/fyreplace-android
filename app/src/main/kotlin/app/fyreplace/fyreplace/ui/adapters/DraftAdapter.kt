@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.StateFlow
 
 class DraftAdapter(
     private val lifecycleOwner: LifecycleOwner,
-    private val canAddChapter: StateFlow<Boolean>
+    private val canAddChapter: StateFlow<Boolean>,
+    private val chapterListener: ChapterListener,
+    itemListener: ItemClickListener<Chapter>
 ) :
-    ItemListAdapter<Chapter, DraftAdapter.ChapterHolder>() {
-    private var chapterListener: ChapterListener? = null
-
+    ItemListAdapter<Chapter, DraftAdapter.ChapterHolder>(itemListener) {
     init {
         setHasStableIds(false)
     }
@@ -53,21 +53,10 @@ class DraftAdapter(
 
     override fun onBindViewHolder(holder: ChapterHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-
-        if (position >= items.size) {
-            holder.itemView.setOnClickListener(null)
-            holder.itemView.setOnLongClickListener(null)
-            holder.setup(Chapter.getDefaultInstance())
-        } else {
-            holder.setup(items[position])
-        }
+        holder.setup(if (position < items.size) items[position] else Chapter.getDefaultInstance())
     }
 
     override fun getItemId(item: Chapter): ByteString = ByteString.EMPTY
-
-    fun setChapterListener(listener: ChapterListener) {
-        chapterListener = listener
-    }
 
     companion object {
         const val TYPE_TEXT = 1
@@ -105,13 +94,20 @@ class DraftAdapter(
 
         init {
             bd.lifecycleOwner = lifecycleOwner
+            bd.holder = this
             bd.canAddChapter = canAddChapter
         }
 
-        override fun setup(chapter: Chapter) {
-            bd.text.setOnClickListener { chapterListener?.onInsertChapter(items.size, TYPE_TEXT) }
-            bd.image.setOnClickListener { chapterListener?.onInsertChapter(items.size, TYPE_IMAGE) }
+        override fun setup(chapter: Chapter) = with(itemView) {
+            setOnClickListener(null)
+            setOnLongClickListener(null)
         }
+
+        @Suppress("UNUSED_PARAMETER")
+        fun onTextClicked(view: View) = chapterListener.onInsertChapter(items.size, TYPE_TEXT)
+
+        @Suppress("UNUSED_PARAMETER")
+        fun onImageClicked(view: View) = chapterListener.onInsertChapter(items.size, TYPE_IMAGE)
     }
 
     interface ChapterListener {

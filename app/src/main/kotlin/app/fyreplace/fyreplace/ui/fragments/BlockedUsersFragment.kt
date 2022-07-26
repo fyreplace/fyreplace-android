@@ -14,27 +14,27 @@ import app.fyreplace.protos.Profiles
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class BlockedUsersFragment : ItemListFragment<Profile, Profiles, BlockedUsersAdapter.Holder>(),
-    ItemListAdapter.ItemClickListener<Profile> {
+class BlockedUsersFragment :
+    ItemListFragment<Profile, Profiles, BlockedUsersAdapter.Holder>(),
+    ItemListAdapter.ItemClickListener<Profile>,
+    BlockedUsersAdapter.UnblockListener {
     override val icvm by activityViewModels<BlockedUsersChangeViewModel>()
     override val vm by viewModels<BlockedUsersViewModel>()
     override val emptyText by lazy { getString(R.string.blocked_users_empty) }
 
-    override fun makeAdapter() = BlockedUsersAdapter().apply {
-        setOnClickListener(this@BlockedUsersFragment)
-        setUnblockListener { profile, position ->
-            showChoiceAlert(R.string.user_unblock_title, null) {
-                launch {
-                    vm.unblock(profile.id)
-                    icvm.delete(position)
-                }
-            }
-        }
-    }
+    override fun makeAdapter() = BlockedUsersAdapter(this, this)
 
     override fun onItemClick(item: Profile, position: Int) {
         val directions =
             BlockedUsersFragmentDirections.actionUser(profile = item.p, position = position)
         findNavController().navigate(directions)
     }
+
+    override fun onUnblock(profile: Profile, position: Int) =
+        showChoiceAlert(R.string.user_unblock_title, null) {
+            launch {
+                vm.unblock(profile.id)
+                icvm.delete(position)
+            }
+        }
 }

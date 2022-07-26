@@ -26,9 +26,7 @@ class DraftsFragment :
     override val vm by viewModels<DraftsViewModel>()
     override val emptyText by lazy { getString(R.string.drafts_empty) }
 
-    override fun makeAdapter() = DraftsAdapter().apply {
-        setOnClickListener(this@DraftsFragment)
-    }
+    override fun makeAdapter() = DraftsAdapter(this)
 
     override fun getPrimaryActionIcon() = R.drawable.ic_baseline_add
 

@@ -7,6 +7,10 @@
         <import type="android.view.View" />
 
         <variable
+            name="ui"
+            type="app.fyreplace.fyreplace.ui.fragments.LoginFragment" />
+
+        <variable
             name="vm"
             type="app.fyreplace.fyreplace.viewmodels.LoginViewModel" />
     </data>
@@ -73,10 +77,10 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:enabled="@{vm.canProceed}"
+                android:onClick="@{ui::onRegisterOrLoginClicked}"
                 android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
                 android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
 
@@ -94,17 +98,17 @@
                 android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}">
 
                 <Button
-                    android:id="@+id/privacy_policy"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="@{ui::onPrivacyPolicyClicked}"
                     android:text="@string/legal_privacy_policy" />
 
                 <Button
-                    android:id="@+id/terms_of_service"
                     style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:onClick="@{ui::onTermsOfServiceClicked}"
                     android:text="@string/legal_terms_of_service" />
             </LinearLayout>
         </LinearLayout>

@@ -4,6 +4,10 @@
     <data>
 
         <variable
+            name="holder"
+            type="app.fyreplace.fyreplace.ui.adapters.DraftAdapter.ButtonsChapterHolder" />
+
+        <variable
             name="canAddChapter"
             type="kotlinx.coroutines.flow.StateFlow&lt;Boolean&gt;" />
     </data>
@@ -17,19 +21,19 @@
         android:paddingBottom="@dimen/gap">
 
         <Button
-            android:id="@+id/text"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="@{canAddChapter}"
+            android:onClick="@{holder::onTextClicked}"
             android:text="@string/draft_add_text" />
 
         <Button
-            android:id="@+id/image"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:enabled="@{canAddChapter}"
+            android:onClick="@{holder::onImageClicked}"
             android:text="@string/draft_add_image" />
     </LinearLayout>
 </layout>

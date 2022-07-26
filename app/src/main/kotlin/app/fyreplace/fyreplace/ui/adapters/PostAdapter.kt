@@ -4,9 +4,10 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
+import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.databinding.ItemCommentBinding
+import app.fyreplace.fyreplace.databinding.ItemNewCommentBinding
 import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.extensions.setComment
 import app.fyreplace.fyreplace.ui.views.ChaptersView
@@ -15,10 +16,13 @@ import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 
-class PostAdapter(private var post: Post, private val selectedComment: Int?) :
+class PostAdapter(
+    private val lifecycleOwner: LifecycleOwner,
+    private var post: Post,
+    private val selectedComment: Int?,
+    private val commentListener: CommentListener
+) :
     ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
-    private var commentListener: CommentListener? = null
-
     override fun getItemCount() = super.getItemCount() + 1
 
     override fun getItemViewType(position: Int) = when {
@@ -52,12 +56,7 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
             is ChaptersHolder -> holder.setup(post)
             is CommentHolder -> holder.setup(items[position - 1] ?: return)
             is CommentLoaderHolder -> holder.setup()
-            is NewCommentHolder -> holder.setup()
         }
-    }
-
-    fun setCommentListener(listener: CommentListener) {
-        commentListener = listener
     }
 
     fun updatePost(post: Post) {
@@ -82,59 +81,67 @@ class PostAdapter(private var post: Post, private val selectedComment: Int?) :
         fun onNewComment()
     }
 
-    private class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
+    class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
         private val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
 
         fun setup(post: Post) = chapters.setPost(post)
     }
 
-    private inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
+    inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
         override val shortDate = true
+        private val bd = ItemCommentBinding.bind(itemView)
         private val primaryColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimary)
         private val textColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorOnSurface)
         private val selectedContainerColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
-        private val content: TextView = itemView.findViewById(R.id.content)
-        private val more: View = itemView.findViewById(R.id.more)
         private val commentPosition get() = bindingAdapterPosition - 1
+        private lateinit var comment: Comment
+
+        init {
+            bd.lifecycleOwner = lifecycleOwner
+            bd.holder = this
+        }
 
         override fun setup(profile: Profile, timestamp: Timestamp?) {
             super.setup(profile, timestamp)
-            val onProfileClicked = { view: View ->
-                commentListener?.onCommentProfileClicked(view, commentPosition, profile) ?: Unit
-            }
-            avatar?.setOnClickListener(onProfileClicked)
-            username?.setOnClickListener(onProfileClicked)
-            username?.setTextColor(if (profile.id == post.author.id) primaryColor else textColor)
+            bd.username.setTextColor(if (profile.id == post.author.id) primaryColor else textColor)
         }
 
         fun setup(comment: Comment) {
             setup(comment.author, comment.dateCreated)
+            this.comment = comment
             itemView.setBackgroundColor(
                 if (commentPosition == selectedComment) selectedContainerColor
                 else Color.TRANSPARENT
             )
-            content.setComment(comment)
-            more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
-            more.setOnClickListener {
-                commentListener?.onCommentOptionsClicked(it, commentPosition, comment)
-            }
-
-            commentListener?.onCommentDisplayed(itemView, commentPosition, comment)
+            bd.content.setComment(comment)
+            bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
+            commentListener.onCommentDisplayed(itemView, commentPosition, comment)
         }
+
+        fun onProfileClicked(view: View) =
+            commentListener.onCommentProfileClicked(view, commentPosition, comment.author)
+
+        fun onMoreClicked(view: View) =
+            commentListener.onCommentOptionsClicked(view, commentPosition, comment)
     }
 
-    private inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
-        fun setup() {
-            commentListener?.onCommentDisplayed(itemView, bindingAdapterPosition - 1, null)
-        }
+    inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
+        fun setup() =
+            commentListener.onCommentDisplayed(itemView, bindingAdapterPosition - 1, null)
     }
 
-    private inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {
-        private val button: Button = itemView.findViewById(R.id.button)
+    inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {
+        private val bd = ItemNewCommentBinding.bind(itemView)
 
-        fun setup() = button.setOnClickListener { commentListener?.onNewComment() }
+        init {
+            bd.lifecycleOwner = lifecycleOwner
+            bd.holder = this
+        }
+
+        @Suppress("UNUSED_PARAMETER")
+        fun onButtonClicked(view: View) = commentListener.onNewComment()
     }
 }

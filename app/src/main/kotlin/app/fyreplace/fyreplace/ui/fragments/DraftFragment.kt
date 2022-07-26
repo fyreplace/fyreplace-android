@@ -70,7 +70,7 @@ class DraftFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = DraftAdapter(viewLifecycleOwner, vm.canAddChapter)
+        adapter = DraftAdapter(viewLifecycleOwner, vm.canAddChapter, this, this)
         bd.recyclerView.adapter = adapter
         launch {
             vm.retrieve(args.post.id)
@@ -78,8 +78,6 @@ class DraftFragment :
                 icvm.update(args.position, it)
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
-            adapter.setOnClickListener(this@DraftFragment)
-            adapter.setChapterListener(this@DraftFragment)
             adapter.addAll(vm.post.value.chaptersList)
         }
     }

@@ -33,20 +33,19 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = super.onCreateView(inflater, container, savedInstanceState)?.also {
-        bd = FragmentLoginBinding.bind(it)
-        bd.lifecycleOwner = viewLifecycleOwner
-        bd.vm = vm
-        val seed = ResourcesCompat.getColor(resources, R.color.seed, it.context.theme)
-        bd.logo.imageTintList =
-            ColorStateList.valueOf(MaterialColors.harmonizeWithPrimary(it.context, seed))
+        bd = FragmentLoginBinding.bind(it).apply {
+            lifecycleOwner = viewLifecycleOwner
+            ui = this@LoginFragment
+            vm = this@LoginFragment.vm
+            val seed = ResourcesCompat.getColor(resources, R.color.seed, it.context.theme)
+            logo.imageTintList =
+                ColorStateList.valueOf(MaterialColors.harmonizeWithPrimary(it.context, seed))
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.setIsRegistering(args.isRegistering)
-        bd.button.setOnClickListener { registerOrLogin() }
-        bd.privacyPolicy.setOnClickListener { browse(R.string.legal_privacy_policy_url) }
-        bd.termsOfService.setOnClickListener { browse(R.string.legal_terms_of_service_url) }
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
@@ -95,6 +94,17 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
 
     override fun getTitle() =
         if (args.isRegistering) R.string.settings_register else R.string.settings_login
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onRegisterOrLoginClicked(view: View) {
+        registerOrLogin()
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onPrivacyPolicyClicked(view: View) = browse(R.string.legal_privacy_policy_url)
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onTermsOfServiceClicked(view: View) = browse(R.string.legal_terms_of_service_url)
 
     private fun registerOrLogin() = launch {
         view?.hideSoftInput()

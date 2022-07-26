@@ -93,9 +93,8 @@ class PostFragment :
         }
     }
 
-    override fun makeAdapter() = PostAdapter(vm.post.value, commentPosition).apply {
-        setCommentListener(this@PostFragment)
-    }
+    override fun makeAdapter() =
+        PostAdapter(viewLifecycleOwner, vm.post.value, commentPosition, this)
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_post, menu)
