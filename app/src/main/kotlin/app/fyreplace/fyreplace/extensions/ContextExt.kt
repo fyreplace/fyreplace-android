@@ -6,9 +6,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorRes
+import androidx.core.content.res.use
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import app.fyreplace.fyreplace.R
+import com.google.android.material.color.DynamicColors
 import com.google.protobuf.ByteString
 
 val Context.mainPreferences: SharedPreferences
@@ -41,3 +45,8 @@ fun Context.makeShareIntent(type: String, id: ByteString, position: Int? = null)
         putExtra(Intent.EXTRA_TEXT, uri.toString())
     }
 }
+
+fun Context.getDynamicColor(@AttrRes attr: Int, @ColorRes default: Int) = DynamicColors
+    .wrapContextIfAvailable(this)
+    .obtainStyledAttributes(intArrayOf(attr))
+    .use { it.getColor(0, default) }

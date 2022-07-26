@@ -1,7 +1,9 @@
 package app.fyreplace.fyreplace.ui
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -31,10 +33,7 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
-import app.fyreplace.fyreplace.extensions.byteString
-import app.fyreplace.fyreplace.extensions.getUsername
-import app.fyreplace.fyreplace.extensions.isAvailable
-import app.fyreplace.fyreplace.extensions.loadAvatar
+import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
@@ -44,6 +43,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
+import com.google.android.material.shape.MaterialShapeDrawable
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
@@ -61,6 +61,7 @@ class MainActivity :
     private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
+    private var defaultNavigationBarDividerColor = Color.TRANSPARENT
     private var bottomBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,8 +78,11 @@ class MainActivity :
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
 
-        val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
+        defaultNavigationBarDividerColor = window.navigationBarDividerColor
+        setNavigationBarColor(true)
         setSupportActionBar(bd.toolbar)
+
+        val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
         setupActionBarWithNavController(navHost.navController, appBarConfiguration)
         bd.bottomNavigation.setupWithNavController(navHost.navController)
         bd.bottomNavigation.doOnLayout { bottomBarHeight = it.height }
@@ -155,7 +159,7 @@ class MainActivity :
         arguments: Bundle?
     ) {
         val isTopLevel = destination.id in TOP_LEVEL_DESTINATIONS
-        moveBottomNavigation(isTopLevel)
+        setBottomNavigationVisible(isTopLevel)
 
         if (isTopLevel) {
             setToolbarInfo(null, null)
@@ -247,24 +251,57 @@ class MainActivity :
     private fun getPrimaryActionProvider() =
         navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
 
-    private fun moveBottomNavigation(isTopLevel: Boolean) = bd.bottomNavigation.doOnLayout {
+    private fun setBottomNavigationVisible(visible: Boolean) = bd.bottomNavigation.doOnLayout {
         val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams
         val isBottomNavigationVisible = params.bottomMargin == 0
 
-        if (isTopLevel == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {
+        if (visible == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {
             return@doOnLayout
         }
 
         val animation = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                val factor = if (isTopLevel) interpolatedTime - 1 else -interpolatedTime
+                val factor = if (visible) interpolatedTime - 1 else -interpolatedTime
                 params.bottomMargin = (bottomBarHeight * factor).roundToInt()
                 bd.bottomNavigation.layoutParams = params
             }
         }
         animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
+        animation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(animation: Animation?) {
+                if (visible) {
+                    setNavigationBarColor(true)
+                }
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                if (!visible) {
+                    setNavigationBarColor(false)
+                }
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) = Unit
+        })
         bd.bottomNavigation.clearAnimation()
         bd.bottomNavigation.startAnimation(animation)
+    }
+
+    private fun setNavigationBarColor(colored: Boolean) {
+        val background = bd.bottomNavigation.background
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1 || background !is MaterialShapeDrawable) {
+            return
+        }
+
+        if (colored) {
+            window.navigationBarColor = background.resolvedTintColor
+            window.navigationBarDividerColor =
+                getDynamicColor(R.attr.colorSurfaceVariant, window.navigationBarDividerColor)
+        } else {
+            window.navigationBarColor =
+                getDynamicColor(R.attr.colorSurface, getColor(R.color.navigation))
+            window.navigationBarDividerColor = defaultNavigationBarDividerColor
+        }
     }
 
     private fun handleIntent(intent: Intent?) {
