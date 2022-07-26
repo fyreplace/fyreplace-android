@@ -36,7 +36,7 @@ abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHo
         }
         bd.lifecycleOwner = viewLifecycleOwner
 
-        with (bd.recyclerView) {
+        with(bd.recyclerView) {
             setHasFixedSize(true)
             addOnChildAttachStateChangeListener(this@ItemRandomAccessListFragment)
             addItemDecoration(

@@ -48,7 +48,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         bd.isEmpty = vm.isEmpty
         bd.emptyText.text = emptyText
 
-        with (bd.recyclerView) {
+        with(bd.recyclerView) {
             setHasFixedSize(true)
             addOnChildAttachStateChangeListener(this@ItemListFragment)
             addItemDecoration(
