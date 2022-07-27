@@ -86,7 +86,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupMenu() {
-        bd.toolbar.inflateMenu(R.menu.fragment_user)
         bd.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.block -> block()
