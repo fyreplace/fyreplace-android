@@ -54,6 +54,8 @@
     <string name="main_error_user_not_pending_title">Account already activated</string>
     <string name="main_error_user_not_pending_message">This account has already been activated.</string>
 
+    <string name="archive_page_all">All posts</string>
+    <string name="archive_page_own">My posts</string>
     <string name="archive_empty">No subscribed posts</string>
 
     <string name="drafts_empty">No drafts</string>

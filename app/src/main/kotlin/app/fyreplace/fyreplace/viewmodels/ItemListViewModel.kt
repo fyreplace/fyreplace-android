@@ -33,6 +33,7 @@ abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
         })
 
         return listItems()
+            .filter { state == ItemsState.FETCHING }
             .onEach {
                 nextCursor = getNextCursor(it)
                 state = if (hasNextCursor(it)) ItemsState.INCOMPLETE else ItemsState.COMPLETE

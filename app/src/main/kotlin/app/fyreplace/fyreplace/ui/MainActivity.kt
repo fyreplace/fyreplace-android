@@ -102,6 +102,7 @@ class MainActivity :
             launch { cvm.retrieveMe() }
         }
 
+        refreshCustomTitle()
         refreshPrimaryAction()
         handleIntent(intent)
     }
@@ -138,6 +139,7 @@ class MainActivity :
     }
 
     override fun onBackStackChanged() {
+        refreshCustomTitle()
         refreshPrimaryAction()
         launch {
             supportFragmentManager.fragments.last().whenStarted {
@@ -160,6 +162,7 @@ class MainActivity :
     ) {
         val isTopLevel = destination.id in TOP_LEVEL_DESTINATIONS
         setBottomNavigationVisible(isTopLevel)
+        removeCustomTitle()
 
         if (isTopLevel) {
             setToolbarInfo(null, null)
@@ -210,6 +213,11 @@ class MainActivity :
         bd.toolbar.isSubtitleCentered = bd.toolbar.isTitleCentered
     }
 
+    fun refreshCustomTitle() {
+        val fragment = getCustomTitleProvider() ?: return removeCustomTitle()
+        setCustomTitle(fragment.getCustomTitleView())
+    }
+
     fun refreshPrimaryAction() {
         val fragment = getPrimaryActionProvider() ?: return removePrimaryAction()
         val style = fragment.getPrimaryActionStyle()
@@ -226,6 +234,14 @@ class MainActivity :
             setPrimaryAction(text, icon)
         }
     }
+
+    private fun setCustomTitle(view: View) {
+        setToolbarInfo(null)
+        removeCustomTitle()
+        bd.customTitle.addView(view)
+    }
+
+    private fun removeCustomTitle() = bd.customTitle.removeAllViews()
 
     private fun setPrimaryAction(
         @StringRes text: Int?,
@@ -247,6 +263,9 @@ class MainActivity :
         shrink()
         hide()
     }
+
+    private fun getCustomTitleProvider() =
+        navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? CustomTitleProvider
 
     private fun getPrimaryActionProvider() =
         navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider

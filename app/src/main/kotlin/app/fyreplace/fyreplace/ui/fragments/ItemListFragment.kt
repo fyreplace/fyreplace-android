@@ -65,8 +65,7 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         adapter.addAll(vm.items)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
-            adapter.removeAll()
-            vm.reset()
+            reset()
             launch { vm.fetchMore() }
         }
 
@@ -88,6 +87,25 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
+        startListing()
+    }
+
+    override fun onStop() {
+        stopListing()
+        super.onStop()
+    }
+
+    override fun onChildViewAttachedToWindow(view: View) {
+        val childPosition = bd.recyclerView.getChildAdapterPosition(view)
+
+        if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) launch {
+            vm.fetchMore()
+        }
+    }
+
+    override fun onChildViewDetachedFromWindow(view: View) = Unit
+
+    protected fun startListing() {
         launch {
             vm.startListing().launchCollect {
                 bd.swipe.isRefreshing = false
@@ -100,18 +118,10 @@ abstract class ItemListFragment<Item : Any, Items : Any, VH : ItemHolder> :
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        vm.stopListing()
+    protected fun stopListing() = vm.stopListing()
+
+    protected fun reset() {
+        adapter.removeAll()
+        vm.reset()
     }
-
-    override fun onChildViewAttachedToWindow(view: View) {
-        val childPosition = bd.recyclerView.getChildAdapterPosition(view)
-
-        if (adapter.itemCount - childPosition < ItemListViewModel.PAGE_SIZE) launch {
-            vm.fetchMore()
-        }
-    }
-
-    override fun onChildViewDetachedFromWindow(view: View) = Unit
 }

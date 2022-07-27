@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/fragment_archive"
         android:name="app.fyreplace.fyreplace.ui.fragments.ArchiveFragment"
-        android:label="@string/destination_archive"
+        android:label=""
         tools:layout="@layout/fragment_item_list" />
     <fragment
         android:id="@+id/fragment_drafts"
