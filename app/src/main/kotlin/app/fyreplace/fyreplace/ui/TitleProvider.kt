@@ -1,5 +1,5 @@
 package app.fyreplace.fyreplace.ui
 
-interface TitleChoosing {
+interface TitleProvider {
     fun getTitle(): Int
 }

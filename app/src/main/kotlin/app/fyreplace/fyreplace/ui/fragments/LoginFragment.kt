@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentLoginBinding
 import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.extensions.hideSoftInput
-import app.fyreplace.fyreplace.ui.TitleChoosing
+import app.fyreplace.fyreplace.ui.TitleProvider
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 
 @AndroidEntryPoint
-class LoginFragment : BaseFragment(R.layout.fragment_login), TitleChoosing {
+class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val vm by viewModels<LoginViewModel>()
     private val args by navArgs<LoginFragmentArgs>()

@@ -148,7 +148,7 @@ class MainActivity :
     }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
-        if (fragment is TitleChoosing) {
+        if (fragment is TitleProvider) {
             bd.toolbar.setTitle(fragment.getTitle())
         }
     }
