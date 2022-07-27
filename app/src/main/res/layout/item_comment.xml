@@ -68,7 +68,6 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textIsSelectable="true"
             app:layout_constraintBaseline_toBottomOf="@id/avatar"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/date"

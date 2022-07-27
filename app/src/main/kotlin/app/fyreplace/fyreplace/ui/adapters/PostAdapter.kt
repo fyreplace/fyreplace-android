@@ -1,9 +1,11 @@
 package app.fyreplace.fyreplace.ui.adapters
 
 import android.graphics.Color
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.text.util.LinkifyCompat
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemCommentBinding
@@ -56,6 +58,14 @@ class PostAdapter(
             is ChaptersHolder -> holder.setup(post)
             is CommentHolder -> holder.setup(items[position - 1] ?: return)
             is CommentLoaderHolder -> holder.setup()
+        }
+    }
+
+    override fun onViewAttachedToWindow(holder: ItemHolder) {
+        super.onViewAttachedToWindow(holder)
+
+        if (holder is CommentHolder) {
+            holder.fixTextView()
         }
     }
 
@@ -119,6 +129,13 @@ class PostAdapter(
             bd.content.setComment(comment)
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment)
+        }
+
+        fun fixTextView() {
+            bd.content.isEnabled = false
+            bd.content.isEnabled = true
+            bd.content.setTextIsSelectable(!comment.isDeleted)
+            LinkifyCompat.addLinks(bd.content, Linkify.ALL)
         }
 
         fun onProfileClicked(view: View) =
