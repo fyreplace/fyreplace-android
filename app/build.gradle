@@ -153,7 +153,6 @@ dependencies {
     implementation libs.androidx.fragment
     implementation libs.androidx.paging
     implementation libs.androidx.preference
-    implementation libs.androidx.security
     implementation libs.androidx.swiperefreshlayout
     implementation libs.google.material
     implementation libs.hilt.hilt

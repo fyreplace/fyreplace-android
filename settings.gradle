@@ -25,7 +25,6 @@ dependencyResolutionManagement {
             library("androidx.preference", "androidx.preference:preference:1.2.0")
             library("androidx.recyclerview", "androidx.recyclerview:recyclerview:1.2.1")
             library("androidx.recyclerview-selection", "androidx.recyclerview:recyclerview-selection:1.1.0")
-            library("androidx.security", "androidx.security:security-crypto:1.0.0")
             library("androidx.swiperefreshlayout", "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
             library("conscrypt", "org.conscrypt:conscrypt-android:2.5.2")
             library("glide.glide", "com.github.bumptech.glide", "glide").versionRef("glide")
