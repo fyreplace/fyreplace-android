@@ -142,9 +142,11 @@ class MainActivity :
         refreshCustomTitle()
         refreshPrimaryAction()
         launch {
-            supportFragmentManager.fragments.last().whenStarted {
+            navHost.childFragmentManager.fragments.last().whenStarted {
                 delay(100)
                 bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
+                val destination = navHost.navController.currentDestination
+                setBottomNavigationVisible(destination?.isTopLevel == true)
             }
         }
     }
@@ -160,11 +162,9 @@ class MainActivity :
         destination: NavDestination,
         arguments: Bundle?
     ) {
-        val isTopLevel = destination.id in TOP_LEVEL_DESTINATIONS
-        setBottomNavigationVisible(isTopLevel)
         removeCustomTitle()
 
-        if (isTopLevel) {
+        if (destination.isTopLevel) {
             setToolbarInfo(null, null)
         }
     }
@@ -436,4 +436,6 @@ class MainActivity :
             errorDrawable?.let { onResourceReady(it, null) }
         }
     }
+
+    private val NavDestination.isTopLevel get() = id in TOP_LEVEL_DESTINATIONS
 }
