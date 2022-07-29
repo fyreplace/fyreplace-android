@@ -78,7 +78,10 @@ class MainActivity :
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
 
-        defaultNavigationBarDividerColor = window.navigationBarDividerColor
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            defaultNavigationBarDividerColor = window.navigationBarDividerColor
+        }
+
         setNavigationBarColor(true)
         setSupportActionBar(bd.toolbar)
 
@@ -312,14 +315,16 @@ class MainActivity :
             return
         }
 
-        if (colored) {
-            window.navigationBarColor = background.resolvedTintColor
-            window.navigationBarDividerColor =
+        window.navigationBarColor = if (colored)
+            background.resolvedTintColor
+        else
+            getDynamicColor(R.attr.colorSurface, getColor(R.color.navigation))
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            window.navigationBarDividerColor = if (colored)
                 getDynamicColor(R.attr.colorSurfaceVariant, window.navigationBarDividerColor)
-        } else {
-            window.navigationBarColor =
-                getDynamicColor(R.attr.colorSurface, getColor(R.color.navigation))
-            window.navigationBarDividerColor = defaultNavigationBarDividerColor
+            else
+                defaultNavigationBarDividerColor
         }
     }
 
