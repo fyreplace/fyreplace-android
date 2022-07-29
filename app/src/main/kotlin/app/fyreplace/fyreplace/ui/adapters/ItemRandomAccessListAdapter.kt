@@ -2,7 +2,7 @@ package app.fyreplace.fyreplace.ui.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 
-abstract class ItemRandomAccessListAdapter<Item : Any, VH : ItemHolder>(private val offset: Int) :
+abstract class ItemRandomAccessListAdapter<Item, VH : ItemHolder>(private val offset: Int) :
     RecyclerView.Adapter<VH>() {
     protected val items = mutableMapOf<Int, Item>()
     private var mTotalSize = 0

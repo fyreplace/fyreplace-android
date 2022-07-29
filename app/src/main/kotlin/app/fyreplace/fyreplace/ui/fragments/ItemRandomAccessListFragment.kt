@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
 
-abstract class ItemRandomAccessListFragment<Item : Any, Items : Any, VH : ItemHolder> :
+abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     ScrollingFragment(R.layout.fragment_item_random_access_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }

@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
-abstract class ItemListViewModel<Item : Any, Items : Any> : BaseViewModel() {
+abstract class ItemListViewModel<Item, Items> : BaseViewModel() {
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var nextCursor = cursor { isNext = true }
     private var state = ItemsState.INCOMPLETE

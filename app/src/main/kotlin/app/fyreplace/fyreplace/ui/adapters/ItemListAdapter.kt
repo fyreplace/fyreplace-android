@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.ui.adapters
 import androidx.recyclerview.widget.RecyclerView
 import com.google.protobuf.ByteString
 
-abstract class ItemListAdapter<Item : Any, VH : ItemHolder>(
+abstract class ItemListAdapter<Item, VH : ItemHolder>(
     private val itemListener: ItemClickListener<Item> = object : ItemClickListener<Item> {}
 ) :
     RecyclerView.Adapter<VH>() {

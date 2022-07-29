@@ -8,9 +8,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
-abstract class ItemRandomAccessListViewModel<Item : Any, Items : Any>(
-    private val contextId: ByteString
-) : BaseViewModel() {
+abstract class ItemRandomAccessListViewModel<Item, Items>(private val contextId: ByteString) :
+    BaseViewModel() {
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var state = ItemListViewModel.ItemsState.INCOMPLETE
     private val mItems = mutableMapOf<Int, Item>()
