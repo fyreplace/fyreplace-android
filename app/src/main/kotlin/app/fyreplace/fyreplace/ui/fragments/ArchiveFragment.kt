@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.view.View
 import androidx.annotation.IdRes
+import androidx.core.view.doOnLayout
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
@@ -44,7 +45,7 @@ class ArchiveFragment :
     override fun getCustomTitleView() = ArchivePagesBinding.inflate(layoutInflater).run {
         lifecycleOwner = viewLifecycleOwner
         ui = this@ArchiveFragment
-        pages.check(vm.selectedPage)
+        pages.doOnLayout { pages.check(vm.selectedPage) }
         return@run root
     }
 
