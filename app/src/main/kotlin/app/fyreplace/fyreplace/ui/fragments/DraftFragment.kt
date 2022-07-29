@@ -12,15 +12,18 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
 import app.fyreplace.fyreplace.extensions.mainActivity
+import app.fyreplace.fyreplace.extensions.makePreview
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
-import app.fyreplace.fyreplace.viewmodels.ArchiveChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModelFactory
-import app.fyreplace.fyreplace.viewmodels.DraftsChangeViewModel
+import app.fyreplace.fyreplace.viewmodels.EventsViewModel
+import app.fyreplace.fyreplace.viewmodels.events.DraftDeletionEvent
+import app.fyreplace.fyreplace.viewmodels.events.DraftPublicationEvent
+import app.fyreplace.fyreplace.viewmodels.events.DraftUpdateEvent
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.chapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,8 +47,7 @@ class DraftFragment :
     private val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }
-    private val icvm by activityViewModels<DraftsChangeViewModel>()
-    private val pcvm by activityViewModels<ArchiveChangeViewModel>()
+    private val evm by activityViewModels<EventsViewModel>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val args by navArgs<DraftFragmentArgs>()
@@ -75,7 +77,7 @@ class DraftFragment :
         launch {
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
-                icvm.update(args.position, it)
+                evm.post(DraftUpdateEvent(it, args.position))
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.addAll(vm.post.value.chaptersList)
@@ -187,14 +189,13 @@ class DraftFragment :
 
     private suspend fun publish(anonymously: Boolean) {
         vm.publish(anonymously)
-        icvm.delete(args.position)
-        pcvm.add(args.position, vm.makePreview())
+        evm.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously), args.position))
         findNavController().navigateUp()
     }
 
     private suspend fun delete() {
         vm.delete()
-        icvm.delete(args.position)
+        evm.post(DraftDeletionEvent(args.position))
         findNavController().navigateUp()
     }
 

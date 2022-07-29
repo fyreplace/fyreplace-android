@@ -15,15 +15,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.extensions.isAdmin
-import app.fyreplace.fyreplace.extensions.mainActivity
-import app.fyreplace.fyreplace.extensions.makeShareIntent
+import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.*
+import app.fyreplace.fyreplace.viewmodels.events.PostDeletionEvent
+import app.fyreplace.fyreplace.viewmodels.events.PostSubscriptionEvent
+import app.fyreplace.fyreplace.viewmodels.events.PostUnsubscriptionEvent
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
@@ -50,7 +50,7 @@ class PostFragment :
     override val recyclerView by lazy { bd.recyclerView }
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
-    private val icvm by activityViewModels<ArchiveChangeViewModel>()
+    private val evm by activityViewModels<EventsViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
     private val commentPosition get() = args.commentPosition.takeIf { it >= 0 }
@@ -215,8 +215,10 @@ class PostFragment :
 
             when {
                 args.position == -1 -> return@launch
-                subscribed -> icvm.add(args.position, vm.post.value)
-                else -> icvm.delete(args.position)
+                subscribed -> evm.post(
+                    PostSubscriptionEvent(vm.post.value.makePreview(), args.position)
+                )
+                else -> evm.post(PostUnsubscriptionEvent(args.position))
             }
         }
     }
@@ -230,7 +232,7 @@ class PostFragment :
         vm.delete()
 
         if (args.position != -1) {
-            icvm.delete(args.position)
+            evm.post(PostDeletionEvent(args.position))
         }
 
         findNavController().navigateUp()

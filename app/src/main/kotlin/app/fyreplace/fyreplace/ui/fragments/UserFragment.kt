@@ -20,6 +20,9 @@ import app.fyreplace.fyreplace.extensions.setAvatar
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.*
+import app.fyreplace.fyreplace.viewmodels.events.UserBanEvent
+import app.fyreplace.fyreplace.viewmodels.events.UserBlockEvent
+import app.fyreplace.fyreplace.viewmodels.events.UserUnblockEvent
 import app.fyreplace.protos.Rank
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -34,7 +37,7 @@ class UserFragment : DialogFragment(), FailureHandler {
 
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val cvm by activityViewModels<CentralViewModel>()
-    private val icvm by activityViewModels<BlockedUsersChangeViewModel>()
+    private val evm by activityViewModels<EventsViewModel>()
     private val vm by viewModels<UserViewModel> {
         UserViewModel.provideFactory(vmFactory, args.profile.v)
     }
@@ -135,14 +138,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            icvm.add(args.position, args.profile.v)
+            evm.post(UserBlockEvent(args.profile.v, args.position))
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-            icvm.delete(args.position)
+            evm.post(UserUnblockEvent(args.position))
         }
     }
 
@@ -178,6 +181,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     private suspend fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        icvm.update(args.position, args.profile.v.toBuilder().setIsBanned(true).build())
+        evm.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build(), args.position))
     }
 }

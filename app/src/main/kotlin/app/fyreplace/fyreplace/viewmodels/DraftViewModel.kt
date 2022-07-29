@@ -96,12 +96,6 @@ class DraftViewModel @AssistedInject constructor(
             .build()
     }
 
-    fun makePreview(): Post = Post.newBuilder(post.value)
-        .clearChapters()
-        .apply { post.value.chaptersList.getOrNull(0)?.let { addChapters(it) } }
-        .setIsPreview(true)
-        .build()
-
     companion object {
         fun provideFactory(
             assistedFactory: DraftViewModelFactory,

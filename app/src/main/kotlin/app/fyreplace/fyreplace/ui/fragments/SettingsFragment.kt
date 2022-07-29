@@ -23,7 +23,6 @@ import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
 import app.fyreplace.fyreplace.ui.views.BioPreference
 import app.fyreplace.fyreplace.ui.views.ImagePreference
-import app.fyreplace.fyreplace.viewmodels.BlockedUsersChangeViewModel
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
 import com.bumptech.glide.Glide
@@ -46,16 +45,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     override lateinit var rootView: View
     private val cvm by activityViewModels<CentralViewModel>()
-    private val icvm by activityViewModels<BlockedUsersChangeViewModel>()
     private val vm by viewModels<SettingsViewModel>()
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1f) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setupTransitions()
         super.onCreate(savedInstanceState)
         imageSelector.onCreate()
-        setupTransitions()
-        icvm.addedItems.launchCollect { cvm.addBlockedUser() }
-        icvm.removedPositions.launchCollect { cvm.removeBlockedUser() }
     }
 
     override fun onCreateView(
