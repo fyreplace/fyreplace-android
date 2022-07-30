@@ -4,12 +4,12 @@ include ":app"
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-            version("androidx.lifecycle", "2.5.0")
-            version("androidx.navigation", "2.5.0")
+            version("androidx.lifecycle", "2.5.1")
+            version("androidx.navigation", "2.5.1")
             version("glide", "4.13.2")
-            version("grpc", "1.47.0")
-            version("hilt", "2.42")
-            version("protobuf", "3.21.2")
+            version("grpc", "1.48.0")
+            version("hilt", "2.43.1")
+            version("protobuf", "3.21.4")
 
             library("androidx.appcompat", "androidx.appcompat:appcompat:1.4.2")
             library("androidx.constraintlayout", "androidx.constraintlayout:constraintlayout:2.1.4")
