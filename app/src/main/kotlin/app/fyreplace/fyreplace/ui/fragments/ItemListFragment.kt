@@ -77,8 +77,9 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         adapter.addAll(vm.items)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
+            stopListing()
             reset()
-            launch { vm.fetchMore() }
+            startListing()
         }
 
         refreshAdapterEventsHandlers()
