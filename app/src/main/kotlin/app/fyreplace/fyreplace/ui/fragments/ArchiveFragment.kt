@@ -27,7 +27,7 @@ class ArchiveFragment :
     override val addedItems: Flow<ItemPositionalEvent<Post>>
         get() {
             val flow = evm.events.filterIsInstance<DraftPublicationEvent>().map { it.atPosition(0) }
-            return if (vm.selectedPage == R.id.own_posts) flow
+            return if (vm.selectedPage.value == R.id.own_posts) flow
             else merge(flow, evm.events.filterIsInstance<PostSubscriptionEvent>())
         }
     override val updatedItems: Flow<ItemPositionalEvent<Post>>
@@ -35,17 +35,16 @@ class ArchiveFragment :
     override val removedPositions: Flow<PositionalEvent>
         get() {
             val flow = evm.events.filterIsInstance<PostDeletionEvent>()
-            return if (vm.selectedPage == R.id.own_posts) flow
+            return if (vm.selectedPage.value == R.id.own_posts) flow
             else merge(flow, evm.events.filterIsInstance<PostUnsubscriptionEvent>())
         }
-    override val emptyText by lazy { getString(R.string.archive_empty) }
 
     override fun makeAdapter() = ArchiveAdapter(this)
 
     override fun getCustomTitleView() = ArchivePagesBinding.inflate(layoutInflater).run {
         lifecycleOwner = viewLifecycleOwner
         ui = this@ArchiveFragment
-        pages.doOnLayout { pages.check(vm.selectedPage) }
+        pages.doOnLayout { pages.check(vm.selectedPage.value) }
         return@run root
     }
 

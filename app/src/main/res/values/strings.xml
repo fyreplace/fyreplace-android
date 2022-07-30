@@ -19,13 +19,13 @@
 
     <string name="error_title">Unknown error: %1$s</string>
     <string name="error_unavailable_title">Service unavailable</string>
-    <string name="error_unavailable_message">The Fyreplace server is currently unavailable. It\'s probably undergoing maintenance, come back later!</string>
+    <string name="error_unavailable_message">The Fyreplace server is currently unavailable. It is likely undergoing some maintenance, come back later!</string>
     <string name="error_authentication_title">Authentication error</string>
     <string name="error_authentication_message">You are not authenticated.</string>
     <string name="error_permission_title">Permission error</string>
     <string name="error_permission_message">You do not have the permission to perform this action.</string>
     <string name="error_validation_title">Validation error</string>
-    <string name="error_validation_message">Please ensure the information you wrote is correct.</string>
+    <string name="error_validation_message">The data received is not correct.</string>
 
     <string name="destination_feed">Feed</string>
     <string name="destination_notifications">Notifications</string>
@@ -38,25 +38,26 @@
     <string name="image_selector_action_photo">Take a picture</string>
     <string name="image_selector_action_remove">Remove</string>
     <string name="image_selector_snackbar_upload">Uploading…</string>
-    <string name="image_failure_unknown_type">Unknown file type</string>
-    <string name="image_failure_file_size">Image file too large</string>
+    <string name="image_error_unknown_type">Unknown file type</string>
+    <string name="image_error_file_size">Image file too large</string>
 
-    <string name="main_account_activated_message">Account activated</string>
+    <string name="main_account_activated_message">Account activated, welcome to Fyreplace!</string>
     <string name="main_user_email_changed_message">Email updated</string>
     <string name="main_error_malformed_url_title">Cannot open URL</string>
-    <string name="main_error_malformed_url_message">The URL is malformed and cannot be used.</string>
+    <string name="main_error_malformed_url_message">This URL is invalid.</string>
     <string name="main_error_timestamp_exceeded_title">Outdated URL</string>
     <string name="main_error_timestamp_exceeded_message">This URL has expired.</string>
     <string name="main_error_invalid_token_title">Invalid token</string>
     <string name="main_error_invalid_token_message">The token in the URL is not correctly formed.</string>
     <string name="main_error_invalid_connection_token_title">Invalid connection token</string>
-    <string name="main_error_invalid_connection_token_message">The connection token is not valid; maybe it has already been used.</string>
+    <string name="main_error_invalid_connection_token_message">This URL has likely already been used.</string>
     <string name="main_error_user_not_pending_title">Account already activated</string>
     <string name="main_error_user_not_pending_message">This account has already been activated.</string>
 
     <string name="archive_page_all">All posts</string>
     <string name="archive_page_own">My posts</string>
-    <string name="archive_empty">No subscribed posts</string>
+    <string name="archive_all_empty">No subscribed posts</string>
+    <string name="archive_own_empty">No published posts</string>
 
     <string name="drafts_empty">No drafts</string>
     <string name="drafts_item_empty">Empty</string>
@@ -81,9 +82,9 @@
     <string name="settings_email_change_success_message">A confirmation email has been sent to your new address.</string>
     <string name="settings_bio">Bio</string>
     <string name="settings_bio_desc">Empty</string>
-    <string name="settings_blocked_users">Blocked users</string>
+    <string name="settings_blocked_users">@string/destination_blocked_users</string>
     <plurals name="settings_blocked_users_desc">
-        <item quantity="zero">No blocked users</item>
+        <item quantity="zero">No users blocked</item>
         <item quantity="one">%1$d user blocked</item>
         <item quantity="other">%1$d users blocked</item>
     </plurals>
@@ -106,8 +107,8 @@
         <item>@string/settings_theme_dark_value</item>
     </string-array>
     <string name="settings_information">Information</string>
-    <string name="settings_privacy_policy_desc">See how your data is used</string>
-    <string name="settings_terms_of_service_desc">See the rules of the app</string>
+    <string name="settings_privacy_policy_desc">See how your data is handled</string>
+    <string name="settings_terms_of_service_desc">Check the rules of the app</string>
     <string name="settings_account">Account</string>
     <string name="settings_register">Register</string>
     <string name="settings_register_desc">Create a new account</string>
@@ -119,7 +120,7 @@
     <string name="settings_delete_desc">Permanently delete your account</string>
     <string name="settings_delete_countdown">Delete account (%1$d)</string>
     <string name="settings_account_deletion_title">Account deletion</string>
-    <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards.\n\nAre you sure you want to go through with this?</string>
+    <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards, and all your posts and comments will also be deleted.\n\nAre you sure you want to go through with this?</string>
     <string name="settings_account_deletion_success_title">Account deleted</string>
     <string name="settings_account_deletion_success_message">Your account has been deleted, your posts and comments will be fully removed as well within the next minutes.\n\nGoodbye! 👋</string>
     <string name="settings_error_bio_too_long_title">Invalid bio</string>
@@ -175,7 +176,7 @@
     <string name="draft_error_chapter_too_long_title">Invalid text</string>
     <string name="draft_error_chapter_too_long_message">This text is too long.</string>
     <string name="draft_error_chapter_empty_title">Empty text section</string>
-    <string name="draft_error_chapter_empty_message">Posts can\'t have text section left empty.</string>
+    <string name="draft_error_chapter_empty_message">Posts can\'t have text sections left empty.</string>
     <string name="draft_error_post_empty_title">Empty post</string>
     <string name="draft_error_post_empty_message">Empty posts can\'t be published.</string>
 

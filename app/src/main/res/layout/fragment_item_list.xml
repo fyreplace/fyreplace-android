@@ -9,6 +9,10 @@
         <variable
             name="isEmpty"
             type="kotlinx.coroutines.flow.StateFlow&lt;Boolean&gt;" />
+
+        <variable
+            name="emptyText"
+            type="kotlinx.coroutines.flow.StateFlow&lt;Integer&gt;" />
     </data>
 
     <FrameLayout
@@ -31,11 +35,11 @@
         </app.fyreplace.fyreplace.ui.views.MaterialSwipeLayout>
 
         <TextView
-            android:id="@+id/empty_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:text="@{emptyText}"
             android:textAppearance="?attr/textAppearanceHeadlineLarge"
             android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}" />
     </FrameLayout>

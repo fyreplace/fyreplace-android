@@ -15,6 +15,7 @@ abstract class ItemListViewModel<Item, Items> : BaseViewModel() {
     protected open val forward = false
     val items: List<Item> = mItems
     val isEmpty = mIsEmpty.asStateFlow()
+    abstract val emptyText: StateFlow<Int>
 
     protected abstract fun listItems(): Flow<Items>
 

@@ -111,7 +111,7 @@ class ImageSelector @AssistedInject constructor(
             onImageLoadingBegin()
             val resolver = fragment.context?.contentResolver ?: return@withContext
             val mimeType = resolver.getType(uri)
-                ?: throw IOException(fragment.resources.getString(R.string.image_failure_unknown_type))
+                ?: throw IOException(fragment.resources.getString(R.string.image_error_unknown_type))
 
             withContext(Dispatchers.IO) {
                 val transformations = resolver.openInputStream(uri)
@@ -194,7 +194,7 @@ class ImageSelector @AssistedInject constructor(
         }
 
         if (compressedBytes.size > maxImageByteSize) {
-            throw IOException(fragment.resources.getString(R.string.image_failure_file_size))
+            throw IOException(fragment.resources.getString(R.string.image_error_file_size))
         }
 
         withContext(Dispatchers.Main) { listener.onImage(compressedBytes) }

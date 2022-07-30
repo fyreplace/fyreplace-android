@@ -36,7 +36,6 @@ class DraftsFragment :
             evm.events.filterIsInstance<DraftDeletionEvent>(),
             evm.events.filterIsInstance<DraftPublicationEvent>()
         )
-    override val emptyText by lazy { getString(R.string.drafts_empty) }
 
     override fun makeAdapter() = DraftsAdapter(this)
 

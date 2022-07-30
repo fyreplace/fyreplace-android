@@ -30,7 +30,6 @@ class BlockedUsersFragment :
         get() = evm.events.filterIsInstance<UserBanEvent>()
     override val removedPositions: Flow<PositionalEvent>
         get() = evm.events.filterIsInstance<UserUnblockEvent>()
-    override val emptyText by lazy { getString(R.string.blocked_users_empty) }
     private val cvm by activityViewModels<CentralViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

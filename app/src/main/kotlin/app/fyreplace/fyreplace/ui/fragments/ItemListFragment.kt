@@ -28,7 +28,6 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     protected abstract val addedItems: Flow<ItemPositionalEvent<Item>>
     protected abstract val updatedItems: Flow<ItemPositionalEvent<Item>>
     protected abstract val removedPositions: Flow<PositionalEvent>
-    protected abstract val emptyText: String
     protected val evm by activityViewModels<EventsViewModel>()
     protected lateinit var bd: FragmentItemListBinding
     private val vmEventJobs = mutableListOf<Job>()
@@ -59,7 +58,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
         bd.lifecycleOwner = viewLifecycleOwner
         bd.isEmpty = vm.isEmpty
-        bd.emptyText.text = emptyText
+        bd.emptyText = vm.emptyText
 
         with(bd.recyclerView) {
             setHasFixedSize(true)
