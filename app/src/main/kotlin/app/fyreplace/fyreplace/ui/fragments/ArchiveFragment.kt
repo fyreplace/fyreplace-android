@@ -32,7 +32,7 @@ class ArchiveFragment :
         }
     override val updatedItems: Flow<ItemPositionalEvent<Post>>
         get() = emptyFlow()
-    override val removedPositions: Flow<PositionalEvent>
+    override val removedItems: Flow<PositionalEvent>
         get() {
             val flow = evm.events.filterIsInstance<PostDeletionEvent>()
             return if (vm.selectedPage.value == R.id.own_posts) flow
@@ -60,8 +60,7 @@ class ArchiveFragment :
     private fun selectPage(@IdRes page: Int) {
         stopListing()
         vm.selectPage(page)
-        refreshViewModelEventsHandlers()
-        refreshAdapterEventsHandlers()
+        refreshEventHandlers()
         reset()
         startListing()
     }

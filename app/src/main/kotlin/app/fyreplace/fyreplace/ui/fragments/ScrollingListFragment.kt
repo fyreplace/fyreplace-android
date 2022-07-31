@@ -8,8 +8,8 @@ import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.PrimaryActionStyle
 
-abstract class ScrollingFragment(contentLayoutId: Int) :
-    BaseFragment(contentLayoutId),
+abstract class ScrollingListFragment<Item>(contentLayoutId: Int) :
+    DynamicListFragment<Item>(contentLayoutId),
     PrimaryActionProvider {
     abstract val recyclerView: RecyclerView
     open val hasPrimaryActionDuplicate = false

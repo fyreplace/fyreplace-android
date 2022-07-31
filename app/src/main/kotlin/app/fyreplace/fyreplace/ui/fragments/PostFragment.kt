@@ -20,10 +20,11 @@ import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
-import app.fyreplace.fyreplace.viewmodels.*
-import app.fyreplace.fyreplace.viewmodels.events.PostDeletionEvent
-import app.fyreplace.fyreplace.viewmodels.events.PostSubscriptionEvent
-import app.fyreplace.fyreplace.viewmodels.events.PostUnsubscriptionEvent
+import app.fyreplace.fyreplace.viewmodels.CentralViewModel
+import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
+import app.fyreplace.fyreplace.viewmodels.PostViewModel
+import app.fyreplace.fyreplace.viewmodels.PostViewModelFactory
+import app.fyreplace.fyreplace.viewmodels.events.*
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
@@ -32,7 +33,7 @@ import com.google.protobuf.timestamp
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 
@@ -47,10 +48,16 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
+    override val addedItems: Flow<ItemPositionalEvent<Comment>>
+        get() = evm.events.filterIsInstance<CommentCreationEvent>()
+            .filter { it.postId == vm.post.value.id }
+            .map { it.atPosition(vm.totalSize.value) }
+    override val updatedItems: Flow<ItemPositionalEvent<Comment>>
+        get() = evm.events.filterIsInstance<CommentDeletionEvent>()
+            .filter { it.postId == vm.post.value.id }
     override val recyclerView by lazy { bd.recyclerView }
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
-    private val evm by activityViewModels<EventsViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
     private val commentPosition get() = args.commentPosition.takeIf { it >= 0 }
@@ -95,6 +102,22 @@ class PostFragment :
 
     override fun makeAdapter() =
         PostAdapter(viewLifecycleOwner, vm.post.value, commentPosition, this)
+
+    override fun addItem(position: Int, item: Comment, toView: Boolean) {
+        if (toView) {
+            adapter.insert(item)
+        } else {
+            vm.insert(item)
+        }
+    }
+
+    override fun updateItem(position: Int, item: Comment, toView: Boolean) {
+        if (toView) {
+            adapter.update(position, item)
+        } else {
+            vm.update(position, item)
+        }
+    }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_post, menu)
@@ -245,8 +268,7 @@ class PostFragment :
             author = cvm.currentUser.value!!.profile
             dateCreated = timestamp { seconds = Date().time / 1000 }
         }
-        adapter.insert(comment)
-        vm.insert(comment)
+        evm.post(CommentCreationEvent(comment, vm.post.value.id))
     }
 
     private suspend fun reportComment(comment: Comment) {
@@ -257,8 +279,7 @@ class PostFragment :
     private suspend fun deleteComment(position: Int, comment: Comment) {
         vm.deleteComment(comment.id)
         vm.makeDeletedComment(position)?.let {
-            adapter.update(position, it)
-            vm.update(position, it)
+            evm.post(CommentDeletionEvent(it, position, vm.post.value.id))
         }
     }
 }

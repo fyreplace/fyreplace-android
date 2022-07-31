@@ -13,11 +13,16 @@ import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
+import app.fyreplace.fyreplace.viewmodels.events.PositionalEvent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
-    ScrollingFragment(R.layout.fragment_item_random_access_list),
+    ScrollingListFragment<Item>(R.layout.fragment_item_random_access_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
+    override val removedItems: Flow<PositionalEvent>
+        get() = emptyFlow()
     protected abstract val vm: ItemRandomAccessListViewModel<Item, Items>
     protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
@@ -75,6 +80,8 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         super.onStop()
         vm.stopListing()
     }
+
+    override fun removeItem(position: Int, toView: Boolean) = Unit
 
     override fun onChildViewAttachedToWindow(view: View) {
         val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1

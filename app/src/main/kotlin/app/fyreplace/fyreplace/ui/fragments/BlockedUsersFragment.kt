@@ -28,14 +28,14 @@ class BlockedUsersFragment :
         get() = evm.events.filterIsInstance<UserBlockEvent>()
     override val updatedItems: Flow<ItemPositionalEvent<Profile>>
         get() = evm.events.filterIsInstance<UserBanEvent>()
-    override val removedPositions: Flow<PositionalEvent>
+    override val removedItems: Flow<PositionalEvent>
         get() = evm.events.filterIsInstance<UserUnblockEvent>()
     private val cvm by activityViewModels<CentralViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         addedItems.launchCollect { cvm.addBlockedUser() }
-        removedPositions.launchCollect { cvm.removeBlockedUser() }
+        removedItems.launchCollect { cvm.removeBlockedUser() }
     }
 
     override fun makeAdapter() = BlockedUsersAdapter(this, this)

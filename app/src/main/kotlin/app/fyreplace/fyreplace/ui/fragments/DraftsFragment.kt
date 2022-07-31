@@ -31,7 +31,7 @@ class DraftsFragment :
             .map { it.atPosition(0) }
     override val updatedItems: Flow<ItemPositionalEvent<Post>>
         get() = evm.events.filterIsInstance<DraftUpdateEvent>()
-    override val removedPositions: Flow<PositionalEvent>
+    override val removedItems: Flow<PositionalEvent>
         get() = merge(
             evm.events.filterIsInstance<DraftDeletionEvent>(),
             evm.events.filterIsInstance<DraftPublicationEvent>()
