@@ -7,8 +7,8 @@ dependencyResolutionManagement {
             version("androidx.lifecycle", "2.5.1")
             version("androidx.navigation", "2.5.1")
             version("glide", "4.13.2")
-            version("grpc", "1.48.0")
-            version("hilt", "2.43.1")
+            version("grpc", "1.48.1")
+            version("hilt", "2.43.2")
             version("protobuf", "3.21.4")
 
             library("androidx.appcompat", "androidx.appcompat:appcompat:1.4.2")
