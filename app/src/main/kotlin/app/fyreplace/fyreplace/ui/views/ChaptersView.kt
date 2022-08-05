@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.text.util.LinkifyCompat
-import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
@@ -98,12 +97,6 @@ class ChaptersView : LinearLayout {
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
-
-        doOnLayout {
-            val width = measuredWidth
-            val height = width * chapter.image.height / chapter.image.width
-            image.updateLayoutParams { this.height = height }
-        }
 
         return image
     }

@@ -91,8 +91,26 @@ class PostAdapter(
         fun onNewComment()
     }
 
-    class ChaptersHolder(itemView: View) : ItemHolder(itemView) {
+    class ChaptersHolder(itemView: View) : ItemHolder(itemView), View.OnLayoutChangeListener {
         private val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
+
+        init {
+            itemView.addOnLayoutChangeListener(this)
+        }
+
+        override fun onLayoutChange(
+            v: View,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
+            oldLeft: Int,
+            oldTop: Int,
+            oldRight: Int,
+            oldBottom: Int
+        ) {
+            itemView.minimumHeight = v.height
+        }
 
         fun setup(post: Post) = chapters.setPost(post)
     }
