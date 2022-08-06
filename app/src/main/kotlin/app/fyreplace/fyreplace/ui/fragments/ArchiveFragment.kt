@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.core.view.doOnLayout
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ArchivePagesBinding
@@ -24,7 +24,7 @@ class ArchiveFragment :
     ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
     CustomTitleProvider,
     ItemListAdapter.ItemClickListener<Post> {
-    override val vm by viewModels<ArchiveViewModel>()
+    override val vm by activityViewModels<ArchiveViewModel>()
     override val addedItems: Flow<ItemPositionalEvent<Post>>
         get() {
             val flow = evm.events.filterIsInstance<DraftPublicationEvent>().map { it.atPosition(0) }

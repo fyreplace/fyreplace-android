@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
@@ -45,7 +44,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     override lateinit var rootView: View
     private val cvm by activityViewModels<CentralViewModel>()
-    private val vm by viewModels<SettingsViewModel>()
+    private val vm by activityViewModels<SettingsViewModel>()
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1f) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

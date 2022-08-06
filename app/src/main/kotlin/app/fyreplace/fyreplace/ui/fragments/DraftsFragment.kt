@@ -1,6 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.grpc.p
@@ -25,7 +25,7 @@ class DraftsFragment :
     ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
     PrimaryActionProvider,
     ItemListAdapter.ItemClickListener<Post> {
-    override val vm by viewModels<DraftsViewModel>()
+    override val vm by activityViewModels<DraftsViewModel>()
     override val addedItems: Flow<ItemPositionalEvent<Post>>
         get() = evm.events.filterIsInstance<DraftCreationEvent>()
             .map { it.atPosition(0) }
