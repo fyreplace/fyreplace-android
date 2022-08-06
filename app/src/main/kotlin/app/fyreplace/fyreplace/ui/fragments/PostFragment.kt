@@ -29,6 +29,7 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.comment
+import com.google.protobuf.ByteString
 import com.google.protobuf.timestamp
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
@@ -60,16 +61,19 @@ class PostFragment :
     private val cvm by activityViewModels<CentralViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
-    private val commentPosition get() = args.commentPosition.takeIf { it >= 0 }
+    private var selectedComment: Int? = null
+    private var isScrolling = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        selectedComment = args.commentPosition.takeIf { it >= 0 }
+        vm.setShouldScrollToComment(selectedComment != null)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
-
-        if (commentPosition == null) {
-            vm.setScrolledToComment()
-        }
 
         if (args.post.isPreview || args.post.chapterCount == 0) {
             launch { vm.retrieve(args.post.id) }
@@ -101,7 +105,7 @@ class PostFragment :
     }
 
     override fun makeAdapter() =
-        PostAdapter(viewLifecycleOwner, vm.post.value, commentPosition, this)
+        PostAdapter(viewLifecycleOwner, vm.post.value, this)
 
     override fun addItem(position: Int, item: Comment, toView: Boolean) {
         if (toView) {
@@ -169,25 +173,18 @@ class PostFragment :
     override fun onPrimaryAction() = onNewComment()
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
-        val viewPosition = (commentPosition ?: return) + 1
-        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val commentPosition = selectedComment ?: return
+        val viewPosition = commentPosition + 1
 
         if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
             return
         }
 
-        fun scheduleScroll() {
-            launch {
-                delay(300)
-                layoutManager.scrollToPositionWithOffset(viewPosition, 0)
-            }
-        }
-
-        if (position == commentPosition && comment != null) {
-            vm.setScrolledToComment()
-            scheduleScroll()
-        } else if (position == commentPosition || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
-            scheduleScroll()
+        if (position == selectedComment && comment != null) {
+            vm.setShouldScrollToComment(false)
+            showComment(commentPosition)
+        } else if (position == selectedComment || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
+            showComment(commentPosition)
         }
     }
 
@@ -231,6 +228,16 @@ class PostFragment :
             allowEmpty = false
         )
     ) { launch { createComment(it) } }
+
+    fun tryShowComment(postId: ByteString, position: Int): Boolean {
+        if (postId == vm.post.value.id) {
+            vm.setShouldScrollToComment(true)
+            showComment(position)
+            return true
+        }
+
+        return false
+    }
 
     private fun updateSubscription(subscribed: Boolean) {
         launch {
@@ -280,6 +287,25 @@ class PostFragment :
         vm.deleteComment(comment.id)
         vm.makeDeletedComment(position)?.let {
             evm.post(CommentDeletionEvent(it, position, vm.post.value.id))
+        }
+    }
+
+    private fun showComment(position: Int) {
+        if (isScrolling) {
+            return
+        }
+
+        val viewPosition = position + 1
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val postAdapter = adapter as PostAdapter
+        selectedComment = position
+        isScrolling = true
+
+        launch {
+            delay(300)
+            isScrolling = false
+            postAdapter.updateSelectedComment(position)
+            layoutManager.scrollToPositionWithOffset(viewPosition, 0)
         }
     }
 }

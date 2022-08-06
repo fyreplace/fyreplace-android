@@ -21,10 +21,11 @@ import com.google.protobuf.Timestamp
 class PostAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private var post: Post,
-    private val selectedComment: Int?,
     private val commentListener: CommentListener
 ) :
     ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
+    private var selectedComment: Int? = null
+
     override fun getItemCount() = super.getItemCount() + 1
 
     override fun getItemViewType(position: Int) = when {
@@ -72,6 +73,11 @@ class PostAdapter(
     fun updatePost(post: Post) {
         this.post = post
         notifyItemChanged(0)
+    }
+
+    fun updateSelectedComment(position: Int) {
+        selectedComment = position
+        notifyItemChanged(position + 1)
     }
 
     companion object {

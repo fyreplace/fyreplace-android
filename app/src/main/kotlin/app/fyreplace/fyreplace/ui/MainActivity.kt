@@ -35,6 +35,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
+import app.fyreplace.fyreplace.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import app.fyreplace.protos.Profile
@@ -274,6 +275,9 @@ class MainActivity :
     private fun getPrimaryActionProvider() =
         navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
 
+    private fun getPostFragment() =
+        navHost.childFragmentManager.fragments.last() as? PostFragment
+
     private fun setBottomNavigationVisible(visible: Boolean) = bd.bottomNavigation.doOnLayout {
         val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams
         val isBottomNavigationVisible = params.bottomMargin == 0
@@ -369,6 +373,7 @@ class MainActivity :
 
     private fun showPost(postIdShortString: String, commentPosition: Int? = null) {
         val post = post { id = byteString(postIdShortString) }
+        val postFragment = getPostFragment()
 
         when {
             post.id.isEmpty -> showBasicAlert(
@@ -381,7 +386,9 @@ class MainActivity :
                 R.string.error_authentication_message,
                 error = true
             )
-            else -> navHost.navController.navigate(
+            postFragment == null || commentPosition == null || !postFragment.tryShowComment(
+                post.id, commentPosition
+            ) -> navHost.navController.navigate(
                 MainDirections.actionPost(
                     post = post.p,
                     commentPosition = commentPosition ?: -1

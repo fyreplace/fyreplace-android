@@ -69,8 +69,8 @@ class PostViewModel @AssistedInject constructor(
         commentStub.delete(id { id = commentId })
     }
 
-    fun setScrolledToComment() {
-        mShouldScrollToComment = false
+    fun setShouldScrollToComment(shouldScroll: Boolean) {
+        mShouldScrollToComment = shouldScroll
     }
 
     fun makeDeletedComment(position: Int) = items[position]?.copy {
