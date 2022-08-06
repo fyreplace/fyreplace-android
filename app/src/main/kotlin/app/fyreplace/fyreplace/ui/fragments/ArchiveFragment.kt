@@ -16,6 +16,7 @@ import app.fyreplace.fyreplace.viewmodels.events.*
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 
 @AndroidEntryPoint
@@ -44,7 +45,12 @@ class ArchiveFragment :
     override fun getCustomTitleView() = ArchivePagesBinding.inflate(layoutInflater).run {
         lifecycleOwner = viewLifecycleOwner
         ui = this@ArchiveFragment
-        pages.doOnLayout { pages.check(vm.selectedPage.value) }
+        pages.doOnLayout {
+            launch {
+                delay(100)
+                pages.check(vm.selectedPage.value)
+            }
+        }
         return@run root
     }
 
