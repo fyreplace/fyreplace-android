@@ -7,7 +7,6 @@ plugins {
     id "androidx.navigation.safeargs.kotlin"
     id "dagger.hilt.android.plugin"
     id "com.google.gms.google-services"
-    id "com.github.triplet.play"
 }
 
 def getVersionNumber = { ->
@@ -129,10 +128,6 @@ protobuf {
             }
         }
     }
-}
-
-play {
-    serviceAccountCredentials.set(file("google-service-account.json"))
 }
 
 dependencies {

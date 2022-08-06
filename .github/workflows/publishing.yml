@@ -94,17 +94,29 @@ jobs:
           submodules: true
 
       - name: Set up artifact directory
-        run: mkdir /tmp/fyreplace
+        run: mkdir -p build
 
       - uses: actions/download-artifact@v3
         with:
           name: Fyreplace.aab
-          path: /tmp/fyreplace
+          path: build
 
       - name: Set up Google service account
         env:
           GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 }}
-        run: echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 | base64 --decode > app/google-service-account.json
+        run: echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 | base64 --decode > build/google-service-account.json
 
       - name: Upload bundle to Google Play
-        run: ./gradlew --no-daemon publishGoogleReleaseBundle --artifact-dir /tmp/fyreplace
+        run: |
+          if [ "${{ github.ref_name }}" = "develop" ]
+          then
+            export track=internal
+          else
+            export track=beta
+          fi
+          fastlane supply \
+            --track $track \
+            --changes_not_sent_for_review true \
+            --json_key build/google-service-account.json \
+            --aab build/*.aab \
+            --package_name ${{ secrets.PACKAGE_NAME }}
