@@ -23,11 +23,6 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>
 
-    override fun onDestroy() {
-        super.onDestroy()
-        vm.reset()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
