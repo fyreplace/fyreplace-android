@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import androidx.annotation.AttrRes
-import androidx.annotation.ColorRes
+import androidx.annotation.ColorInt
 import androidx.core.content.res.use
 import app.fyreplace.fyreplace.R
 import com.google.android.material.color.DynamicColors
@@ -26,7 +26,7 @@ fun Context.makeShareIntent(type: String, id: ByteString, position: Int? = null)
     }
 }
 
-fun Context.getDynamicColor(@AttrRes attr: Int, @ColorRes default: Int) = DynamicColors
+fun Context.getDynamicColor(@AttrRes attr: Int, @ColorInt default: Int) = DynamicColors
     .wrapContextIfAvailable(this)
     .obtainStyledAttributes(intArrayOf(attr))
     .use { it.getColor(0, default) }
