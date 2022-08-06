@@ -166,6 +166,7 @@ class MainActivity :
         arguments: Bundle?
     ) {
         removeCustomTitle()
+        bd.toolbar.isTitleCentered = destination.isTopLevel
 
         if (destination.isTopLevel) {
             setToolbarInfo(null, null)
