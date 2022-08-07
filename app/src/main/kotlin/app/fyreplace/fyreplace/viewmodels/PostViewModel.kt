@@ -18,9 +18,11 @@ class PostViewModel @AssistedInject constructor(
 ) : ItemRandomAccessListViewModel<Comment, Comments>(initialPost.id) {
     private val mPost = MutableStateFlow(initialPost)
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
+    private var mSelectedComment = MutableStateFlow<Int?>(null)
     private var mShouldScrollToComment = true
     val post = mPost.asStateFlow()
     val subscribed = mSubscribed.asStateFlow()
+    val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
 
     override fun listItems() = commentStub.list(pages)
@@ -31,6 +33,7 @@ class PostViewModel @AssistedInject constructor(
 
     override fun reset() {
         super.reset()
+        mSelectedComment.value = null
         mShouldScrollToComment = true
     }
 
@@ -69,8 +72,13 @@ class PostViewModel @AssistedInject constructor(
         commentStub.delete(id { id = commentId })
     }
 
-    fun setShouldScrollToComment(shouldScroll: Boolean) {
-        mShouldScrollToComment = shouldScroll
+    fun setSelectedComment(position: Int?) {
+        mSelectedComment.value = position
+        mShouldScrollToComment = position != null
+    }
+
+    fun setScrolledToComment() {
+        mShouldScrollToComment = false
     }
 
     fun makeDeletedComment(position: Int) = items[position]?.copy {

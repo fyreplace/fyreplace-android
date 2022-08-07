@@ -61,19 +61,27 @@ class PostFragment :
     private val cvm by activityViewModels<CentralViewModel>()
     private val args by navArgs<PostFragmentArgs>()
     private var errored = false
-    private var selectedComment: Int? = null
     private var isScrolling = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        selectedComment = args.commentPosition.takeIf { it >= 0 }
-        vm.setShouldScrollToComment(selectedComment != null)
+
+        if (vm.selectedComment.value == null) {
+            vm.setSelectedComment(args.commentPosition.takeIf { it >= 0 })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val postAdapter = adapter as PostAdapter
-        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope, postAdapter::updatePost)
+        vm.post.launchCollect(
+            viewLifecycleOwner.lifecycleScope,
+            postAdapter::updatePost
+        )
+        vm.selectedComment.launchCollect(
+            viewLifecycleOwner.lifecycleScope,
+            postAdapter::updateSelectedComment
+        )
 
         if (args.post.isPreview || args.post.chapterCount == 0) {
             launch { vm.retrieve(args.post.id) }
@@ -173,17 +181,17 @@ class PostFragment :
     override fun onPrimaryAction() = onNewComment()
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
-        val commentPosition = selectedComment ?: return
+        val commentPosition = vm.selectedComment.value ?: return
         val viewPosition = commentPosition + 1
 
         if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
             return
         }
 
-        if (position == selectedComment && comment != null) {
-            vm.setShouldScrollToComment(false)
+        if (position == vm.selectedComment.value && comment != null) {
+            vm.setScrolledToComment()
             showComment(commentPosition)
-        } else if (position == selectedComment || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
+        } else if (position == vm.selectedComment.value || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
             showComment(commentPosition)
         }
     }
@@ -231,7 +239,7 @@ class PostFragment :
 
     fun tryShowComment(postId: ByteString, position: Int): Boolean {
         if (postId == vm.post.value.id) {
-            vm.setShouldScrollToComment(true)
+            vm.setSelectedComment(position)
             showComment(position)
             return true
         }
@@ -297,14 +305,11 @@ class PostFragment :
 
         val viewPosition = position + 1
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        val postAdapter = adapter as PostAdapter
-        selectedComment = position
         isScrolling = true
 
         launch {
             delay(300)
             isScrolling = false
-            postAdapter.updateSelectedComment(position)
             layoutManager.scrollToPositionWithOffset(viewPosition, 0)
         }
     }

@@ -73,9 +73,12 @@ class PostAdapter(
         notifyItemChanged(0)
     }
 
-    fun updateSelectedComment(position: Int) {
+    fun updateSelectedComment(position: Int?) {
         selectedComment = position
-        notifyItemChanged(position + 1)
+
+        if (position != null) {
+            notifyItemChanged(position + 1)
+        }
     }
 
     companion object {
