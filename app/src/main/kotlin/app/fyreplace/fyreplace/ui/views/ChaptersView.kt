@@ -6,10 +6,10 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.text.util.LinkifyCompat
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
@@ -66,15 +66,16 @@ class ChaptersView : LinearLayout {
     }
 
     private fun makeTextView(chapter: Chapter): View {
-        val text = TextView(context)
+        val text = AppCompatTextView(context)
         val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
         else R.style.TextAppearance_Material3_BodyLarge
 
         text.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
         text.text = chapter.text
+        text.linksClickable = true
+        text.autoLinkMask = Linkify.ALL
         text.setTextIsSelectable(true)
         TextViewCompat.setTextAppearance(text, style)
-        LinkifyCompat.addLinks(text, Linkify.ALL)
         text.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
@@ -87,7 +88,7 @@ class ChaptersView : LinearLayout {
     }
 
     private fun makeImageView(chapter: Chapter): View {
-        val image = ImageView(context)
+        val image = AppCompatImageView(context)
         Glide.with(context)
             .load(chapter.image.url)
             .transition(DrawableTransitionOptions.withCrossFade())

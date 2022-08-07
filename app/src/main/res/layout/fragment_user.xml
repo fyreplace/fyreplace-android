@@ -52,6 +52,8 @@
                     android:id="@+id/bio"
                     android:layout_width="@dimen/form_width"
                     android:layout_height="wrap_content"
+                    android:autoLink="all"
+                    android:linksClickable="true"
                     android:padding="@dimen/gap"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textIsSelectable="true"

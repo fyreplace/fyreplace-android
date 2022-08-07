@@ -1,12 +1,10 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
-import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.text.util.LinkifyCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -129,7 +127,6 @@ class UserFragment : DialogFragment(), FailureHandler {
             bd.dateJoined.text = getString(R.string.user_date_joined, user.dateJoined.formatDate())
             bd.bio.isVisible = user.bio.isNotBlank()
             bd.bio.text = user.bio
-            LinkifyCompat.addLinks(bd.bio, Linkify.ALL)
         }
 
         launch { vm.retrieve(args.profile.id) }
