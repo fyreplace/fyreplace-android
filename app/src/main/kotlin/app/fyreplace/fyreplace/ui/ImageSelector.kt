@@ -149,7 +149,8 @@ class ImageSelector @AssistedInject constructor(
         mimeType: String
     ) {
         var compressedBytes = bytes
-        val isTooBig = compressedBytes.size > maxImageByteSize
+        val downscaleFactor = compressedBytes.size.toFloat() / maxImageByteSize
+        val isTooBig = downscaleFactor >= 1
         val isUnknownMime = mimeType !in listOf("jpeg", "png").map { "image/$it" }
         val isPng = mimeType == "image/png"
         val isRotated = !transformations.isIdentity
@@ -158,9 +159,9 @@ class ImageSelector @AssistedInject constructor(
             coroutineContext.ensureActive()
             val os = ByteArrayOutputStream()
             val bitmap = BitmapFactory.decodeByteArray(compressedBytes, 0, compressedBytes.size)
-            var quality = 100
+            var quality = 75
             var compressFormat = if (isPng) CompressFormat.PNG else CompressFormat.JPEG
-            var rotatedBitmap = Bitmap.createBitmap(
+            var uprightBitmap = Bitmap.createBitmap(
                 bitmap,
                 0,
                 0,
@@ -172,14 +173,14 @@ class ImageSelector @AssistedInject constructor(
 
             if (isTooBig) {
                 coroutineContext.ensureActive()
-                rotatedBitmap = rotatedBitmap.downscaled()
+                uprightBitmap = uprightBitmap.downscaled(downscaleFactor)
                 quality = 50
             }
 
             fun compress() {
                 coroutineContext.ensureActive()
                 os.reset()
-                rotatedBitmap.compress(compressFormat, quality, os)
+                uprightBitmap.compress(compressFormat, quality, os)
             }
 
             compress()
@@ -201,7 +202,6 @@ class ImageSelector @AssistedInject constructor(
     }
 
     companion object {
-        const val IMAGE_MAX_AREA = 1920 * 1080
         const val IMAGE_CHUNK_SIZE = 100 * 1024
     }
 
@@ -230,14 +230,12 @@ private suspend fun extractTransformations(source: InputStream) = withContext(Di
     return@withContext transformations
 }
 
-private fun Bitmap.downscaled(): Bitmap {
-    val areaFactor = (width * height).toFloat() / ImageSelector.IMAGE_MAX_AREA
-
-    if (areaFactor <= 1) {
+private fun Bitmap.downscaled(factor: Float): Bitmap {
+    if (factor <= 1) {
         return this
     }
 
-    val sideFactor = sqrt(areaFactor)
+    val sideFactor = sqrt(factor)
     return Bitmap.createScaledBitmap(
         this,
         (width / sideFactor).toInt(),
