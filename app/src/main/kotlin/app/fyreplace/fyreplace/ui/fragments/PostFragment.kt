@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
@@ -60,6 +61,7 @@ class PostFragment :
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
     private val args by navArgs<PostFragmentArgs>()
+    private val scrollListener = ScrollListener()
     private var errored = false
     private var isScrolling = false
 
@@ -73,6 +75,7 @@ class PostFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bd.recyclerView.addOnScrollListener(scrollListener)
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(
             viewLifecycleOwner.lifecycleScope,
@@ -86,6 +89,11 @@ class PostFragment :
         if (args.post.isPreview || args.post.chapterCount == 0) {
             launch { vm.retrieve(args.post.id) }
         }
+    }
+
+    override fun onDestroyView() {
+        bd.recyclerView.removeOnScrollListener(scrollListener)
+        super.onDestroyView()
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
@@ -129,6 +137,11 @@ class PostFragment :
         } else {
             vm.update(position, item)
         }
+    }
+
+    override fun onFetchedItems(index: Int, items: List<Comment>) {
+        super.onFetchedItems(index, items)
+        acknowledgeLastVisibleComment()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -311,6 +324,25 @@ class PostFragment :
             delay(300)
             isScrolling = false
             layoutManager.scrollToPositionWithOffset(viewPosition, 0)
+        }
+    }
+
+    private fun acknowledgeLastVisibleComment() {
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        val viewPosition = layoutManager.findLastVisibleItemPosition()
+        val comment = vm.items[viewPosition - 1] ?: return
+        evm.post(CommentSeenEvent(comment))
+    }
+
+    private inner class ScrollListener : RecyclerView.OnScrollListener() {
+        private var lastState = RecyclerView.SCROLL_STATE_IDLE
+
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE || lastState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                acknowledgeLastVisibleComment()
+            }
+
+            lastState = newState
         }
     }
 }

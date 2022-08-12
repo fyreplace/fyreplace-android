@@ -13,3 +13,7 @@ class CommentDeletionEvent(
     override val position: Int,
     val postId: ByteString
 ) : ItemPositionalEvent<Comment>
+
+class CommentSeenEvent(
+    override val item: Comment
+) : ItemEvent<Comment>
