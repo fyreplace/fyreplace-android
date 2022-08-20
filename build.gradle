@@ -1,8 +1,8 @@
 buildscript {
     ext {
         configuration = [
-                compileSdk: 32,
-                targetSdk : 32,
+                compileSdk: 33,
+                targetSdk : 33,
                 minSdk    : 21,
         ]
     }

@@ -97,7 +97,7 @@ class DraftFragment :
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_draft, menu)
         val publish = menu.findItem(R.id.publish)
-        val publishButton = publish.actionView.findViewById<Button>(R.id.button)
+        val publishButton = publish.actionView?.findViewById<Button>(R.id.button) ?: return
         publishButton.setOnClickListener { onMenuItemSelected(publish) }
         vm.canPublish.launchCollect(viewLifecycleOwner.lifecycleScope, publishButton::setEnabled)
     }
