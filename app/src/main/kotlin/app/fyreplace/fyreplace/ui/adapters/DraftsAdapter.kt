@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
@@ -15,7 +16,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         val post = items[position]
         return when (post.chaptersCount) {
             0 -> TYPE_EMPTY
-            else -> if (post.getChapters(0).text.isEmpty()) TYPE_IMAGE else TYPE_TEXT
+            else -> if (post.firstChapter.text.isEmpty()) TYPE_IMAGE else TYPE_TEXT
         }
     }
 
@@ -37,7 +38,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         val post = items[position]
 
         if (post.chaptersCount > 0) {
-            holder.setup(post.getChapters(0))
+            holder.setup(post.firstChapter)
             (holder as DraftHolder).setup(post)
         }
     }

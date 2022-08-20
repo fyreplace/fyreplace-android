@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
@@ -19,7 +20,7 @@ import com.google.protobuf.ByteString
 class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
     ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(itemListener) {
     override fun getItemViewType(position: Int) =
-        if (items[position].getChapters(0).text.isEmpty()) TYPE_IMAGE
+        if (items[position].firstChapter.text.isEmpty()) TYPE_IMAGE
         else TYPE_TEXT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChapterHolder {
@@ -34,9 +35,8 @@ class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
     override fun onBindViewHolder(holder: ChapterHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         val post = items[position]
-        val chapter = post.getChapters(0)
         holder.setup(post.author, post.dateCreated)
-        holder.setup(chapter)
+        holder.setup(post.firstChapter)
     }
 
     override fun getItemId(item: Post): ByteString = item.id
