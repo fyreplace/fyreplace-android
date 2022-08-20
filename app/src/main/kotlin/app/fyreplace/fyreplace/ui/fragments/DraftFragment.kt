@@ -51,7 +51,7 @@ class DraftFragment :
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val args by navArgs<DraftFragmentArgs>()
-    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 0.5f) }
+    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 512 * 1024) }
     private var currentChapterPosition = -1
     private val chapterTextMaxSize by lazy { requireContext().resources.getInteger(R.integer.chapter_text_max_size) }
 

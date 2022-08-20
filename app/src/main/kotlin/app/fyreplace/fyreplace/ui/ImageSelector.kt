@@ -35,12 +35,11 @@ class ImageSelector @AssistedInject constructor(
     @Assisted private val fragment: Fragment,
     @Assisted private val failureHandler: FailureHandler,
     @Assisted private val listener: Listener,
-    @Assisted maxImageSize: Float
+    @Assisted private val maxImageByteSize: Int
 ) {
     private val vm by fragment.viewModels<ImageSelectorViewModel>()
     private val imagesDirectory = File(fragment.requireContext().filesDir, "images")
     private val photoImageFile = File(imagesDirectory, "image.data")
-    private val maxImageByteSize = (maxImageSize * 1024 * 1024).roundToInt()
     private var snackbar: Snackbar? = null
     private lateinit var getContentLauncher: ActivityResultLauncher<String>
     private lateinit var takePictureLauncher: ActivityResultLauncher<Uri>

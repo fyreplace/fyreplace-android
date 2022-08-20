@@ -10,6 +10,6 @@ interface ImageSelectorFactory {
         fragment: Fragment,
         failureHandler: FailureHandler,
         listener: ImageSelector.Listener,
-        maxImageSize: Float
+        maxImageByteSize: Int
     ): ImageSelector
 }

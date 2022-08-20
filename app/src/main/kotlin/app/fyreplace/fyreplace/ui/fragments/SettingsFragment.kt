@@ -45,7 +45,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override lateinit var rootView: View
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by activityViewModels<SettingsViewModel>()
-    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1f) }
+    private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1024 * 1024) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setupTransitions()
