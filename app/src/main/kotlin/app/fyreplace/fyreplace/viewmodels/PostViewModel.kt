@@ -3,19 +3,27 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import app.fyreplace.fyreplace.events.CommentCreationEvent
+import app.fyreplace.fyreplace.events.CommentDeletionEvent
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
 
 @SuppressLint("CheckResult")
 class PostViewModel @AssistedInject constructor(
+    em: EventsManager,
     @Assisted initialPost: Post,
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
     private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub
-) : ItemRandomAccessListViewModel<Comment, Comments>(initialPost.id) {
+) : ItemRandomAccessListViewModel<Comment, Comments>(em, initialPost.id) {
+    override val addedItems = em.events.filterIsInstance<CommentCreationEvent>()
+        .filter { it.postId == post.value.id }
+        .map { it.atPosition(totalSize.value) }
+    override val updatedItems = em.events.filterIsInstance<CommentDeletionEvent>()
+        .filter { it.postId == post.value.id }
     private val mPost = MutableStateFlow(initialPost)
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
     private var mSelectedComment = MutableStateFlow<Int?>(null)

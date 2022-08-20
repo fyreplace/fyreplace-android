@@ -12,15 +12,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
+import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.UserBanEvent
+import app.fyreplace.fyreplace.events.UserBlockEvent
+import app.fyreplace.fyreplace.events.UserUnblockEvent
 import app.fyreplace.fyreplace.extensions.formatDate
 import app.fyreplace.fyreplace.extensions.getUsername
 import app.fyreplace.fyreplace.extensions.setAvatar
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
-import app.fyreplace.fyreplace.viewmodels.*
-import app.fyreplace.fyreplace.viewmodels.events.UserBanEvent
-import app.fyreplace.fyreplace.viewmodels.events.UserBlockEvent
-import app.fyreplace.fyreplace.viewmodels.events.UserUnblockEvent
+import app.fyreplace.fyreplace.viewmodels.CentralViewModel
+import app.fyreplace.fyreplace.viewmodels.Sentence
+import app.fyreplace.fyreplace.viewmodels.UserViewModel
+import app.fyreplace.fyreplace.viewmodels.UserViewModelFactory
 import app.fyreplace.protos.Rank
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
@@ -31,11 +35,13 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class UserFragment : DialogFragment(), FailureHandler {
     @Inject
+    lateinit var em: EventsManager
+
+    @Inject
     lateinit var vmFactory: UserViewModelFactory
 
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val cvm by activityViewModels<CentralViewModel>()
-    private val evm by activityViewModels<EventsViewModel>()
     private val vm by viewModels<UserViewModel> {
         UserViewModel.provideFactory(vmFactory, args.profile.v)
     }
@@ -135,14 +141,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            evm.post(UserBlockEvent(args.profile.v, args.position))
+            em.post(UserBlockEvent(args.profile.v, args.position))
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-            evm.post(UserUnblockEvent(args.position))
+            em.post(UserUnblockEvent(args.position))
         }
     }
 
@@ -178,6 +184,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     private suspend fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        evm.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build(), args.position))
+        em.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build(), args.position))
     }
 }

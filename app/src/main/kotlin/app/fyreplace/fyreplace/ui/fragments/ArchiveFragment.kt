@@ -5,19 +5,16 @@ import androidx.annotation.IdRes
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ArchivePagesBinding
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.CustomTitleProvider
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.ArchiveViewModel
-import app.fyreplace.fyreplace.viewmodels.events.*
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
 
 @AndroidEntryPoint
 class ArchiveFragment :
@@ -25,20 +22,6 @@ class ArchiveFragment :
     CustomTitleProvider,
     ItemListAdapter.ItemClickListener<Post> {
     override val vm by activityViewModels<ArchiveViewModel>()
-    override val addedItems: Flow<ItemPositionalEvent<Post>>
-        get() {
-            val flow = evm.events.filterIsInstance<DraftPublicationEvent>().map { it.atPosition(0) }
-            return if (vm.selectedPage.value == R.id.own_posts) flow
-            else merge(flow, evm.events.filterIsInstance<PostSubscriptionEvent>())
-        }
-    override val updatedItems: Flow<ItemPositionalEvent<Post>>
-        get() = emptyFlow()
-    override val removedItems: Flow<PositionalEvent>
-        get() {
-            val flow = evm.events.filterIsInstance<PostDeletionEvent>()
-            return if (vm.selectedPage.value == R.id.own_posts) flow
-            else merge(flow, evm.events.filterIsInstance<PostUnsubscriptionEvent>())
-        }
 
     override fun makeAdapter() = ArchiveAdapter(this)
 
@@ -66,7 +49,7 @@ class ArchiveFragment :
     private fun selectPage(@IdRes page: Int) {
         stopListing()
         vm.selectPage(page)
-        refreshEventHandlers()
+        refreshAllEventHandlers()
         reset()
         startListing()
     }

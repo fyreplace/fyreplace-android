@@ -2,16 +2,27 @@ package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.UserBanEvent
+import app.fyreplace.fyreplace.events.UserBlockEvent
+import app.fyreplace.fyreplace.events.UserUnblockEvent
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import javax.inject.Inject
 
 @HiltViewModel
 @SuppressLint("CheckResult")
-class BlockedUsersViewModel @Inject constructor(private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub) :
-    ItemListViewModel<Profile, Profiles>() {
+class BlockedUsersViewModel @Inject constructor(
+    em: EventsManager,
+    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
+) :
+    ItemListViewModel<Profile, Profiles>(em) {
+    override val addedItems = em.events.filterIsInstance<UserBlockEvent>()
+    override val updatedItems = em.events.filterIsInstance<UserBanEvent>()
+    override val removedItems = em.events.filterIsInstance<UserUnblockEvent>()
     override val forward = true
     override val emptyText = emptyFlow<Int>().asState(R.string.blocked_users_empty)
 

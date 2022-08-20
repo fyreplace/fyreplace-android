@@ -1,11 +1,12 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.protos.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
-abstract class ItemListViewModel<Item, Items> : BaseViewModel() {
+abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListViewModel<Item>(em) {
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var nextCursor = cursor { isNext = true }
     private var state = ItemsState.INCOMPLETE
@@ -16,6 +17,20 @@ abstract class ItemListViewModel<Item, Items> : BaseViewModel() {
     val items: List<Item> = mItems
     val isEmpty = mIsEmpty.asStateFlow()
     abstract val emptyText: StateFlow<Int>
+
+    override fun addItem(position: Int, item: Item) {
+        mItems.add(position, item)
+        mIsEmpty.value = false
+    }
+
+    override fun updateItem(position: Int, item: Item) {
+        mItems[position] = item
+    }
+
+    override fun removeItem(position: Int) {
+        mItems.removeAt(position)
+        mIsEmpty.value = items.isEmpty()
+    }
 
     protected abstract fun listItems(): Flow<Items>
 
@@ -65,20 +80,6 @@ abstract class ItemListViewModel<Item, Items> : BaseViewModel() {
             state = ItemsState.FETCHING
             maybePages.emit(page { cursor = nextCursor })
         }
-    }
-
-    fun add(position: Int, item: Item) {
-        mItems.add(position, item)
-        mIsEmpty.value = false
-    }
-
-    fun update(position: Int, item: Item) {
-        mItems[position] = item
-    }
-
-    fun remove(position: Int) {
-        mItems.removeAt(position)
-        mIsEmpty.value = items.isEmpty()
     }
 
     companion object {

@@ -2,21 +2,36 @@ package app.fyreplace.fyreplace.viewmodels
 
 import androidx.annotation.IdRes
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.*
 import app.fyreplace.protos.Cursor
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.PostServiceGrpcKt
 import app.fyreplace.protos.Posts
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
-class ArchiveViewModel @Inject constructor(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
-    ItemListViewModel<Post, Posts>() {
-    private var mSelectedPage = MutableStateFlow(R.id.all_posts)
+class ArchiveViewModel @Inject constructor(
+    em: EventsManager,
+    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub
+) :
+    ItemListViewModel<Post, Posts>(em) {
+    private val mSelectedPage = MutableStateFlow(R.id.all_posts)
     val selectedPage = mSelectedPage.asStateFlow()
+    override val addedItems = merge(
+        em.events.filterIsInstance<DraftPublicationEvent>().map { it.atPosition(0) },
+        selectedPage.filter { it == R.id.all_posts }
+            .flatMapConcat { em.events.filterIsInstance<PostSubscriptionEvent>() }
+    )
+    override val updatedItems = emptyFlow<ItemPositionalEvent<Post>>()
+    override val removedItems = merge(
+        em.events.filterIsInstance<PostDeletionEvent>(),
+        selectedPage.filter { it == R.id.all_posts }
+            .flatMapConcat { em.events.filterIsInstance<PostUnsubscriptionEvent>() }
+    )
     override val emptyText = selectedPage
         .map { if (it == R.id.all_posts) R.string.archive_all_empty else R.string.archive_own_empty }
         .asState(R.string.archive_all_empty)

@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Button
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
+import app.fyreplace.fyreplace.events.DraftDeletionEvent
+import app.fyreplace.fyreplace.events.DraftPublicationEvent
+import app.fyreplace.fyreplace.events.DraftUpdateEvent
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makePreview
 import app.fyreplace.fyreplace.ui.ImageSelector
@@ -20,10 +23,6 @@ import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModelFactory
-import app.fyreplace.fyreplace.viewmodels.EventsViewModel
-import app.fyreplace.fyreplace.viewmodels.events.DraftDeletionEvent
-import app.fyreplace.fyreplace.viewmodels.events.DraftPublicationEvent
-import app.fyreplace.fyreplace.viewmodels.events.DraftUpdateEvent
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.chapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,6 +37,9 @@ class DraftFragment :
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener {
     @Inject
+    lateinit var em: EventsManager
+
+    @Inject
     lateinit var vmFactory: DraftViewModelFactory
 
     @Inject
@@ -47,7 +49,6 @@ class DraftFragment :
     private val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }
-    private val evm by activityViewModels<EventsViewModel>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val args by navArgs<DraftFragmentArgs>()
@@ -77,7 +78,7 @@ class DraftFragment :
         launch {
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
-                evm.post(DraftUpdateEvent(it, args.position))
+                em.post(DraftUpdateEvent(it, args.position))
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.addAll(vm.post.value.chaptersList)
@@ -190,13 +191,13 @@ class DraftFragment :
 
     private suspend fun publish(anonymously: Boolean) {
         vm.publish(anonymously)
-        evm.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously), args.position))
+        em.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously), args.position))
         findNavController().navigateUp()
     }
 
     private suspend fun delete() {
         vm.delete()
-        evm.post(DraftDeletionEvent(args.position))
+        em.post(DraftDeletionEvent(args.position))
         findNavController().navigateUp()
     }
 

@@ -1,5 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.protos.Page
 import app.fyreplace.protos.header
 import app.fyreplace.protos.page
@@ -8,8 +10,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
-abstract class ItemRandomAccessListViewModel<Item, Items>(private val contextId: ByteString) :
-    BaseViewModel() {
+abstract class ItemRandomAccessListViewModel<Item, Items>(
+    em: EventsManager,
+    private val contextId: ByteString
+) :
+    DynamicListViewModel<Item>(em) {
+    override val removedItems = emptyFlow<PositionalEvent>()
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var state = ItemListViewModel.ItemsState.INCOMPLETE
     private val mItems = mutableMapOf<Int, Item>()
@@ -24,6 +30,17 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(private val contextId:
     protected abstract fun getItemList(items: Items): List<Item>
 
     protected abstract fun getTotalSize(items: Items): Int
+
+    override fun addItem(position: Int, item: Item) {
+        mItems[totalSize.value] = item
+        mTotalSize.value++
+    }
+
+    override fun updateItem(position: Int, item: Item) {
+        mItems[position] = item
+    }
+
+    override fun removeItem(position: Int) = Unit
 
     suspend fun startListing(): Flow<Pair<Int, List<Item>>> {
         maybePages.emit(page {
@@ -82,15 +99,6 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(private val contextId:
             state = ItemListViewModel.ItemsState.FETCHING
             maybePages.emit(page { offset = startIndex })
         }
-    }
-
-    fun insert(item: Item) {
-        mItems[totalSize.value] = item
-        mTotalSize.value++
-    }
-
-    fun update(position: Int, item: Item) {
-        mItems[position] = item
     }
 
     companion object {

@@ -3,22 +3,19 @@ package app.fyreplace.fyreplace.ui.fragments
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.DraftCreationEvent
+import app.fyreplace.fyreplace.events.PostDeletionEvent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.DraftsAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.viewmodels.DraftsViewModel
-import app.fyreplace.fyreplace.viewmodels.events.*
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import app.fyreplace.protos.post
 import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
 
 @AndroidEntryPoint
 class DraftsFragment :
@@ -26,16 +23,6 @@ class DraftsFragment :
     PrimaryActionProvider,
     ItemListAdapter.ItemClickListener<Post> {
     override val vm by activityViewModels<DraftsViewModel>()
-    override val addedItems: Flow<ItemPositionalEvent<Post>>
-        get() = evm.events.filterIsInstance<DraftCreationEvent>()
-            .map { it.atPosition(0) }
-    override val updatedItems: Flow<ItemPositionalEvent<Post>>
-        get() = evm.events.filterIsInstance<DraftUpdateEvent>()
-    override val removedItems: Flow<PositionalEvent>
-        get() = merge(
-            evm.events.filterIsInstance<DraftDeletionEvent>(),
-            evm.events.filterIsInstance<DraftPublicationEvent>()
-        )
 
     override fun makeAdapter() = DraftsAdapter(this)
 
@@ -67,12 +54,12 @@ class DraftsFragment :
 
     private suspend fun createPost(): Post {
         val post = post { id = vm.create().id }
-        evm.post(DraftCreationEvent(post))
+        vm.em.post(DraftCreationEvent(post))
         return post
     }
 
     private suspend fun deletePost(postId: ByteString, position: Int) {
         vm.delete(postId)
-        evm.post(PostDeletionEvent(position))
+        vm.em.post(PostDeletionEvent(position))
     }
 }

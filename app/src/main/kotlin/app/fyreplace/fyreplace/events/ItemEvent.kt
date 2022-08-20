@@ -1,6 +1,4 @@
-package app.fyreplace.fyreplace.viewmodels.events
-
-import app.fyreplace.fyreplace.viewmodels.Event
+package app.fyreplace.fyreplace.events
 
 interface PositionalEvent : Event {
     val position: Int

@@ -17,7 +17,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     DynamicListFragment<Item>(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
-    protected abstract val vm: ItemListViewModel<Item, Items>
+    abstract override val vm: ItemListViewModel<Item, Items>
     protected lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
 
@@ -75,28 +75,16 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         super.onStop()
     }
 
-    override fun addItem(position: Int, item: Item, toView: Boolean) {
-        if (toView) {
-            adapter.add(position, item)
-        } else {
-            vm.add(position, item)
-        }
+    override fun addItem(position: Int, item: Item) {
+        adapter.add(position, item)
     }
 
-    override fun updateItem(position: Int, item: Item, toView: Boolean) {
-        if (toView) {
-            adapter.update(position, item)
-        } else {
-            vm.update(position, item)
-        }
+    override fun updateItem(position: Int, item: Item) {
+        adapter.update(position, item)
     }
 
-    override fun removeItem(position: Int, toView: Boolean) {
-        if (toView) {
-            adapter.remove(position)
-        } else {
-            vm.remove(position)
-        }
+    override fun removeItem(position: Int) {
+        adapter.remove(position)
     }
 
     override fun onChildViewAttachedToWindow(view: View) {

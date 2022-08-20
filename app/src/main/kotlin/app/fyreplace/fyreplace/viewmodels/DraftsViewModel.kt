@@ -1,16 +1,30 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.*
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import com.google.protobuf.Empty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 
 @HiltViewModel
-class DraftsViewModel @Inject constructor(private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub) :
-    ItemListViewModel<Post, Posts>() {
+class DraftsViewModel @Inject constructor(
+    em: EventsManager,
+    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub
+) :
+    ItemListViewModel<Post, Posts>(em) {
+    override val addedItems = em.events.filterIsInstance<DraftCreationEvent>()
+        .map { it.atPosition(0) }
+    override val updatedItems = em.events.filterIsInstance<DraftUpdateEvent>()
+    override val removedItems = merge(
+        em.events.filterIsInstance<DraftDeletionEvent>(),
+        em.events.filterIsInstance<DraftPublicationEvent>()
+    )
     override val emptyText = emptyFlow<Int>().asState(R.string.drafts_empty)
 
     override fun listItems() = postStub.listDrafts(pages)

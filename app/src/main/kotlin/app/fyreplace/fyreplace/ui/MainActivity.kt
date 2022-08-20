@@ -33,13 +33,13 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.events.CommentSeenEvent
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
-import app.fyreplace.fyreplace.viewmodels.EventsViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
-import app.fyreplace.fyreplace.viewmodels.events.CommentSeenEvent
 import app.fyreplace.protos.Profile
 import app.fyreplace.protos.post
 import com.bumptech.glide.Glide
@@ -51,6 +51,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterIsInstance
+import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -60,10 +61,12 @@ class MainActivity :
     FragmentManager.OnBackStackChangedListener,
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener {
+    @Inject
+    lateinit var em: EventsManager
+
     override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
     private val vm by viewModels<MainViewModel>()
     private val cvm by viewModels<CentralViewModel>()
-    private val evm by viewModels<EventsViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
     private var defaultNavigationBarDividerColor = Color.TRANSPARENT
@@ -110,7 +113,7 @@ class MainActivity :
             launch { cvm.retrieveMe() }
         }
 
-        evm.events.filterIsInstance<CommentSeenEvent>().launchCollect {
+        em.events.filterIsInstance<CommentSeenEvent>().launchCollect {
             vm.acknowledgeComment(it.item.id)
         }
 

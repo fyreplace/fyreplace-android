@@ -16,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemHolder
@@ -25,7 +26,6 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModelFactory
-import app.fyreplace.fyreplace.viewmodels.events.*
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
@@ -35,7 +35,7 @@ import com.google.protobuf.timestamp
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
 import java.util.*
 import javax.inject.Inject
 
@@ -50,13 +50,6 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
-    override val addedItems: Flow<ItemPositionalEvent<Comment>>
-        get() = evm.events.filterIsInstance<CommentCreationEvent>()
-            .filter { it.postId == vm.post.value.id }
-            .map { it.atPosition(vm.totalSize.value) }
-    override val updatedItems: Flow<ItemPositionalEvent<Comment>>
-        get() = evm.events.filterIsInstance<CommentDeletionEvent>()
-            .filter { it.postId == vm.post.value.id }
     override val recyclerView by lazy { bd.recyclerView }
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
@@ -122,22 +115,6 @@ class PostFragment :
 
     override fun makeAdapter() =
         PostAdapter(viewLifecycleOwner, vm.post.value, this)
-
-    override fun addItem(position: Int, item: Comment, toView: Boolean) {
-        if (toView) {
-            adapter.insert(item)
-        } else {
-            vm.insert(item)
-        }
-    }
-
-    override fun updateItem(position: Int, item: Comment, toView: Boolean) {
-        if (toView) {
-            adapter.update(position, item)
-        } else {
-            vm.update(position, item)
-        }
-    }
 
     override fun onFetchedItems(index: Int, items: List<Comment>) {
         super.onFetchedItems(index, items)
@@ -266,10 +243,10 @@ class PostFragment :
 
             when {
                 args.position == -1 -> return@launch
-                subscribed -> evm.post(
+                subscribed -> vm.em.post(
                     PostSubscriptionEvent(vm.post.value.makePreview(), args.position)
                 )
-                else -> evm.post(PostUnsubscriptionEvent(args.position))
+                else -> vm.em.post(PostUnsubscriptionEvent(args.position))
             }
         }
     }
@@ -283,7 +260,7 @@ class PostFragment :
         vm.delete()
 
         if (args.position != -1) {
-            evm.post(PostDeletionEvent(args.position))
+            vm.em.post(PostDeletionEvent(args.position))
         }
 
         findNavController().navigateUp()
@@ -296,7 +273,7 @@ class PostFragment :
             author = cvm.currentUser.value!!.profile
             dateCreated = timestamp { seconds = Date().time / 1000 }
         }
-        evm.post(CommentCreationEvent(comment, vm.post.value.id))
+        vm.em.post(CommentCreationEvent(comment, vm.post.value.id))
     }
 
     private suspend fun reportComment(comment: Comment) {
@@ -307,7 +284,7 @@ class PostFragment :
     private suspend fun deleteComment(position: Int, comment: Comment) {
         vm.deleteComment(comment.id)
         vm.makeDeletedComment(position)?.let {
-            evm.post(CommentDeletionEvent(it, position, vm.post.value.id))
+            vm.em.post(CommentDeletionEvent(it, position, vm.post.value.id))
         }
     }
 
@@ -331,7 +308,7 @@ class PostFragment :
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
         val viewPosition = layoutManager.findLastVisibleItemPosition()
         val comment = vm.items[viewPosition - 1] ?: return
-        evm.post(CommentSeenEvent(comment))
+        vm.em.post(CommentSeenEvent(comment))
     }
 
     private inner class ScrollListener : RecyclerView.OnScrollListener() {

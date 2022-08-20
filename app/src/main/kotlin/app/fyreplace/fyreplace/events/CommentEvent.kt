@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.viewmodels.events
+package app.fyreplace.fyreplace.events
 
 import app.fyreplace.protos.Comment
 import com.google.protobuf.ByteString
