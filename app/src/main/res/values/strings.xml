@@ -38,8 +38,9 @@
     <string name="image_selector_action_photo">Take a picture</string>
     <string name="image_selector_action_remove">Remove</string>
     <string name="image_selector_snackbar_upload">Uploading…</string>
-    <string name="image_error_unknown_type">Unknown file type</string>
-    <string name="image_error_file_size">Image file too large</string>
+    <string name="image_error_unknown_type_message">Unknown file type</string>
+    <string name="image_error_file_size_title">Invalid image</string>
+    <string name="image_error_file_size_message">This picture is too large.</string>
 
     <string name="main_account_activated_message">Account activated, welcome to Fyreplace!</string>
     <string name="main_user_email_changed_message">Email updated</string>

@@ -86,6 +86,7 @@ class DraftFragment :
 
     override fun getFailureTexts(error: Status) = when (error.code) {
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
             "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
             else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message

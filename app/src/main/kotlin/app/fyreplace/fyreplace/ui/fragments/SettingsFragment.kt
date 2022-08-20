@@ -173,6 +173,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override fun getFailureTexts(error: Status) = when (error.code) {
         Status.Code.ALREADY_EXISTS -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
+            "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
         }

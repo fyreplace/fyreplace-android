@@ -28,7 +28,6 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import kotlin.coroutines.coroutineContext
-import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 class ImageSelector @AssistedInject constructor(
@@ -110,7 +109,7 @@ class ImageSelector @AssistedInject constructor(
             onImageLoadingBegin()
             val resolver = fragment.context?.contentResolver ?: return@withContext
             val mimeType = resolver.getType(uri)
-                ?: throw IOException(fragment.resources.getString(R.string.image_error_unknown_type))
+                ?: throw IOException(fragment.resources.getString(R.string.image_error_unknown_type_message))
 
             withContext(Dispatchers.IO) {
                 val transformations = resolver.openInputStream(uri)
@@ -191,10 +190,6 @@ class ImageSelector @AssistedInject constructor(
 
             compressedBytes = os.toByteArray()
             coroutineContext.ensureActive()
-        }
-
-        if (compressedBytes.size > maxImageByteSize) {
-            throw IOException(fragment.resources.getString(R.string.image_error_file_size))
         }
 
         withContext(Dispatchers.Main) { listener.onImage(compressedBytes) }
