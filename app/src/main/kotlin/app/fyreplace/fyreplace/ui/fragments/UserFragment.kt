@@ -16,10 +16,7 @@ import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.UserBanEvent
 import app.fyreplace.fyreplace.events.UserBlockEvent
 import app.fyreplace.fyreplace.events.UserUnblockEvent
-import app.fyreplace.fyreplace.extensions.formatDate
-import app.fyreplace.fyreplace.extensions.getUsername
-import app.fyreplace.fyreplace.extensions.setAvatar
-import app.fyreplace.fyreplace.extensions.setupTransitions
+import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.Sentence
@@ -27,7 +24,9 @@ import app.fyreplace.fyreplace.viewmodels.UserViewModel
 import app.fyreplace.fyreplace.viewmodels.UserViewModelFactory
 import app.fyreplace.protos.Rank
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
@@ -59,12 +58,12 @@ class UserFragment : DialogFragment(), FailureHandler {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = super.onCreateView(inflater, container, savedInstanceState).also {
-        viewLifecycleScope = CoroutineScope(Dispatchers.Main.immediate) + SupervisorJob()
+        viewLifecycleScope = MainScope()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
         viewLifecycleScope.cancel()
+        super.onDestroyView()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?) = AlertDialog
@@ -132,7 +131,7 @@ class UserFragment : DialogFragment(), FailureHandler {
             bd.dateJoined.isVisible = true
             bd.dateJoined.text = getString(R.string.user_date_joined, user.dateJoined.formatDate())
             bd.bio.isVisible = user.bio.isNotBlank()
-            bd.bio.text = user.bio
+            bd.bio.setLinkifiedText(user.bio)
         }
 
         launch { vm.retrieve(args.profile.id) }

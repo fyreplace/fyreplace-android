@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemCommentBinding
 import app.fyreplace.fyreplace.databinding.ItemNewCommentBinding
@@ -15,6 +16,8 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class PostAdapter(
     private val lifecycleOwner: LifecycleOwner,
@@ -64,7 +67,7 @@ class PostAdapter(
         super.onViewAttachedToWindow(holder)
 
         if (holder is CommentHolder) {
-            holder.fixTextView()
+            lifecycleOwner.lifecycleScope.launch { holder.fixTextView() }
         }
     }
 
@@ -96,7 +99,7 @@ class PostAdapter(
         fun onNewComment()
     }
 
-    class ChaptersHolder(itemView: View) : ItemHolder(itemView), View.OnLayoutChangeListener {
+    inner class ChaptersHolder(itemView: View) : ItemHolder(itemView), View.OnLayoutChangeListener {
         private val chapters: ChaptersView = itemView.findViewById(R.id.chapters)
 
         init {
@@ -117,7 +120,7 @@ class PostAdapter(
             itemView.minimumHeight = v.height
         }
 
-        fun setup(post: Post) = chapters.setPost(post)
+        fun setup(post: Post) = lifecycleOwner.lifecycleScope.launch { chapters.setPost(post) }
     }
 
     inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
@@ -131,6 +134,7 @@ class PostAdapter(
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
         private val commentPosition get() = bindingAdapterPosition - 1
         private lateinit var comment: Comment
+        private var commentJob: Job? = null
 
         init {
             bd.lifecycleOwner = lifecycleOwner
@@ -149,15 +153,15 @@ class PostAdapter(
                 if (commentPosition == selectedComment) selectedContainerColor
                 else Color.TRANSPARENT
             )
-            bd.content.setComment(comment)
+            commentJob = lifecycleOwner.lifecycleScope.launch { bd.content.setComment(comment) }
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment)
         }
 
-        fun fixTextView() {
+        suspend fun fixTextView() {
+            commentJob?.join()
             bd.content.isEnabled = false
             bd.content.isEnabled = true
-            bd.content.setTextIsSelectable(!comment.isDeleted)
         }
 
         fun onProfileClicked(view: View) =

@@ -1,23 +1,25 @@
 package app.fyreplace.fyreplace.ui.views
 
 import android.content.Context
-import android.text.util.Linkify
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.setLinkifiedText
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.progressindicator.CircularProgressIndicator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 @Suppress("unused")
 class ChaptersView : LinearLayout {
@@ -40,10 +42,9 @@ class ChaptersView : LinearLayout {
 
     init {
         orientation = VERTICAL
-        gravity = Gravity.CENTER_HORIZONTAL
     }
 
-    fun setPost(post: Post) {
+    suspend fun setPost(post: Post) {
         removeAllViews()
 
         if (post.isPreview) {
@@ -53,7 +54,7 @@ class ChaptersView : LinearLayout {
         }
     }
 
-    private fun addChapter(chapter: Chapter) {
+    private suspend fun addChapter(chapter: Chapter) {
         val view = if (chapter.hasImage()) makeImageView(chapter)
         else makeTextView(chapter)
 
@@ -65,16 +66,11 @@ class ChaptersView : LinearLayout {
         addView(view)
     }
 
-    private fun makeTextView(chapter: Chapter): View {
+    private suspend fun makeTextView(chapter: Chapter): View {
         val text = AppCompatTextView(context)
         val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
         else R.style.TextAppearance_Material3_BodyLarge
 
-        text.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-        text.text = chapter.text
-        text.linksClickable = true
-        text.autoLinkMask = Linkify.ALL
-        text.setTextIsSelectable(true)
         TextViewCompat.setTextAppearance(text, style)
         text.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -84,7 +80,7 @@ class ChaptersView : LinearLayout {
             marginEnd = marginStart
         }
 
-        return text
+        return text.apply { setLinkifiedText(chapter.text) }
     }
 
     private fun makeImageView(chapter: Chapter): View {

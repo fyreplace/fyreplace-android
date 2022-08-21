@@ -67,8 +67,6 @@
             android:id="@+id/content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:autoLink="all"
-            android:linksClickable="true"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintBaseline_toBottomOf="@id/avatar"
             app:layout_constraintBottom_toBottomOf="parent"
