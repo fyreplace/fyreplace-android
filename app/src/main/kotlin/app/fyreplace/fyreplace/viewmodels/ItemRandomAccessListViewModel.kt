@@ -20,10 +20,10 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     private var state = ItemListViewModel.ItemsState.INCOMPLETE
     private val mItems = mutableMapOf<Int, Item>()
     private val indexes = mutableListOf<Int>()
-    private val mTotalSize = MutableStateFlow(0)
+    private var mTotalSize = 0
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     val items: Map<Int, Item> = mItems
-    val totalSize = mTotalSize.asStateFlow()
+    val totalSize get() = mTotalSize
 
     protected abstract fun listItems(): Flow<Items>
 
@@ -32,8 +32,8 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     protected abstract fun getTotalSize(items: Items): Int
 
     override fun addItem(position: Int, item: Item) {
-        mItems[totalSize.value] = item
-        mTotalSize.value++
+        mItems[totalSize] = item
+        mTotalSize++
     }
 
     override fun updateItem(position: Int, item: Item) {
@@ -53,10 +53,10 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
 
         return listItems()
             .onEach {
-                mTotalSize.value = getTotalSize(it)
+                mTotalSize = getTotalSize(it)
                 state = when {
                     indexes.size > 1 -> ItemListViewModel.ItemsState.FETCHING
-                    items.size < mTotalSize.value -> ItemListViewModel.ItemsState.INCOMPLETE
+                    items.size < totalSize -> ItemListViewModel.ItemsState.INCOMPLETE
                     else -> ItemListViewModel.ItemsState.COMPLETE
                 }
             }
@@ -84,7 +84,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
         state = ItemListViewModel.ItemsState.INCOMPLETE
         mItems.clear()
         indexes.clear()
-        mTotalSize.value = 0
+        mTotalSize = 0
     }
 
     suspend fun fetchAround(index: Int) {

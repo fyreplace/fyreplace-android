@@ -21,7 +21,7 @@ class PostViewModel @AssistedInject constructor(
 ) : ItemRandomAccessListViewModel<Comment, Comments>(em, initialPost.id) {
     override val addedItems = em.events.filterIsInstance<CommentCreationEvent>()
         .filter { it.postId == post.value.id }
-        .map { it.atPosition(totalSize.value) }
+        .map { it.atPosition(totalSize) }
     override val updatedItems = em.events.filterIsInstance<CommentDeletionEvent>()
         .filter { it.postId == post.value.id }
     private val mPost = MutableStateFlow(initialPost)

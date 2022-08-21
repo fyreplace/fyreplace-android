@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
@@ -52,7 +51,6 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         adapter = makeAdapter()
         adapter.resetTo(vm.items)
         bd.recyclerView.adapter = adapter
-        vm.totalSize.launchCollect(viewLifecycleOwner.lifecycleScope, adapter::setTotalSize)
     }
 
     override fun onDestroyView() {
@@ -65,7 +63,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         launch {
             vm.startListing().launchCollect { (index, items) -> onFetchedItems(index, items) }
 
-            if (adapter.itemCount <= 1) {
+            if (adapter.totalSize == 0) {
                 vm.fetchAround(0)
             }
         }
@@ -92,5 +90,11 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
-    open fun onFetchedItems(index: Int, items: List<Item>) = adapter.update(index, items)
+    open fun onFetchedItems(index: Int, items: List<Item>) {
+        adapter.update(index, items)
+
+        if (adapter.totalSize == 0) {
+            adapter.setTotalSize(vm.totalSize)
+        }
+    }
 }

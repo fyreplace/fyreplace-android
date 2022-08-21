@@ -6,7 +6,7 @@ abstract class ItemRandomAccessListAdapter<Item, VH : ItemHolder>(private val of
     RecyclerView.Adapter<VH>() {
     protected val items = mutableMapOf<Int, Item>()
     private var mTotalSize = 0
-    protected val totalSize get() = mTotalSize
+    val totalSize get() = mTotalSize
 
     override fun getItemCount() = mTotalSize + offset
 
