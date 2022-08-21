@@ -15,7 +15,7 @@
         android:padding="@dimen/gap_narrow">
 
         <Button
-            style="@style/Widget.Material3.Button.TonalButton.Icon"
+            style="@style/Widget.Material3.Button.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

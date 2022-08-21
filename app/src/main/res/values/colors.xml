@@ -31,4 +31,5 @@
     <color name="status">@android:color/black</color>
     <color name="navigation">@android:color/black</color>
     <color name="splash">@color/seed</color>
+    <color name="disabled">#7F7F7F7F</color>
 </resources>

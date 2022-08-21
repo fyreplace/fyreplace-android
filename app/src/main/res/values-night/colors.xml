@@ -28,4 +28,5 @@
     <color name="md_theme_primaryInverse">#A33F00</color>
     <color name="status">@android:color/transparent</color>
     <color name="splash">@color/md_theme_background</color>
+    <color name="disabled">#BF7F7F7F</color>
 </resources>

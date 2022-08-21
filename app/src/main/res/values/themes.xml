@@ -28,6 +28,7 @@
         <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
         <item name="colorPrimaryInverse">@color/md_theme_primaryInverse</item>
+        <item name="colorControlHighlight">?attr/colorPrimaryInverse</item>
     </style>
 
     <style name="AppTheme" parent="AppThemeBase">
