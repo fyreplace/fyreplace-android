@@ -64,7 +64,7 @@ class MainActivity :
     @Inject
     lateinit var em: EventsManager
 
-    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
+    override val rootView get() = if (::bd.isInitialized) bd.root else null
     private val vm by viewModels<MainViewModel>()
     private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding

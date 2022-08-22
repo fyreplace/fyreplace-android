@@ -50,7 +50,7 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
-    override val recyclerView by lazy { bd.recyclerView }
+    override val recyclerView get() = bd.recyclerView
     override val hasPrimaryActionDuplicate = true
     private val cvm by activityViewModels<CentralViewModel>()
     private val args by navArgs<PostFragmentArgs>()
@@ -68,7 +68,7 @@ class PostFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bd.recyclerView.addOnScrollListener(scrollListener)
+        recyclerView.addOnScrollListener(scrollListener)
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(
             viewLifecycleOwner.lifecycleScope,
@@ -85,7 +85,7 @@ class PostFragment :
     }
 
     override fun onDestroyView() {
-        bd.recyclerView.removeOnScrollListener(scrollListener)
+        recyclerView.removeOnScrollListener(scrollListener)
         super.onDestroyView()
     }
 

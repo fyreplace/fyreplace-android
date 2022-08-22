@@ -39,7 +39,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     @Inject
     lateinit var vmFactory: UserViewModelFactory
 
-    override val rootView by lazy { if (::bd.isInitialized) bd.root else null }
+    override val rootView get() = if (::bd.isInitialized) bd.root else null
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by viewModels<UserViewModel> {
         UserViewModel.provideFactory(vmFactory, args.profile.v)
