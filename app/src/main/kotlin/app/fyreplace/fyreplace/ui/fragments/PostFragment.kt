@@ -116,6 +116,11 @@ class PostFragment :
     override fun makeAdapter() =
         PostAdapter(viewLifecycleOwner, vm.post.value, this)
 
+    override fun addItem(position: Int, item: Comment) {
+        super.addItem(position, item)
+        showComment(position)
+    }
+
     override fun onFetchedItems(index: Int, items: List<Comment>) {
         super.onFetchedItems(index, items)
         acknowledgeLastVisibleComment()
