@@ -194,7 +194,7 @@ class PostFragment :
     override fun onCommentOptionsClicked(view: View, position: Int, comment: Comment) {
         val popup = PopupMenu(requireContext(), view)
         popup.inflate(R.menu.item_comment)
-        val shareIntent = context?.makeShareIntent("p", comment.id, position)
+        val shareIntent = context?.makeShareIntent("p", vm.post.value.id, position)
         popup.menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
         popup.setOnMenuItemClickListener {
             when (it.itemId) {
