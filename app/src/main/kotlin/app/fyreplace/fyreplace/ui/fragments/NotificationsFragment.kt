@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class NotificationsFragment : BaseFragment(R.layout.fragment_notifications) {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
-    private val vm by activityViewModels<NotificationsViewModel>()
+    override val vm by activityViewModels<NotificationsViewModel>()
     private lateinit var bd: FragmentNotificationsBinding
 
     override fun onCreateView(

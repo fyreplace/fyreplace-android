@@ -16,10 +16,6 @@ import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.progressindicator.CircularProgressIndicator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
 @Suppress("unused")
 class ChaptersView : LinearLayout {

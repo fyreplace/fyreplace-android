@@ -1,5 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import android.content.ComponentCallbacks2
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -73,6 +74,14 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     override fun onStop() {
         stopListing()
         super.onStop()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN || !isVisible) {
+            reset()
+        }
     }
 
     override fun addItem(position: Int, item: Item) {

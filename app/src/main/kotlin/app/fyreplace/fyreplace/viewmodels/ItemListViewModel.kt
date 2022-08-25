@@ -18,6 +18,8 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     val isEmpty = mIsEmpty.asStateFlow()
     abstract val emptyText: StateFlow<Int>
 
+    override fun onTrimMemory(level: Int) = reset()
+
     override fun addItem(position: Int, item: Item) {
         mItems.add(position, item)
         mIsEmpty.value = false

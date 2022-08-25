@@ -24,7 +24,7 @@ import io.grpc.Status
 @AndroidEntryPoint
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
-    private val vm by viewModels<LoginViewModel>()
+    override val vm by viewModels<LoginViewModel>()
     private val args by navArgs<LoginFragmentArgs>()
     private lateinit var bd: FragmentLoginBinding
 

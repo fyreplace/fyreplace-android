@@ -46,7 +46,7 @@ class DraftFragment :
     lateinit var imageSelectorFactory: ImageSelectorFactory
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
-    private val vm by viewModels<DraftViewModel> {
+    override val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }
     private lateinit var bd: FragmentDraftBinding
