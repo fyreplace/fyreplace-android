@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -44,7 +45,11 @@ class ChaptersView : LinearLayout {
         removeAllViews()
 
         if (post.isPreview) {
-            addView(CircularProgressIndicator(context).apply { isIndeterminate = true })
+            val loader = CircularProgressIndicator(context).apply { isIndeterminate = true }
+            val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            layoutParams.gravity = Gravity.CENTER_HORIZONTAL
+            loader.layoutParams = layoutParams
+            addView(loader)
         } else for (chapter in post.chaptersList) {
             addChapter(chapter)
         }

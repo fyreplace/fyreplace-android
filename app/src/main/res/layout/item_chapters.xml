@@ -4,4 +4,5 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/gap_narrow"
-    android:layout_marginBottom="@dimen/gap_narrow" />
+    android:layout_marginBottom="@dimen/gap_narrow"
+    android:background="?attr/colorSurface" />
