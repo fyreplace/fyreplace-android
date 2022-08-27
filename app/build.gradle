@@ -156,7 +156,6 @@ dependencies {
     implementation libs.androidx.swiperefreshlayout
     implementation libs.google.material
     implementation libs.hilt.hilt
-    implementation libs.javax.annotation
     implementation libs.kotlinx.coroutines
     googleImplementation libs.google.play.services
     libreImplementation libs.conscrypt
