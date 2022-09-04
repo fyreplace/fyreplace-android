@@ -26,6 +26,8 @@ class BlockedUsersViewModel @Inject constructor(
     override val forward = true
     override val emptyText = emptyFlow<Int>().asState(R.string.blocked_users_empty)
 
+    override fun getItemId(item: Profile): ByteString = item.id
+
     override fun listItems() = userStub.listBlocked(pages)
 
     override fun hasNextCursor(items: Profiles) = items.hasNext()

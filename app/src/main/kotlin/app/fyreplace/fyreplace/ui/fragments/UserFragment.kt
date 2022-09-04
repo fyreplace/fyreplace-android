@@ -140,14 +140,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            em.post(UserBlockEvent(args.profile.v, args.position))
+            em.post(UserBlockEvent(args.profile.v))
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-            em.post(UserUnblockEvent(args.position))
+            em.post(UserUnblockEvent(args.profile.v))
         }
     }
 
@@ -183,6 +183,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     private suspend fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        em.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build(), args.position))
+        em.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build()))
     }
 }

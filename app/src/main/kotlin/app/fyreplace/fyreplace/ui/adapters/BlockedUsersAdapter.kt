@@ -23,10 +23,7 @@ class BlockedUsersAdapter(
         super.onBindViewHolder(holder, position)
         holder.setup(items[position], null)
         holder.unblock.setOnClickListener {
-            unblockListener.onUnblock(
-                items[holder.bindingAdapterPosition],
-                holder.bindingAdapterPosition
-            )
+            unblockListener.onUnblock(items[holder.bindingAdapterPosition])
         }
     }
 
@@ -37,6 +34,6 @@ class BlockedUsersAdapter(
     }
 
     interface UnblockListener {
-        fun onUnblock(profile: Profile, position: Int)
+        fun onUnblock(profile: Profile)
     }
 }

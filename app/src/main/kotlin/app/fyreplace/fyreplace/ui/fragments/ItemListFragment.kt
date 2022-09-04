@@ -92,7 +92,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         adapter.update(position, item)
     }
 
-    override fun removeItem(position: Int) {
+    override fun removeItem(position: Int, item: Item) {
         adapter.remove(position)
     }
 

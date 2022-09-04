@@ -38,7 +38,7 @@ class ArchiveFragment :
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = ArchiveFragmentDirections.actionPost(post = item.p, position = position)
+        val directions = ArchiveFragmentDirections.actionPost(post = item.p)
         findNavController().navigate(directions)
     }
 

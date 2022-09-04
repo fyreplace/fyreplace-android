@@ -2,23 +2,16 @@ package app.fyreplace.fyreplace.events
 
 import app.fyreplace.protos.Post
 
-class PostSubscriptionEvent(override val item: Post, override val position: Int) :
-    ItemPositionalEvent<Post>
+class PostSubscriptionEvent(item: Post) : ItemEvent<Post>(item)
 
-class PostUnsubscriptionEvent(override val position: Int) :
-    PositionalEvent
+class PostUnsubscriptionEvent(item: Post) : ItemEvent<Post>(item)
 
-class PostDeletionEvent(override val position: Int) :
-    PositionalEvent
+class PostDeletionEvent(item: Post) : ItemEvent<Post>(item)
 
-class DraftCreationEvent(override val item: Post) :
-    ItemEvent<Post>
+class DraftCreationEvent(item: Post) : ItemEvent<Post>(item)
 
-class DraftUpdateEvent(override val item: Post, override val position: Int) :
-    ItemPositionalEvent<Post>
+class DraftUpdateEvent(item: Post) : ItemEvent<Post>(item)
 
-class DraftDeletionEvent(override val position: Int) :
-    PositionalEvent
+class DraftDeletionEvent(item: Post) : ItemEvent<Post>(item)
 
-class DraftPublicationEvent(override val item: Post, override val position: Int) :
-    ItemPositionalEvent<Post>
+class DraftPublicationEvent(item: Post) : ItemEvent<Post>(item)

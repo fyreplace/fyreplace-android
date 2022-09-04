@@ -245,14 +245,11 @@ class PostFragment :
     private fun updateSubscription(subscribed: Boolean) {
         launch {
             vm.updateSubscription(subscribed)
-
-            when {
-                args.position == -1 -> return@launch
-                subscribed -> vm.em.post(
-                    PostSubscriptionEvent(vm.post.value.makePreview(), args.position)
-                )
-                else -> vm.em.post(PostUnsubscriptionEvent(args.position))
-            }
+            val preview = vm.post.value.makePreview()
+            vm.em.post(
+                if (subscribed) PostSubscriptionEvent(preview)
+                else PostUnsubscriptionEvent(preview)
+            )
         }
     }
 
@@ -263,11 +260,7 @@ class PostFragment :
 
     private suspend fun delete() {
         vm.delete()
-
-        if (args.position != -1) {
-            vm.em.post(PostDeletionEvent(args.position))
-        }
-
+        vm.em.post(PostDeletionEvent(vm.post.value))
         findNavController().navigateUp()
     }
 
@@ -289,7 +282,7 @@ class PostFragment :
     private suspend fun deleteComment(position: Int, comment: Comment) {
         vm.deleteComment(comment.id)
         vm.makeDeletedComment(position)?.let {
-            vm.em.post(CommentDeletionEvent(it, position, vm.post.value.id))
+            vm.em.post(CommentDeletionEvent(it, vm.post.value.id))
         }
     }
 

@@ -14,7 +14,6 @@ import app.fyreplace.fyreplace.viewmodels.DraftsViewModel
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import app.fyreplace.protos.post
-import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,16 +29,13 @@ class DraftsFragment :
 
     override fun onPrimaryAction() {
         launch {
-            val directions = DraftsFragmentDirections.actionDraft(
-                post = createPost().p,
-                position = 0
-            )
+            val directions = DraftsFragmentDirections.actionDraft(post = createPost().p)
             findNavController().navigate(directions)
         }
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = DraftsFragmentDirections.actionDraft(post = item.p, position = position)
+        val directions = DraftsFragmentDirections.actionDraft(post = item.p)
         findNavController().navigate(directions)
     }
 
@@ -47,7 +43,7 @@ class DraftsFragment :
         showSelectionAlert(null, R.array.drafts_item_choices) { choice ->
             when (choice) {
                 0 -> onItemClick(item, position)
-                1 -> launch { deletePost(item.id, position) }
+                1 -> launch { deletePost(item) }
             }
         }
     }
@@ -58,8 +54,8 @@ class DraftsFragment :
         return post
     }
 
-    private suspend fun deletePost(postId: ByteString, position: Int) {
-        vm.delete(postId)
-        vm.em.post(PostDeletionEvent(position))
+    private suspend fun deletePost(post: Post) {
+        vm.delete(post.id)
+        vm.em.post(PostDeletionEvent(post))
     }
 }

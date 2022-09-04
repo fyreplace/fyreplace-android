@@ -78,7 +78,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun updateItem(position: Int, item: Item) = adapter.update(position, item)
 
-    override fun removeItem(position: Int) = Unit
+    override fun removeItem(position: Int, item: Item) = Unit
 
     override fun onChildViewAttachedToWindow(view: View) {
         val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1

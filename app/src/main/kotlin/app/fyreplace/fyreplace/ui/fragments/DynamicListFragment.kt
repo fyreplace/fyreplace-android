@@ -14,7 +14,7 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
 
     abstract fun updateItem(position: Int, item: Item)
 
-    abstract fun removeItem(position: Int)
+    abstract fun removeItem(position: Int, item: Item)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +36,27 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
         eventJobs.clear()
 
         eventJobs.add(vm.addedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            addItem(it.position, it.item)
+            var position = vm.getPosition(it.item)
+
+            if (position == -1) {
+                position = 0
+            }
+
+            addItem(position, it.item)
         })
         eventJobs.add(vm.updatedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            updateItem(it.position, it.item)
+            val position = vm.getPosition(it.item)
+
+            if (position != -1) {
+                updateItem(position, it.item)
+            }
         })
         eventJobs.add(vm.removedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            removeItem(it.position)
+            val position = vm.getPosition(it.item)
+
+            if (position != -1) {
+                removeItem(position, it.item)
+            }
         })
     }
 }

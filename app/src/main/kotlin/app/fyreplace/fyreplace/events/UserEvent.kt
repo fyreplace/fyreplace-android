@@ -2,11 +2,8 @@ package app.fyreplace.fyreplace.events
 
 import app.fyreplace.protos.Profile
 
-class UserBlockEvent(override val item: Profile, override val position: Int) :
-    ItemPositionalEvent<Profile>
+class UserBlockEvent(item: Profile) : ItemEvent<Profile>(item)
 
-class UserUnblockEvent(override val position: Int) :
-    PositionalEvent
+class UserUnblockEvent(item: Profile) : ItemEvent<Profile>(item)
 
-class UserBanEvent(override val item: Profile, override val position: Int) :
-    ItemPositionalEvent<Profile>
+class UserBanEvent(item: Profile) : ItemEvent<Profile>(item)

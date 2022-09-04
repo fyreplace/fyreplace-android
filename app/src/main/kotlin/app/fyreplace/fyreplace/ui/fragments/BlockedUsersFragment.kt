@@ -34,15 +34,15 @@ class BlockedUsersFragment :
 
     override fun onItemClick(item: Profile, position: Int) {
         val directions =
-            BlockedUsersFragmentDirections.actionUser(profile = item.p, position = position)
+            BlockedUsersFragmentDirections.actionUser(profile = item.p)
         findNavController().navigate(directions)
     }
 
-    override fun onUnblock(profile: Profile, position: Int) =
+    override fun onUnblock(profile: Profile) =
         showChoiceAlert(R.string.user_unblock_title, null) {
             launch {
                 vm.unblock(profile.id)
-                vm.em.post(UserUnblockEvent(position))
+                vm.em.post(UserUnblockEvent(profile))
             }
         }
 }

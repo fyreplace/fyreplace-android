@@ -20,6 +20,11 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
 
     override fun onTrimMemory(level: Int) = reset()
 
+    override fun getPosition(item: Item): Int {
+        val itemId = getItemId(item)
+        return mItems.indexOfFirst { getItemId(it) == itemId }
+    }
+
     override fun addItem(position: Int, item: Item) {
         mItems.add(position, item)
         mIsEmpty.value = false
@@ -29,7 +34,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
         mItems[position] = item
     }
 
-    override fun removeItem(position: Int) {
+    override fun removeItem(position: Int, item: Item) {
         mItems.removeAt(position)
         mIsEmpty.value = items.isEmpty()
     }

@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.fyreplace.events.EventsManager
-import app.fyreplace.fyreplace.events.PositionalEvent
+import app.fyreplace.fyreplace.events.ItemEvent
 import app.fyreplace.protos.Page
 import app.fyreplace.protos.header
 import app.fyreplace.protos.page
@@ -15,10 +15,11 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     private val contextId: ByteString
 ) :
     DynamicListViewModel<Item>(em) {
-    override val removedItems = emptyFlow<PositionalEvent>()
+    override val removedItems = emptyFlow<ItemEvent<Item>>()
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var state = ItemListViewModel.ItemsState.INCOMPLETE
     private val mItems = mutableMapOf<Int, Item>()
+    private val itemPositions = mutableMapOf<ByteString, Int>()
     private val indexes = mutableListOf<Int>()
     private var mTotalSize = 0
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
@@ -31,16 +32,20 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
 
     protected abstract fun getTotalSize(items: Items): Int
 
+    override fun getPosition(item: Item) = itemPositions[getItemId(item)] ?: -1
+
     override fun addItem(position: Int, item: Item) {
         mItems[totalSize] = item
+        itemPositions[getItemId(item)] = totalSize
         mTotalSize++
     }
 
     override fun updateItem(position: Int, item: Item) {
         mItems[position] = item
+        itemPositions[getItemId(item)] = position
     }
 
-    override fun removeItem(position: Int) = Unit
+    override fun removeItem(position: Int, item: Item) = Unit
 
     suspend fun startListing(): Flow<Pair<Int, List<Item>>> {
         maybePages.emit(page {
@@ -63,7 +68,10 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
             .map { getItemList(it) }
             .map {
                 val index = indexes.removeFirst()
-                it.forEachIndexed { i, item -> mItems[index + i] = item }
+                it.forEachIndexed { i, item ->
+                    mItems[index + i] = item
+                    itemPositions[getItemId(item)] = index + i
+                }
 
                 if (indexes.isNotEmpty()) {
                     maybePages.emit(page { offset = indexes.first() })
@@ -83,6 +91,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     open fun reset() {
         state = ItemListViewModel.ItemsState.INCOMPLETE
         mItems.clear()
+        itemPositions.clear()
         indexes.clear()
         mTotalSize = 0
     }

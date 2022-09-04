@@ -78,7 +78,7 @@ class DraftFragment :
         launch {
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
-                em.post(DraftUpdateEvent(it, args.position))
+                em.post(DraftUpdateEvent(it))
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.addAll(vm.post.value.chaptersList)
@@ -191,13 +191,13 @@ class DraftFragment :
 
     private suspend fun publish(anonymously: Boolean) {
         vm.publish(anonymously)
-        em.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously), args.position))
+        em.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously)))
         findNavController().navigateUp()
     }
 
     private suspend fun delete() {
         vm.delete()
-        em.post(DraftDeletionEvent(args.position))
+        em.post(DraftDeletionEvent(vm.post.value))
         findNavController().navigateUp()
     }
 

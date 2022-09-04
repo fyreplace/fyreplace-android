@@ -8,7 +8,6 @@ import com.google.protobuf.Empty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 
@@ -19,13 +18,14 @@ class DraftsViewModel @Inject constructor(
 ) :
     ItemListViewModel<Post, Posts>(em) {
     override val addedItems = em.events.filterIsInstance<DraftCreationEvent>()
-        .map { it.atPosition(0) }
     override val updatedItems = em.events.filterIsInstance<DraftUpdateEvent>()
     override val removedItems = merge(
         em.events.filterIsInstance<DraftDeletionEvent>(),
         em.events.filterIsInstance<DraftPublicationEvent>()
     )
     override val emptyText = emptyFlow<Int>().asState(R.string.drafts_empty)
+
+    override fun getItemId(item: Post): ByteString = item.id
 
     override fun listItems() = postStub.listDrafts(pages)
 
