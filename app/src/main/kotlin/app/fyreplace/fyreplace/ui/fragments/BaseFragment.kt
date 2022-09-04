@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.ComponentCallbacks2
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.MenuProvider
@@ -17,21 +16,11 @@ abstract class BaseFragment(contentLayoutId: Int) :
     FailureHandler {
     protected abstract val vm: BaseViewModel
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        context.unregisterComponentCallbacks(vm)
-        context.registerComponentCallbacks(this)
-    }
-
-    override fun onDetach() {
-        requireContext().registerComponentCallbacks(vm)
-        requireContext().unregisterComponentCallbacks(this)
-        super.onDetach()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setupTransitions()
         super.onCreate(savedInstanceState)
+        requireContext().unregisterComponentCallbacks(vm)
+        requireContext().registerComponentCallbacks(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,6 +29,12 @@ abstract class BaseFragment(contentLayoutId: Int) :
         if (this is MenuProvider) {
             requireActivity().addMenuProvider(this, viewLifecycleOwner, Lifecycle.State.STARTED)
         }
+    }
+
+    override fun onDestroy() {
+        requireContext().registerComponentCallbacks(vm)
+        requireContext().unregisterComponentCallbacks(this)
+        super.onDestroy()
     }
 
     override fun onTrimMemory(level: Int) = Unit
