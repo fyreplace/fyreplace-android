@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/fragment_archive"
         android:name="app.fyreplace.fyreplace.ui.fragments.ArchiveFragment"
-        android:label=""
+        android:label=" "
         tools:layout="@layout/fragment_item_list" />
     <fragment
         android:id="@+id/fragment_drafts"
@@ -43,7 +43,7 @@
     <fragment
         android:id="@+id/fragment_draft"
         android:name="app.fyreplace.fyreplace.ui.fragments.DraftFragment"
-        android:label=""
+        android:label=" "
         tools:layout="@layout/fragment_draft">
         <argument
             android:name="post"
@@ -52,7 +52,7 @@
     <dialog
         android:id="@+id/fragment_user"
         android:name="app.fyreplace.fyreplace.ui.fragments.UserFragment"
-        android:label=""
+        android:label=" "
         tools:layout="@layout/fragment_user">
         <argument
             android:name="profile"
@@ -72,7 +72,7 @@
     <fragment
         android:id="@+id/fragment_login"
         android:name="app.fyreplace.fyreplace.ui.fragments.LoginFragment"
-        android:label=""
+        android:label=" "
         tools:layout="@layout/fragment_login">
         <argument
             android:name="isRegistering"
