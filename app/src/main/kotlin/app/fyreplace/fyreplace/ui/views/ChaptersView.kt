@@ -86,6 +86,7 @@ class ChaptersView : LinearLayout {
 
     private fun makeImageView(chapter: Chapter): View {
         val image = AppCompatImageView(context)
+        image.adjustViewBounds = true
         Glide.with(context)
             .load(chapter.image.url)
             .transition(DrawableTransitionOptions.withCrossFade())
