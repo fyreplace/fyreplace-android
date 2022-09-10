@@ -4,7 +4,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.DraftCreationEvent
-import app.fyreplace.fyreplace.events.PostDeletionEvent
+import app.fyreplace.fyreplace.events.DraftDeletionEvent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.DraftsAdapter
@@ -55,6 +55,6 @@ class DraftsFragment :
 
     private suspend fun deletePost(post: Post) {
         vm.delete(post.id)
-        vm.em.post(PostDeletionEvent(post))
+        vm.em.post(DraftDeletionEvent(post))
     }
 }
