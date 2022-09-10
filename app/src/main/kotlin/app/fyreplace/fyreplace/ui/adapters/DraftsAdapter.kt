@@ -19,16 +19,22 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         val post = items[position]
         return when (post.chaptersCount) {
             0 -> TYPE_EMPTY
-            else -> if (post.firstChapter.text.isEmpty()) TYPE_IMAGE else TYPE_TEXT
+            else -> if (post.firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_EMPTY -> EmptyHolder(inflater.inflate(R.layout.item_draft_empty, parent, false))
-            TYPE_TEXT -> TextHolder(inflater.inflate(R.layout.item_draft_text, parent, false))
-            TYPE_IMAGE -> ImageHolder(inflater.inflate(R.layout.item_draft_image, parent, false))
+            TYPE_EMPTY -> EmptyHolder(
+                inflater.inflate(R.layout.item_draft_empty, parent, false)
+            )
+            TYPE_TEXT -> TextHolder(
+                inflater.inflate(R.layout.item_draft_text, parent, false)
+            )
+            TYPE_IMAGE -> ImageHolder(
+                inflater.inflate(R.layout.item_draft_image, parent, false)
+            )
             else -> throw RuntimeException()
         }
     }
@@ -50,8 +56,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         val parts: TextView?
 
         fun setup(post: Post) {
-            val parts = parts ?: return
-            parts.text = parts.resources.getQuantityString(
+            parts?.text = parts?.resources?.getQuantityString(
                 R.plurals.drafts_item_parts,
                 post.chapterCount,
                 post.chapterCount

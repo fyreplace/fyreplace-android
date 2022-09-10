@@ -177,7 +177,7 @@ class PostFragment :
 
     override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
 
-    override fun onPrimaryAction() = onNewComment()
+    override fun onPrimaryAction() = onNewCommentClicked()
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
         val commentPosition = vm.selectedComment.value ?: vm.post.value.commentsRead
@@ -228,7 +228,7 @@ class PostFragment :
         popup.show()
     }
 
-    override fun onNewComment() = showTextInputAlert(
+    override fun onNewCommentClicked() = showTextInputAlert(
         R.string.post_comment_title,
         TextInputConfig(
             maxLength = resources.getInteger(R.integer.comment_text_max_size),

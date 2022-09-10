@@ -98,7 +98,7 @@ class PostAdapter(
 
         fun onCommentOptionsClicked(view: View, position: Int, comment: Comment)
 
-        fun onNewComment()
+        fun onNewCommentClicked()
     }
 
     inner class ChaptersHolder(itemView: View) : ItemHolder(itemView), View.OnLayoutChangeListener {
@@ -122,7 +122,9 @@ class PostAdapter(
             itemView.minimumHeight = v.height
         }
 
-        fun setup(post: Post) = lifecycleOwner.lifecycleScope.launch { chapters.setPost(post) }
+        fun setup(post: Post) {
+            lifecycleOwner.lifecycleScope.launch { chapters.setPost(post) }
+        }
     }
 
     inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
@@ -192,6 +194,6 @@ class PostAdapter(
         }
 
         @Suppress("UNUSED_PARAMETER")
-        fun onButtonClicked(view: View) = commentListener.onNewComment()
+        fun onButtonClicked(view: View) = commentListener.onNewCommentClicked()
     }
 }

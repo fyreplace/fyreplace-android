@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.viewmodels.ImageSelectorViewModel
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -74,19 +73,19 @@ class ImageSelector @AssistedInject constructor(
             items += R.string.image_selector_action_remove
         }
 
-        MaterialAlertDialogBuilder(fragment.requireContext())
-            .setTitle(title)
-            .setItems(items.map { fragment.resources.getString(it) }.toTypedArray()) { _, i ->
-                failureHandler.launch {
-                    when (items[i]) {
-                        R.string.image_selector_action_remove -> listener.onImageRemoved()
-                        R.string.image_selector_action_file -> selectImage(false)
-                        R.string.image_selector_action_photo -> selectImage(true)
-                        else -> throw IllegalArgumentException()
-                    }
+        failureHandler.showSelectionAlert(
+            title,
+            items.map { fragment.resources.getString(it) }.toTypedArray()
+        ) {
+            failureHandler.launch {
+                when (items[it]) {
+                    R.string.image_selector_action_remove -> listener.onImageRemoved()
+                    R.string.image_selector_action_file -> selectImage(false)
+                    R.string.image_selector_action_photo -> selectImage(true)
+                    else -> throw IllegalArgumentException()
                 }
             }
-            .show()
+        }
     }
 
     private suspend fun selectImage(picture: Boolean) = if (picture) {

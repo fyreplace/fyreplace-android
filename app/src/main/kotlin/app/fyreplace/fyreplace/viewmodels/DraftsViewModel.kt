@@ -1,17 +1,19 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import android.annotation.SuppressLint
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.*
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import com.google.protobuf.Empty
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
 
 @HiltViewModel
+@SuppressLint("CheckResult")
 class DraftsViewModel @Inject constructor(
     em: EventsManager,
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub
@@ -23,7 +25,7 @@ class DraftsViewModel @Inject constructor(
         em.events.filterIsInstance<DraftDeletionEvent>(),
         em.events.filterIsInstance<DraftPublicationEvent>()
     )
-    override val emptyText = emptyFlow<Int>().asState(R.string.drafts_empty)
+    override val emptyText = MutableStateFlow(R.string.drafts_empty)
 
     override fun getItemId(item: Post): ByteString = item.id
 
@@ -37,5 +39,7 @@ class DraftsViewModel @Inject constructor(
 
     suspend fun create() = postStub.create(Empty.getDefaultInstance())
 
-    suspend fun delete(postId: ByteString) = postStub.delete(id { id = postId })
+    suspend fun delete(postId: ByteString) {
+        postStub.delete(id { id = postId })
+    }
 }

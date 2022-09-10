@@ -1,12 +1,9 @@
 package app.fyreplace.fyreplace.ui.adapters
 
 import androidx.recyclerview.widget.RecyclerView
-import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import com.google.protobuf.ByteString
 
-abstract class ItemListAdapter<Item, VH : ItemHolder>(
-    private val itemListener: ItemClickListener<Item> = object : ItemClickListener<Item> {}
-) :
+abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val itemListener: ItemClickListener<Item>) :
     RecyclerView.Adapter<VH>() {
     protected val items = mutableListOf<Item>()
 
