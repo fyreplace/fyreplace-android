@@ -16,7 +16,7 @@ val Context.mainPreferences: SharedPreferences
     get() = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
 
 fun Context.makeShareIntent(type: String, id: ByteString, position: Int? = null): Intent {
-    val host = getString(R.string.link_host)
+    val host = getString(R.string.link_hosts).split(';').first()
     var uriString = "https://$host/$type/${id.base64ShortString}"
     position?.let { uriString += "/$position" }
     val uri = Uri.parse(uriString)

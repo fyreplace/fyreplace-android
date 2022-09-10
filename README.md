@@ -2,7 +2,7 @@
 
 [![Shipping](https://github.com/fyreplace/fyreplace-android/actions/workflows/publishing.yml/badge.svg)](https://github.com/fyreplace/fyreplace-android/actions/workflows/publishing.yml)
 
-The Android client app for [Fyreplace](https://fyreplace.app).
+The Android client app for [Fyreplace](https://fyreplace.net).
 
 ## License
 

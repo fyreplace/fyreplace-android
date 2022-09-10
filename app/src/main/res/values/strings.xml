@@ -7,9 +7,9 @@
     <string name="no">No</string>
 
     <string name="legal_privacy_policy">Privacy policy</string>
-    <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.app/privacy-policy</string>
+    <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.net/privacy-policy</string>
     <string name="legal_terms_of_service">Terms of service</string>
-    <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.app/terms-of-service</string>
+    <string name="legal_terms_of_service_url" translatable="false">https://fyreplace.net/terms-of-service</string>
 
     <string name="profile_anonymous"><i>Anonymous</i></string>
     <string name="profile_banned"><i>User banned</i></string>
