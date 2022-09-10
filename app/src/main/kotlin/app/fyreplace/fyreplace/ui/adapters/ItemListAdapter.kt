@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.ui.adapters
 
 import androidx.recyclerview.widget.RecyclerView
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import com.google.protobuf.ByteString
 
 abstract class ItemListAdapter<Item, VH : ItemHolder>(

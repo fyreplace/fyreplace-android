@@ -13,18 +13,15 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.55" />
 
-    <TextView
-        android:id="@+id/text_preview"
+    <ImageView
+        android:id="@+id/image_preview"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:ellipsize="end"
-        android:gravity="center_vertical"
-        android:scrollbars="none"
         app:layout_constraintEnd_toEndOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
-        layout="@layout/block_post_info"
+        layout="@layout/block_notification_info"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/gap"

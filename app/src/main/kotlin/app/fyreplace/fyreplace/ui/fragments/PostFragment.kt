@@ -19,8 +19,8 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
-import app.fyreplace.fyreplace.ui.adapters.ItemHolder
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
@@ -116,12 +116,16 @@ class PostFragment :
     override fun makeAdapter() =
         PostAdapter(viewLifecycleOwner, vm.post.value, this)
 
-    override fun addItem(position: Int, item: Comment) {
-        super.addItem(position, item)
+    override fun addItem(position: Int, event: ItemEvent<Comment>) {
+        super.addItem(position, event)
         showComment(position)
     }
 
     override fun onFetchedItems(index: Int, items: List<Comment>) {
+        if (adapter.totalSize == 0 && vm.post.value.commentsRead in 1 until vm.totalSize) {
+            vm.setShouldScrollToComment(true)
+        }
+
         super.onFetchedItems(index, items)
         acknowledgeLastVisibleComment()
     }
@@ -176,17 +180,17 @@ class PostFragment :
     override fun onPrimaryAction() = onNewComment()
 
     override fun onCommentDisplayed(view: View, position: Int, comment: Comment?) {
-        val commentPosition = vm.selectedComment.value ?: return
-        val viewPosition = commentPosition + 1
+        val commentPosition = vm.selectedComment.value ?: vm.post.value.commentsRead
+        val viewPosition = commentPosition + adapter.offset
 
         if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
             return
         }
 
-        if (position == vm.selectedComment.value && comment != null) {
-            vm.setScrolledToComment()
+        if (position == commentPosition && comment != null) {
+            vm.setShouldScrollToComment(false)
             showComment(commentPosition)
-        } else if (position == vm.selectedComment.value || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
+        } else if (position == commentPosition || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
             showComment(commentPosition)
         }
     }
@@ -291,7 +295,7 @@ class PostFragment :
             return
         }
 
-        val viewPosition = position + 1
+        val viewPosition = position + adapter.offset
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
         isScrolling = true
 
@@ -304,9 +308,9 @@ class PostFragment :
 
     private fun acknowledgeLastVisibleComment() {
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        val viewPosition = layoutManager.findLastVisibleItemPosition()
-        val comment = vm.items[viewPosition - 1] ?: return
-        vm.em.post(CommentSeenEvent(comment))
+        val position = layoutManager.findLastVisibleItemPosition() - adapter.offset - 1
+        val comment = vm.items[position] ?: return
+        vm.em.post(CommentSeenEvent(comment, vm.post.value.id, vm.totalSize - 1 - position))
     }
 
     private inner class ScrollListener : RecyclerView.OnScrollListener() {

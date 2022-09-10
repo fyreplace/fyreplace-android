@@ -75,7 +75,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
         val error = Status.fromThrowable(failure)
 
         if (error.code == Status.Code.CANCELLED) {
-            val passwordLayout = layoutInflater.inflate(R.layout.login_password_input, null, false)
+            val passwordLayout = layoutInflater.inflate(R.layout.block_password_input, null, false)
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.login_password)
                 .setView(passwordLayout)

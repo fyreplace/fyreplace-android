@@ -26,8 +26,8 @@ class BlockedUsersFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.addedItems.launchCollect { cvm.addBlockedUser() }
-        vm.removedItems.launchCollect { cvm.removeBlockedUser() }
+        vm.addedPositions.launchCollect { cvm.addBlockedUser() }
+        vm.removedPositions.launchCollect { cvm.removeBlockedUser() }
     }
 
     override fun makeAdapter() = BlockedUsersAdapter(this, this)

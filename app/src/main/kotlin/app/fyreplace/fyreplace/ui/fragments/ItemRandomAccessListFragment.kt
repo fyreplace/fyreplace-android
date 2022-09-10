@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
-import app.fyreplace.fyreplace.ui.adapters.ItemHolder
+import app.fyreplace.fyreplace.events.ItemEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemRandomAccessListAdapter
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
 
 abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
@@ -74,11 +75,13 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         vm.stopListing()
     }
 
-    override fun addItem(position: Int, item: Item) = adapter.insert(item)
+    override fun addItem(position: Int, event: ItemEvent<Item>) =
+        adapter.insert(event.item)
 
-    override fun updateItem(position: Int, item: Item) = adapter.update(position, item)
+    override fun updateItem(position: Int, event: ItemEvent<Item>) =
+        adapter.update(position, event.item)
 
-    override fun removeItem(position: Int, item: Item) = Unit
+    override fun removeItem(position: Int, event: ItemEvent<Item>) = Unit
 
     override fun onChildViewAttachedToWindow(view: View) {
         val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1

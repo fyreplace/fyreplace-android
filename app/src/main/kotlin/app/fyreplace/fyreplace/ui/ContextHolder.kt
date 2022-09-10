@@ -81,7 +81,7 @@ interface ContextHolder {
         lateinit var textWatcher: TextWatcher
         val alert = MaterialAlertDialogBuilder(getContext() ?: return)
             .setTitle(title)
-            .setView(R.layout.alert_text_input)
+            .setView(R.layout.block_text_input)
             .setPositiveButton(R.string.ok) { _, _ ->
                 val text = textInput.text ?: ""
                 action(text.trim().toString())

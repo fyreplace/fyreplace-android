@@ -6,12 +6,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.firstChapter
+import app.fyreplace.fyreplace.ui.adapters.holders.ImagePreviewHolder
+import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
+import app.fyreplace.fyreplace.ui.adapters.holders.TextPreviewHolder
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
 
 class DraftsAdapter(itemListener: ItemClickListener<Post>) :
-    ItemListAdapter<Post, ArchiveAdapter.ChapterHolder>(itemListener) {
+    ItemListAdapter<Post, PreviewHolder>(itemListener) {
     override fun getItemViewType(position: Int): Int {
         val post = items[position]
         return when (post.chaptersCount) {
@@ -20,10 +23,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         }
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ArchiveAdapter.ChapterHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_EMPTY -> EmptyHolder(inflater.inflate(R.layout.item_draft_empty, parent, false))
@@ -33,14 +33,9 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         }
     }
 
-    override fun onBindViewHolder(holder: ArchiveAdapter.ChapterHolder, position: Int) {
+    override fun onBindViewHolder(holder: PreviewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        val post = items[position]
-
-        if (post.chaptersCount > 0) {
-            holder.setup(post.firstChapter)
-            (holder as DraftHolder).setup(post)
-        }
+        (holder as DraftHolder).setup(items[position])
     }
 
     override fun getItemId(item: Post): ByteString = item.id
@@ -64,15 +59,32 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         }
     }
 
-    class EmptyHolder(itemView: View) : ArchiveAdapter.ChapterHolder(itemView) {
+    class EmptyHolder(itemView: View) : PreviewHolder(itemView), DraftHolder {
+        override val parts: TextView? = null
+
         override fun setup(chapter: Chapter) = Unit
+
+        override fun setup(post: Post) {
+            super<PreviewHolder>.setup(post)
+            super<DraftHolder>.setup(post)
+        }
     }
 
-    class TextHolder(itemView: View) : ArchiveAdapter.TextHolder(itemView), DraftHolder {
+    class TextHolder(itemView: View) : TextPreviewHolder(itemView), DraftHolder {
         override val parts: TextView = itemView.findViewById(R.id.parts)
+
+        override fun setup(post: Post) {
+            super<TextPreviewHolder>.setup(post)
+            super<DraftHolder>.setup(post)
+        }
     }
 
-    class ImageHolder(itemView: View) : ArchiveAdapter.ImageHolder(itemView), DraftHolder {
+    class ImageHolder(itemView: View) : ImagePreviewHolder(itemView), DraftHolder {
         override val parts: TextView = itemView.findViewById(R.id.parts)
+
+        override fun setup(post: Post) {
+            super<ImagePreviewHolder>.setup(post)
+            super<DraftHolder>.setup(post)
+        }
     }
 }

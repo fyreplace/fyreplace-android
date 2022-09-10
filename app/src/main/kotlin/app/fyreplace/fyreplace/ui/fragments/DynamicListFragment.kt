@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
+import app.fyreplace.fyreplace.events.ItemEvent
 import app.fyreplace.fyreplace.viewmodels.DynamicListViewModel
 import kotlinx.coroutines.Job
 
@@ -10,11 +11,11 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
     abstract override val vm: DynamicListViewModel<Item>
     private val eventJobs = mutableListOf<Job>()
 
-    abstract fun addItem(position: Int, item: Item)
+    abstract fun addItem(position: Int, event: ItemEvent<Item>)
 
-    abstract fun updateItem(position: Int, item: Item)
+    abstract fun updateItem(position: Int, event: ItemEvent<Item>)
 
-    abstract fun removeItem(position: Int, item: Item)
+    abstract fun removeItem(position: Int, event: ItemEvent<Item>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,28 +36,14 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
         eventJobs.forEach { it.cancel() }
         eventJobs.clear()
 
-        eventJobs.add(vm.addedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            var position = vm.getPosition(it.item)
-
-            if (position == -1) {
-                position = 0
-            }
-
-            addItem(position, it.item)
+        eventJobs.add(vm.addedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            addItem(it.position, it)
         })
-        eventJobs.add(vm.updatedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            val position = vm.getPosition(it.item)
-
-            if (position != -1) {
-                updateItem(position, it.item)
-            }
+        eventJobs.add(vm.updatedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            updateItem(it.position, it)
         })
-        eventJobs.add(vm.removedItems.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            val position = vm.getPosition(it.item)
-
-            if (position != -1) {
-                removeItem(position, it.item)
-            }
+        eventJobs.add(vm.removedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            removeItem(it.position, it)
         })
     }
 }

@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.extensions
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Build
 import android.text.SpannableString
 import android.text.method.LinkMovementMethod
@@ -18,10 +19,11 @@ fun TextView.setUsername(profile: Profile) {
     text = profile.getUsername(context)
 }
 
-suspend fun TextView.setComment(comment: Comment) {
+suspend fun TextView.setComment(comment: Comment, highlighted: Boolean) {
     setLinkifiedText(if (comment.isDeleted) context.getText(R.string.comment_deleted) else comment.text)
     setTextIsSelectable(!comment.isDeleted)
     alpha = if (comment.isDeleted) 0.6f else 1f
+    setTypeface(null, if (highlighted) Typeface.BOLD else Typeface.NORMAL)
 }
 
 suspend fun TextView.setLinkifiedText(text: CharSequence) {

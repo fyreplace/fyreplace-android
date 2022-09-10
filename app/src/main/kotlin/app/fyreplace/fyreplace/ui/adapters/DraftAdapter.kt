@@ -10,6 +10,8 @@ import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemChapterButtonsBinding
 import app.fyreplace.fyreplace.extensions.translucent
+import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
+import app.fyreplace.fyreplace.ui.adapters.holders.TextPreviewHolder
 import app.fyreplace.protos.Chapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -22,7 +24,7 @@ class DraftAdapter(
     private val chapterListener: ChapterListener,
     itemListener: ItemClickListener<Chapter>
 ) :
-    ItemListAdapter<Chapter, DraftAdapter.ChapterHolder>(itemListener) {
+    ItemListAdapter<Chapter, PreviewHolder>(itemListener) {
     init {
         setHasStableIds(false)
     }
@@ -35,10 +37,10 @@ class DraftAdapter(
         else -> TYPE_TEXT
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChapterHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_TEXT -> TextChapterHolder(
+            TYPE_TEXT -> DraftTextChapterHolder(
                 inflater.inflate(R.layout.item_chapter_text, parent, false)
             )
             TYPE_IMAGE -> ImageChapterHolder(
@@ -51,7 +53,7 @@ class DraftAdapter(
         }
     }
 
-    override fun onBindViewHolder(holder: ChapterHolder, position: Int) {
+    override fun onBindViewHolder(holder: PreviewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         holder.setup(if (position < items.size) items[position] else Chapter.getDefaultInstance())
     }
@@ -64,21 +66,18 @@ class DraftAdapter(
         const val TYPE_BUTTONS = 3
     }
 
-    abstract class ChapterHolder(itemView: View) : ItemHolder(itemView) {
-        abstract fun setup(chapter: Chapter)
-    }
-
-    class TextChapterHolder(itemView: View) : ChapterHolder(itemView) {
+    class DraftTextChapterHolder(itemView: View) : TextPreviewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text)
 
         override fun setup(chapter: Chapter) {
+            super.setup(chapter)
             val color = ContextCompat.getColor(itemView.context, R.color.md_theme_onSurface)
             text.text = chapter.text.ifEmpty { itemView.context.getString(R.string.draft_empty) }
             text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
         }
     }
 
-    class ImageChapterHolder(itemView: View) : ChapterHolder(itemView) {
+    class ImageChapterHolder(itemView: View) : PreviewHolder(itemView) {
         private val image: ImageView = itemView.findViewById(R.id.image)
 
         override fun setup(chapter: Chapter) {
@@ -89,7 +88,7 @@ class DraftAdapter(
         }
     }
 
-    inner class ButtonsChapterHolder(itemView: View) : ChapterHolder(itemView) {
+    inner class ButtonsChapterHolder(itemView: View) : PreviewHolder(itemView) {
         private val bd = ItemChapterButtonsBinding.bind(itemView)
 
         init {

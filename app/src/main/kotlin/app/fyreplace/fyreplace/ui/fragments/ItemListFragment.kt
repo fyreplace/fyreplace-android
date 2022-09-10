@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
-import app.fyreplace.fyreplace.ui.adapters.ItemHolder
+import app.fyreplace.fyreplace.events.ItemEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
 
 abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
@@ -84,15 +85,15 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
     }
 
-    override fun addItem(position: Int, item: Item) {
-        adapter.add(position, item)
+    override fun addItem(position: Int, event: ItemEvent<Item>) {
+        adapter.add(position, event.item)
     }
 
-    override fun updateItem(position: Int, item: Item) {
-        adapter.update(position, item)
+    override fun updateItem(position: Int, event: ItemEvent<Item>) {
+        adapter.update(position, event.item)
     }
 
-    override fun removeItem(position: Int, item: Item) {
+    override fun removeItem(position: Int, event: ItemEvent<Item>) {
         adapter.remove(position)
     }
 

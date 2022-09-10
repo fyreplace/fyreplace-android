@@ -10,6 +10,7 @@ import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.CustomTitleProvider
 import app.fyreplace.fyreplace.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
+import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
 import app.fyreplace.fyreplace.viewmodels.ArchiveViewModel
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
@@ -18,7 +19,7 @@ import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class ArchiveFragment :
-    ItemListFragment<Post, Posts, ArchiveAdapter.ChapterHolder>(),
+    ItemListFragment<Post, Posts, PreviewHolder>(),
     CustomTitleProvider,
     ItemListAdapter.ItemClickListener<Post> {
     override val vm by activityViewModels<ArchiveViewModel>()

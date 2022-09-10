@@ -11,6 +11,7 @@ import app.fyreplace.fyreplace.databinding.ItemCommentBinding
 import app.fyreplace.fyreplace.databinding.ItemNewCommentBinding
 import app.fyreplace.fyreplace.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.extensions.setComment
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.ui.views.ChaptersView
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
@@ -27,12 +28,12 @@ class PostAdapter(
     ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var selectedComment: Int? = null
 
-    override fun getItemCount() = super.getItemCount() + 1
+    override fun getItemCount() = super.getItemCount() + offset
 
     override fun getItemViewType(position: Int) = when {
         position == 0 -> TYPE_CHAPTERS
         position > totalSize -> TYPE_NEW_COMMENT
-        items.containsKey(position - 1) -> TYPE_COMMENT
+        items.containsKey(position - offset) -> TYPE_COMMENT
         else -> TYPE_COMMENT_LOADER
     }
 
@@ -58,8 +59,9 @@ class PostAdapter(
     override fun onBindViewHolder(holder: ItemHolder, position: Int) {
         when (holder) {
             is ChaptersHolder -> holder.setup(post)
-            is CommentHolder -> holder.setup(items[position - 1] ?: return)
+            is CommentHolder -> holder.setup(items[position - offset] ?: return)
             is CommentLoaderHolder -> holder.setup()
+            else -> Unit
         }
     }
 
@@ -132,7 +134,7 @@ class PostAdapter(
             itemView.context.theme.resolveStyleAttribute(R.attr.colorOnSurface)
         private val selectedContainerColor =
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
-        private val commentPosition get() = bindingAdapterPosition - 1
+        private val commentPosition get() = bindingAdapterPosition - offset
         private lateinit var comment: Comment
         private var commentJob: Job? = null
 
@@ -153,7 +155,12 @@ class PostAdapter(
                 if (commentPosition == selectedComment) selectedContainerColor
                 else Color.TRANSPARENT
             )
-            commentJob = lifecycleOwner.lifecycleScope.launch { bd.content.setComment(comment) }
+            commentJob = lifecycleOwner.lifecycleScope.launch {
+                bd.content.setComment(
+                    comment,
+                    post.commentsRead in 1..commentPosition
+                )
+            }
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment)
         }
@@ -173,7 +180,7 @@ class PostAdapter(
 
     inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
         fun setup() =
-            commentListener.onCommentDisplayed(itemView, bindingAdapterPosition - 1, null)
+            commentListener.onCommentDisplayed(itemView, bindingAdapterPosition - offset, null)
     }
 
     inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {

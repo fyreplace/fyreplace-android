@@ -21,7 +21,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <include
-        layout="@layout/item_post_info"
+        layout="@layout/block_post_info"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginStart="@dimen/gap"

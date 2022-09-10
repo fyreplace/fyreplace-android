@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.protos.Profile
 import com.google.protobuf.ByteString
 

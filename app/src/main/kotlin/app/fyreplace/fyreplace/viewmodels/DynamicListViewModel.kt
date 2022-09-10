@@ -3,16 +3,24 @@ package app.fyreplace.fyreplace.viewmodels
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.ItemEvent
+import app.fyreplace.fyreplace.events.PositionalEvent
 import com.google.protobuf.ByteString
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel() {
-    abstract val addedItems: Flow<ItemEvent<Item>>
-    abstract val updatedItems: Flow<ItemEvent<Item>>
-    abstract val removedItems: Flow<ItemEvent<Item>>
+    protected abstract val addedItems: Flow<ItemEvent<Item>>
+    protected abstract val updatedItems: Flow<ItemEvent<Item>>
+    protected abstract val removedItems: Flow<ItemEvent<Item>>
+    private val mAddedPositions = MutableSharedFlow<PositionalEvent<Item>>()
+    private val mUpdatedPositions = MutableSharedFlow<PositionalEvent<Item>>()
+    private val mRemovedPositions = MutableSharedFlow<PositionalEvent<Item>>()
     private val eventJobs = mutableListOf<Job>()
+    val addedPositions = mAddedPositions.asSharedFlow()
+    val updatedPositions = mUpdatedPositions.asSharedFlow()
+    val removedPositions = mRemovedPositions.asSharedFlow()
 
     abstract fun getPosition(item: Item): Int
 
@@ -29,35 +37,32 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
         eventJobs.clear()
 
         eventJobs.add(viewModelScope.launch {
-            addedItems.collect {
-                var position = getPosition(it.item)
-
-                if (position == -1) {
-                    position = 0
+            addedItems
+                .map { it.at(max(getPosition(it.item), 0)) }
+                .collect {
+                    addItem(it.position, it.item)
+                    mAddedPositions.emit(it)
                 }
-
-                addItem(position, it.item)
-            }
         })
 
         eventJobs.add(viewModelScope.launch {
-            updatedItems.collect {
-                val position = getPosition(it.item)
-
-                if (position != -1) {
-                    updateItem(position, it.item)
+            updatedItems
+                .map { it.at(getPosition(it.item)) }
+                .filter { it.position != -1 }
+                .collect {
+                    updateItem(it.position, it.item)
+                    mUpdatedPositions.emit(it)
                 }
-            }
         })
 
         eventJobs.add(viewModelScope.launch {
-            removedItems.collect {
-                val position = getPosition(it.item)
-
-                if (position != -1) {
-                    removeItem(position, it.item)
+            removedItems
+                .map { it.at(getPosition(it.item)) }
+                .filter { it.position != -1 }
+                .collect {
+                    removeItem(it.position, it.item)
+                    mRemovedPositions.emit(it)
                 }
-            }
         })
     }
 }
