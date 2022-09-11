@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.TextViewCompat
@@ -85,8 +84,9 @@ class ChaptersView : LinearLayout {
     }
 
     private fun makeImageView(chapter: Chapter): View {
-        val image = AppCompatImageView(context)
+        val image = ChapterImageView(context)
         image.adjustViewBounds = true
+        image.setChapterImage(chapter.image)
         Glide.with(context)
             .load(chapter.image.url)
             .transition(DrawableTransitionOptions.withCrossFade())
