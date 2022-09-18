@@ -151,7 +151,7 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
     }
 
-    private fun report() = showChoiceAlert(R.string.post_report_title, null) {
+    private fun report() = showChoiceAlert(R.string.user_report_title, null) {
         launch {
             vm.report()
             showBasicSnackbar(R.string.user_report_success_message)
