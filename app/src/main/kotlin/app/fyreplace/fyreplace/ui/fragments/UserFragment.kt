@@ -180,7 +180,7 @@ class UserFragment : DialogFragment(), FailureHandler {
         }
     }
 
-    private suspend fun finishBan() {
+    private fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
         em.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build()))

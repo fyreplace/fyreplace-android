@@ -23,13 +23,11 @@ class ChapterImageView : AppCompatImageView {
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val newHeightSpec: Int
-
-        if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
+        val newHeightSpec: Int = if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
             val height = MeasureSpec.getSize(widthMeasureSpec) * image.height / image.width
-            newHeightSpec = MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
+            MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY)
         } else {
-            newHeightSpec = heightMeasureSpec
+            heightMeasureSpec
         }
 
         super.onMeasure(widthMeasureSpec, newHeightSpec)
