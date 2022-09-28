@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fyreplace</string>
     <string name="ok">OK</string>
@@ -129,6 +129,23 @@
     <string name="settings_account_deletion_message">Deleting your account is a permanent action. You will not be able to restore your account afterwards, and all your posts and comments will also be deleted.\n\nAre you sure you want to go through with this?</string>
     <string name="settings_account_deletion_success_title">Account deleted</string>
     <string name="settings_account_deletion_success_message">Your account has been deleted, your posts and comments will be fully removed as well within the next minutes.\n\nGoodbye! 👋</string>
+    <string name="settings_environment">Environment</string>
+    <string name="settings_environment_main">Production</string>
+    <string name="settings_environment_dev">Sandbox</string>
+    <string name="settings_environment_local">Local</string>
+    <string-array name="settings_environment">
+        <item>@string/settings_environment_main</item>
+        <item>@string/settings_environment_dev</item>
+        <item>@string/settings_environment_local</item>
+    </string-array>
+    <string name="settings_environment_main_value">main</string>
+    <string name="settings_environment_dev_value">dev</string>
+    <string name="settings_environment_local_value">local</string>
+    <string-array name="settings_environment_values">
+        <item>@string/settings_environment_main_value</item>
+        <item>@string/settings_environment_dev_value</item>
+        <item>@string/settings_environment_local_value</item>
+    </string-array>
     <string name="settings_error_bio_too_long_title">Invalid bio</string>
     <string name="settings_error_bio_too_long_message">Your bio is too long.</string>
 

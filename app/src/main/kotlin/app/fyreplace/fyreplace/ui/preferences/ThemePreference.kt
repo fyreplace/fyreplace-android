@@ -1,17 +1,14 @@
-package app.fyreplace.fyreplace.ui.views
+package app.fyreplace.fyreplace.ui.preferences
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.preference.Preference
-import app.fyreplace.fyreplace.ui.ContextHolder
+import app.fyreplace.fyreplace.R
 
-@Suppress("LeakingThis")
-abstract class TextInputPreference :
-    Preference,
-    Preference.OnPreferenceClickListener,
-    ContextHolder {
-    protected abstract val dialogTitle: Int
-    protected abstract val textInputConfig: TextInputConfig
+class ThemePreference : SingleChoicePreference {
+    override val title = R.string.settings_theme
+    override val choiceNames = R.array.settings_theme
+    override val choiceValues = R.array.settings_theme_values
+    override val defaultValue = R.string.settings_theme_auto_value
 
     @Suppress("unused")
     constructor(context: Context) : super(context)
@@ -33,13 +30,4 @@ abstract class TextInputPreference :
         defStyleAttr: Int,
         defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
-
-    init {
-        onPreferenceClickListener = this
-    }
-
-    override fun onPreferenceClick(preference: Preference): Boolean {
-        showTextInputAlert(dialogTitle, textInputConfig, ::persistString)
-        return true
-    }
 }

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_environment_default_value">@string/settings_environment_main_value</string>
+</resources>

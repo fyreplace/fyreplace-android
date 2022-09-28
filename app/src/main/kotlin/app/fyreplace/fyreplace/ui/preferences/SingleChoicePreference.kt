@@ -1,21 +1,24 @@
-package app.fyreplace.fyreplace.ui.views
+package app.fyreplace.fyreplace.ui.preferences
 
 import android.content.Context
 import android.util.AttributeSet
 import androidx.preference.Preference
-import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.ContextHolder
 
-class ThemePreference :
+abstract class SingleChoicePreference :
     Preference,
     Preference.OnPreferenceClickListener,
     ContextHolder {
-    private val themeValues by lazy { context.resources.getStringArray(R.array.settings_theme_values) }
-    private val themeNames by lazy { context.resources.getStringArray(R.array.settings_theme) }
+    abstract val title: Int
+    abstract val choiceNames: Int
+    abstract val choiceValues: Int
+    abstract val defaultValue: Int
+    private val choiceNamesList by lazy { context.resources.getStringArray(choiceNames) }
+    private val choiceValuesList by lazy { context.resources.getStringArray(choiceValues) }
     private val value: String
-        get() = getPersistedString(context.getString(R.string.settings_theme_auto_value))
+        get() = getPersistedString(context.getString(defaultValue))
     private val currentIndex
-        get() = themeValues.indexOf(value)
+        get() = choiceValuesList.indexOf(value)
 
     @Suppress("unused")
     constructor(context: Context) : super(context)
@@ -38,17 +41,14 @@ class ThemePreference :
         defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    init {
-        onPreferenceClickListener = this
-    }
-
     override fun onSetInitialValue(defaultValue: Any?) {
+        onPreferenceClickListener = this
         updateSummary()
     }
 
     override fun onPreferenceClick(preference: Preference): Boolean {
-        showSingleChoiceAlert(R.string.settings_theme, R.array.settings_theme, currentIndex) {
-            persistString(themeValues[it])
+        showSingleChoiceAlert(title, choiceNames, currentIndex) {
+            persistString(choiceValuesList[it])
             updateSummary()
         }
 
@@ -56,6 +56,6 @@ class ThemePreference :
     }
 
     private fun updateSummary() {
-        summary = themeNames[currentIndex]
+        summary = choiceNamesList[currentIndex]
     }
 }

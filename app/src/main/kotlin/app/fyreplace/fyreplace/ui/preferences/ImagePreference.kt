@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui.views
+package app.fyreplace.fyreplace.ui.preferences
 
 import android.content.Context
 import android.util.AttributeSet

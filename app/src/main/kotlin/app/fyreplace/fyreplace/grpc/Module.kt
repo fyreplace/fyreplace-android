@@ -21,12 +21,22 @@ object GrpcModule {
         @ApplicationContext context: Context,
         preferences: SharedPreferences
     ): Channel {
+        val environment = preferences.getString(
+            "app.environment",
+            context.getString(R.string.settings_environment_default_value)
+        )
+        val host = when (environment) {
+            context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main
+            context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev
+            context.getString(R.string.settings_environment_local_value) -> R.string.api_host_local
+            else -> R.string.api_host_default
+        }
         val channel = ManagedChannelBuilder.forAddress(
-            context.resources.getString(R.string.api_host),
+            context.resources.getString(host),
             context.resources.getInteger(R.integer.api_port)
         )
 
-        if (context.resources.getBoolean(R.bool.clear_text_communication)) {
+        if (environment == context.getString(R.string.settings_environment_local_value)) {
             channel.usePlaintext()
         }
 

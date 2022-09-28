@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Fyredbg</string>
+    <string name="settings_environment_default_value">@string/settings_environment_local_value</string>
 </resources>

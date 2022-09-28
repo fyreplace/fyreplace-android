@@ -1,8 +1,9 @@
-package app.fyreplace.fyreplace.ui.views
+package app.fyreplace.fyreplace.ui.preferences
 
 import android.content.Context
 import android.util.AttributeSet
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.ui.views.TextInputConfig
 
 class BioPreference : TextInputPreference {
     override val dialogTitle = R.string.settings_bio

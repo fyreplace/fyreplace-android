@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,8 +20,8 @@ import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
-import app.fyreplace.fyreplace.ui.views.BioPreference
-import app.fyreplace.fyreplace.ui.views.ImagePreference
+import app.fyreplace.fyreplace.ui.preferences.BioPreference
+import app.fyreplace.fyreplace.ui.preferences.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
 import com.bumptech.glide.Glide
@@ -94,12 +95,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
 
             for ((preference, needsUser) in mapOf(
+                "category_information" to true,
+                "category_environment" to false,
                 "register" to false,
                 "login" to false,
                 "email" to true,
                 "bio" to true,
                 "blocked_users" to true,
-                "information" to true,
                 "privacy_policy" to true,
                 "terms_of_service" to true,
                 "logout" to true,
@@ -221,6 +223,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "settings.theme",
                 getString(R.string.settings_theme_auto_value)
             )
+            "environment" -> preferences?.getString(
+                "app.environment",
+                getString(R.string.settings_environment_main_value)
+            )
             else -> super.getString(key, defValue)
         }
 
@@ -240,6 +246,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "theme" -> {
                     preferences?.edit { putString("settings.theme", value) }
                     preferences?.applySettings(requireContext())
+                }
+                "environment" -> {
+                    preferences?.edit { putString("app.environment", value) }
+                    activity?.run {
+                        val intent = Intent.makeRestartActivityTask(intent.component)
+                        startActivity(intent)
+                    }
                 }
                 else -> super.putString(key, value)
             }
