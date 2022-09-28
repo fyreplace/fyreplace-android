@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.preference.Preference
 import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
+import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.applySettings
 import app.fyreplace.fyreplace.extensions.setupTransitions
@@ -46,6 +47,16 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by activityViewModels<SettingsViewModel>()
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1024 * 1024) }
+    private val canChangeEnvironment: Boolean
+        get() {
+            val environment = preferences?.getString(
+                "app.environment",
+                getString(R.string.settings_environment_main_value)
+            )
+
+            return (environment != null && environment != getString(R.string.settings_environment_default_value))
+                    || BuildConfig.VERSION_CODE % 10 == 0
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setupTransitions()
@@ -108,6 +119,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "delete" to true
             )) {
                 findPreference<Preference>(preference)?.isVisible = (user != null) == needsUser
+            }
+
+            if (!canChangeEnvironment) {
+                findPreference<Preference>("category_environment")?.isVisible = false
             }
         }
 
