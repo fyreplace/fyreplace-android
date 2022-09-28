@@ -15,7 +15,6 @@ import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.applySettings
-import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
@@ -132,16 +131,6 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 findNavController().navigate(SettingsFragmentDirections.actionBlockedUsers())
                 return@setOnPreferenceClickListener true
             }
-        }
-
-        findPreference<Preference>("privacy_policy")?.setOnPreferenceClickListener {
-            browse(R.string.legal_privacy_policy_url)
-            return@setOnPreferenceClickListener true
-        }
-
-        findPreference<Preference>("terms_of_service")?.setOnPreferenceClickListener {
-            browse(R.string.legal_terms_of_service_url)
-            return@setOnPreferenceClickListener true
         }
 
         findPreference<Preference>("logout")?.setOnPreferenceClickListener {
