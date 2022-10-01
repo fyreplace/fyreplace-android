@@ -38,8 +38,7 @@
                 android:layout_marginTop="@dimen/gap"
                 android:layout_marginBottom="@dimen/gap"
                 android:contentDescription="@string/login_logo_desc"
-                android:src="@drawable/logo"
-                app:tint="@color/seed" />
+                android:src="@drawable/logo_tinted" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="@dimen/form_width"

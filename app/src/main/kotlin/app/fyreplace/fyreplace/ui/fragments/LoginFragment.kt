@@ -1,12 +1,10 @@
 package app.fyreplace.fyreplace.ui.fragments
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -16,7 +14,6 @@ import app.fyreplace.fyreplace.extensions.browse
 import app.fyreplace.fyreplace.extensions.hideSoftInput
 import app.fyreplace.fyreplace.ui.TitleProvider
 import app.fyreplace.fyreplace.viewmodels.LoginViewModel
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
@@ -37,9 +34,6 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
             lifecycleOwner = viewLifecycleOwner
             ui = this@LoginFragment
             vm = this@LoginFragment.vm
-            val seed = ResourcesCompat.getColor(resources, R.color.seed, it.context.theme)
-            logo.imageTintList =
-                ColorStateList.valueOf(MaterialColors.harmonizeWithPrimary(it.context, seed))
         }
     }
 
