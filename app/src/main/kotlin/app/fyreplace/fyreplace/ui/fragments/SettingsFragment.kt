@@ -51,7 +51,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         get() {
             val environment = preferences?.getString(
                 "app.environment",
-                getString(R.string.settings_environment_main_value)
+                getString(R.string.settings_environment_default_value)
             )
 
             return (environment != null && environment != getString(R.string.settings_environment_default_value))
@@ -240,7 +240,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             )
             "environment" -> preferences?.getString(
                 "app.environment",
-                getString(R.string.settings_environment_main_value)
+                getString(R.string.settings_environment_default_value)
             )
             else -> super.getString(key, defValue)
         }
