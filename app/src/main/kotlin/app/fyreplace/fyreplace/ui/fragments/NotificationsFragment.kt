@@ -4,10 +4,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.NotificationDeletionEvent
+import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.adapters.NotificationsAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
+import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.NotificationsViewModel
 import app.fyreplace.protos.Notification
 import app.fyreplace.protos.Notifications
@@ -19,6 +21,7 @@ class NotificationsFragment :
     ItemListFragment<Notification, Notifications, ItemHolder>(),
     ItemListAdapter.ItemClickListener<Notification> {
     override val vm by activityViewModels<NotificationsViewModel>()
+    private val cvm by activityViewModels<CentralViewModel>()
 
     override fun makeAdapter() = NotificationsAdapter(this)
 
@@ -35,11 +38,14 @@ class NotificationsFragment :
         findNavController().navigate(directions)
     }
 
-    override fun onItemLongClick(item: Notification, position: Int) =
-        showSelectionAlert(null, R.array.notifications_item_choices) {
-            launch {
-                vm.absolve(item)
-                vm.em.post(NotificationDeletionEvent(item))
+    override fun onItemLongClick(item: Notification, position: Int) {
+        if (item.isFlag && cvm.currentUser.value?.profile?.isAdmin == true) {
+            showSelectionAlert(null, R.array.notifications_item_choices) {
+                launch {
+                    vm.absolve(item)
+                    vm.em.post(NotificationDeletionEvent(item))
+                }
             }
         }
+    }
 }
