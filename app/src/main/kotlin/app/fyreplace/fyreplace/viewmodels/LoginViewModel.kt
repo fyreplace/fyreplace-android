@@ -26,15 +26,17 @@ class LoginViewModel @Inject constructor(
     val isRegistering = mIsRegistering.asStateFlow()
     val email = MutableStateFlow("")
     val username = MutableStateFlow("")
+    val conditionsAccepted = MutableStateFlow(false)
     val canProceed = isRegistering
-        .combine(username) { registering, username ->
-            !registering || username.between(
+        .combine(conditionsAccepted) { registering, accepted -> registering to accepted }
+        .combine(username) { (registering, accepted), username ->
+            !registering || (accepted && username.between(
                 R.integer.username_min_size,
                 R.integer.username_max_size
-            )
+            ))
         }
-        .combine(email) { res, email ->
-            res && email.between(
+        .combine(email) { canProceed, email ->
+            canProceed && email.between(
                 R.integer.email_min_size,
                 R.integer.email_max_size
             )

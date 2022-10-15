@@ -74,24 +74,16 @@
                     android:text="@={vm.username}" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:layout_width="wrap_content"
+            <CheckBox
+                android:layout_width="@dimen/form_width"
                 android:layout_height="wrap_content"
-                android:enabled="@{vm.canProceed}"
-                android:onClick="@{ui::onRegisterOrLoginClicked}"
-                android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
-                android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
-
-            <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"
-                android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}" />
+                android:checked="@={vm.conditionsAccepted}"
+                android:text="@string/login_conditions"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/gap"
                 android:orientation="horizontal"
                 android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}">
 
@@ -109,6 +101,22 @@
                     android:onClick="@{ui::onTermsOfServiceClicked}"
                     android:text="@string/legal_terms_of_service" />
             </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:enabled="@{vm.canProceed}"
+                android:onClick="@{ui::onRegisterOrLoginClicked}"
+                android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
+                android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:indeterminate="true"
+                android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}" />
         </LinearLayout>
     </ScrollView>
 </layout>

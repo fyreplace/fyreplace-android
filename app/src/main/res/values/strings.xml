@@ -216,6 +216,7 @@
     <string name="login_email">Email</string>
     <string name="login_username">Username</string>
     <string name="login_password">Password</string>
+    <string name="login_conditions">I accept the Privacy Policy and the Terms Of Service described in the links below.</string>
     <string name="login_logo_desc">Logo</string>
     <string name="login_register_title">Check your email</string>
     <string name="login_register_message">A confirmation email has been sent to your address. It contains a link that will allow you to confirm your registration.</string>
