@@ -102,7 +102,10 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
         }
 
         val startIndex = index - (index % PAGE_SIZE)
-        indexes.add(startIndex)
+
+        if (startIndex !in indexes) {
+            indexes.add(startIndex)
+        }
 
         if (state == ItemListViewModel.ItemsState.INCOMPLETE) {
             state = ItemListViewModel.ItemsState.FETCHING
