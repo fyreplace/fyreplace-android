@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.min
 
 @AndroidEntryPoint
 class PostFragment :
@@ -308,9 +309,13 @@ class PostFragment :
 
     private fun acknowledgeLastVisibleComment() {
         val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-        val position = layoutManager.findLastVisibleItemPosition() - adapter.offset - 1
+        val lastPosition = vm.totalSize - 1
+        val position = min(
+            layoutManager.findLastVisibleItemPosition() - adapter.offset,
+            lastPosition
+        )
         val comment = vm.items[position] ?: return
-        vm.em.post(CommentSeenEvent(comment, vm.post.value.id, vm.totalSize - 1 - position))
+        vm.em.post(CommentSeenEvent(comment, vm.post.value.id, lastPosition - position))
     }
 
     private inner class ScrollListener : RecyclerView.OnScrollListener() {
