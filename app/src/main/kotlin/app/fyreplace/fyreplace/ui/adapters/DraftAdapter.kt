@@ -70,13 +70,13 @@ class DraftAdapter(
         val text: TextView = itemView.findViewById(R.id.text)
 
         override fun setup(chapter: Chapter) {
-            val color = ContextCompat.getColor(itemView.context, R.color.md_theme_onSurface)
             text.text = chapter.text.ifEmpty { itemView.context.getString(R.string.draft_empty) }
-            text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
             TextViewCompat.setTextAppearance(
                 text,
                 if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
             )
+            val color = ContextCompat.getColor(itemView.context, R.color.md_theme_onSurface)
+            text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
         }
     }
 
