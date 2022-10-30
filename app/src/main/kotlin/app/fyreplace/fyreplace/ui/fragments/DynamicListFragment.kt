@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.lifecycleScope
-import app.fyreplace.fyreplace.events.ItemEvent
+import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.fyreplace.viewmodels.DynamicListViewModel
 import kotlinx.coroutines.Job
 
@@ -11,11 +11,11 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
     abstract override val vm: DynamicListViewModel<Item>
     private val eventJobs = mutableListOf<Job>()
 
-    abstract fun addItem(position: Int, event: ItemEvent<Item>)
+    abstract fun addItem(position: Int, event: PositionalEvent<Item>)
 
-    abstract fun updateItem(position: Int, event: ItemEvent<Item>)
+    abstract fun updateItem(position: Int, event: PositionalEvent<Item>)
 
-    abstract fun removeItem(position: Int, event: ItemEvent<Item>)
+    abstract fun removeItem(position: Int, event: PositionalEvent<Item>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

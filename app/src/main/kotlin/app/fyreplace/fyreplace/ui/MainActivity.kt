@@ -15,7 +15,6 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
@@ -34,36 +33,32 @@ import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
 import app.fyreplace.fyreplace.events.CommentSeenEvent
-import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
-import app.fyreplace.protos.Profile
-import app.fyreplace.protos.post
+import app.fyreplace.protos.*
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class MainActivity :
-    AppCompatActivity(R.layout.activity_main),
-    FailureHandler,
+    RemoteNotificationsActivity(R.layout.activity_main),
     FragmentManager.OnBackStackChangedListener,
     FragmentOnAttachListener,
     NavController.OnDestinationChangedListener {
-    @Inject
-    lateinit var em: EventsManager
-
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     private val vm by viewModels<MainViewModel>()
     private val cvm by viewModels<CentralViewModel>()
@@ -99,6 +94,7 @@ class MainActivity :
         bd.bottomNavigation.doOnLayout { bottomBarHeight = it.height }
     }
 
+    @OptIn(FlowPreview::class)
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         cvm.isAuthenticated.launchCollect { authenticated ->
@@ -110,12 +106,18 @@ class MainActivity :
                 navHost.navController.navigate(R.id.fragment_settings)
             }
 
-            launch { cvm.retrieveMe() }
+            if (authenticated) {
+                startReceivingRemoteNotifications()
+            } else {
+                stopReceivingRemoteNotifications()
+            }
+
+            cvm.retrieveMe()
         }
 
-        em.events.filterIsInstance<CommentSeenEvent>().launchCollect {
-            vm.acknowledgeComment(it.item.id)
-        }
+        em.events.filterIsInstance<CommentSeenEvent>()
+            .debounce(1000)
+            .launchCollect { vm.acknowledgeComment(it.item.id) }
 
         refreshCustomTitle()
         refreshPrimaryAction()
@@ -127,6 +129,16 @@ class MainActivity :
         navHost.childFragmentManager.removeFragmentOnAttachListener(this)
         navHost.navController.removeOnDestinationChangedListener(this)
         super.onDestroy()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        application.current.registerActivityStart()
+    }
+
+    override fun onStop() {
+        application.current.registerActivityStop()
+        super.onStop()
     }
 
     override fun onTrimMemory(level: Int) {
@@ -157,6 +169,13 @@ class MainActivity :
         }
         else -> super.getFailureTexts(error)
     }
+
+    override fun tryHandleCommentCreation(comment: Comment, postId: ByteString) =
+        if (application.current.isInForeground) {
+            getPostFragment()?.tryHandleCommentCreation(comment, postId) ?: false
+        } else {
+            false
+        }
 
     override fun onBackStackChanged() {
         refreshCustomTitle()
@@ -350,9 +369,9 @@ class MainActivity :
     }
 
     private fun handleIntent(intent: Intent?) {
+        this.intent = null
         val uri = intent?.data ?: return
         val token = uri.fragment ?: ""
-        this.intent = null
 
         when (val path = uri.path ?: return) {
             getString(R.string.link_path_account_confirm_activation) -> confirmActivation(token)
@@ -374,11 +393,15 @@ class MainActivity :
 
     private fun confirmActivation(token: String) = launch(autoDisconnect = false) {
         vm.confirmActivation(token)
-        showBasicSnackbar(R.string.main_account_activated_message)
+        showBasicAlert(
+            R.string.main_account_activated_title,
+            R.string.main_account_activated_message
+        ) { requestNotificationPermission() }
     }
 
     private fun confirmConnection(token: String) = launch(autoDisconnect = false) {
         vm.confirmConnection(token)
+        requestNotificationPermission()
     }
 
     private fun confirmEmailUpdate(token: String) = launch(autoDisconnect = false) {
@@ -402,9 +425,12 @@ class MainActivity :
                 R.string.error_authentication_message,
                 error = true
             )
-            postFragment == null || commentPosition == null || !postFragment.tryShowComment(
-                post.id, commentPosition
-            ) -> navHost.navController.navigate(
+            postFragment != null && commentPosition != null && postFragment.tryShowComment(
+                post.id,
+                commentPosition
+            ) -> return
+            postFragment != null && postFragment.args.post.id == post.id -> postFragment.showUnreadComments()
+            else -> navHost.navController.navigate(
                 MainDirections.actionPost(
                     post = post.p,
                     commentPosition = commentPosition ?: -1

@@ -22,7 +22,7 @@ import io.grpc.Status
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     override val vm by viewModels<LoginViewModel>()
-    private val args by navArgs<LoginFragmentArgs>()
+    val args by navArgs<LoginFragmentArgs>()
     private lateinit var bd: FragmentLoginBinding
 
     override fun onCreateView(

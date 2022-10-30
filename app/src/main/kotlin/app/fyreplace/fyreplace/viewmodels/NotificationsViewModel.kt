@@ -1,13 +1,17 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import android.annotation.SuppressLint
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.id
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,37 +25,53 @@ class NotificationsViewModel @Inject constructor(
 ) :
     ItemListViewModel<Notification, Notifications>(em) {
     override val addedItems = emptyFlow<ItemEvent<Notification>>()
-    override val updatedItems = merge(
-        em.events.filterIsInstance<CommentSeenEvent>()
-            .filter { it.commentsLeft > 0 }
-            .map {
-                val position = getPosition(notification { post = post { id = it.postId } })
-                val notification = items.getOrNull(position) ?: return@map null
+    override val updatedItems = em.events.filterIsInstance<NotificationUpdateEvent>()
+    override val removedItems = em.events.filterIsInstance<NotificationDeletionEvent>()
+    override val emptyText = MutableStateFlow(R.string.notifications_empty)
 
-                if (notification.count < it.commentsLeft) {
-                    return@map null
+    init {
+        viewModelScope.launch {
+            em.events.filterIsInstance<CommentSeenEvent>().collect {
+                val position = getPosition(notification { post = post { id = it.postId } })
+                val notification = items.getOrNull(position) ?: return@collect
+
+                if (it.commentsLeft == 0) {
+                    em.post(NotificationDeletionEvent(notification))
+                } else if (notification.count >= it.commentsLeft) {
+                    val newNotification = Notification.newBuilder(notification)
+                        .setCount(it.commentsLeft)
+                        .build()
+                    em.post(NotificationUpdateEvent(newNotification))
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            em.events.filterIsInstance<RemoteNotificationReceptionEvent>().collect {
+                val position = getPosition(notification { post = post { id = it.postId } })
+                val notification = items.getOrNull(position)
+                val event = when {
+                    it.command !in setOf("comment:creation", "comment:deletion") -> return@collect
+
+                    notification == null -> NotificationCreationEvent(notification {
+                        post = post { id = it.postId }
+                    })
+
+                    notification.count == 1 && it.command == "comment:deletion" -> NotificationDeletionEvent(
+                        notification
+                    )
+
+                    else -> NotificationUpdateEvent(
+                        Notification.newBuilder(notification)
+                            .setCount(notification.count + if (it.command == "comment:deletion") -1 else 1)
+                            .build()
+                    )
                 }
 
-                val newNotification = Notification.newBuilder(notification)
-                    .setCount(it.commentsLeft)
-                    .build()
-                return@map NotificationUpdateEvent(newNotification)
+                em.post(event)
             }
-            .filterNotNull(),
-        em.events.filterIsInstance()
-    )
-    override val removedItems = merge(
-        em.events.filterIsInstance<CommentSeenEvent>()
-            .filter { it.commentsLeft == 0 }
-            .map {
-                val position = getPosition(notification { post = post { id = it.postId } })
-                val notification = items.getOrNull(position) ?: return@map null
-                return@map NotificationDeletionEvent(notification)
-            }
-            .filterNotNull(),
-        em.events.filterIsInstance()
-    )
-    override val emptyText = MutableStateFlow(R.string.notifications_empty)
+        }
+    }
 
     override fun getItemId(item: Notification): ByteString = item.id
 

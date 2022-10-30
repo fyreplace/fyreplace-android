@@ -19,11 +19,16 @@ import com.google.android.material.textfield.TextInputLayout
 interface ContextHolder {
     fun getContext(): Context?
 
-    fun showBasicAlert(@StringRes title: Int, @StringRes message: Int?, error: Boolean = false) {
+    fun showBasicAlert(
+        @StringRes title: Int,
+        @StringRes message: Int?,
+        error: Boolean = false,
+        action: (() -> Unit)? = null
+    ) {
         MaterialAlertDialogBuilder(getContext() ?: return)
             .setTitle(title)
             .apply { message?.let { setMessage(it) } ?: setMessage(null) }
-            .setPositiveButton(R.string.ok, null)
+            .setPositiveButton(R.string.ok) { _, _ -> action?.invoke() }
             .run { if (error) setIcon(R.drawable.ic_baseline_error) else this }
             .show()
     }

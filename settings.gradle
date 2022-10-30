@@ -31,6 +31,8 @@ dependencyResolutionManagement {
             library("glide.glide", "com.github.bumptech.glide", "glide").versionRef("glide")
             library("glide.glide-okhttp", "com.github.bumptech.glide", "okhttp3-integration").versionRef("glide")
             library("glide.glide-processor", "com.github.bumptech.glide", "ksp").versionRef("glide")
+            library("google.firebase.bom", "com.google.firebase:firebase-bom:31.0.1")
+            library("google.firebase.messaging", "com.google.firebase:firebase-messaging-ktx:23.1.0")
             library("google.material", "com.google.android.material:material:1.7.0")
             library("google.play-services", "com.google.android.gms:play-services-basement:18.1.0")
             library("grpc.grpc-okhttp", "io.grpc", "grpc-okhttp").versionRef("grpc")
@@ -56,6 +58,10 @@ dependencyResolutionManagement {
             bundle("androidx.recyclerview", [
                     "androidx.recyclerview",
                     "androidx.recyclerview-selection",
+            ])
+            bundle("google.firebase", [
+                    "google.firebase.bom",
+                    "google.firebase.messaging",
             ])
             bundle("glide", [
                     "glide.glide",

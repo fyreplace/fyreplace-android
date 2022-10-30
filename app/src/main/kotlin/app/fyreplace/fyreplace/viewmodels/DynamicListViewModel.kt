@@ -40,7 +40,7 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
             addedItems
                 .map { it.at(max(getPosition(it.item), 0)) }
                 .collect {
-                    addItem(it.position, it.item)
+                    addItem(it.position, it.event.item)
                     mAddedPositions.emit(it)
                 }
         })
@@ -50,7 +50,7 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
                 .map { it.at(getPosition(it.item)) }
                 .filter { it.position != -1 }
                 .collect {
-                    updateItem(it.position, it.item)
+                    updateItem(it.position, it.event.item)
                     mUpdatedPositions.emit(it)
                 }
         })
@@ -60,7 +60,7 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
                 .map { it.at(getPosition(it.item)) }
                 .filter { it.position != -1 }
                 .collect {
-                    removeItem(it.position, it.item)
+                    removeItem(it.position, it.event.item)
                     mRemovedPositions.emit(it)
                 }
         })

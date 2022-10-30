@@ -6,6 +6,7 @@ plugins {
     id "com.google.protobuf"
     id "androidx.navigation.safeargs.kotlin"
     id "dagger.hilt.android.plugin"
+    id "com.google.gms.google-services"
     id "com.github.triplet.play"
 }
 
@@ -152,6 +153,7 @@ dependencies {
     implementation libs.google.material
     implementation libs.hilt.hilt
     implementation libs.kotlinx.coroutines
+    googleImplementation libs.bundles.google.firebase
     googleImplementation libs.google.play.services
     libreImplementation libs.conscrypt
     ksp libs.glide.glide.processor

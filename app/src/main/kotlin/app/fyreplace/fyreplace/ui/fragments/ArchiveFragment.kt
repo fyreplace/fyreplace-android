@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -43,15 +42,7 @@ class ArchiveFragment :
         findNavController().navigate(directions)
     }
 
-    fun onAllPostsClicked(view: View) = selectPage(view.id)
+    fun onAllPostsClicked(view: View) = refreshListing { vm.selectPage(view.id) }
 
-    fun onOwnPostsClicked(view: View) = selectPage(view.id)
-
-    private fun selectPage(@IdRes page: Int) {
-        stopListing()
-        vm.selectPage(page)
-        refreshAllEventHandlers()
-        reset()
-        startListing()
-    }
+    fun onOwnPostsClicked(view: View) = refreshListing { vm.selectPage(view.id) }
 }

@@ -10,8 +10,19 @@ class App : BaseApp() {
     @Inject
     lateinit var preferences: SharedPreferences
 
+    private var activityCount = 0
+    val isInForeground get() = activityCount > 0
+
     override fun onCreate() {
         super.onCreate()
         preferences.applySettings(this)
+    }
+
+    fun registerActivityStart() {
+        activityCount++
+    }
+
+    fun registerActivityStop() {
+        activityCount--
     }
 }

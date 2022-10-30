@@ -1,8 +1,11 @@
 package app.fyreplace.fyreplace.ui.fragments
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.NotificationCreationEvent
 import app.fyreplace.fyreplace.events.NotificationDeletionEvent
 import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.grpc.p
@@ -15,6 +18,7 @@ import app.fyreplace.protos.Notification
 import app.fyreplace.protos.Notifications
 import app.fyreplace.protos.post
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.filterIsInstance
 
 @AndroidEntryPoint
 class NotificationsFragment :
@@ -22,6 +26,12 @@ class NotificationsFragment :
     ItemListAdapter.ItemClickListener<Notification> {
     override val vm by activityViewModels<NotificationsViewModel>()
     private val cvm by activityViewModels<CentralViewModel>()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        vm.em.events.filterIsInstance<NotificationCreationEvent>()
+            .launchCollect { refreshListing() }
+    }
 
     override fun makeAdapter() = NotificationsAdapter(this)
 

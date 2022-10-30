@@ -17,6 +17,7 @@ import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.applySettings
+import app.fyreplace.fyreplace.extensions.date
 import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
@@ -35,7 +36,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -82,10 +82,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 imageUrl = user?.profile?.avatar?.url
                 title = user?.profile?.username ?: getString(R.string.settings_username)
                 summary = user?.run {
-                    getString(
-                        R.string.settings_date_joined,
-                        dateFormatter.format(Date(dateJoined.seconds * 1000))
-                    )
+                    getString(R.string.settings_date_joined, dateFormatter.format(dateJoined.date))
                 } ?: getString(R.string.settings_has_not_joined)
                 isEnabled = user != null
                 setOnPreferenceClickListener {

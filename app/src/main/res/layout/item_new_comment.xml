@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:onClick="@{holder::onButtonClicked}"
-            android:text="@string/post_new_comment"
+            android:text="@string/post_write_comment"
             app:icon="@drawable/ic_baseline_comment" />
     </FrameLayout>
 </layout>

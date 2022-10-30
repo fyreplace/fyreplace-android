@@ -3,7 +3,7 @@ buildscript {
         configuration = [
                 compileSdk: 33,
                 targetSdk : 33,
-                minSdk    : 21,
+                minSdk    : 23,
         ]
     }
 
@@ -19,6 +19,7 @@ buildscript {
         classpath "com.google.protobuf:protobuf-gradle-plugin:0.8.19"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${libs.versions.androidx.navigation.get()}"
         classpath "com.google.dagger:hilt-android-gradle-plugin:${libs.versions.hilt.get()}"
+        classpath "com.google.gms:google-services:4.3.14"
         classpath "com.github.triplet.gradle:play-publisher:3.7.0"
     }
 }

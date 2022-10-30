@@ -92,7 +92,7 @@ class PostAdapter(
     }
 
     interface CommentListener {
-        fun onCommentDisplayed(view: View, position: Int, comment: Comment?)
+        fun onCommentDisplayed(view: View, position: Int, comment: Comment?, highlighted: Boolean)
 
         fun onCommentProfileClicked(view: View, position: Int, profile: Profile)
 
@@ -157,14 +157,12 @@ class PostAdapter(
                 if (commentPosition == selectedComment) selectedContainerColor
                 else Color.TRANSPARENT
             )
+            val highlighted = post.isSubscribed && commentPosition >= post.commentsRead
             commentJob = lifecycleOwner.lifecycleScope.launch {
-                bd.content.setComment(
-                    comment,
-                    post.commentsRead in 1..commentPosition
-                )
+                bd.content.setComment(comment, highlighted)
             }
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
-            commentListener.onCommentDisplayed(itemView, commentPosition, comment)
+            commentListener.onCommentDisplayed(itemView, commentPosition, comment, highlighted)
         }
 
         suspend fun fixTextView() {
@@ -182,7 +180,12 @@ class PostAdapter(
 
     inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
         fun setup() =
-            commentListener.onCommentDisplayed(itemView, bindingAdapterPosition - offset, null)
+            commentListener.onCommentDisplayed(
+                itemView,
+                bindingAdapterPosition - offset,
+                null,
+                false
+            )
     }
 
     inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {

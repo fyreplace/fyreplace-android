@@ -17,6 +17,14 @@
 
     <string name="comment_deleted"><i>Comment deleted</i></string>
 
+    <string name="notification_channel_group_comments_id">comments</string>
+    <string name="notification_channel_group_comments_name">Comments</string>
+    <string name="notification_channel_comments_own_posts_id">comments_own_posts</string>
+    <string name="notification_channel_comments_own_posts_name">Comments on your posts</string>
+    <string name="notification_channel_comments_other_posts_id">comments_other_posts</string>
+    <string name="notification_channel_comments_other_posts_name">Comments on subscribed posts</string>
+    <string name="notification_channel_default_id">@string/notification_channel_comments_other_posts_id</string>
+
     <string name="error_title">Unknown error: %1$s</string>
     <string name="error_unavailable_title">Service unavailable</string>
     <string name="error_unavailable_message">The Fyreplace server is currently unavailable. It is likely undergoing some maintenance, come back later!</string>
@@ -42,7 +50,8 @@
     <string name="image_error_file_size_title">Invalid image</string>
     <string name="image_error_file_size_message">This picture is too large.</string>
 
-    <string name="main_account_activated_message">Account activated, welcome to Fyreplace!</string>
+    <string name="main_account_activated_title">Account activated</string>
+    <string name="main_account_activated_message">Your account has been successfully activated. Welcome to Fyreplace!</string>
     <string name="main_user_email_changed_message">Email updated</string>
     <string name="main_error_malformed_url_title">Cannot open URL</string>
     <string name="main_error_malformed_url_message">This URL is invalid.</string>
@@ -157,7 +166,9 @@
     <string name="post_comment_report_success_message">Comment reported</string>
     <string name="post_comment_delete_title">Delete this comment?</string>
     <string name="post_comment_delete_message">This action cannot be undone.</string>
-    <string name="post_new_comment">Add comment</string>
+    <string name="post_write_comment">Add comment</string>
+    <string name="post_snackbar_comment_created">New comment from %1$s</string>
+    <string name="post_snackbar_comment_created_action">See</string>
     <string name="post_error_not_found_title">Post not found</string>
     <string name="post_error_not_found_message">This post does not exist, or it has been deleted.</string>
     <string name="post_error_blocked_title">Unable to comment</string>

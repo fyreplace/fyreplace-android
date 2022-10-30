@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
-import app.fyreplace.fyreplace.events.ItemEvent
+import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
@@ -85,15 +85,15 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
     }
 
-    override fun addItem(position: Int, event: ItemEvent<Item>) {
-        adapter.add(position, event.item)
+    override fun addItem(position: Int, event: PositionalEvent<Item>) {
+        adapter.add(position, event.event.item)
     }
 
-    override fun updateItem(position: Int, event: ItemEvent<Item>) {
-        adapter.update(position, event.item)
+    override fun updateItem(position: Int, event: PositionalEvent<Item>) {
+        adapter.update(position, event.event.item)
     }
 
-    override fun removeItem(position: Int, event: ItemEvent<Item>) {
+    override fun removeItem(position: Int, event: PositionalEvent<Item>) {
         adapter.remove(position)
     }
 
@@ -107,7 +107,15 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
-    protected fun startListing() {
+    protected fun refreshListing(pauseAction: (() -> Unit)? = null) {
+        stopListing()
+        pauseAction?.invoke()
+        refreshAllEventHandlers()
+        reset()
+        startListing()
+    }
+
+    private fun startListing() {
         launch {
             vm.startListing().launchCollect {
                 bd.swipe.isRefreshing = false
@@ -120,9 +128,9 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
     }
 
-    protected fun stopListing() = vm.stopListing()
+    private fun stopListing() = vm.stopListing()
 
-    protected fun reset() {
+    private fun reset() {
         adapter.removeAll()
         vm.reset()
     }

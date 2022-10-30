@@ -13,7 +13,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    environment: main
+    environment: google-play-store
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -36,11 +36,16 @@ jobs:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
         run: echo $KEYSTORE_B64 | base64 --decode > /tmp/fyreplace.keystore
 
+      - name: Set up Google services
+        env:
+          GOOGLE_SERVICES_B64: ${{ secrets.GOOGLE_SERVICES_B64 }}
+        run: echo $GOOGLE_SERVICES_B64 | base64 --decode > app/google-services.json
+
       - name: Build APKs
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: app.fyreplace.fyreplace
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
@@ -48,7 +53,7 @@ jobs:
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: app.fyreplace.fyreplace
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease
 
@@ -80,7 +85,7 @@ jobs:
     name: Publish
     needs: build
     runs-on: ubuntu-latest
-    environment: main
+    environment: google-play-store
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
