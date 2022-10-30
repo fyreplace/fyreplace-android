@@ -87,14 +87,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                         dateFormatter.format(Date(dateJoined.seconds * 1000))
                     )
                 } ?: getString(R.string.settings_has_not_joined)
-
-                if (user != null) {
-                    setOnPreferenceClickListener {
-                        imageSelector.showImageChooser(R.string.profile_avatar, canRemove = true)
-                        return@setOnPreferenceClickListener true
-                    }
-                } else {
-                    onPreferenceClickListener = null
+                isEnabled = user != null
+                setOnPreferenceClickListener {
+                    imageSelector.showImageChooser(R.string.profile_avatar, canRemove = true)
+                    return@setOnPreferenceClickListener true
                 }
             }
 
