@@ -1,14 +1,14 @@
 package app.fyreplace.fyreplace.events
 
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 interface EventsManager {
-    val events: Flow<Event>
+    val events: SharedFlow<Event>
 
     fun post(event: Event)
 }

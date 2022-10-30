@@ -131,8 +131,8 @@ class ImageSelector @AssistedInject constructor(
             view, R.string.image_selector_snackbar_upload,
             Snackbar.LENGTH_INDEFINITE
         )
-        snackbar?.setAction(R.string.cancel) { context.cancel() }
-        snackbar?.show()
+            .setAction(R.string.cancel) { context.cancel() }
+            .apply { show() }
     }
 
     private fun onImageLoadingEnd() {
