@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
@@ -161,6 +162,7 @@ class PostAdapter(
             commentJob = lifecycleOwner.lifecycleScope.launch {
                 bd.content.setComment(comment, highlighted)
             }
+            bd.highlight.isVisible = highlighted
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment, highlighted)
         }

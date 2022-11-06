@@ -12,16 +12,23 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/comment_height"
-        android:paddingStart="@dimen/gap"
-        android:paddingTop="@dimen/gap_narrow"
-        android:paddingEnd="@dimen/gap_narrow"
-        android:paddingBottom="@dimen/gap_narrow">
+        android:minHeight="@dimen/comment_height">
+
+        <View
+            android:id="@+id/highlight"
+            android:layout_width="@dimen/gap_tiny"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:id="@+id/avatar"
             android:layout_width="@dimen/avatar_size"
             android:layout_height="@dimen/avatar_size"
+            android:layout_marginStart="@dimen/gap"
+            android:layout_marginTop="@dimen/gap_narrow"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/profile_avatar"
             android:onClick="@{holder::onProfileClicked}"
@@ -46,6 +53,7 @@
             android:id="@+id/more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/gap_narrow"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
@@ -67,6 +75,7 @@
             android:id="@+id/content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/gap_narrow"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             app:layout_constraintBaseline_toBottomOf="@id/avatar"
             app:layout_constraintBottom_toBottomOf="parent"
