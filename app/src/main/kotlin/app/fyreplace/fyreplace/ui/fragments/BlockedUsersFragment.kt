@@ -6,7 +6,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.UserUnblockEvent
+import app.fyreplace.fyreplace.events.UserWasUnblockedEvent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.BlockedUsersAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -42,7 +42,7 @@ class BlockedUsersFragment :
         showChoiceAlert(R.string.user_unblock_title, null) {
             launch {
                 vm.unblock(profile.id)
-                vm.em.post(UserUnblockEvent(profile))
+                vm.em.post(UserWasUnblockedEvent(profile))
             }
         }
 }

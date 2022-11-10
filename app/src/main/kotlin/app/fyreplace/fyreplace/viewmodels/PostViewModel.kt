@@ -3,8 +3,8 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.fyreplace.fyreplace.events.CommentCreationEvent
-import app.fyreplace.fyreplace.events.CommentDeletionEvent
+import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
+import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
@@ -22,9 +22,9 @@ class PostViewModel @AssistedInject constructor(
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
     private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub
 ) : ItemRandomAccessListViewModel<Comment, Comments>(em, initialPost.id) {
-    override val addedItems = em.events.filterIsInstance<CommentCreationEvent>()
+    override val addedItems = em.events.filterIsInstance<CommentWasCreatedEvent>()
         .filter { it.postId == post.value.id }
-    override val updatedItems = em.events.filterIsInstance<CommentDeletionEvent>()
+    override val updatedItems = em.events.filterIsInstance<CommentWasDeletedEvent>()
         .filter { it.postId == post.value.id }
     private val mPost = MutableStateFlow(initialPost)
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)

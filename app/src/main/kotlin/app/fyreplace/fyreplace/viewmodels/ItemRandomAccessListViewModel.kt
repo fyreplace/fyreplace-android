@@ -20,7 +20,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     private var state = ItemListViewModel.ItemsState.INCOMPLETE
     private val mItems = mutableMapOf<Int, Item>()
     private val itemPositions = mutableMapOf<ByteString, Int>()
-    private val indexes = mutableListOf<Int>()
+    private val positions = mutableListOf<Int>()
     private var mTotalSize = 0
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     val items: Map<Int, Item> = mItems
@@ -60,24 +60,24 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
             .onEach {
                 mTotalSize = getTotalSize(it)
                 state = when {
-                    indexes.size > 1 -> ItemListViewModel.ItemsState.FETCHING
+                    positions.size > 1 -> ItemListViewModel.ItemsState.FETCHING
                     items.size < totalSize -> ItemListViewModel.ItemsState.INCOMPLETE
                     else -> ItemListViewModel.ItemsState.COMPLETE
                 }
             }
             .map { getItemList(it) }
             .map {
-                val index = indexes.removeFirst()
+                val position = positions.removeFirst()
                 it.forEachIndexed { i, item ->
-                    mItems[index + i] = item
-                    itemPositions[getItemId(item)] = index + i
+                    mItems[position + i] = item
+                    itemPositions[getItemId(item)] = position + i
                 }
 
-                if (indexes.isNotEmpty()) {
-                    maybePages.emit(page { offset = indexes.first() })
+                if (positions.isNotEmpty()) {
+                    maybePages.emit(page { offset = positions.first() })
                 }
 
-                return@map index to it
+                return@map position to it
             }
             .flowOn(Dispatchers.Main.immediate)
     }
@@ -92,24 +92,24 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
         state = ItemListViewModel.ItemsState.INCOMPLETE
         mItems.clear()
         itemPositions.clear()
-        indexes.clear()
+        positions.clear()
         mTotalSize = 0
     }
 
-    suspend fun fetchAround(index: Int) {
+    suspend fun fetchAround(position: Int) {
         if (state == ItemListViewModel.ItemsState.COMPLETE) {
             return
         }
 
-        val startIndex = index - (index % PAGE_SIZE)
+        val startPosition = position - (position % PAGE_SIZE)
 
-        if (startIndex !in indexes) {
-            indexes.add(startIndex)
+        if (startPosition !in positions) {
+            positions.add(startPosition)
         }
 
         if (state == ItemListViewModel.ItemsState.INCOMPLETE) {
             state = ItemListViewModel.ItemsState.FETCHING
-            maybePages.emit(page { offset = startIndex })
+            maybePages.emit(page { offset = startPosition })
         }
     }
 

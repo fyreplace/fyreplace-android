@@ -23,15 +23,15 @@ class ArchiveViewModel @Inject constructor(
     private val mSelectedPage = MutableStateFlow(R.id.all_posts)
     val selectedPage = mSelectedPage.asStateFlow()
     override val addedItems = merge(
-        em.events.filterIsInstance<DraftPublicationEvent>(),
+        em.events.filterIsInstance<DraftWasPublishedEvent>(),
         selectedPage.filter { it == R.id.all_posts }
-            .flatMapConcat { em.events.filterIsInstance<PostSubscriptionEvent>() }
+            .flatMapConcat { em.events.filterIsInstance<PostWasSubscribedToEvent>() }
     )
     override val updatedItems = emptyFlow<ItemEvent<Post>>()
     override val removedItems = merge(
-        em.events.filterIsInstance<PostDeletionEvent>(),
+        em.events.filterIsInstance<PostWasDeletedEvent>(),
         selectedPage.filter { it == R.id.all_posts }
-            .flatMapConcat { em.events.filterIsInstance<PostUnsubscriptionEvent>() }
+            .flatMapConcat { em.events.filterIsInstance<PostWasUnsubscribedFromEvent>() }
     )
     override val emptyText = selectedPage
         .map { if (it == R.id.all_posts) R.string.archive_all_empty else R.string.archive_own_empty }

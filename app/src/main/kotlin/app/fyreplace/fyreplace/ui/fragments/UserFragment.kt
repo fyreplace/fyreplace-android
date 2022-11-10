@@ -13,9 +13,9 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentUserBinding
 import app.fyreplace.fyreplace.events.EventsManager
-import app.fyreplace.fyreplace.events.UserBanEvent
-import app.fyreplace.fyreplace.events.UserBlockEvent
-import app.fyreplace.fyreplace.events.UserUnblockEvent
+import app.fyreplace.fyreplace.events.UserWasBannedEvent
+import app.fyreplace.fyreplace.events.UserWasBlockedEvent
+import app.fyreplace.fyreplace.events.UserWasUnblockedEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
@@ -140,14 +140,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            em.post(UserBlockEvent(args.profile.v))
+            em.post(UserWasBlockedEvent(args.profile.v))
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-            em.post(UserUnblockEvent(args.profile.v))
+            em.post(UserWasUnblockedEvent(args.profile.v))
         }
     }
 
@@ -183,6 +183,6 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun finishBan() {
         showBasicSnackbar(R.string.user_ban_success_message)
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        em.post(UserBanEvent(args.profile.v.toBuilder().setIsBanned(true).build()))
+        em.post(UserWasBannedEvent(args.profile.v.toBuilder().setIsBanned(true).build()))
     }
 }

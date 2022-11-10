@@ -111,19 +111,19 @@ class PostFragment :
 
     override fun addItem(position: Int, event: PositionalEvent<Comment>) {
         super.addItem(position, event)
-        val commentCreationEvent = event.event as? CommentCreationEvent ?: return
+        val commentWasCreatedEvent = event.event as? CommentWasCreatedEvent ?: return
 
-        if (commentCreationEvent.byCurrentUser) {
+        if (commentWasCreatedEvent.byCurrentUser) {
             showComment(position)
         }
     }
 
-    override fun onFetchedItems(index: Int, items: List<Comment>) {
+    override fun onFetchedItems(position: Int, items: List<Comment>) {
         if (adapter.totalSize == 0 && vm.post.value.commentsRead in 1 until vm.totalSize) {
             vm.setShouldScrollToComment(true)
         }
 
-        super.onFetchedItems(index, items)
+        super.onFetchedItems(position, items)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -285,8 +285,8 @@ class PostFragment :
             vm.updateSubscription(subscribed)
             val preview = vm.post.value.makePreview()
             vm.em.post(
-                if (subscribed) PostSubscriptionEvent(preview)
-                else PostUnsubscriptionEvent(preview)
+                if (subscribed) PostWasSubscribedToEvent(preview)
+                else PostWasUnsubscribedFromEvent(preview)
             )
         }
     }
@@ -298,7 +298,7 @@ class PostFragment :
 
     private suspend fun delete() {
         vm.delete()
-        vm.em.post(PostDeletionEvent(vm.post.value))
+        vm.em.post(PostWasDeletedEvent(vm.post.value))
         findNavController().navigateUp()
     }
 
@@ -309,7 +309,7 @@ class PostFragment :
             author = cvm.currentUser.value!!.profile
             dateCreated = timestamp { seconds = System.currentTimeMillis() / 1000 }
         }
-        vm.em.post(CommentCreationEvent(comment, vm.post.value.id, true))
+        vm.em.post(CommentWasCreatedEvent(comment, vm.post.value.id, true))
     }
 
     private suspend fun reportComment(comment: Comment) {
@@ -320,7 +320,7 @@ class PostFragment :
     private suspend fun deleteComment(position: Int, comment: Comment) {
         vm.deleteComment(comment.id)
         vm.makeDeletedComment(position)?.let {
-            vm.em.post(CommentDeletionEvent(it, vm.post.value.id))
+            vm.em.post(CommentWasDeletedEvent(it, vm.post.value.id))
         }
     }
 
@@ -342,7 +342,7 @@ class PostFragment :
 
     private fun acknowledgeComment(comment: Comment, position: Int) {
         val lastPosition = vm.totalSize - 1
-        vm.em.post(CommentSeenEvent(comment, vm.post.value.id, lastPosition - position))
+        vm.em.post(CommentWasSeenEvent(comment, vm.post.value.id, lastPosition - position))
     }
 
     private fun LinearLayoutManager.findLastVisibleCommentPosition() = min(

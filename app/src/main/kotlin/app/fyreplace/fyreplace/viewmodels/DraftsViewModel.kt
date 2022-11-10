@@ -19,11 +19,11 @@ class DraftsViewModel @Inject constructor(
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub
 ) :
     ItemListViewModel<Post, Posts>(em) {
-    override val addedItems = em.events.filterIsInstance<DraftCreationEvent>()
-    override val updatedItems = em.events.filterIsInstance<DraftUpdateEvent>()
+    override val addedItems = em.events.filterIsInstance<DraftWasCreatedEvent>()
+    override val updatedItems = em.events.filterIsInstance<DraftWasUpdatedEvent>()
     override val removedItems = merge(
-        em.events.filterIsInstance<DraftDeletionEvent>(),
-        em.events.filterIsInstance<DraftPublicationEvent>()
+        em.events.filterIsInstance<DraftWasDeletedEvent>(),
+        em.events.filterIsInstance<DraftWasPublishedEvent>()
     )
     override val emptyText = MutableStateFlow(R.string.drafts_empty)
 

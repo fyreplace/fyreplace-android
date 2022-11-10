@@ -62,7 +62,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     override fun onStart() {
         super.onStart()
         launch {
-            vm.startListing().launchCollect { (index, items) -> onFetchedItems(index, items) }
+            vm.startListing().launchCollect { (position, items) -> onFetchedItems(position, items) }
 
             if (adapter.totalSize == 0) {
                 vm.fetchAround(0)
@@ -93,8 +93,8 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
-    open fun onFetchedItems(index: Int, items: List<Item>) {
-        adapter.update(index, items)
+    open fun onFetchedItems(position: Int, items: List<Item>) {
+        adapter.update(position, items)
 
         if (adapter.totalSize == 0) {
             adapter.setTotalSize(vm.totalSize)

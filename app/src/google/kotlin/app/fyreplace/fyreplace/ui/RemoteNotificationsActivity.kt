@@ -11,8 +11,8 @@ import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.CommentCreationEvent
-import app.fyreplace.fyreplace.events.CommentDeletionEvent
+import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
+import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.RemoteNotificationReceptionEvent
 import app.fyreplace.fyreplace.extensions.*
@@ -49,7 +49,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         em.events.filterIsInstance<RemoteNotificationReceptionEvent>()
             .filter { it.command == "comment:creation" }
             .launchCollect {
-                em.post(CommentCreationEvent(it.comment, it.postId, false))
+                em.post(CommentWasCreatedEvent(it.comment, it.postId, false))
 
                 if (!tryHandleCommentCreation(it.comment, it.postId)) {
                     createNotification(
@@ -66,7 +66,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
             .filter { it.command == "comment:deletion" }
             .launchCollect {
                 val comment = Comment.newBuilder(it.comment).setIsDeleted(true).build()
-                em.post(CommentDeletionEvent(comment, it.postId))
+                em.post(CommentWasDeletedEvent(comment, it.postId))
             }
     }
 

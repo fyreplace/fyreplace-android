@@ -5,8 +5,8 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.NotificationCreationEvent
-import app.fyreplace.fyreplace.events.NotificationDeletionEvent
+import app.fyreplace.fyreplace.events.NotificationWasCreatedEvent
+import app.fyreplace.fyreplace.events.NotificationWasDeletedEvent
 import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -29,7 +29,7 @@ class NotificationsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        vm.em.events.filterIsInstance<NotificationCreationEvent>()
+        vm.em.events.filterIsInstance<NotificationWasCreatedEvent>()
             .launchCollect { refreshListing() }
     }
 
@@ -53,7 +53,7 @@ class NotificationsFragment :
             showSelectionAlert(null, R.array.notifications_item_choices) {
                 launch {
                     vm.absolve(item)
-                    vm.em.post(NotificationDeletionEvent(item))
+                    vm.em.post(NotificationWasDeletedEvent(item))
                 }
             }
         }

@@ -25,23 +25,23 @@ class NotificationsViewModel @Inject constructor(
 ) :
     ItemListViewModel<Notification, Notifications>(em) {
     override val addedItems = emptyFlow<ItemEvent<Notification>>()
-    override val updatedItems = em.events.filterIsInstance<NotificationUpdateEvent>()
-    override val removedItems = em.events.filterIsInstance<NotificationDeletionEvent>()
+    override val updatedItems = em.events.filterIsInstance<NotificationWasUpdatedEvent>()
+    override val removedItems = em.events.filterIsInstance<NotificationWasDeletedEvent>()
     override val emptyText = MutableStateFlow(R.string.notifications_empty)
 
     init {
         viewModelScope.launch {
-            em.events.filterIsInstance<CommentSeenEvent>().collect {
+            em.events.filterIsInstance<CommentWasSeenEvent>().collect {
                 val position = getPosition(notification { post = post { id = it.postId } })
                 val notification = items.getOrNull(position) ?: return@collect
 
                 if (it.commentsLeft == 0) {
-                    em.post(NotificationDeletionEvent(notification))
+                    em.post(NotificationWasDeletedEvent(notification))
                 } else if (notification.count >= it.commentsLeft) {
                     val newNotification = Notification.newBuilder(notification)
                         .setCount(it.commentsLeft)
                         .build()
-                    em.post(NotificationUpdateEvent(newNotification))
+                    em.post(NotificationWasUpdatedEvent(newNotification))
                 }
             }
         }
@@ -53,15 +53,15 @@ class NotificationsViewModel @Inject constructor(
                 val event = when {
                     it.command !in setOf("comment:creation", "comment:deletion") -> return@collect
 
-                    notification == null -> NotificationCreationEvent(notification {
+                    notification == null -> NotificationWasCreatedEvent(notification {
                         post = post { id = it.postId }
                     })
 
-                    notification.count == 1 && it.command == "comment:deletion" -> NotificationDeletionEvent(
+                    notification.count == 1 && it.command == "comment:deletion" -> NotificationWasDeletedEvent(
                         notification
                     )
 
-                    else -> NotificationUpdateEvent(
+                    else -> NotificationWasUpdatedEvent(
                         Notification.newBuilder(notification)
                             .setCount(notification.count + if (it.command == "comment:deletion") -1 else 1)
                             .build()

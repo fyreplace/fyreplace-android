@@ -10,9 +10,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
-import app.fyreplace.fyreplace.events.DraftDeletionEvent
-import app.fyreplace.fyreplace.events.DraftPublicationEvent
-import app.fyreplace.fyreplace.events.DraftUpdateEvent
+import app.fyreplace.fyreplace.events.DraftWasDeletedEvent
+import app.fyreplace.fyreplace.events.DraftWasPublishedEvent
+import app.fyreplace.fyreplace.events.DraftWasUpdatedEvent
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makePreview
@@ -78,7 +78,7 @@ class DraftFragment :
         launch {
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
-                em.post(DraftUpdateEvent(it))
+                em.post(DraftWasUpdatedEvent(it))
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.addAll(vm.post.value.chaptersList)
@@ -191,13 +191,13 @@ class DraftFragment :
 
     private suspend fun publish(anonymously: Boolean) {
         vm.publish(anonymously)
-        em.post(DraftPublicationEvent(vm.post.value.makePreview(anonymously)))
+        em.post(DraftWasPublishedEvent(vm.post.value.makePreview(anonymously)))
         findNavController().navigateUp()
     }
 
     private suspend fun delete() {
         vm.delete()
-        em.post(DraftDeletionEvent(vm.post.value))
+        em.post(DraftWasDeletedEvent(vm.post.value))
         findNavController().navigateUp()
     }
 

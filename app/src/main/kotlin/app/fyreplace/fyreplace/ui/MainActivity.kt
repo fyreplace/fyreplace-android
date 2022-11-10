@@ -32,7 +32,7 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
-import app.fyreplace.fyreplace.events.CommentSeenEvent
+import app.fyreplace.fyreplace.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.fragments.PostFragment
@@ -115,7 +115,7 @@ class MainActivity :
             cvm.retrieveMe()
         }
 
-        em.events.filterIsInstance<CommentSeenEvent>()
+        em.events.filterIsInstance<CommentWasSeenEvent>()
             .debounce(1000)
             .launchCollect { vm.acknowledgeComment(it.item.id) }
 
