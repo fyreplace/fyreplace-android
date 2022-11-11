@@ -1,24 +1,16 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    android:width="96dp"
-    android:height="96dp"
-    android:viewportWidth="650"
-    android:viewportHeight="650">
-    <path android:pathData="M175,575Q75,575 75,475L75,125A50,50 0,0 1,175 125L175,275A50,50 0,0 0,275 275L275,125A50,50 0,0 1,375 125L375,275A50,50 0,0 0,475 275L475,125A50,50 0,0 1,575 125L575,475Q575,575 475,575Z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="-75"
-                android:endY="575"
-                android:startX="-75"
-                android:startY="75"
-                android:type="linear">
-                <item
-                    android:color="#FFFFB243"
-                    android:offset="0" />
-                <item
-                    android:color="#FFFF6243"
-                    android:offset="1" />
-            </gradient>
-        </aapt:attr>
-    </path>
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="@android:color/white"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <group
+        android:scaleX="0.03460815"
+        android:scaleY="0.03460815"
+        android:translateX="3.3479624"
+        android:translateY="3.3479624">
+        <path
+            android:fillColor="@android:color/white"
+            android:pathData="M100,500Q0,500 0,400V50A50,50 0,0 1,100 50V200A50,50 0,0 0,200 200V50A50,50 0,0 1,300 50V200A50,50 0,0 0,400 200V50A50,50 0,0 1,500 50V400Q500,500 400,500Z" />
+    </group>
 </vector>
