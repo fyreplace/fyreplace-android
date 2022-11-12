@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.ContextCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
@@ -114,8 +113,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
             .setName(getString(R.string.notification_channel_comments_other_posts_name))
 
         for (builder in listOf(ownPostsCommentsChannel, otherPostsCommentsChannel)) {
-            builder.setLightsEnabled(true)
-                .setLightColor(ContextCompat.getColor(this, R.color.seed))
+            builder.setLightsEnabled(true).setLightColor(getColor(R.color.seed))
         }
 
         val notificationManager = NotificationManagerCompat.from(this)

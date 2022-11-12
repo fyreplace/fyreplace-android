@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.ui.adapters.holders
 
 import android.view.View
 import android.widget.TextView
-import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Comment
@@ -13,10 +12,7 @@ open class TextPreviewHolder(itemView: View) : PreviewHolder(itemView) {
     override fun setup(chapter: Chapter) {
         preview.text = chapter.text
         preview.setLines(if (chapter.isTitle) 1 else textMaxLines)
-        TextViewCompat.setTextAppearance(
-            preview,
-            if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
-        )
+        preview.setTextAppearance(if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal)
     }
 
     fun setup(comment: Comment) {

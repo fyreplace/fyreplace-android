@@ -5,8 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.widget.TextViewCompat
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemChapterButtonsBinding
@@ -71,11 +69,8 @@ class DraftAdapter(
 
         override fun setup(chapter: Chapter) {
             text.text = chapter.text.ifEmpty { itemView.context.getString(R.string.draft_empty) }
-            TextViewCompat.setTextAppearance(
-                text,
-                if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal
-            )
-            val color = ContextCompat.getColor(itemView.context, R.color.md_theme_onSurface)
+            text.setTextAppearance(if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal)
+            val color = itemView.context.getColor(R.color.md_theme_onSurface)
             text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
         }
     }

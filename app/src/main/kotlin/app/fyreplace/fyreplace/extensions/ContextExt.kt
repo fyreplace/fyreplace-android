@@ -12,7 +12,6 @@ import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import app.fyreplace.fyreplace.R
 import com.google.android.material.color.DynamicColors
@@ -60,7 +59,7 @@ fun Context.createNotification(
             channel ?: getString(R.string.notification_channel_default_id)
         )
             .setSmallIcon(R.drawable.logo_notification)
-            .setColor(ResourcesCompat.getColor(resources, R.color.seed, theme))
+            .setColor(getColor(R.color.seed))
             .setContentTitle(title)
             .setContentText(body)
             .setWhen(date.time)

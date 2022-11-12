@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.updateLayoutParams
-import androidx.core.widget.TextViewCompat
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.setLinkifiedText
 import app.fyreplace.protos.Chapter
@@ -71,7 +70,7 @@ class ChaptersView : LinearLayout {
         val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
         else R.style.TextAppearance_Material3_BodyLarge
 
-        TextViewCompat.setTextAppearance(text, style)
+        text.setTextAppearance(style)
         text.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
