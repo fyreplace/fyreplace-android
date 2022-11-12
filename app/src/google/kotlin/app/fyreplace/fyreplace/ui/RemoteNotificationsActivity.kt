@@ -104,6 +104,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         )
             .setGroup(getString(R.string.notification_channel_group_comments_id))
             .setName(getString(R.string.notification_channel_comments_own_posts_name))
+            .setVibrationEnabled(true)
 
         val otherPostsCommentsChannel = NotificationChannelCompat.Builder(
             getString(R.string.notification_channel_comments_other_posts_id),
@@ -113,7 +114,9 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
             .setName(getString(R.string.notification_channel_comments_other_posts_name))
 
         for (builder in listOf(ownPostsCommentsChannel, otherPostsCommentsChannel)) {
-            builder.setLightsEnabled(true).setLightColor(getColor(R.color.seed))
+            builder.setShowBadge(true)
+                .setLightsEnabled(true)
+                .setLightColor(getColor(R.color.seed))
         }
 
         val notificationManager = NotificationManagerCompat.from(this)
