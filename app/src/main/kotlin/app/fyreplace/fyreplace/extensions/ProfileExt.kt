@@ -10,6 +10,7 @@ val Profile?.isAdmin get() = (this?.rank ?: Rank.RANK_CITIZEN) > Rank.RANK_CITIZ
 val Profile.isAvailable get() = !isBanned && username.isNotEmpty()
 
 fun Profile.getUsername(context: Context): CharSequence = when {
+    isDeleted -> context.getText(R.string.profile_deleted)
     isBanned -> context.getText(R.string.profile_banned)
     username.isEmpty() -> context.getText(R.string.profile_anonymous)
     else -> username

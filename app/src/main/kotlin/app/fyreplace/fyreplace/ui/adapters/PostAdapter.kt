@@ -173,11 +173,17 @@ class PostAdapter(
             bd.content.isEnabled = true
         }
 
-        fun onProfileClicked(view: View) =
-            commentListener.onCommentProfileClicked(view, commentPosition, comment.author)
+        fun onProfileClicked(view: View) {
+            if (!comment.author.isDeleted) {
+                commentListener.onCommentProfileClicked(view, commentPosition, comment.author)
+            }
+        }
 
-        fun onMoreClicked(view: View) =
-            commentListener.onCommentOptionsClicked(view, commentPosition, comment)
+        fun onMoreClicked(view: View) {
+            if (!comment.author.isDeleted) {
+                commentListener.onCommentOptionsClicked(view, commentPosition, comment)
+            }
+        }
     }
 
     inner class CommentLoaderHolder(itemView: View) : ItemHolder(itemView) {
