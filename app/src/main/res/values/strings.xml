@@ -34,6 +34,8 @@
     <string name="error_permission_message">You do not have the permission to perform this action.</string>
     <string name="error_validation_title">Validation error</string>
     <string name="error_validation_message">The data received is not correct.</string>
+    <string name="error_autodisconnect_title">You have been disconnected</string>
+    <string name="error_autodisconnect_message">Your session has expired.</string>
 
     <string name="destination_feed">Feed</string>
     <string name="destination_notifications">Notifications</string>

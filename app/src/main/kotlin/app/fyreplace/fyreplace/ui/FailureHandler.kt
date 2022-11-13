@@ -7,7 +7,6 @@ import androidx.core.content.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.isNotNullOrBlank
 import app.fyreplace.fyreplace.extensions.mainPreferences
 import io.grpc.Status
 import io.grpc.StatusException
@@ -57,20 +56,24 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
         }
     }
 
-    private fun onGrpcFailure(e: StatusRuntimeException, autoDisconnect: Boolean) {
-        val isAuthenticated = preferences?.getString("auth.token", null).isNotNullOrBlank()
+    private fun onGrpcFailure(e: StatusRuntimeException, autoDisconnect: Boolean) = when {
+        e.status.code == Status.Code.UNAVAILABLE -> showBasicAlert(
+            R.string.error_unavailable_title,
+            R.string.error_unavailable_message,
+            error = true
+        )
+        e.status.code == Status.Code.UNAUTHENTICATED && autoDisconnect -> {
+            if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
+                showBasicAlert(
+                    R.string.error_autodisconnect_title,
+                    R.string.error_autodisconnect_message,
+                    error = true
+                )
+            }
 
-        when {
-            e.status.code == Status.Code.UNAVAILABLE -> showBasicAlert(
-                R.string.error_unavailable_title,
-                R.string.error_unavailable_message,
-                error = true
-            )
-            e.status.code == Status.Code.UNAUTHENTICATED
-                    && autoDisconnect
-                    && isAuthenticated -> preferences?.edit { putString("auth.token", "") }
-            else -> onFailure(e)
+            preferences?.edit { putString("auth.token", "") }
         }
+        else -> onFailure(e)
     }
 
     fun <T> Flow<T>.launchCollect(

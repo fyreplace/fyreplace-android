@@ -112,7 +112,7 @@ class MainActivity :
                 stopReceivingRemoteNotifications()
             }
 
-            cvm.retrieveMe()
+            launch { cvm.retrieveMe() }
         }
 
         em.events.filterIsInstance<CommentWasSeenEvent>()
