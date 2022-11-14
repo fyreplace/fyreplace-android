@@ -76,10 +76,6 @@ class PostFragment :
             viewLifecycleOwner.lifecycleScope,
             postAdapter::updateSelectedComment
         )
-
-        if (args.post.isPreview || args.post.chapterCount == 0) {
-            launch { vm.retrieve(args.post.id) }
-        }
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
@@ -124,6 +120,14 @@ class PostFragment :
         }
 
         super.onFetchedItems(position, items)
+    }
+
+    override suspend fun startFetchingData() {
+        if (args.post.isPreview || args.post.chapterCount == 0) {
+            vm.retrieve(args.post.id)
+        }
+
+        super.startFetchingData()
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

@@ -61,13 +61,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
-        launch {
-            vm.startListing().launchCollect { (position, items) -> onFetchedItems(position, items) }
-
-            if (adapter.totalSize == 0) {
-                vm.fetchAround(0)
-            }
-        }
+        launch { startFetchingData() }
     }
 
     override fun onStop() {
@@ -98,6 +92,14 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
         if (adapter.totalSize == 0) {
             adapter.setTotalSize(vm.totalSize)
+        }
+    }
+
+    open suspend fun startFetchingData() {
+        vm.startListing().launchCollect { (position, items) -> onFetchedItems(position, items) }
+
+        if (adapter.totalSize == 0) {
+            vm.fetchAround(0)
         }
     }
 }

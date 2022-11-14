@@ -17,7 +17,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     DynamicListViewModel<Item>(em) {
     override val removedItems = emptyFlow<ItemEvent<Item>>()
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
-    private var state = ItemListViewModel.ItemsState.INCOMPLETE
+    private var state = ItemListViewModel.ItemsState.COMPLETE
     private val mItems = mutableMapOf<Int, Item>()
     private val itemPositions = mutableMapOf<ByteString, Int>()
     private val positions = mutableListOf<Int>()
@@ -55,6 +55,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
                 contextId = this@ItemRandomAccessListViewModel.contextId
             }
         })
+        state = ItemListViewModel.ItemsState.INCOMPLETE
 
         return listItems()
             .onEach {
@@ -84,6 +85,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun stopListing() {
+        state = ItemListViewModel.ItemsState.COMPLETE
         maybePages.tryEmit(null)
         maybePages.resetReplayCache()
     }
