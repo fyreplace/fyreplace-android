@@ -26,14 +26,11 @@ import app.fyreplace.fyreplace.ui.preferences.BioPreference
 import app.fyreplace.fyreplace.ui.preferences.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
-import com.bumptech.glide.Glide
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import javax.inject.Inject
@@ -179,10 +176,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         else -> super.getFailureTexts(error)
     }
 
-    private fun logout() = launch {
-        vm.logout()
-        clearGlideCache()
-    }
+    private fun logout() = launch { vm.logout() }
 
     private fun startDelete() {
         val alert = MaterialAlertDialogBuilder(requireContext())
@@ -209,16 +203,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
     private fun delete() = launch {
         vm.delete()
-        clearGlideCache()
         showBasicAlert(
             R.string.settings_account_deletion_success_title,
             R.string.settings_account_deletion_success_message
         )
-    }
-
-    private suspend fun clearGlideCache() {
-        withContext(Dispatchers.Main.immediate) { Glide.get(requireContext()).clearMemory() }
-        withContext(Dispatchers.IO) { Glide.get(requireContext()).clearDiskCache() }
     }
 
     private companion object {

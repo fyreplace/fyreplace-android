@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
@@ -47,10 +48,12 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.protobuf.ByteString
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -110,6 +113,8 @@ class MainActivity :
                 startReceivingRemoteNotifications()
             } else {
                 stopReceivingRemoteNotifications()
+                clearGlideCache()
+                NotificationManagerCompat.from(this).cancelAll()
             }
 
             launch { cvm.retrieveMe() }
@@ -437,6 +442,11 @@ class MainActivity :
                 )
             )
         }
+    }
+
+    private suspend fun clearGlideCache() {
+        withContext(Dispatchers.Main.immediate) { Glide.get(this@MainActivity).clearMemory() }
+        withContext(Dispatchers.IO) { Glide.get(this@MainActivity).clearDiskCache() }
     }
 
     private companion object {
