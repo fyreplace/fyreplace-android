@@ -246,7 +246,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "environment" -> {
                     preferences?.edit { putString("app.environment", value) }
                     activity?.run {
-                        val intent = Intent.makeRestartActivityTask(intent.component)
+                        val intent = Intent.makeRestartActivityTask(componentName)
                         startActivity(intent)
                     }
                 }
