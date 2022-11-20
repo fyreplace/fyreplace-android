@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListViewModel<Item>(em) {
     private val maybePages = MutableSharedFlow<Page?>(replay = 10)
     private var nextCursor = cursor { isNext = true }
-    private var state = ItemsState.COMPLETE
+    private var state = ItemsState.PAUSED
     private val mItems = mutableListOf<Item>()
     private val mIsEmpty = MutableStateFlow(true)
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
@@ -54,7 +54,10 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
                 size = PAGE_SIZE
             }
         })
-        state = ItemsState.INCOMPLETE
+
+        if (state == ItemsState.PAUSED) {
+            state = ItemsState.INCOMPLETE
+        }
 
         return listItems()
             .filter { state == ItemsState.FETCHING }
@@ -72,7 +75,10 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun stopListing() {
-        state = ItemsState.COMPLETE
+        if (state != ItemsState.COMPLETE) {
+            state = ItemsState.PAUSED
+        }
+
         maybePages.tryEmit(null)
         maybePages.resetReplayCache()
     }
@@ -98,6 +104,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     enum class ItemsState {
         INCOMPLETE,
         COMPLETE,
-        FETCHING
+        FETCHING,
+        PAUSED
     }
 }
