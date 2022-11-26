@@ -42,8 +42,8 @@ import kotlin.math.min
 @AndroidEntryPoint
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
-    MenuProvider,
-    PostAdapter.CommentListener {
+    PostAdapter.CommentListener,
+    MenuProvider {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
 
@@ -130,55 +130,6 @@ class PostFragment :
         super.startFetchingData()
     }
 
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.fragment_post, menu)
-        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
-            mainActivity.setToolbarInfo(
-                if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
-                post.dateCreated.formatDate()
-            )
-            val shareIntent = context?.makeShareIntent("p", post.id)
-            menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
-        }
-
-        vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
-            menu.findItem(R.id.subscribe).isVisible = !subscribed
-            menu.findItem(R.id.unsubscribe).isVisible = subscribed
-        }
-
-        cvm.currentUser.combine(vm.post) { u, p ->
-            val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
-            return@combine currentUserOwnsPost || u?.profile.isAdmin
-        }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
-            menu.findItem(R.id.report).isVisible = !canDeletePost
-            menu.findItem(R.id.delete).isVisible = canDeletePost
-        }
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.subscribe -> updateSubscription(true)
-            R.id.unsubscribe -> updateSubscription(false)
-            R.id.report -> showChoiceAlert(
-                R.string.post_report_title,
-                null
-            ) { launch { report() } }
-            R.id.delete -> showChoiceAlert(
-                R.string.post_delete_title,
-                R.string.post_delete_message
-            ) { launch { delete() } }
-            else -> return false
-        }
-
-        return true
-    }
-
-    override fun getPrimaryActionText() = R.string.post_primary_action_comment
-
-    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
-
-    override fun onPrimaryAction() = onNewCommentClicked()
-
     override fun onCommentDisplayed(
         view: View,
         position: Int,
@@ -244,6 +195,55 @@ class PostFragment :
             allowEmpty = false
         )
     ) { launch { createComment(it) } }
+
+    override fun getPrimaryActionText() = R.string.post_primary_action_comment
+
+    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
+
+    override fun onPrimaryAction() = onNewCommentClicked()
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.fragment_post, menu)
+        vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
+            mainActivity.setToolbarInfo(
+                if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
+                post.dateCreated.formatDate()
+            )
+            val shareIntent = context?.makeShareIntent("p", post.id)
+            menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
+        }
+
+        vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
+            menu.findItem(R.id.subscribe).isVisible = !subscribed
+            menu.findItem(R.id.unsubscribe).isVisible = subscribed
+        }
+
+        cvm.currentUser.combine(vm.post) { u, p ->
+            val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
+            return@combine currentUserOwnsPost || u?.profile.isAdmin
+        }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
+            menu.findItem(R.id.report).isVisible = !canDeletePost
+            menu.findItem(R.id.delete).isVisible = canDeletePost
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.subscribe -> updateSubscription(true)
+            R.id.unsubscribe -> updateSubscription(false)
+            R.id.report -> showChoiceAlert(
+                R.string.post_report_title,
+                null
+            ) { launch { report() } }
+            R.id.delete -> showChoiceAlert(
+                R.string.post_delete_title,
+                R.string.post_delete_message
+            ) { launch { delete() } }
+            else -> return false
+        }
+
+        return true
+    }
 
     fun tryShowComment(postId: ByteString, position: Int): Boolean {
         if (postId != vm.post.value.id) {

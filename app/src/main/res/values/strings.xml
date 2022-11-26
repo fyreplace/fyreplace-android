@@ -179,8 +179,8 @@
     <string name="post_error_comment_too_long_title">Invalid comment</string>
     <string name="post_error_comment_too_long_message">Your comment is too long.</string>
 
-    <string name="draft_menu_action_publish">Publish</string>
     <string name="draft_menu_action_delete">Delete</string>
+    <string name="draft_primary_action_publish">Publish</string>
     <string name="draft_publish_title">Publish this post…</string>
     <string-array name="draft_publish_choices">
         <item>Publicly</item>

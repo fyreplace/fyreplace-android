@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
@@ -124,8 +125,11 @@ class MainActivity :
             .debounce(1000)
             .launchCollect { vm.acknowledgeComment(it.item.id) }
 
-        refreshCustomTitle()
-        refreshPrimaryAction()
+        bd.root.doOnLayout {
+            refreshCustomTitle()
+            refreshPrimaryAction()
+        }
+
         handleIntent(intent)
     }
 
@@ -292,12 +296,18 @@ class MainActivity :
         @StringRes text: Int?,
         @DrawableRes icon: Int?
     ) = with(bd.primaryAction) {
-        icon?.let { setIconResource(it) }
-
         if (text != null) {
             setText(text)
             extend()
+        }
+
+        if (icon != null) {
+            setIconResource(icon)
         } else {
+            setIcon(null)
+        }
+
+        if (text == null) {
             shrink()
         }
 
@@ -309,17 +319,17 @@ class MainActivity :
         hide()
     }
 
-    private fun getCustomTitleProvider() =
-        navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? CustomTitleProvider
+    private fun getCustomTitleProvider() = getNonDialogFragment() as? CustomTitleProvider
 
-    private fun getPrimaryActionProvider() =
-        navHost.childFragmentManager.fragments.last { it !is DialogFragment } as? PrimaryActionProvider
+    private fun getPrimaryActionProvider() = getNonDialogFragment() as? PrimaryActionProvider
 
-    private fun getPostFragment() =
-        navHost.childFragmentManager.fragments.last() as? PostFragment
+    private fun getPostFragment() = getNonDialogFragment() as? PostFragment
+
+    private fun getNonDialogFragment() =
+        navHost.childFragmentManager.fragments.last { it !is DialogFragment }
 
     private fun setBottomNavigationVisible(visible: Boolean) = bd.bottomNavigation.doOnLayout {
-        val params = bd.bottomNavigation.layoutParams as ViewGroup.MarginLayoutParams
+        val params = bd.bottomNavigation.layoutParams as MarginLayoutParams
         val isBottomNavigationVisible = params.bottomMargin == 0
 
         if (visible == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {

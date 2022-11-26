@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
 import android.view.*
-import android.widget.Button
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +17,7 @@ import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makePreview
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
+import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
@@ -32,10 +32,11 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class DraftFragment :
     BaseFragment(R.layout.fragment_draft),
-    MenuProvider,
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
-    DraftAdapter.ChapterListener {
+    DraftAdapter.ChapterListener,
+    MenuProvider,
+    PrimaryActionProvider {
     @Inject
     lateinit var em: EventsManager
 
@@ -93,32 +94,6 @@ class DraftFragment :
             else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
         }
         else -> super.getFailureTexts(error)
-    }
-
-    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-        menuInflater.inflate(R.menu.fragment_draft, menu)
-        val publish = menu.findItem(R.id.publish)
-        val publishButton = publish.actionView?.findViewById<Button>(R.id.button) ?: return
-        publishButton.setOnClickListener { onMenuItemSelected(publish) }
-        vm.canPublish.launchCollect(viewLifecycleOwner.lifecycleScope, publishButton::setEnabled)
-    }
-
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.publish -> showSelectionAlert(
-                R.string.draft_publish_title,
-                R.array.draft_publish_choices
-            ) { launch { publish(it != 0) } }
-
-            R.id.delete -> showChoiceAlert(
-                R.string.draft_delete_title,
-                R.string.draft_delete_message
-            ) { launch { delete() } }
-
-            else -> return false
-        }
-
-        return true
     }
 
     override suspend fun onImage(image: ByteArray) {
@@ -188,6 +163,37 @@ class DraftFragment :
             }
         }
     }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.fragment_draft, menu)
+        vm.canPublish.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            mainActivity.refreshPrimaryAction()
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.delete -> showChoiceAlert(
+                R.string.draft_delete_title,
+                R.string.draft_delete_message
+            ) { launch { delete() } }
+
+            else -> return false
+        }
+
+        return true
+    }
+
+    override fun getPrimaryActionText() =
+        if (vm.canPublish.value) R.string.draft_primary_action_publish else null
+
+    override fun getPrimaryActionIcon() =
+        if (vm.canPublish.value) R.drawable.ic_baseline_check else null
+
+    override fun onPrimaryAction() = showSelectionAlert(
+        R.string.draft_publish_title,
+        R.array.draft_publish_choices
+    ) { launch { publish(it != 0) } }
 
     private suspend fun publish(anonymously: Boolean) {
         vm.publish(anonymously)

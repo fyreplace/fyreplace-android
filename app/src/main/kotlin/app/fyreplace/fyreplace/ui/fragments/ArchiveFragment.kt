@@ -19,11 +19,16 @@ import kotlinx.coroutines.delay
 @AndroidEntryPoint
 class ArchiveFragment :
     ItemListFragment<Post, Posts, PreviewHolder>(),
-    CustomTitleProvider,
-    ItemListAdapter.ItemClickListener<Post> {
+    ItemListAdapter.ItemClickListener<Post>,
+    CustomTitleProvider {
     override val vm by activityViewModels<ArchiveViewModel>()
 
     override fun makeAdapter() = ArchiveAdapter(this)
+
+    override fun onItemClick(item: Post, position: Int) {
+        val directions = ArchiveFragmentDirections.actionPost(post = item.p)
+        findNavController().navigate(directions)
+    }
 
     override fun getCustomTitleView() = ArchivePagesBinding.inflate(layoutInflater).run {
         lifecycleOwner = viewLifecycleOwner
@@ -35,11 +40,6 @@ class ArchiveFragment :
             }
         }
         return@run root
-    }
-
-    override fun onItemClick(item: Post, position: Int) {
-        val directions = ArchiveFragmentDirections.actionPost(post = item.p)
-        findNavController().navigate(directions)
     }
 
     fun onAllPostsClicked(view: View) = refreshListing { vm.selectPage(view.id) }
