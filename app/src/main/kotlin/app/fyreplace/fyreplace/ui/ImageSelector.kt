@@ -5,6 +5,7 @@ import android.graphics.Bitmap.CompressFormat
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -140,6 +141,7 @@ class ImageSelector @AssistedInject constructor(
         snackbar = null
     }
 
+    @Suppress("DEPRECATION")
     private suspend fun useBytes(
         bytes: ByteArray,
         transformations: Matrix,
@@ -148,16 +150,25 @@ class ImageSelector @AssistedInject constructor(
         var compressedBytes = bytes
         val downscaleFactor = compressedBytes.size.toFloat() / maxImageByteSize
         val isTooBig = downscaleFactor >= 1
-        val isUnknownMime = mimeType !in listOf("jpeg", "png").map { "image/$it" }
-        val isPng = mimeType == "image/png"
+        val isUnknownMime = mimeType !in listOf("jpeg", "png", "webp").map { "image/$it" }
         val isRotated = !transformations.isIdentity
 
         if (isTooBig || isUnknownMime || isRotated) withContext(Dispatchers.Default) {
             coroutineContext.ensureActive()
             val os = ByteArrayOutputStream()
             val bitmap = BitmapFactory.decodeByteArray(compressedBytes, 0, compressedBytes.size)
-            var quality = 75
-            var compressFormat = if (isPng) CompressFormat.PNG else CompressFormat.JPEG
+            var quality = 100
+            var compressFormat = when (mimeType.split('/').last()) {
+                "webp" -> when {
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> when {
+                        isTooBig -> CompressFormat.WEBP_LOSSY
+                        else -> CompressFormat.WEBP_LOSSLESS
+                    }
+                    else -> CompressFormat.WEBP
+                }
+                "png" -> CompressFormat.PNG
+                else -> CompressFormat.JPEG
+            }
             var uprightBitmap = Bitmap.createBitmap(
                 bitmap,
                 0,
@@ -182,7 +193,7 @@ class ImageSelector @AssistedInject constructor(
 
             compress()
 
-            if (os.size() > maxImageByteSize && isPng) {
+            if (os.size() > maxImageByteSize && compressFormat != CompressFormat.JPEG) {
                 compressFormat = CompressFormat.JPEG
                 compress()
             }
