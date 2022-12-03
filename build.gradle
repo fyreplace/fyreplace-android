@@ -13,9 +13,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21"
-        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.7.21-1.0.8"
+        classpath "com.android.tools.build:gradle:7.3.1"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22"
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.7.22-1.0.8"
         classpath "com.google.protobuf:protobuf-gradle-plugin:0.9.1"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${libs.versions.androidx.navigation.get()}"
         classpath "com.google.dagger:hilt-android-gradle-plugin:${libs.versions.hilt.get()}"

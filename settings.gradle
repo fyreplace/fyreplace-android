@@ -9,7 +9,7 @@ dependencyResolutionManagement {
             version("glide", "4.14.2")
             version("grpc", "1.51.0")
             version("hilt", "2.44.2")
-            version("protobuf", "3.21.9")
+            version("protobuf", "3.21.10")
 
             library("androidx.activity-ktx", "androidx.activity:activity-ktx:1.6.1")
             library("androidx.appcompat", "androidx.appcompat:appcompat:1.5.1")
