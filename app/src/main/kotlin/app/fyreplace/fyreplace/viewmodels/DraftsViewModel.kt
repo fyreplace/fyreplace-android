@@ -8,6 +8,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.Empty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.merge
 import javax.inject.Inject
@@ -25,7 +26,7 @@ class DraftsViewModel @Inject constructor(
         em.events.filterIsInstance<DraftWasDeletedEvent>(),
         em.events.filterIsInstance<DraftWasPublishedEvent>()
     )
-    override val emptyText = MutableStateFlow(R.string.drafts_empty)
+    override val emptyText = MutableStateFlow(R.string.drafts_empty).asStateFlow()
 
     override fun getItemId(item: Post): ByteString = item.id
 

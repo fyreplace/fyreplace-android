@@ -135,7 +135,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
         findPreference<Preference>("blocked_users")?.run {
             setOnPreferenceClickListener {
-                findNavController().navigate(SettingsFragmentDirections.actionBlockedUsers())
+                val directions = SettingsFragmentDirections.actionBlockedUsers()
+                findNavController().navigate(directions)
                 return@setOnPreferenceClickListener true
             }
         }

@@ -10,6 +10,7 @@ import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import javax.inject.Inject
 
@@ -24,7 +25,7 @@ class BlockedUsersViewModel @Inject constructor(
     override val updatedItems = em.events.filterIsInstance<UserWasBannedEvent>()
     override val removedItems = em.events.filterIsInstance<UserWasUnblockedEvent>()
     override val forward = true
-    override val emptyText = MutableStateFlow(R.string.blocked_users_empty)
+    override val emptyText = MutableStateFlow(R.string.blocked_users_empty).asStateFlow()
 
     override fun getItemId(item: Profile): ByteString = item.id
 

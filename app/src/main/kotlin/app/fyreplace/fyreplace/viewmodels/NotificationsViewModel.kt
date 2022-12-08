@@ -9,6 +9,7 @@ import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ class NotificationsViewModel @Inject constructor(
     override val addedItems = emptyFlow<ItemEvent<Notification>>()
     override val updatedItems = em.events.filterIsInstance<NotificationWasUpdatedEvent>()
     override val removedItems = em.events.filterIsInstance<NotificationWasDeletedEvent>()
-    override val emptyText = MutableStateFlow(R.string.notifications_empty)
+    override val emptyText = MutableStateFlow(R.string.notifications_empty).asStateFlow()
 
     init {
         viewModelScope.launch {
