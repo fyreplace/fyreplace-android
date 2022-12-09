@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.databinding.ItemFeedPostImageBinding
 import app.fyreplace.fyreplace.databinding.ItemFeedPostTextBinding
 import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
@@ -27,10 +28,10 @@ class FeedAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
-            TYPE_TEXT -> PostHolder(
+            TYPE_TEXT -> TextPostHolder(
                 inflater.inflate(R.layout.item_feed_post_text, parent, false)
             )
-            TYPE_IMAGE -> PostHolder(
+            TYPE_IMAGE -> ImagePostHolder(
                 inflater.inflate(R.layout.item_feed_post_image, parent, false)
             )
             else -> throw RuntimeException()
@@ -53,7 +54,15 @@ class FeedAdapter(
         fun onPostVoted(view: View, position: Int, spread: Boolean)
     }
 
-    inner class PostHolder(itemView: View) : PreviewHolder(itemView) {
+    abstract inner class PostHolder(itemView: View) : PreviewHolder(itemView) {
+        fun onDownClicked(view: View) =
+            voteListener.onPostVoted(view, bindingAdapterPosition, false)
+
+        fun onUpClicked(view: View) =
+            voteListener.onPostVoted(view, bindingAdapterPosition, true)
+    }
+
+    inner class TextPostHolder(itemView: View) : PostHolder(itemView) {
         private val bd = ItemFeedPostTextBinding.bind(itemView)
 
         init {
@@ -61,11 +70,15 @@ class FeedAdapter(
             bd.holder = this
             bd.canVote = canVote
         }
+    }
 
-        fun onDownClicked(view: View) =
-            voteListener.onPostVoted(view, bindingAdapterPosition, false)
+    inner class ImagePostHolder(itemView: View) : PostHolder(itemView) {
+        private val bd = ItemFeedPostImageBinding.bind(itemView)
 
-        fun onUpClicked(view: View) =
-            voteListener.onPostVoted(view, bindingAdapterPosition, true)
+        init {
+            bd.lifecycleOwner = lifecycleOwner
+            bd.holder = this
+            bd.canVote = canVote
+        }
     }
 }

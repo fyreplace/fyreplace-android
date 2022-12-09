@@ -6,7 +6,7 @@
 
         <variable
             name="holder"
-            type="app.fyreplace.fyreplace.ui.adapters.FeedAdapter.PostHolder" />
+            type="app.fyreplace.fyreplace.ui.adapters.FeedAdapter.TextPostHolder" />
 
         <variable
             name="canVote"

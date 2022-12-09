@@ -55,7 +55,6 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
 
         override fun setup(post: Post) {
             super.setup(post)
-
             parts.text = parts.resources?.getQuantityString(
                 R.plurals.drafts_item_parts,
                 post.chapterCount,
