@@ -8,6 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.view.MenuProvider
+import androidx.core.view.iterator
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -18,6 +19,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
+import app.fyreplace.fyreplace.ui.PrimaryActionStyle
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.ui.views.TextInputConfig
@@ -103,7 +105,7 @@ class PostFragment :
     }
 
     override fun makeAdapter() =
-        PostAdapter(viewLifecycleOwner, vm.post.value, this)
+        PostAdapter(viewLifecycleOwner, cvm.isAuthenticated, vm.post.value, this)
 
     override fun addItem(position: Int, event: PositionalEvent<Comment>) {
         super.addItem(position, event)
@@ -200,6 +202,10 @@ class PostFragment :
 
     override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
 
+    override fun getPrimaryActionStyle() =
+        if (cvm.isAuthenticated.value) super.getPrimaryActionStyle()
+        else PrimaryActionStyle.NONE
+
     override fun onPrimaryAction() = onNewCommentClicked()
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -224,6 +230,12 @@ class PostFragment :
         }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
             menu.findItem(R.id.report).isVisible = !canDeletePost
             menu.findItem(R.id.delete).isVisible = canDeletePost
+        }
+
+        cvm.isAuthenticated.launchCollect(viewLifecycleOwner.lifecycleScope) { authenticated ->
+            for (item in menu) {
+                item.isEnabled = authenticated || item.itemId == R.id.share
+            }
         }
     }
 

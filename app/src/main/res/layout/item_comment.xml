@@ -4,9 +4,15 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="holder"
             type="app.fyreplace.fyreplace.ui.adapters.PostAdapter.CommentHolder" />
+
+        <variable
+            name="isAuthenticated"
+            type="kotlinx.coroutines.flow.StateFlow&lt;Boolean&gt;" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -55,10 +61,11 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/gap_narrow"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
+            android:clickable="@{isAuthenticated}"
             android:focusable="true"
             android:onClick="@{holder::onMoreClicked}"
             android:src="@drawable/ic_baseline_more_vert"
+            android:visibility="@{isAuthenticated ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/username" />
 

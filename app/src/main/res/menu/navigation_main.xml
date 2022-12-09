@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/fragment_feed"
-        android:icon="@drawable/ic_dynamic_grid_view"
+        android:icon="@drawable/ic_dynamic_home"
         android:title="@string/destination_feed" />
     <item
         android:id="@+id/fragment_notifications"

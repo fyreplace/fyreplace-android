@@ -19,10 +19,12 @@ import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class PostAdapter(
     private val lifecycleOwner: LifecycleOwner,
+    private val isAuthenticated: StateFlow<Boolean>,
     private var post: Post,
     private val commentListener: CommentListener
 ) :
@@ -144,6 +146,7 @@ class PostAdapter(
         init {
             bd.lifecycleOwner = lifecycleOwner
             bd.holder = this
+            bd.isAuthenticated = isAuthenticated
         }
 
         override fun setup(profile: Profile, timestamp: Timestamp?) {
@@ -202,6 +205,7 @@ class PostAdapter(
         init {
             bd.lifecycleOwner = lifecycleOwner
             bd.holder = this
+            bd.isAuthenticated = isAuthenticated
         }
 
         @Suppress("UNUSED_PARAMETER")

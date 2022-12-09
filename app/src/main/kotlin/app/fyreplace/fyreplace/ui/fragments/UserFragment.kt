@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
+import androidx.core.view.iterator
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -122,6 +123,12 @@ class UserFragment : DialogFragment(), FailureHandler {
             val currentRank = currentUser?.profile?.rank ?: Rank.RANK_UNSPECIFIED
             return@combine args.profile.rank < currentRank && isNotCurrentUser && !banned
         }.launchCollect(viewLifecycleScope, bd.toolbar.menu.findItem(R.id.ban)::setVisible)
+
+        cvm.isAuthenticated.launchCollect(viewLifecycleScope) { authenticated ->
+            for (item in bd.toolbar.menu) {
+                item.isEnabled = authenticated
+            }
+        }
     }
 
     private fun setupContent() {

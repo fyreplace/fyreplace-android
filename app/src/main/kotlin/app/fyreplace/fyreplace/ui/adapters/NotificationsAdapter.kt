@@ -7,9 +7,8 @@ import android.widget.TextView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.fyreplace.extensions.id
-import app.fyreplace.fyreplace.ui.adapters.holders.ImagePreviewHolder
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
-import app.fyreplace.fyreplace.ui.adapters.holders.TextPreviewHolder
+import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Notification
 import com.google.protobuf.ByteString
 
@@ -76,7 +75,7 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
         }
     }
 
-    class TextHolder(itemView: View) : TextPreviewHolder(itemView), NotificationHolder {
+    class TextHolder(itemView: View) : PreviewHolder(itemView), NotificationHolder {
         override val count: TextView = itemView.findViewById(R.id.count)
 
         override fun setup(notification: Notification) {
@@ -90,7 +89,7 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
         }
     }
 
-    class ImageHolder(itemView: View) : ImagePreviewHolder(itemView), NotificationHolder {
+    class ImageHolder(itemView: View) : PreviewHolder(itemView), NotificationHolder {
         override val count: TextView = itemView.findViewById(R.id.count)
 
         override fun setup(notification: Notification) {

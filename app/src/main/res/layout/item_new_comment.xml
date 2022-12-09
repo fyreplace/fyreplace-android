@@ -7,6 +7,10 @@
         <variable
             name="holder"
             type="app.fyreplace.fyreplace.ui.adapters.PostAdapter.NewCommentHolder" />
+
+        <variable
+            name="isAuthenticated"
+            type="kotlinx.coroutines.flow.StateFlow&lt;Boolean&gt;" />
     </data>
 
     <FrameLayout
@@ -19,6 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:enabled="@{isAuthenticated}"
             android:onClick="@{holder::onButtonClicked}"
             android:text="@string/post_write_comment"
             app:icon="@drawable/ic_baseline_comment" />

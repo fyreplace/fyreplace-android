@@ -8,7 +8,7 @@
         android:id="@+id/fragment_feed"
         android:name="app.fyreplace.fyreplace.ui.fragments.FeedFragment"
         android:label="@string/destination_feed"
-        tools:layout="@layout/fragment_feed" />
+        tools:layout="@layout/fragment_item_list" />
     <fragment
         android:id="@+id/fragment_notifications"
         android:name="app.fyreplace.fyreplace.ui.fragments.NotificationsFragment"

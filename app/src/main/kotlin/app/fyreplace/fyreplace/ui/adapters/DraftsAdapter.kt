@@ -6,9 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.firstChapter
-import app.fyreplace.fyreplace.ui.adapters.holders.ImagePreviewHolder
 import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
-import app.fyreplace.fyreplace.ui.adapters.holders.TextPreviewHolder
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
@@ -29,10 +27,10 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
             TYPE_EMPTY -> EmptyHolder(
                 inflater.inflate(R.layout.item_draft_empty, parent, false)
             )
-            TYPE_TEXT -> TextHolder(
+            TYPE_TEXT -> DraftHolder(
                 inflater.inflate(R.layout.item_draft_text, parent, false)
             )
-            TYPE_IMAGE -> ImageHolder(
+            TYPE_IMAGE -> DraftHolder(
                 inflater.inflate(R.layout.item_draft_image, parent, false)
             )
             else -> throw RuntimeException()
@@ -52,11 +50,13 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         const val TYPE_IMAGE = 3
     }
 
-    interface DraftHolder {
-        val parts: TextView?
+    open class DraftHolder(itemView: View) : PreviewHolder(itemView) {
+        private val parts: TextView = itemView.findViewById(R.id.parts)
 
-        fun setup(post: Post) {
-            parts?.text = parts?.resources?.getQuantityString(
+        override fun setup(post: Post) {
+            super.setup(post)
+
+            parts.text = parts.resources?.getQuantityString(
                 R.plurals.drafts_item_parts,
                 post.chapterCount,
                 post.chapterCount
@@ -64,32 +64,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         }
     }
 
-    class EmptyHolder(itemView: View) : PreviewHolder(itemView), DraftHolder {
-        override val parts: TextView? = null
-
+    class EmptyHolder(itemView: View) : DraftHolder(itemView) {
         override fun setup(chapter: Chapter) = Unit
-
-        override fun setup(post: Post) {
-            super<PreviewHolder>.setup(post)
-            super<DraftHolder>.setup(post)
-        }
-    }
-
-    class TextHolder(itemView: View) : TextPreviewHolder(itemView), DraftHolder {
-        override val parts: TextView = itemView.findViewById(R.id.parts)
-
-        override fun setup(post: Post) {
-            super<TextPreviewHolder>.setup(post)
-            super<DraftHolder>.setup(post)
-        }
-    }
-
-    class ImageHolder(itemView: View) : ImagePreviewHolder(itemView), DraftHolder {
-        override val parts: TextView = itemView.findViewById(R.id.parts)
-
-        override fun setup(post: Post) {
-            super<ImagePreviewHolder>.setup(post)
-            super<DraftHolder>.setup(post)
-        }
     }
 }
