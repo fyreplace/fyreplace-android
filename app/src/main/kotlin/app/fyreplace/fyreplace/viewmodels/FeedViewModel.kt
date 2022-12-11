@@ -21,8 +21,13 @@ class FeedViewModel @Inject constructor(private val postStub: PostServiceGrpcKt.
     val emptyText = MutableStateFlow(R.string.feed_empty).asStateFlow()
 
     fun startListing() = postStub.listFeed(votes)
-        .filterNot { it in posts.value }
-        .onEach { mPosts.value = posts.value + it }
+        .onEach { post ->
+            val index = posts.value.indexOfFirst { it.id == post.id }
+
+            mPosts.value =
+                (if (index >= 0) posts.value.mapIndexed { i, p -> if (i == index) post else p }
+                else posts.value + post)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun stopListing() {
