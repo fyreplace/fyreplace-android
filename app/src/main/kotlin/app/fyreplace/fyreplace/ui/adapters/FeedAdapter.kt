@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.ui.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemFeedPostImageBinding
@@ -11,7 +12,10 @@ import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
 import com.google.protobuf.ByteString
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class FeedAdapter(
     private val lifecycleOwner: LifecycleOwner,
@@ -55,11 +59,27 @@ class FeedAdapter(
     }
 
     abstract inner class PostHolder(itemView: View) : PreviewHolder(itemView) {
-        fun onDownClicked(view: View) =
-            voteListener.onPostVoted(view, bindingAdapterPosition, false)
+        private val down = itemView.findViewById<ImageButton>(R.id.down)
+        private val up = itemView.findViewById<ImageButton>(R.id.up)
+        private val isVoting get() = down.isActivated || up.isActivated
+        private val scope = MainScope()
 
-        fun onUpClicked(view: View) =
-            voteListener.onPostVoted(view, bindingAdapterPosition, true)
+        fun onDownClicked(view: View) = vote(view)
+
+        fun onUpClicked(view: View) = vote(view)
+
+        private fun vote(button: View) {
+            if (isVoting) {
+                return
+            }
+
+            scope.launch {
+                button.isActivated = true
+                delay(1000)
+                voteListener.onPostVoted(button, bindingAdapterPosition, button == up)
+                button.isActivated = false
+            }
+        }
     }
 
     inner class TextPostHolder(itemView: View) : PostHolder(itemView) {
