@@ -76,10 +76,14 @@ class PostViewModel @AssistedInject constructor(
         postStub.delete(id { id = mPost.value.id })
     }
 
-    suspend fun createComment(text: String) = commentStub.create(commentCreation {
-        postId = post.value.id
-        this.text = text
-    })
+    suspend fun createComment(text: String): Id {
+        val id = commentStub.create(commentCreation {
+            postId = post.value.id
+            this.text = text
+        })
+        mSubscribed.value = true
+        return id
+    }
 
     suspend fun reportComment(commentId: ByteString) {
         commentStub.report(id { id = commentId })
