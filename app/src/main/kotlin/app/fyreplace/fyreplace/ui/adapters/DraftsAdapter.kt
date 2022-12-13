@@ -51,11 +51,11 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
     }
 
     open class DraftHolder(itemView: View) : PreviewHolder(itemView) {
-        private val parts: TextView = itemView.findViewById(R.id.parts)
+        private val parts: TextView? = itemView.findViewById(R.id.parts)
 
         override fun setup(post: Post) {
             super.setup(post)
-            parts.text = parts.resources?.getQuantityString(
+            parts?.text = parts?.resources?.getQuantityString(
                 R.plurals.drafts_item_parts,
                 post.chapterCount,
                 post.chapterCount
