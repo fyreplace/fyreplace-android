@@ -13,5 +13,5 @@
     <dimen name="feed_post_height">160dp</dimen>
     <dimen name="feed_button_size">40dp</dimen>
     <dimen name="user_avatar_size">100dp</dimen>
-    <dimen name="comment_height">60dp</dimen>
+    <dimen name="comment_height">80dp</dimen>
 </resources>

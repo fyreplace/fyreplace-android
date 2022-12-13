@@ -51,9 +51,18 @@
             android:onClick="@{holder::onProfileClicked}"
             android:textAppearance="?attr/textAppearanceBodyMedium"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/date"
+            app:layout_constraintEnd_toStartOf="@id/more"
             app:layout_constraintStart_toEndOf="@id/avatar"
             app:layout_constraintTop_toTopOf="@id/avatar" />
+
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceBodySmall"
+            app:layout_constraintBottom_toBottomOf="@id/avatar"
+            app:layout_constraintEnd_toEndOf="@id/username"
+            app:layout_constraintStart_toStartOf="@id/username" />
 
         <ImageView
             android:id="@+id/more"
@@ -70,23 +79,14 @@
             app:layout_constraintTop_toTopOf="@id/username" />
 
         <TextView
-            android:id="@+id/date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/gap_narrow"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            app:layout_constraintEnd_toStartOf="@id/more"
-            app:layout_constraintTop_toTopOf="@id/username" />
-
-        <TextView
             android:id="@+id/content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/gap_tiny"
             android:paddingBottom="@dimen/gap_narrow"
             android:textAppearance="?attr/textAppearanceBodyMedium"
-            app:layout_constraintBaseline_toBottomOf="@id/avatar"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/date"
-            app:layout_constraintStart_toStartOf="@id/username" />
+            app:layout_constraintEnd_toStartOf="@id/more"
+            app:layout_constraintStart_toStartOf="@id/username"
+            app:layout_constraintTop_toBottomOf="@id/avatar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
