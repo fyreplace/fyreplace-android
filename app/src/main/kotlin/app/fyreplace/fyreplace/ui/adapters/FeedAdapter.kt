@@ -24,10 +24,8 @@ class FeedAdapter(
     itemListener: ItemClickListener<Post>
 ) :
     ItemListAdapter<Post, PreviewHolder>(itemListener) {
-    override fun getItemViewType(position: Int): Int {
-        val post = items[position]
-        return if (post.firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
-    }
+    override fun getItemViewType(position: Int) =
+        if (items[position].firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -69,11 +67,7 @@ class FeedAdapter(
         fun onUpClicked(view: View) = vote(view)
 
         private fun vote(button: View) {
-            if (isVoting) {
-                return
-            }
-
-            scope.launch {
+            if (!isVoting) scope.launch {
                 button.isActivated = true
                 delay(1000)
                 voteListener.onPostVoted(button, bindingAdapterPosition, button == up)

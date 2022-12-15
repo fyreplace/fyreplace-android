@@ -42,9 +42,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         with(bd.recyclerView) {
             setHasFixedSize(true)
             addOnChildAttachStateChangeListener(this@ItemListFragment)
-            addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL)
-            )
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
 
         return view
