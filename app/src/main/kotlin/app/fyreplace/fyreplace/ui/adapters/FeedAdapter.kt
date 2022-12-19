@@ -47,6 +47,12 @@ class FeedAdapter(
 
     override fun getItemId(item: Post): ByteString = item.id
 
+    override fun add(position: Int, item: Post) {
+        if (item.id !in items.map { it.id }) {
+            super.add(position, item)
+        }
+    }
+
     companion object {
         const val TYPE_TEXT = 1
         const val TYPE_IMAGE = 2

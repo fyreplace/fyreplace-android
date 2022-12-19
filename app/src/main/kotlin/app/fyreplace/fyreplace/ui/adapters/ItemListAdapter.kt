@@ -35,29 +35,29 @@ abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val i
 
     abstract fun getItemId(item: Item): ByteString
 
-    fun add(position: Int, item: Item) {
+    open fun add(position: Int, item: Item) {
         items.add(position, item)
         notifyItemInserted(position)
     }
 
-    fun addAll(items: List<Item>) {
+    open fun addAll(items: List<Item>) {
         val start = this.items.size
         this.items += items
         notifyItemRangeInserted(start, items.size)
     }
 
-    fun update(position: Int, item: Item) {
+    open fun update(position: Int, item: Item) {
         items[position] = item
         notifyItemChanged(position)
     }
 
-    fun remove(position: Int): Item {
+    open fun remove(position: Int): Item {
         val item = items.removeAt(position)
         notifyItemRemoved(position)
         return item
     }
 
-    fun removeAll() {
+    open fun removeAll() {
         val count = items.size
         items.clear()
         notifyItemRangeRemoved(0, count)
