@@ -108,12 +108,14 @@ jobs:
 
       - name: Upload bundle to Google Play
         run: |
-          if [ "${{ github.ref_name }}" = "develop" ]
-          then
-            export track=internal
-          else
-            export track=beta
-          fi
+          case "${{ github.ref_name }}" in
+          v*.*.*)
+            export track=beta;;
+          hotfix/*)
+            export track=beta;;
+          *)
+            export track=internal;;
+          esac
           fastlane supply \
             --track $track \
             --changes_not_sent_for_review true \
