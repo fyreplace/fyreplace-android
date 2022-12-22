@@ -12,10 +12,12 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     private var state = ItemsState.PAUSED
     private val mItems = mutableListOf<Item>()
     private val mIsEmpty = MutableStateFlow(true)
+    private var mManuallyAddedCount = 0
     protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     protected open val forward = false
     val items: List<Item> = mItems
     val isEmpty = mIsEmpty.asStateFlow()
+    val manuallyAddedCount get() = mManuallyAddedCount
     abstract val emptyText: StateFlow<Int>
 
     override fun onTrimMemory(level: Int) = reset()
@@ -28,6 +30,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     override fun addItem(position: Int, item: Item) {
         mItems.add(position, item)
         mIsEmpty.value = false
+        mManuallyAddedCount++
     }
 
     override fun updateItem(position: Int, item: Item) {
@@ -37,6 +40,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     override fun removeItem(position: Int, item: Item) {
         mItems.removeAt(position)
         mIsEmpty.value = items.isEmpty()
+        mManuallyAddedCount--
     }
 
     protected abstract fun listItems(): Flow<Items>
@@ -88,6 +92,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
         state = ItemsState.INCOMPLETE
         mItems.clear()
         mIsEmpty.value = true
+        mManuallyAddedCount = 0
     }
 
     suspend fun fetchMore() {

@@ -120,7 +120,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
                 adapter.addAll(it)
             }
 
-            if (adapter.itemCount == 0) {
+            if (adapter.itemCount - vm.manuallyAddedCount <= 0) {
                 vm.reset()
                 vm.fetchMore()
             }
