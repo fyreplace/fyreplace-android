@@ -121,6 +121,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
             }
 
             if (adapter.itemCount == 0) {
+                vm.reset()
                 vm.fetchMore()
             }
         }
