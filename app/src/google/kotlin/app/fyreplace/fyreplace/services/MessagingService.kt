@@ -1,8 +1,7 @@
 package app.fyreplace.fyreplace.services
 
-import android.content.Intent
 import app.fyreplace.fyreplace.events.EventsManager
-import app.fyreplace.fyreplace.events.RemoteNotificationReceptionEvent
+import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.MessagingService
@@ -58,18 +57,6 @@ class MessagingService : FirebaseMessagingService() {
         val postId = byteString(message.data["postId"] ?: return)
 
         when (command) {
-            "comment:creation" -> {
-                if (!application.current.isInForeground) {
-                    createNotification(
-                        comment.notificationTag(postId),
-                        Intent(Intent.ACTION_VIEW, makeShareUri("p", postId)),
-                        channel,
-                        comment.author.username,
-                        comment.text,
-                        comment.dateCreated.date
-                    )
-                }
-            }
             "comment:deletion" -> deleteNotification(comment.notificationTag(postId))
             "comment:acknowledgement" -> deleteNotifications(
                 Regex("${postId.base64ShortString}:.*"),
@@ -77,6 +64,6 @@ class MessagingService : FirebaseMessagingService() {
             )
         }
 
-        em.post(RemoteNotificationReceptionEvent(message, channel, command, postId))
+        em.post(RemoteNotificationWasReceivedEvent(message, channel, command, postId))
     }
 }

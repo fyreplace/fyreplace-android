@@ -385,6 +385,12 @@ class MainActivity :
 
     private fun handleIntent(intent: Intent?) {
         this.intent = null
+        val postIdShortString = intent?.extras?.getString("postId")
+
+        if (postIdShortString != null) {
+            return showPost(postIdShortString)
+        }
+
         val uri = intent?.data ?: return
         val token = uri.fragment ?: ""
 

@@ -13,7 +13,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.EventsManager
-import app.fyreplace.fyreplace.events.RemoteNotificationReceptionEvent
+import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.MessagingService
@@ -45,7 +45,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        em.events.filterIsInstance<RemoteNotificationReceptionEvent>()
+        em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:creation" }
             .launchCollect {
                 em.post(CommentWasCreatedEvent(it.comment, it.postId, false))
@@ -61,7 +61,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
                     )
                 }
             }
-        em.events.filterIsInstance<RemoteNotificationReceptionEvent>()
+        em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:deletion" }
             .launchCollect {
                 val comment = Comment.newBuilder(it.comment).setIsDeleted(true).build()

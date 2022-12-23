@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.extensions
 
-import app.fyreplace.fyreplace.events.RemoteNotificationReceptionEvent
+import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.protos.Comment
 
-val RemoteNotificationReceptionEvent.comment: Comment
+val RemoteNotificationWasReceivedEvent.comment: Comment
     get() = Comment.parseFrom(byteString(message.data["comment"]!!))

@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.events
 import com.google.firebase.messaging.RemoteMessage
 import com.google.protobuf.ByteString
 
-class RemoteNotificationReceptionEvent(
+class RemoteNotificationWasReceivedEvent(
     val message: RemoteMessage,
     val channel: String?,
     val command: String,

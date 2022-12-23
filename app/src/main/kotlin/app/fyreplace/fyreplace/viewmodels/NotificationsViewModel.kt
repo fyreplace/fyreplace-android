@@ -48,7 +48,7 @@ class NotificationsViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            em.events.filterIsInstance<RemoteNotificationReceptionEvent>().collect {
+            em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>().collect {
                 val position = getPosition(notification { post = post { id = it.postId } })
                 val notification = items.getOrNull(position)
                 val event = when {
