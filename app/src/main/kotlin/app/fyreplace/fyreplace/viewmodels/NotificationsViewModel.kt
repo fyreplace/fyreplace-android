@@ -54,9 +54,9 @@ class NotificationsViewModel @Inject constructor(
                 val event = when {
                     it.command !in setOf("comment:creation", "comment:deletion") -> return@collect
 
-                    notification == null -> NotificationWasCreatedEvent(notification {
-                        post = post { id = it.postId }
-                    })
+                    notification == null -> if (it.command == "comment:creation")
+                        NotificationWasCreatedEvent(notification { post = post { id = it.postId } })
+                    else return@collect
 
                     notification.count == 1 && it.command == "comment:deletion" -> NotificationWasDeletedEvent(
                         notification
