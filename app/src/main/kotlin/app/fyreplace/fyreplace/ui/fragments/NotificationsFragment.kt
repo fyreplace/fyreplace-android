@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.ui.fragments
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.NotificationWasCreatedEvent
@@ -30,7 +31,7 @@ class NotificationsFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.em.events.filterIsInstance<NotificationWasCreatedEvent>()
-            .launchCollect { refreshListing() }
+            .launchCollect(viewLifecycleOwner.lifecycleScope) { refreshListing() }
     }
 
     override fun makeAdapter() = NotificationsAdapter(this)
