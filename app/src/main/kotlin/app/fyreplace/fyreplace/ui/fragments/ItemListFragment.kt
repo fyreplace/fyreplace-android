@@ -14,6 +14,7 @@ import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
+import kotlin.math.max
 
 abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     DynamicListFragment<Item>(R.layout.fragment_item_list),
@@ -120,7 +121,9 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
                 adapter.addAll(it)
             }
 
-            if (adapter.itemCount - vm.manuallyAddedCount <= 0) {
+            val manualCount = max(vm.manuallyAddedCount, 0)
+
+            if (adapter.itemCount - manualCount <= 0) {
                 vm.reset()
                 vm.fetchMore()
             }
