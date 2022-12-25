@@ -105,7 +105,7 @@ class PostFragment :
     }
 
     override fun makeAdapter() =
-        PostAdapter(viewLifecycleOwner, cvm.isAuthenticated, vm.post.value, this)
+        PostAdapter(this, cvm.isAuthenticated, vm.post.value, this)
 
     override fun addItem(position: Int, event: PositionalEvent<Comment>) {
         super.addItem(position, event)
