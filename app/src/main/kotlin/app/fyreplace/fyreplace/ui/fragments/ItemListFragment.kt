@@ -26,6 +26,11 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        adapter = makeAdapter()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,7 +56,6 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = makeAdapter()
         adapter.addAll(vm.items)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
