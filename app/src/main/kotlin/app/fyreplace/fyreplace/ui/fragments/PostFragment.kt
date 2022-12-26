@@ -141,7 +141,7 @@ class PostFragment :
         val scrollTargetPosition = vm.selectedComment.value ?: vm.post.value.commentsRead
         val viewPosition = scrollTargetPosition + adapter.offset
 
-        if (highlighted && comment != null && isResumed) {
+        if (highlighted && comment != null) {
             acknowledgeComment(comment, position)
         }
 
