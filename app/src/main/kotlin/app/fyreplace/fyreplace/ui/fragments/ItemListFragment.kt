@@ -56,7 +56,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.addAll(vm.items)
+        adapter.resetTo(vm.items)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
             stopListing()

@@ -30,6 +30,11 @@ abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val i
 
     abstract fun getItemId(item: Item): ByteString
 
+    open fun resetTo(items: List<Item>) {
+        removeAll()
+        addAll(items)
+    }
+
     open fun add(position: Int, item: Item) {
         items.add(position, item)
         notifyItemInserted(position)
