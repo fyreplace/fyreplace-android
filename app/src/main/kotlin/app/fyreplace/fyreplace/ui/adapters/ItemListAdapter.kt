@@ -18,7 +18,7 @@ abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val i
     override fun getItemCount() = items.size
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val item = items[position]
+        val item = items.getOrNull(position) ?: return
         holder.itemView.setOnClickListener {
             itemListener.onItemClick(item, position)
         }
