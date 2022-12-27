@@ -39,7 +39,7 @@ class ChaptersView : LinearLayout {
         orientation = VERTICAL
     }
 
-    suspend fun setPost(post: Post) {
+    fun setPost(post: Post) {
         removeAllViews()
 
         if (post.isPreview) {
@@ -53,7 +53,7 @@ class ChaptersView : LinearLayout {
         }
     }
 
-    private suspend fun addChapter(chapter: Chapter) {
+    private fun addChapter(chapter: Chapter) {
         val view = if (chapter.hasImage()) makeImageView(chapter)
         else makeTextView(chapter)
 
@@ -65,7 +65,7 @@ class ChaptersView : LinearLayout {
         addView(view)
     }
 
-    private suspend fun makeTextView(chapter: Chapter): View {
+    private fun makeTextView(chapter: Chapter): View {
         val text = AppCompatTextView(context)
         val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
         else R.style.TextAppearance_Material3_BodyLarge

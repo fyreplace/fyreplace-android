@@ -141,7 +141,6 @@ class ImageSelector @AssistedInject constructor(
         snackbar = null
     }
 
-    @Suppress("DEPRECATION")
     private suspend fun useBytes(
         bytes: ByteArray,
         transformations: Matrix,
@@ -164,7 +163,7 @@ class ImageSelector @AssistedInject constructor(
                         isTooBig -> CompressFormat.WEBP_LOSSY
                         else -> CompressFormat.WEBP_LOSSLESS
                     }
-                    else -> CompressFormat.WEBP
+                    else -> @Suppress("DEPRECATION") CompressFormat.WEBP
                 }
                 "png" -> CompressFormat.PNG
                 else -> CompressFormat.JPEG

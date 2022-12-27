@@ -18,7 +18,6 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -125,9 +124,7 @@ class PostAdapter(
             itemView.minimumHeight = v.height
         }
 
-        fun setup(post: Post) {
-            lifecycleOwner.lifecycleScope.launch { chapters.setPost(post) }
-        }
+        fun setup(post: Post) = chapters.setPost(post)
     }
 
     inner class CommentHolder(itemView: View) : ItemHolder(itemView) {
@@ -141,7 +138,6 @@ class PostAdapter(
             itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
         private val commentPosition get() = bindingAdapterPosition - offset
         private lateinit var comment: Comment
-        private var commentJob: Job? = null
 
         init {
             bd.lifecycleOwner = lifecycleOwner
@@ -162,16 +158,13 @@ class PostAdapter(
                 else Color.TRANSPARENT
             )
             val highlighted = post.isSubscribed && commentPosition >= post.commentsRead
-            commentJob = lifecycleOwner.lifecycleScope.launch {
-                bd.content.setComment(comment, highlighted)
-            }
+            bd.content.setComment(comment, highlighted)
             bd.highlight.isVisible = highlighted
             bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment, highlighted)
         }
 
         suspend fun fixTextView() {
-            commentJob?.join()
             bd.content.isEnabled = false
             bd.content.isEnabled = true
         }
