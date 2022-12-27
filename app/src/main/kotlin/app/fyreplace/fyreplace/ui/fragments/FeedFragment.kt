@@ -5,6 +5,7 @@ import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import app.fyreplace.fyreplace.R
@@ -83,7 +84,9 @@ class FeedFragment :
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_feed, menu)
-        cvm.isAuthenticated.launchCollect { menu.findItem(R.id.help)?.isVisible = !it }
+        cvm.isAuthenticated.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            menu.findItem(R.id.help)?.isVisible = !it
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
