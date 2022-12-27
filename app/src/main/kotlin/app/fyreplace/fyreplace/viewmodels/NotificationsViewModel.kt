@@ -7,6 +7,7 @@ import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.id
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
+import com.google.protobuf.Empty
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,6 +84,10 @@ class NotificationsViewModel @Inject constructor(
     override fun getNextCursor(items: Notifications): Cursor = items.next
 
     override fun getItemList(items: Notifications): List<Notification> = items.notificationsList
+
+    suspend fun clear() {
+        notificationStub.clear(Empty.getDefaultInstance())
+    }
 
     suspend fun absolve(notification: Notification) = when (notification.targetCase) {
         Notification.TargetCase.USER -> absolveUser(notification.user.id)

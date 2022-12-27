@@ -67,11 +67,13 @@
     <string name="main_error_user_not_pending_title">Account already activated</string>
     <string name="main_error_user_not_pending_message">This account has already been activated.</string>
 
-    <string name="feed_empty">Nothing more to see for now</string>
     <string name="feed_menu_action_help">How does it work?</string>
     <string name="feed_help_title">How it works</string>
     <string name="feed_help_message">The buttons on the right allow you to spread or dismiss posts in your feed.\nSpreading will send posts to other people, dismissing will simply remove it from your feed.\n\nIf you\'re interested, head over to the settings to make an account!</string>
+    <string name="feed_empty">Nothing more to see for now</string>
 
+    <string name="notifications_menu_action_clear">Clear</string>
+    <string name="notifications_clear_title">Clear all notifications?</string>
     <string name="notifications_empty">No notifications</string>
     <string-array name="notifications_item_choices">
         <item>Dismiss</item>

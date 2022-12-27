@@ -70,9 +70,7 @@ fun Context.createNotification(
     NotificationManagerCompat.from(this).notify(tag, 0, notification)
 }
 
-fun Context.deleteNotification(tag: String) {
-    NotificationManagerCompat.from(this).cancel(tag, 0)
-}
+fun Context.deleteNotification(tag: String) = NotificationManagerCompat.from(this).cancel(tag, 0)
 
 fun Context.deleteNotifications(tag: Regex, beforeDate: Date) {
     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -84,3 +82,5 @@ fun Context.deleteNotifications(tag: Regex, beforeDate: Date) {
         }
     }
 }
+
+fun Context.deleteNotifications() = NotificationManagerCompat.from(this).cancelAll()

@@ -52,6 +52,11 @@ class MessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         val command = message.data["_command"] ?: return
+
+        if (command == "notifications:clear") {
+            return deleteNotifications()
+        }
+
         val channel = message.data["_fcm.channel"]
         val comment = Comment.parseFrom(byteString(message.data["comment"] ?: return))
         val postId = byteString(message.data["postId"] ?: return)

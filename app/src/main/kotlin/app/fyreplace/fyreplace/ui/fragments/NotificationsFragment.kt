@@ -1,7 +1,11 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -24,7 +28,8 @@ import kotlinx.coroutines.flow.filterIsInstance
 @AndroidEntryPoint
 class NotificationsFragment :
     ItemListFragment<Notification, Notifications, ItemHolder>(),
-    ItemListAdapter.ItemClickListener<Notification> {
+    ItemListAdapter.ItemClickListener<Notification>,
+    MenuProvider {
     override val vm by activityViewModels<NotificationsViewModel>()
     private val cvm by activityViewModels<CentralViewModel>()
 
@@ -58,5 +63,26 @@ class NotificationsFragment :
                 }
             }
         }
+    }
+
+    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.fragment_notifications, menu)
+        vm.isEmpty.launchCollect(viewLifecycleOwner.lifecycleScope) {
+            menu.findItem(R.id.clear).isEnabled = !it
+        }
+    }
+
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.clear -> showChoiceAlert(R.string.notifications_clear_title, null) {
+                launch {
+                    vm.clear()
+                    refreshListing()
+                }
+            }
+            else -> return false
+        }
+
+        return true
     }
 }
