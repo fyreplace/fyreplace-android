@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
+import app.fyreplace.fyreplace.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
@@ -30,6 +31,7 @@ class PostViewModel @AssistedInject constructor(
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
     private var mSelectedComment = MutableStateFlow<Int?>(null)
     private var mShouldScrollToComment = true
+    private var acknowledgedPosition = -1
     val post = mPost.asStateFlow()
     val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
@@ -58,6 +60,7 @@ class PostViewModel @AssistedInject constructor(
         val newPost = postStub.retrieve(id { id = postId })
         mPost.value = newPost
         mSubscribed.value = newPost.isSubscribed
+        acknowledgedPosition = newPost.commentsRead - 1
     }
 
     suspend fun updateSubscription(subscribed: Boolean) {
@@ -100,6 +103,17 @@ class PostViewModel @AssistedInject constructor(
 
     fun setShouldScrollToComment(shouldScroll: Boolean) {
         mShouldScrollToComment = shouldScroll
+    }
+
+    fun acknowledgeComment(position: Int) {
+        if (position <= acknowledgedPosition) {
+            return
+        }
+
+        val comment = items[position] ?: return
+        val lastPosition = totalSize - 1
+        acknowledgedPosition = position
+        em.post(CommentWasSeenEvent(comment, post.value.id, lastPosition - position))
     }
 
     fun makeDeletedComment(position: Int) = items[position]?.copy {

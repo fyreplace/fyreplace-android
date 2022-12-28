@@ -141,8 +141,8 @@ class PostFragment :
         val scrollTargetPosition = vm.selectedComment.value ?: vm.post.value.commentsRead
         val viewPosition = scrollTargetPosition + adapter.offset
 
-        if (highlighted && comment != null) {
-            acknowledgeComment(comment, position)
+        if (highlighted) {
+            vm.acknowledgeComment(position)
         }
 
         if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
@@ -354,11 +354,6 @@ class PostFragment :
             isScrolling = false
             layoutManager.scrollToPositionWithOffset(viewPosition, 0)
         }
-    }
-
-    private fun acknowledgeComment(comment: Comment, position: Int) {
-        val lastPosition = vm.totalSize - 1
-        vm.em.post(CommentWasSeenEvent(comment, vm.post.value.id, lastPosition - position))
     }
 
     private fun LinearLayoutManager.findLastVisibleCommentPosition() = min(
