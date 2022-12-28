@@ -216,20 +216,20 @@ class PostFragment :
                 post.dateCreated.formatDate()
             )
             val shareIntent = context?.makeShareIntent("p", post.id)
-            menu.findItem(R.id.share).run { intent = Intent.createChooser(shareIntent, title) }
+            menu.findItem(R.id.share)?.run { intent = Intent.createChooser(shareIntent, title) }
         }
 
         vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
-            menu.findItem(R.id.subscribe).isVisible = !subscribed
-            menu.findItem(R.id.unsubscribe).isVisible = subscribed
+            menu.findItem(R.id.subscribe)?.isVisible = !subscribed
+            menu.findItem(R.id.unsubscribe)?.isVisible = subscribed
         }
 
         cvm.currentUser.combine(vm.post) { u, p ->
             val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
             return@combine currentUserOwnsPost || u?.profile.isAdmin
         }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
-            menu.findItem(R.id.report).isVisible = !canDeletePost
-            menu.findItem(R.id.delete).isVisible = canDeletePost
+            menu.findItem(R.id.report)?.isVisible = !canDeletePost
+            menu.findItem(R.id.delete)?.isVisible = canDeletePost
         }
 
         cvm.isAuthenticated.launchCollect(viewLifecycleOwner.lifecycleScope) { authenticated ->

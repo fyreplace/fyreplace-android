@@ -68,7 +68,7 @@ class NotificationsFragment :
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_notifications, menu)
         vm.isEmpty.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            menu.findItem(R.id.clear).isEnabled = !it
+            menu.findItem(R.id.clear)?.isEnabled = !it
         }
     }
 
