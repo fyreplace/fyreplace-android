@@ -115,6 +115,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
 
         for (builder in listOf(ownPostsCommentsChannel, otherPostsCommentsChannel)) {
             builder.setShowBadge(true)
+                .setShowBadge(true)
                 .setLightsEnabled(true)
                 .setLightColor(getColor(R.color.seed))
         }
