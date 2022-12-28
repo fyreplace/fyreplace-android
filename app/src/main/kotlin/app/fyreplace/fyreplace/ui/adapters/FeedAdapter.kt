@@ -75,7 +75,7 @@ class FeedAdapter(
         private fun vote(button: View) {
             if (!isVoting) scope.launch {
                 button.isActivated = true
-                delay(1000)
+                delay(500)
                 voteListener.onPostVoted(button, bindingAdapterPosition, button == up)
                 button.isActivated = false
             }
