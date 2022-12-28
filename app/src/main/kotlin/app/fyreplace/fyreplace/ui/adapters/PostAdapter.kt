@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemCommentBinding
 import app.fyreplace.fyreplace.databinding.ItemNewCommentBinding
@@ -19,7 +18,6 @@ import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
 import com.google.protobuf.Timestamp
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class PostAdapter(
     private val lifecycleOwner: LifecycleOwner,
@@ -71,7 +69,7 @@ class PostAdapter(
         super.onViewAttachedToWindow(holder)
 
         if (holder is CommentHolder) {
-            lifecycleOwner.lifecycleScope.launch { holder.fixTextView() }
+            holder.fixTextView()
         }
     }
 
@@ -164,7 +162,7 @@ class PostAdapter(
             commentListener.onCommentDisplayed(itemView, commentPosition, comment, highlighted)
         }
 
-        suspend fun fixTextView() {
+        fun fixTextView() {
             bd.content.isEnabled = false
             bd.content.isEnabled = true
         }
