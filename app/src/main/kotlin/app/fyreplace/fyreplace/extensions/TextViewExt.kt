@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.extensions
 
 import android.graphics.Typeface
-import android.os.Build
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.widget.TextView
@@ -21,12 +20,8 @@ fun TextView.setComment(comment: Comment, highlighted: Boolean) {
 }
 
 fun TextView.setLinkifiedText(text: CharSequence) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-        @Suppress("DEPRECATION")
-        autoLinkMask = Linkify.ALL
-    }
-
     this.text = text
+    autoLinkMask = Linkify.WEB_URLS or Linkify.EMAIL_ADDRESSES or Linkify.PHONE_NUMBERS
     linksClickable = true
     movementMethod = LinkMovementMethod()
     setTextIsSelectable(true)
