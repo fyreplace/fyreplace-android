@@ -26,6 +26,7 @@ import app.fyreplace.fyreplace.ui.preferences.BioPreference
 import app.fyreplace.fyreplace.ui.preferences.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
+import app.fyreplace.fyreplace.viewmodels.SettingsViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
@@ -38,11 +39,16 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelector.Listener {
     @Inject
+    lateinit var vmFactory: SettingsViewModelFactory
+
+    @Inject
     lateinit var imageSelectorFactory: ImageSelectorFactory
 
     override lateinit var rootView: View
     private val cvm by activityViewModels<CentralViewModel>()
-    private val vm by activityViewModels<SettingsViewModel>()
+    private val vm by activityViewModels<SettingsViewModel> {
+        SettingsViewModel.provideFactory(vmFactory, cvm.currentUser.value?.blockedUsers ?: 0)
+    }
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1024 * 1024) }
     private val canChangeEnvironment: Boolean
         get() {
@@ -116,7 +122,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
         }
 
-        cvm.blockedUsers.launchCollect(viewLifecycleOwner.lifecycleScope) {
+        vm.blockedUsers.launchCollect(viewLifecycleOwner.lifecycleScope) {
             findPreference<Preference>("blocked_users")?.summary =
                 resources.getQuantityString(R.plurals.settings_blocked_users_desc, it, it)
         }

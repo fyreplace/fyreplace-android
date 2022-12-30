@@ -6,6 +6,12 @@ import dagger.assisted.AssistedFactory
 
 @AssistedFactory
 @Suppress("unused")
+interface SettingsViewModelFactory {
+    fun create(blockedUsers: Int): SettingsViewModel
+}
+
+@AssistedFactory
+@Suppress("unused")
 interface PostViewModelFactory {
     fun create(post: Post): PostViewModel
 }
