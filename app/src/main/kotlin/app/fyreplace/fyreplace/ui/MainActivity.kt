@@ -34,6 +34,8 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.events.ActivityWasStartedEvent
+import app.fyreplace.fyreplace.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
@@ -142,11 +144,11 @@ class MainActivity :
 
     override fun onStart() {
         super.onStart()
-        application.current.registerActivityStart()
+        em.post(ActivityWasStartedEvent())
     }
 
     override fun onStop() {
-        application.current.registerActivityStop()
+        em.post(ActivityWasStoppedEvent())
         super.onStop()
     }
 
