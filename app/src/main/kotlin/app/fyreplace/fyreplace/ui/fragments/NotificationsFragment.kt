@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.events.NotificationWasCreatedEvent
 import app.fyreplace.fyreplace.events.NotificationWasDeletedEvent
 import app.fyreplace.fyreplace.events.PostWasSeenEvent
@@ -36,6 +37,8 @@ class NotificationsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        vm.em.events.filterIsInstance<ActivityWasStoppedEvent>()
+            .launchCollect(viewLifecycleOwner.lifecycleScope) { resetListing() }
         vm.em.events.filterIsInstance<NotificationWasCreatedEvent>()
             .launchCollect(viewLifecycleOwner.lifecycleScope) { refreshListing() }
     }

@@ -60,7 +60,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener {
             stopListing()
-            reset()
+            resetListing()
             startListing()
         }
     }
@@ -83,8 +83,8 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     override fun onTrimMemory(level: Int) {
         super.onTrimMemory(level)
 
-        if (level >= ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN || !isVisible) {
-            reset()
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_BACKGROUND || !isVisible) {
+            resetListing()
         }
     }
 
@@ -110,11 +110,16 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
+    protected fun resetListing() {
+        adapter.removeAll()
+        vm.reset()
+    }
+
     protected fun refreshListing(pauseAction: (() -> Unit)? = null) {
         stopListing()
         pauseAction?.invoke()
         refreshAllEventHandlers()
-        reset()
+        resetListing()
         startListing()
     }
 
@@ -135,9 +140,4 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     }
 
     private fun stopListing() = vm.stopListing()
-
-    private fun reset() {
-        adapter.removeAll()
-        vm.reset()
-    }
 }

@@ -33,6 +33,10 @@ class NotificationsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            em.events.filterIsInstance<ActivityWasStoppedEvent>().collect { reset() }
+        }
+
+        viewModelScope.launch {
             em.events.filterIsInstance<CommentWasSeenEvent>().collect {
                 val position = getPosition(notification { post = post { id = it.postId } })
                 val notification = items.getOrNull(position) ?: return@collect
