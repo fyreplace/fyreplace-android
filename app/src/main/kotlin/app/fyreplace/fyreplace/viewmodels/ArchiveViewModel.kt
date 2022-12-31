@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import androidx.annotation.IdRes
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.*
 import app.fyreplace.protos.Cursor
@@ -11,6 +12,7 @@ import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class)
@@ -36,6 +38,16 @@ class ArchiveViewModel @Inject constructor(
     override val emptyText = selectedPage
         .map { if (it == R.id.all_posts) R.string.archive_all_empty else R.string.archive_own_empty }
         .asState(R.string.archive_all_empty)
+
+    init {
+        viewModelScope.launch {
+            em.events.filterIsInstance<PostWasSeenEvent>()
+                .collect {
+                    onItemRemoved(it.at(getPosition(it.item)))
+                    onItemAdded(it.at(0))
+                }
+        }
+    }
 
     override fun getItemId(item: Post): ByteString = item.id
 

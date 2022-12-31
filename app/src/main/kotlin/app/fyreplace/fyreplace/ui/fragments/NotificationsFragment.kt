@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.NotificationWasCreatedEvent
 import app.fyreplace.fyreplace.events.NotificationWasDeletedEvent
+import app.fyreplace.fyreplace.events.PostWasSeenEvent
 import app.fyreplace.fyreplace.extensions.isAdmin
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -47,6 +48,7 @@ class NotificationsFragment :
                 NotificationsFragmentDirections.actionUser(profile = item.user.p)
             Notification.TargetCase.POST ->
                 NotificationsFragmentDirections.actionPost(post = item.post.p)
+                    .also { vm.em.post(PostWasSeenEvent(item.post)) }
             Notification.TargetCase.COMMENT ->
                 NotificationsFragmentDirections.actionPost(post = post { id = item.comment.id }.p)
             else -> return

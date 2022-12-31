@@ -6,6 +6,8 @@ class PostWasSubscribedToEvent(item: Post) : ItemEvent<Post>(item)
 
 class PostWasUnsubscribedFromEvent(item: Post) : ItemEvent<Post>(item)
 
+class PostWasSeenEvent(item: Post) : ItemEvent<Post>(item)
+
 class PostWasDeletedEvent(item: Post) : ItemEvent<Post>(item)
 
 class DraftWasCreatedEvent(item: Post) : ItemEvent<Post>(item)
