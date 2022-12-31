@@ -88,16 +88,16 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
     }
 
-    override fun addItem(position: Int, event: PositionalEvent<Item>) {
-        adapter.add(position, event.event.item)
+    override fun addItem(event: PositionalEvent<Item>) {
+        adapter.add(event.position, event.event.item)
     }
 
-    override fun updateItem(position: Int, event: PositionalEvent<Item>) {
-        adapter.update(position, event.event.item)
+    override fun updateItem(event: PositionalEvent<Item>) {
+        adapter.update(event.position, event.event.item)
     }
 
-    override fun removeItem(position: Int, event: PositionalEvent<Item>) {
-        adapter.remove(position)
+    override fun removeItem(event: PositionalEvent<Item>) {
+        adapter.remove(event.position)
     }
 
     override fun onChildViewAttachedToWindow(view: View) {

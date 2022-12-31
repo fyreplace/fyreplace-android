@@ -8,7 +8,6 @@ import com.google.protobuf.ByteString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlin.math.max
 
 abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel() {
     protected abstract val addedItems: Flow<ItemEvent<Item>>
@@ -26,11 +25,11 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
 
     abstract fun getItemId(item: Item): ByteString
 
-    abstract fun addItem(position: Int, item: Item)
+    abstract fun addItem(event: PositionalEvent<Item>)
 
-    abstract fun updateItem(position: Int, item: Item)
+    abstract fun updateItem(event: PositionalEvent<Item>)
 
-    abstract fun removeItem(position: Int, item: Item)
+    abstract fun removeItem(event: PositionalEvent<Item>)
 
     fun refreshEventHandlers() {
         eventJobs.forEach { it.cancel() }
@@ -38,31 +37,37 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
 
         eventJobs.add(viewModelScope.launch {
             addedItems
-                .map { it.at(max(getPosition(it.item), 0)) }
-                .collect {
-                    addItem(it.position, it.event.item)
-                    mAddedPositions.emit(it)
-                }
+                .map { it.at(0) }
+                .collect(::onItemAdded)
         })
 
         eventJobs.add(viewModelScope.launch {
             updatedItems
                 .map { it.at(getPosition(it.item)) }
                 .filter { it.position != -1 }
-                .collect {
-                    updateItem(it.position, it.event.item)
-                    mUpdatedPositions.emit(it)
-                }
+                .collect(::onItemUpdated)
         })
 
         eventJobs.add(viewModelScope.launch {
             removedItems
                 .map { it.at(getPosition(it.item)) }
                 .filter { it.position != -1 }
-                .collect {
-                    removeItem(it.position, it.event.item)
-                    mRemovedPositions.emit(it)
-                }
+                .collect(::onItemRemoved)
         })
+    }
+
+    suspend fun onItemAdded(event: PositionalEvent<Item>) {
+        addItem(event)
+        mAddedPositions.emit(event)
+    }
+
+    suspend fun onItemUpdated(event: PositionalEvent<Item>) {
+        updateItem(event)
+        mUpdatedPositions.emit(event)
+    }
+
+    suspend fun onItemRemoved(event: PositionalEvent<Item>) {
+        removeItem(event)
+        mRemovedPositions.emit(event)
     }
 }

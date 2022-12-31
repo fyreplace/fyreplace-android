@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.protos.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,18 +28,18 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
         return mItems.indexOfFirst { getItemId(it) == itemId }
     }
 
-    override fun addItem(position: Int, item: Item) {
-        mItems.add(position, item)
+    override fun addItem(event: PositionalEvent<Item>) {
+        mItems.add(event.position, event.event.item)
         mIsEmpty.value = false
         mManuallyAddedCount++
     }
 
-    override fun updateItem(position: Int, item: Item) {
-        mItems[position] = item
+    override fun updateItem(event: PositionalEvent<Item>) {
+        mItems[event.position] = event.event.item
     }
 
-    override fun removeItem(position: Int, item: Item) {
-        mItems.removeAt(position)
+    override fun removeItem(event: PositionalEvent<Item>) {
+        mItems.removeAt(event.position)
         mIsEmpty.value = items.isEmpty()
         mManuallyAddedCount--
     }

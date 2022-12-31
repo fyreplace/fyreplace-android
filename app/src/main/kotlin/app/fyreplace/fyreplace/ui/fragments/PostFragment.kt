@@ -107,12 +107,12 @@ class PostFragment :
     override fun makeAdapter() =
         PostAdapter(this, cvm.isAuthenticated, vm.post.value, this)
 
-    override fun addItem(position: Int, event: PositionalEvent<Comment>) {
-        super.addItem(position, event)
+    override fun addItem(event: PositionalEvent<Comment>) {
+        super.addItem(event)
         val commentWasCreatedEvent = event.event as? CommentWasCreatedEvent ?: return
 
         if (commentWasCreatedEvent.byCurrentUser) {
-            showComment(position)
+            showComment(event.position)
         }
     }
 
@@ -145,15 +145,17 @@ class PostFragment :
             vm.acknowledgeComment(position)
         }
 
-        if (!vm.shouldScrollToComment || viewPosition >= adapter.itemCount) {
-            return
-        }
+        when {
+            !vm.shouldScrollToComment || viewPosition >= adapter.itemCount -> return
+            position == scrollTargetPosition -> {
+                if (comment != null) {
+                    vm.setShouldScrollToComment(false)
+                }
 
-        if (position == scrollTargetPosition && comment != null) {
-            vm.setShouldScrollToComment(false)
-            showComment(scrollTargetPosition)
-        } else if (position == scrollTargetPosition || position % ItemRandomAccessListViewModel.PAGE_SIZE == 0) {
-            showComment(scrollTargetPosition)
+                showComment(scrollTargetPosition)
+            }
+            position % ItemRandomAccessListViewModel.PAGE_SIZE == 0 ->
+                showComment(scrollTargetPosition)
         }
     }
 

@@ -11,11 +11,11 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
     abstract override val vm: DynamicListViewModel<Item>
     private val eventJobs = mutableListOf<Job>()
 
-    abstract fun addItem(position: Int, event: PositionalEvent<Item>)
+    abstract fun addItem(event: PositionalEvent<Item>)
 
-    abstract fun updateItem(position: Int, event: PositionalEvent<Item>)
+    abstract fun updateItem(event: PositionalEvent<Item>)
 
-    abstract fun removeItem(position: Int, event: PositionalEvent<Item>)
+    abstract fun removeItem(event: PositionalEvent<Item>)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +37,13 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
         eventJobs.clear()
 
         eventJobs.add(vm.addedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            addItem(it.position, it)
+            addItem(it)
         })
         eventJobs.add(vm.updatedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            updateItem(it.position, it)
+            updateItem(it)
         })
         eventJobs.add(vm.removedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            removeItem(it.position, it)
+            removeItem(it)
         })
     }
 }

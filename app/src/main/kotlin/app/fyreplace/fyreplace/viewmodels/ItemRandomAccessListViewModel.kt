@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.viewmodels
 
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.ItemEvent
+import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.protos.Page
 import app.fyreplace.protos.header
 import app.fyreplace.protos.page
@@ -34,18 +35,18 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
 
     override fun getPosition(item: Item) = itemPositions[getItemId(item)] ?: -1
 
-    override fun addItem(position: Int, item: Item) {
-        mItems[totalSize] = item
-        itemPositions[getItemId(item)] = totalSize
+    override fun addItem(event: PositionalEvent<Item>) {
+        mItems[totalSize] = event.event.item
+        itemPositions[getItemId(event.event.item)] = totalSize
         mTotalSize++
     }
 
-    override fun updateItem(position: Int, item: Item) {
-        mItems[position] = item
-        itemPositions[getItemId(item)] = position
+    override fun updateItem(event: PositionalEvent<Item>) {
+        mItems[event.position] = event.event.item
+        itemPositions[getItemId(event.event.item)] = event.position
     }
 
-    override fun removeItem(position: Int, item: Item) = Unit
+    override fun removeItem(event: PositionalEvent<Item>) = Unit
 
     suspend fun startListing(): Flow<Pair<Int, List<Item>>> {
         maybePages.emit(page {

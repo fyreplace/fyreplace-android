@@ -71,13 +71,13 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         vm.stopListing()
     }
 
-    override fun addItem(position: Int, event: PositionalEvent<Item>) =
+    override fun addItem(event: PositionalEvent<Item>) =
         adapter.insert(event.event.item)
 
-    override fun updateItem(position: Int, event: PositionalEvent<Item>) =
-        adapter.update(position, event.event.item)
+    override fun updateItem(event: PositionalEvent<Item>) =
+        adapter.update(event.position, event.event.item)
 
-    override fun removeItem(position: Int, event: PositionalEvent<Item>) = Unit
+    override fun removeItem(event: PositionalEvent<Item>) = Unit
 
     override fun onChildViewAttachedToWindow(view: View) {
         val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1
