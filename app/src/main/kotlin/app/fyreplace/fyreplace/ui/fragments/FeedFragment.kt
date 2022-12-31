@@ -29,6 +29,18 @@ class FeedFragment :
     private val cvm by activityViewModels<CentralViewModel>()
     private lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: FeedAdapter
+    private var canAutoRefresh = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        cvm.isAuthenticated.launchCollect {
+            when {
+                !canAutoRefresh -> return@launchCollect
+                lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) -> refreshListing()
+                else -> reset()
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,17 +59,10 @@ class FeedFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = FeedAdapter(this, cvm.isAuthenticated, this, this)
+        adapter.addAll(vm.posts.value)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { refreshListing() }
-        cvm.isAuthenticated.launchCollect {
-            if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-                refreshListing()
-            } else {
-                reset()
-            }
-        }
-
-        adapter.addAll(vm.posts.value)
+        canAutoRefresh = true
     }
 
     override fun onStart() {
