@@ -484,10 +484,17 @@ class MainActivity :
 
     private inner class LogoTarget(private val size: Int, private val profile: Profile) :
         CustomTarget<Drawable>() {
+        private var done = false
+
         override fun onResourceReady(
             resource: Drawable,
             transition: Transition<in Drawable>?
         ) {
+            if (done) {
+                return
+            }
+
+            done = true
             bd.toolbar.logo = resource
             bd.toolbar.children
                 .filterIsInstance<ImageView>()
