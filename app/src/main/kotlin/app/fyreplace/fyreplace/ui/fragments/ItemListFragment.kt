@@ -98,6 +98,10 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun removeItem(event: PositionalEvent<Item>) {
         adapter.remove(event.position)
+
+        if (adapter.itemCount < ItemListViewModel.PAGE_SIZE) launch {
+            vm.fetchMore()
+        }
     }
 
     override fun onChildViewAttachedToWindow(view: View) {
