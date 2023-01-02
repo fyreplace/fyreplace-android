@@ -43,7 +43,12 @@ class ArchiveViewModel @Inject constructor(
         viewModelScope.launch {
             em.events.filterIsInstance<PostWasSeenEvent>()
                 .collect {
-                    onItemRemoved(it.at(getPosition(it.item)))
+                    val position = getPosition(it.item)
+
+                    if (position != -1) {
+                        onItemRemoved(it.at(position))
+                    }
+
                     onItemAdded(it.at(0))
                 }
         }
