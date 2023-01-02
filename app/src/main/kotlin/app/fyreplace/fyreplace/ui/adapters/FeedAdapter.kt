@@ -53,9 +53,13 @@ class FeedAdapter(
 
     override fun getItemId(item: Post): ByteString = item.id
 
-    override fun add(position: Int, item: Post) {
-        if (item.id !in items.map { it.id }) {
-            super.add(position, item)
+    fun addOrUpdate(item: Post) {
+        val position = items.indexOfFirst { it.id == item.id }
+
+        if (position > -1) {
+            update(position, item)
+        } else {
+            add(itemCount, item)
         }
     }
 

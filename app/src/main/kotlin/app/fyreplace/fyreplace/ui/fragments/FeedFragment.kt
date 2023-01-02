@@ -111,7 +111,7 @@ class FeedFragment :
     private fun startListing() {
         vm.startListing().launchCollect {
             bd.swipe.isRefreshing = false
-            adapter.add(adapter.itemCount, it)
+            adapter.addOrUpdate(it)
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
     }
 
