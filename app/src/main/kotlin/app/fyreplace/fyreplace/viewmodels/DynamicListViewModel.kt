@@ -8,6 +8,7 @@ import com.google.protobuf.ByteString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel() {
     protected abstract val addedItems: Flow<ItemEvent<Item>>
@@ -37,7 +38,7 @@ abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel
 
         eventJobs.add(viewModelScope.launch {
             addedItems
-                .map { it.at(0) }
+                .map { it.at(max(getPosition(it.item), 0)) }
                 .collect(::onItemAdded)
         })
 
