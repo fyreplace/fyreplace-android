@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.FeedAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -17,6 +18,7 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.FeedViewModel
 import app.fyreplace.protos.Post
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeedFragment :
@@ -24,6 +26,9 @@ class FeedFragment :
     ItemListAdapter.ItemClickListener<Post>,
     FeedAdapter.VoteListener,
     MenuProvider {
+    @Inject
+    lateinit var em: EventsManager
+
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     override val vm by activityViewModels<FeedViewModel>()
     private val cvm by activityViewModels<CentralViewModel>()
@@ -58,7 +63,7 @@ class FeedFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = FeedAdapter(this, cvm.isAuthenticated, this, this)
+        adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
         adapter.addAll(vm.posts.value)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { refreshListing() }

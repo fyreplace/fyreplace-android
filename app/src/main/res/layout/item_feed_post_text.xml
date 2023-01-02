@@ -33,15 +33,28 @@
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.5" />
 
+        <FrameLayout
+            android:id="@+id/stats_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <include layout="@layout/feed_stats" />
+        </FrameLayout>
+
         <TextView
             android:id="@+id/text_preview"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/gap_tiny"
             android:ellipsize="end"
             android:gravity="center_vertical"
             android:scrollbars="none"
+            app:layout_constraintBottom_toTopOf="@id/stats_container"
             app:layout_constraintEnd_toEndOf="@id/guideline_vertical"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
             android:layout_width="wrap_content"

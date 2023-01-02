@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemFeedPostImageBinding
 import app.fyreplace.fyreplace.databinding.ItemFeedPostTextBinding
+import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.extensions.firstChapter
 import app.fyreplace.fyreplace.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
@@ -15,9 +18,12 @@ import com.google.protobuf.ByteString
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 
 class FeedAdapter(
+    private val em: EventsManager,
     private val lifecycleOwner: LifecycleOwner,
     private val canVote: StateFlow<Boolean>,
     private val voteListener: VoteListener,
@@ -65,8 +71,24 @@ class FeedAdapter(
     abstract inner class PostHolder(itemView: View) : PreviewHolder(itemView) {
         private val down = itemView.findViewById<ImageButton>(R.id.down)
         private val up = itemView.findViewById<ImageButton>(R.id.up)
+        private val votes = itemView.findViewById<TextView>(R.id.votes)
+        private val comments = itemView.findViewById<TextView>(R.id.comments)
         private val isVoting get() = down.isActivated || up.isActivated
         private val scope = MainScope()
+
+        override fun setup(post: Post) {
+            super.setup(post)
+            votes.text = post.voteCount.toString()
+            comments.text = post.commentCount.toString()
+            scope.launch {
+                em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
+                    .filter { it.command == "comment:creation" && it.postId == post.id }
+                    .collect {
+                        val newCount = comments.text.toString().toInt() + 1
+                        comments.text = newCount.toString()
+                    }
+            }
+        }
 
         fun onDownClicked(view: View) = vote(view)
 
