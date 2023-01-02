@@ -82,7 +82,10 @@ class PostFragment :
 
     override fun getFailureTexts(error: Status) = when (error.code) {
         Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
-        Status.Code.PERMISSION_DENIED -> R.string.post_error_blocked_title to R.string.post_error_blocked_message
+        Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "caller_blocked" -> R.string.post_error_blocked_title to R.string.post_error_blocked_message
+            else -> R.string.error_permission_title to R.string.error_permission_message
+        }
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "invalid_uuid" -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
             else -> R.string.post_error_comment_too_long_title to R.string.post_error_comment_too_long_message
