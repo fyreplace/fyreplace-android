@@ -56,10 +56,10 @@ class FeedAdapter(
     fun addOrUpdate(item: Post) {
         val position = items.indexOfFirst { it.id == item.id }
 
-        if (position > -1) {
-            update(position, item)
-        } else {
+        if (position == -1) {
             add(itemCount, item)
+        } else if (items[position] != item) {
+            update(position, item)
         }
     }
 
