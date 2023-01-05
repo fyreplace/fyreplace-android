@@ -102,15 +102,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
 
             for ((preference, needsUser) in mapOf(
-                "category_information" to true,
+                "category_about" to true,
                 "category_environment" to false,
                 "register" to false,
                 "login" to false,
                 "email" to true,
                 "bio" to true,
                 "blocked_users" to true,
-                "privacy_policy" to true,
-                "terms_of_service" to true,
                 "logout" to true,
                 "delete" to true
             )) {

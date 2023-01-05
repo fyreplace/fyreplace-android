@@ -35,11 +35,10 @@
     </PreferenceCategory>
     <PreferenceCategory
         app:isPreferenceVisible="false"
-        app:key="category_information"
-        app:title="@string/settings_information">
+        app:key="category_about"
+        app:title="@string/settings_about">
         <Preference
             app:icon="@drawable/ic_baseline_shield"
-            app:isPreferenceVisible="false"
             app:key="privacy_policy"
             app:summary="@string/settings_privacy_policy_desc"
             app:title="@string/legal_privacy_policy">
@@ -49,13 +48,30 @@
         </Preference>
         <Preference
             app:icon="@drawable/ic_baseline_gavel"
-            app:isPreferenceVisible="false"
             app:key="terms_of_service"
             app:summary="@string/settings_terms_of_service_desc"
             app:title="@string/legal_terms_of_service">
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/legal_terms_of_service_url" />
+        </Preference>
+        <Preference
+            app:icon="@drawable/ic_baseline_code"
+            app:key="code"
+            app:summary="@string/settings_code_desc"
+            app:title="@string/settings_code">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/app_code_url" />
+        </Preference>
+        <Preference
+            app:icon="@drawable/ic_baseline_bug_report"
+            app:key="bug_report"
+            app:summary="@string/settings_bug_report_desc"
+            app:title="@string/settings_bug_report">
+            <intent
+                android:action="android.intent.action.SENDTO"
+                android:data="@string/app_bug_report_url" />
         </Preference>
     </PreferenceCategory>
     <PreferenceCategory app:title="@string/settings_account">
