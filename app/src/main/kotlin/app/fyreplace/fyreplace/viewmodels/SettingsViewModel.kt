@@ -45,10 +45,6 @@ class SettingsViewModel @AssistedInject constructor(
         userStub.sendEmailUpdateEmail(email { email = address })
     }
 
-    suspend fun updateBio(bioValue: String) {
-        userStub.updateBio(bio { bio = bioValue })
-    }
-
     suspend fun logout() {
         accountStub.disconnect(id { })
         preferences.edit { putString("auth.token", "") }

@@ -9,10 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
-import app.fyreplace.fyreplace.events.DraftWasDeletedEvent
-import app.fyreplace.fyreplace.events.DraftWasPublishedEvent
-import app.fyreplace.fyreplace.events.DraftWasUpdatedEvent
-import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.*
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makePreview
 import app.fyreplace.fyreplace.ui.ImageSelector
@@ -20,13 +17,14 @@ import app.fyreplace.fyreplace.ui.ImageSelectorFactory
 import app.fyreplace.fyreplace.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.ui.adapters.DraftAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
-import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.viewmodels.DraftViewModelFactory
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.chapter
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -55,7 +53,6 @@ class DraftFragment :
     private lateinit var adapter: DraftAdapter
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 512 * 1024) }
     private var currentChapterPosition = -1
-    private val chapterTextMaxSize by lazy { requireContext().resources.getInteger(R.integer.chapter_text_max_size) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +80,11 @@ class DraftFragment :
                 mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
             }
             adapter.addAll(vm.post.value.chaptersList)
+            em.events.filterIsInstance<ChapterWasUpdatedEvent>()
+                .filter { it.postId == vm.post.value.id }
+                .launchCollect(viewLifecycleOwner.lifecycleScope) {
+                    adapter.update(it.position, chapter { text = it.text })
+                }
         }
     }
 
@@ -91,7 +93,7 @@ class DraftFragment :
             "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
             "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
-            else -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
+            else -> R.string.error_validation_title to R.string.error_validation_message
         }
         else -> super.getFailureTexts(error)
     }
@@ -115,7 +117,7 @@ class DraftFragment :
         if (item.hasImage()) {
             updateImageChapter(new = false)
         } else {
-            updateTextChapter(item, new = false)
+            updateTextChapter(item)
         }
     }
 
@@ -155,10 +157,7 @@ class DraftFragment :
             adapter.add(position, Chapter.getDefaultInstance())
 
             when (type) {
-                DraftAdapter.TYPE_TEXT -> updateTextChapter(
-                    Chapter.getDefaultInstance(),
-                    new = true
-                )
+                DraftAdapter.TYPE_TEXT -> updateTextChapter(Chapter.getDefaultInstance())
                 DraftAdapter.TYPE_IMAGE -> updateImageChapter(new = true)
             }
         }
@@ -214,17 +213,13 @@ class DraftFragment :
         }
     }
 
-    private fun updateTextChapter(chapter: Chapter, new: Boolean) {
-        val title = if (new) R.string.draft_add_text else R.string.draft_update_text
-        showTextInputAlert(
-            title,
-            TextInputConfig(maxLength = chapterTextMaxSize, text = chapter.text)
-        ) {
-            launch {
-                vm.updateChapterText(currentChapterPosition, it)
-                adapter.update(currentChapterPosition, chapter { text = it })
-            }
-        }
+    private fun updateTextChapter(chapter: Chapter) {
+        val directions = DraftFragmentDirections.toTextChapter(
+            postId = vm.post.value.id,
+            position = currentChapterPosition,
+            text = chapter.text
+        )
+        findNavController().navigate(directions)
     }
 
     private fun updateImageChapter(new: Boolean) {

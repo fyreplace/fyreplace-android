@@ -3,7 +3,6 @@ package app.fyreplace.fyreplace.ui
 import android.content.Context
 import android.content.DialogInterface
 import android.text.Editable
-import android.text.InputType
 import android.text.TextWatcher
 import android.widget.Button
 import androidx.annotation.ArrayRes
@@ -101,18 +100,13 @@ interface ContextHolder {
         }
 
         val positiveButton = alert.getButton(DialogInterface.BUTTON_POSITIVE)
-        positiveButton.isEnabled = config.allowEmpty
+        positiveButton.isEnabled = false
         textInput = alert.findViewById(R.id.text_input)!!
         textWatcher = ButtonToggleWatcher(textInput, positiveButton)
         with(textInput) {
             inputType = config.inputType
-            setText(config.text)
             requestFocus()
             addTextChangedListener(textWatcher)
-
-            if (config.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE > 0) {
-                minLines = 3
-            }
         }
 
         alert.showSoftInput()

@@ -14,7 +14,7 @@
             app:key="email"
             app:summary="@string/settings_email_desc"
             app:title="@string/settings_email" />
-        <app.fyreplace.fyreplace.ui.preferences.BioPreference
+        <Preference
             app:icon="@drawable/ic_baseline_person"
             app:isPreferenceVisible="false"
             app:key="bio"

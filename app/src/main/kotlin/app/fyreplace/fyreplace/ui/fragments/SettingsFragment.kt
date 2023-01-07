@@ -22,7 +22,6 @@ import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.ui.ImageSelector
 import app.fyreplace.fyreplace.ui.ImageSelectorFactory
-import app.fyreplace.fyreplace.ui.preferences.BioPreference
 import app.fyreplace.fyreplace.ui.preferences.ImagePreference
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.SettingsViewModel
@@ -96,9 +95,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
             findPreference<Preference>("email")?.run { summary = user?.email }
 
-            findPreference<BioPreference>("bio")?.run {
+            findPreference<Preference>("bio")?.run {
                 summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
-                setInitialText(user?.bio ?: "")
             }
 
             for ((preference, needsUser) in mapOf(
@@ -131,6 +129,14 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         )) {
             pref?.setOnPreferenceClickListener {
                 val directions = SettingsFragmentDirections.toLogin(isRegistering = registering)
+                findNavController().navigate(directions)
+                return@setOnPreferenceClickListener true
+            }
+        }
+
+        findPreference<Preference>("bio")?.run {
+            setOnPreferenceClickListener {
+                val directions = SettingsFragmentDirections.toBio()
                 findNavController().navigate(directions)
                 return@setOnPreferenceClickListener true
             }
@@ -175,7 +181,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
-            else -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
+            else -> R.string.error_validation_title to R.string.error_validation_message
         }
         else -> super.getFailureTexts(error)
     }
@@ -239,20 +245,13 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                         R.string.settings_email_change_success_message
                     )
                 }
-                "bio" -> {
-                    vm.updateBio(value.orEmpty())
-                    cvm.retrieveMe()
-                }
                 "theme" -> {
                     preferences?.edit { putString("settings.theme", value) }
                     preferences?.applySettings(requireContext())
                 }
                 "environment" -> {
                     preferences?.edit { putString("app.environment", value) }
-                    activity?.run {
-                        val intent = Intent.makeRestartActivityTask(componentName)
-                        startActivity(intent)
-                    }
+                    activity?.run { startActivity(Intent.makeRestartActivityTask(componentName)) }
                 }
                 else -> super.putString(key, value)
             }

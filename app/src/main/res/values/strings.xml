@@ -56,6 +56,9 @@
     <string name="image_error_file_size_title">Invalid image</string>
     <string name="image_error_file_size_message">This picture is too large.</string>
 
+    <string name="text_input_menu_action_done">Done</string>
+    <string name="text_input_length">%1$d/%2$d characters</string>
+
     <string name="main_account_activated_title">Account activated</string>
     <string name="main_account_activated_message">Your account has been successfully activated. Welcome to Fyreplace!</string>
     <string name="main_user_email_changed_message">Email updated</string>
@@ -175,7 +178,6 @@
     <string name="post_report_success_message">Post reported</string>
     <string name="post_delete_title">Delete this post?</string>
     <string name="post_delete_message">This action cannot be undone.</string>
-    <string name="post_comment_title">New comment</string>
     <string name="post_comment_menu_action_share">Share</string>
     <string name="post_comment_menu_action_report">Report</string>
     <string name="post_comment_menu_action_delete">Delete</string>
@@ -193,6 +195,8 @@
     <string name="post_error_comment_too_long_title">Invalid comment</string>
     <string name="post_error_comment_too_long_message">Your comment is too long.</string>
 
+    <string name="comment_menu_action_post">Post</string>
+
     <string name="draft_menu_action_delete">Delete</string>
     <string name="draft_primary_action_publish">Publish</string>
     <string name="draft_publish_title">Publish this post…</string>
@@ -206,7 +210,6 @@
     <string name="draft_empty">Enter some text…</string>
     <string name="draft_add_text">Add text</string>
     <string name="draft_add_image">Add image</string>
-    <string name="draft_update_text">Update text</string>
     <string name="draft_update_image">Update image</string>
     <string-array name="draft_item_choices">
         <item>Move up</item>

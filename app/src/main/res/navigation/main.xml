@@ -39,6 +39,17 @@
             android:name="commentPosition"
             android:defaultValue="-1"
             app:argType="integer" />
+        <action
+            android:id="@+id/to_comment"
+            app:destination="@id/fragment_comment" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_comment"
+        android:name="app.fyreplace.fyreplace.ui.fragments.CommentFragment"
+        tools:layout="@layout/fragment_text_input">
+        <argument
+            android:name="postId"
+            app:argType="com.google.protobuf.ByteString" />
     </fragment>
     <fragment
         android:id="@+id/fragment_draft"
@@ -48,6 +59,24 @@
         <argument
             android:name="post"
             app:argType="app.fyreplace.fyreplace.grpc.ParcelablePost" />
+        <action
+            android:id="@+id/to_text_chapter"
+            app:destination="@id/fragment_text_chapter" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_text_chapter"
+        android:name="app.fyreplace.fyreplace.ui.fragments.TextChapterFragment"
+        android:label=" "
+        tools:layout="@layout/fragment_text_input">
+        <argument
+            android:name="postId"
+            app:argType="com.google.protobuf.ByteString" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <argument
+            android:name="text"
+            app:argType="string" />
     </fragment>
     <dialog
         android:id="@+id/fragment_user"
@@ -66,6 +95,9 @@
             android:id="@+id/to_login"
             app:destination="@id/fragment_login" />
         <action
+            android:id="@+id/to_bio"
+            app:destination="@id/fragment_bio" />
+        <action
             android:id="@+id/to_blocked_users"
             app:destination="@id/fragment_blocked_users" />
     </fragment>
@@ -78,6 +110,11 @@
             android:name="isRegistering"
             app:argType="boolean" />
     </fragment>
+    <fragment
+        android:id="@+id/fragment_bio"
+        android:name="app.fyreplace.fyreplace.ui.fragments.BioFragment"
+        android:label=" "
+        tools:layout="@layout/fragment_text_input" />
     <fragment
         android:id="@+id/fragment_blocked_users"
         android:name="app.fyreplace.fyreplace.ui.fragments.BlockedUsersFragment"

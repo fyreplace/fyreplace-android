@@ -22,7 +22,6 @@ import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.PrimaryActionStyle
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
-import app.fyreplace.fyreplace.ui.views.TextInputConfig
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
 import app.fyreplace.fyreplace.viewmodels.PostViewModel
@@ -30,10 +29,8 @@ import app.fyreplace.fyreplace.viewmodels.PostViewModelFactory
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
-import app.fyreplace.protos.comment
 import com.google.android.material.snackbar.Snackbar
 import com.google.protobuf.ByteString
-import com.google.protobuf.timestamp
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.Status
 import kotlinx.coroutines.delay
@@ -195,13 +192,10 @@ class PostFragment :
         popup.show()
     }
 
-    override fun onNewCommentClicked() = showTextInputAlert(
-        R.string.post_comment_title,
-        TextInputConfig(
-            maxLength = resources.getInteger(R.integer.comment_text_max_size),
-            allowEmpty = false
-        )
-    ) { launch { createComment(it) } }
+    override fun onNewCommentClicked() {
+        val directions = PostFragmentDirections.toComment(postId = vm.post.value.id)
+        findNavController().navigate(directions)
+    }
 
     override fun getPrimaryActionText() = R.string.post_primary_action_comment
 
@@ -321,16 +315,6 @@ class PostFragment :
         vm.delete()
         vm.em.post(PostWasDeletedEvent(vm.post.value))
         findNavController().navigateUp()
-    }
-
-    private suspend fun createComment(text: String) {
-        val comment = comment {
-            id = vm.createComment(text).id
-            this.text = text
-            author = cvm.currentUser.value!!.profile
-            dateCreated = timestamp { seconds = System.currentTimeMillis() / 1000 }
-        }
-        vm.em.post(CommentWasCreatedEvent(comment, vm.post.value.id, true))
     }
 
     private suspend fun reportComment(comment: Comment) {

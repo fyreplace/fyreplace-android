@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.CommentWasSeenEvent
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 
 @SuppressLint("CheckResult")
 class PostViewModel @AssistedInject constructor(
@@ -36,6 +38,14 @@ class PostViewModel @AssistedInject constructor(
     val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
+
+    init {
+        viewModelScope.launch {
+            em.events.filterIsInstance<CommentWasCreatedEvent>()
+                .filter { it.postId == post.value.id }
+                .collect { mSubscribed.value = true }
+        }
+    }
 
     override fun getPosition(item: Comment): Int {
         val position = super.getPosition(item)
@@ -77,15 +87,6 @@ class PostViewModel @AssistedInject constructor(
 
     suspend fun delete() {
         postStub.delete(id { id = mPost.value.id })
-    }
-
-    suspend fun createComment(text: String): Id {
-        val id = commentStub.create(commentCreation {
-            postId = post.value.id
-            this.text = text
-        })
-        mSubscribed.value = true
-        return id
     }
 
     suspend fun reportComment(commentId: ByteString) {

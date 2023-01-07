@@ -3,15 +3,20 @@ package app.fyreplace.fyreplace.viewmodels
 import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import app.fyreplace.fyreplace.events.ChapterWasUpdatedEvent
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.imageChunkFlow
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @SuppressLint("CheckResult")
 class DraftViewModel @AssistedInject constructor(
+    em: EventsManager,
     @Assisted initialPost: Post,
     private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
     private val chapterStub: ChapterServiceGrpcKt.ChapterServiceCoroutineStub
@@ -22,6 +27,17 @@ class DraftViewModel @AssistedInject constructor(
         .combine(isLoading) { post, isLoading -> post.chapterCount < 10 && !isLoading }
         .asState(false)
     val canPublish = post.map { it.chapterCount > 0 }.asState(false)
+
+    init {
+        viewModelScope.launch {
+            em.events.filterIsInstance<ChapterWasUpdatedEvent>()
+                .filter { it.postId == post.value.id }
+                .collect {
+                    mPost.value =
+                        post.value.copy { chapters[it.position] = chapter { text = it.text } }
+                }
+        }
+    }
 
     suspend fun retrieve(postId: ByteString) {
         mPost.value = postStub.retrieve(id { id = postId })
@@ -58,17 +74,6 @@ class DraftViewModel @AssistedInject constructor(
             .removeChapters(position)
             .setChapterCount(post.value.chaptersCount - 1)
             .build()
-    }
-
-    suspend fun updateChapterText(position: Int, text: String): Unit = whileLoading {
-        chapterStub.updateText(chapterTextUpdate {
-            location = chapterLocation {
-                postId = post.value.id
-                this.position = position
-            }
-            this.text = text
-        })
-        mPost.value = post.value.copy { chapters[position] = chapter { this.text = text } }
     }
 
     suspend fun updateChapterImage(position: Int, image: ByteArray) = whileLoading {
