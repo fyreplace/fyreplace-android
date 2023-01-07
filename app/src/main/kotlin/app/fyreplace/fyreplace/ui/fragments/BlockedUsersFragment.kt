@@ -23,7 +23,7 @@ class BlockedUsersFragment :
 
     override fun onItemClick(item: Profile, position: Int) {
         val directions =
-            BlockedUsersFragmentDirections.actionUser(profile = item.p)
+            BlockedUsersFragmentDirections.toUser(profile = item.p)
         findNavController().navigate(directions)
     }
 

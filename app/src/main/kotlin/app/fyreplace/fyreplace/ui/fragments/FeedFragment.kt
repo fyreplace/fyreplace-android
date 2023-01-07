@@ -81,7 +81,7 @@ class FeedFragment :
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = FeedFragmentDirections.actionPost(item.p)
+        val directions = FeedFragmentDirections.toPost(item.p)
         findNavController().navigate(directions)
     }
 

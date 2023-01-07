@@ -249,7 +249,7 @@ class MainActivity :
 
             for (view in textViews) {
                 view.setOnClickListener {
-                    navHost.navController.navigate(MainDirections.actionUser(profile = profile.p))
+                    navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
                 }
             }
         } else {
@@ -454,7 +454,7 @@ class MainActivity :
             ) -> return
             postFragment != null && postFragment.args.post.id == post.id -> postFragment.showUnreadComments()
             else -> navHost.navController.navigate(
-                MainDirections.actionPost(
+                MainDirections.toPost(
                     post = post.p,
                     commentPosition = commentPosition ?: -1
                 )
@@ -515,7 +515,7 @@ class MainActivity :
                     }
 
                     setOnClickListener {
-                        navHost.navController.navigate(MainDirections.actionUser(profile = profile.p))
+                        navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
                     }
                 }
         }

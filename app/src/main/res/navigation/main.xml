@@ -25,7 +25,7 @@
         android:label="@string/destination_drafts"
         tools:layout="@layout/fragment_item_list">
         <action
-            android:id="@+id/action_draft"
+            android:id="@+id/to_draft"
             app:destination="@id/fragment_draft" />
     </fragment>
     <fragment
@@ -63,10 +63,10 @@
         android:name="app.fyreplace.fyreplace.ui.fragments.SettingsFragment"
         android:label="@string/destination_settings">
         <action
-            android:id="@+id/to_fragment_login"
+            android:id="@+id/to_login"
             app:destination="@id/fragment_login" />
         <action
-            android:id="@+id/action_blocked_users"
+            android:id="@+id/to_blocked_users"
             app:destination="@id/fragment_blocked_users" />
     </fragment>
     <fragment
@@ -84,9 +84,9 @@
         android:label="@string/destination_blocked_users"
         tools:layout="@layout/fragment_item_list" />
     <action
-        android:id="@+id/action_post"
+        android:id="@+id/to_post"
         app:destination="@id/fragment_post" />
     <action
-        android:id="@+id/action_user"
+        android:id="@+id/to_user"
         app:destination="@id/fragment_user" />
 </navigation>

@@ -26,7 +26,7 @@ class ArchiveFragment :
     override fun makeAdapter() = ArchiveAdapter(this)
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = ArchiveFragmentDirections.actionPost(post = item.p)
+        val directions = ArchiveFragmentDirections.toPost(post = item.p)
         findNavController().navigate(directions)
     }
 

@@ -163,7 +163,7 @@ class PostFragment :
     }
 
     override fun onCommentProfileClicked(view: View, position: Int, profile: Profile) {
-        val directions = PostFragmentDirections.actionUser(profile = profile.p)
+        val directions = PostFragmentDirections.toUser(profile = profile.p)
         findNavController().navigate(directions)
     }
 

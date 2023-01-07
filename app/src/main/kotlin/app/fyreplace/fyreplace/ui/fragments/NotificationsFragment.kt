@@ -48,12 +48,12 @@ class NotificationsFragment :
     override fun onItemClick(item: Notification, position: Int) {
         val directions = when (item.targetCase) {
             Notification.TargetCase.USER ->
-                NotificationsFragmentDirections.actionUser(profile = item.user.p)
+                NotificationsFragmentDirections.toUser(profile = item.user.p)
             Notification.TargetCase.POST ->
-                NotificationsFragmentDirections.actionPost(post = item.post.p)
+                NotificationsFragmentDirections.toPost(post = item.post.p)
                     .also { vm.em.post(PostWasSeenEvent(item.post)) }
             Notification.TargetCase.COMMENT ->
-                NotificationsFragmentDirections.actionPost(post = post { id = item.comment.id }.p)
+                NotificationsFragmentDirections.toPost(post = post { id = item.comment.id }.p)
             else -> return
         }
         findNavController().navigate(directions)

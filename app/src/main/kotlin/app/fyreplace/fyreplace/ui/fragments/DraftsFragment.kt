@@ -26,7 +26,7 @@ class DraftsFragment :
     override fun makeAdapter() = DraftsAdapter(this)
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = DraftsFragmentDirections.actionDraft(post = item.p)
+        val directions = DraftsFragmentDirections.toDraft(post = item.p)
         findNavController().navigate(directions)
     }
 
@@ -42,7 +42,7 @@ class DraftsFragment :
 
     override fun onPrimaryAction() {
         launch {
-            val directions = DraftsFragmentDirections.actionDraft(post = createPost().p)
+            val directions = DraftsFragmentDirections.toDraft(post = createPost().p)
             findNavController().navigate(directions)
         }
     }

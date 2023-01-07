@@ -130,8 +130,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             findPreference<Preference>("login") to false
         )) {
             pref?.setOnPreferenceClickListener {
-                val directions = SettingsFragmentDirections
-                    .toFragmentLogin(isRegistering = registering)
+                val directions = SettingsFragmentDirections.toLogin(isRegistering = registering)
                 findNavController().navigate(directions)
                 return@setOnPreferenceClickListener true
             }
@@ -139,7 +138,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
         findPreference<Preference>("blocked_users")?.run {
             setOnPreferenceClickListener {
-                val directions = SettingsFragmentDirections.actionBlockedUsers()
+                val directions = SettingsFragmentDirections.toBlockedUsers()
                 findNavController().navigate(directions)
                 return@setOnPreferenceClickListener true
             }
