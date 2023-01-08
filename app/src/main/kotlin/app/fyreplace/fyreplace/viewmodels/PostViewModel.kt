@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
-import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
-import app.fyreplace.fyreplace.events.CommentWasSeenEvent
-import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.*
 import app.fyreplace.protos.*
 import com.google.protobuf.ByteString
 import dagger.assisted.Assisted
@@ -33,17 +30,27 @@ class PostViewModel @AssistedInject constructor(
     private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
     private var mSelectedComment = MutableStateFlow<Int?>(null)
     private var mShouldScrollToComment = true
+    private var mSavedComment = ""
     private var acknowledgedPosition = -1
     val post = mPost.asStateFlow()
     val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
+    val savedComment get() = mSavedComment
 
     init {
         viewModelScope.launch {
+            em.events.filterIsInstance<CommentWasSavedEvent>()
+                .collect { mSavedComment = it.text }
+        }
+
+        viewModelScope.launch {
             em.events.filterIsInstance<CommentWasCreatedEvent>()
                 .filter { it.postId == post.value.id }
-                .collect { mSubscribed.value = true }
+                .collect {
+                    mSubscribed.value = true
+                    mSavedComment = ""
+                }
         }
     }
 

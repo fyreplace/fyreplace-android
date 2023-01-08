@@ -50,6 +50,9 @@
         <argument
             android:name="postId"
             app:argType="com.google.protobuf.ByteString" />
+        <argument
+            android:name="text"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/fragment_draft"

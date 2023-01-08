@@ -193,7 +193,10 @@ class PostFragment :
     }
 
     override fun onNewCommentClicked() {
-        val directions = PostFragmentDirections.toComment(postId = vm.post.value.id)
+        val directions = PostFragmentDirections.toComment(
+            postId = vm.post.value.id,
+            text = vm.savedComment
+        )
         findNavController().navigate(directions)
     }
 

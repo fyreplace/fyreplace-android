@@ -5,6 +5,8 @@ import com.google.protobuf.ByteString
 
 abstract class CommentEvent(item: Comment, val postId: ByteString) : ItemEvent<Comment>(item)
 
+class CommentWasSavedEvent(val text: String) : Event
+
 class CommentWasCreatedEvent(item: Comment, postId: ByteString, val byCurrentUser: Boolean) :
     CommentEvent(item, postId)
 
