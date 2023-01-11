@@ -22,9 +22,9 @@ abstract class ItemRandomAccessListAdapter<Item, VH : ItemHolder>(val offset: In
         }
     }
 
-    fun resetTo(items: Map<Int, Item>) {
+    fun resetTo(items: Map<Int, Item>, size: Int) {
         val oldTotalSize = totalSize
-        mTotalSize = items.size
+        mTotalSize = size
         this.items.clear()
         notifyItemRangeRemoved(offset, oldTotalSize)
         this.items.putAll(items)

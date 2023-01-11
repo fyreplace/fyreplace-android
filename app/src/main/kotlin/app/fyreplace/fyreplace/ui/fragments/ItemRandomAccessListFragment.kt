@@ -52,7 +52,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter.resetTo(vm.items)
+        adapter.resetTo(vm.items, vm.totalSize)
         bd.recyclerView.adapter = adapter
     }
 
