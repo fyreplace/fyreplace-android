@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 @SuppressLint("CheckResult")
 class PostViewModel @AssistedInject constructor(
@@ -36,6 +37,8 @@ class PostViewModel @AssistedInject constructor(
     val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
+    val scrollTargetPosition
+        get() = selectedComment.value ?: max(post.value.commentsRead, totalSize)
     val savedComment get() = mSavedComment
 
     init {
@@ -48,7 +51,11 @@ class PostViewModel @AssistedInject constructor(
             em.events.filterIsInstance<CommentWasCreatedEvent>()
                 .filter { it.postId == post.value.id }
                 .collect {
+                    mPost.value = Post.newBuilder(post.value)
+                        .setCommentsRead(post.value.commentsRead + 1)
+                        .build()
                     mSubscribed.value = true
+                    mShouldScrollToComment = true
                     mSavedComment = ""
                 }
         }

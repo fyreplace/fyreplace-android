@@ -16,7 +16,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.*
+import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
+import app.fyreplace.fyreplace.events.PostWasDeletedEvent
+import app.fyreplace.fyreplace.events.PostWasSubscribedToEvent
+import app.fyreplace.fyreplace.events.PostWasUnsubscribedFromEvent
 import app.fyreplace.fyreplace.extensions.*
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.PrimaryActionStyle
@@ -77,6 +80,15 @@ class PostFragment :
         )
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if (vm.shouldScrollToComment) {
+            vm.setShouldScrollToComment(false)
+            showComment(vm.scrollTargetPosition)
+        }
+    }
+
     override fun getFailureTexts(error: Status) = when (error.code) {
         Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
         Status.Code.PERMISSION_DENIED -> when (error.description) {
@@ -107,15 +119,6 @@ class PostFragment :
     override fun makeAdapter() =
         PostAdapter(this, cvm.isAuthenticated, vm.post.value, this)
 
-    override fun addItem(event: PositionalEvent<Comment>) {
-        super.addItem(event)
-        val commentWasCreatedEvent = event.event as? CommentWasCreatedEvent ?: return
-
-        if (commentWasCreatedEvent.byCurrentUser) {
-            showComment(event.position)
-        }
-    }
-
     override fun onFetchedItems(position: Int, items: List<Comment>) {
         if (adapter.totalSize == 0 && vm.post.value.commentsRead in 1 until vm.totalSize) {
             vm.setShouldScrollToComment(true)
@@ -138,15 +141,14 @@ class PostFragment :
         comment: Comment?,
         highlighted: Boolean
     ) {
-        val scrollTargetPosition = vm.selectedComment.value ?: vm.post.value.commentsRead
-        val viewPosition = scrollTargetPosition + adapter.offset
+        val scrollTargetPosition = vm.scrollTargetPosition
 
         if (highlighted) {
             vm.acknowledgeComment(position)
         }
 
         when {
-            !vm.shouldScrollToComment || viewPosition >= adapter.itemCount -> return
+            !vm.shouldScrollToComment || position >= vm.totalSize -> return
             position == scrollTargetPosition -> {
                 if (comment != null) {
                     vm.setShouldScrollToComment(false)
