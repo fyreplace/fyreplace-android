@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
 import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.adapters.FeedAdapter
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
@@ -18,6 +19,9 @@ import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.FeedViewModel
 import app.fyreplace.protos.Post
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterIsInstance
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,6 +39,7 @@ class FeedFragment :
     private lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: FeedAdapter
     private var canAutoRefresh = false
+    private var retryCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +66,7 @@ class FeedFragment :
         )
     }
 
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
@@ -68,10 +74,15 @@ class FeedFragment :
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { refreshListing() }
         canAutoRefresh = true
+
+        em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
+            .debounce(1000)
+            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
     }
 
     override fun onStart() {
         super.onStart()
+        retryCount = 0
         startListing()
     }
 
@@ -109,10 +120,11 @@ class FeedFragment :
     }
 
     private fun startListing() {
-        vm.startListing().launchCollect {
+        vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
             adapter.addOrUpdate(it)
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
+        retryCount++
     }
 
     private fun stopListing() = vm.stopListing()
@@ -120,6 +132,11 @@ class FeedFragment :
     private fun refreshListing() {
         stopListing()
         reset()
+        startListing()
+    }
+
+    private fun retryListing() {
+        stopListing()
         startListing()
     }
 

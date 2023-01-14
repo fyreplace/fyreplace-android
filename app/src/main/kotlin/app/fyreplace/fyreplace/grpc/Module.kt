@@ -9,7 +9,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.grpc.Channel
+import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 
 @Module
@@ -17,10 +17,10 @@ import io.grpc.ManagedChannelBuilder
 @Suppress("unused")
 object GrpcModule {
     @Provides
-    fun provideChannel(
+    fun provideManagedChannel(
         @ApplicationContext context: Context,
         preferences: SharedPreferences
-    ): Channel {
+    ): ManagedChannel {
         val environment = preferences.getString(
             "app.environment",
             context.getString(R.string.settings_environment_default_value)
@@ -47,26 +47,26 @@ object GrpcModule {
     }
 
     @Provides
-    fun provideAccountServiceStub(channel: Channel) =
+    fun provideAccountServiceStub(channel: ManagedChannel) =
         AccountServiceGrpcKt.AccountServiceCoroutineStub(channel)
 
     @Provides
-    fun provideUserServiceStub(channel: Channel) =
+    fun provideUserServiceStub(channel: ManagedChannel) =
         UserServiceGrpcKt.UserServiceCoroutineStub(channel)
 
     @Provides
-    fun providePostServiceStub(channel: Channel) =
+    fun providePostServiceStub(channel: ManagedChannel) =
         PostServiceGrpcKt.PostServiceCoroutineStub(channel)
 
     @Provides
-    fun provideChapterServiceStub(channel: Channel) =
+    fun provideChapterServiceStub(channel: ManagedChannel) =
         ChapterServiceGrpcKt.ChapterServiceCoroutineStub(channel)
 
     @Provides
-    fun provideCommentServiceStub(channel: Channel) =
+    fun provideCommentServiceStub(channel: ManagedChannel) =
         CommentServiceGrpcKt.CommentServiceCoroutineStub(channel)
 
     @Provides
-    fun provideNotificationServiceStub(channel: Channel) =
+    fun provideNotificationServiceStub(channel: ManagedChannel) =
         NotificationServiceGrpcKt.NotificationServiceCoroutineStub(channel)
 }

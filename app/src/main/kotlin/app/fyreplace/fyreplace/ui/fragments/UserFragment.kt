@@ -122,7 +122,7 @@ class UserFragment : DialogFragment(), FailureHandler {
             val isNotCurrentUser = currentUser?.profile?.id != args.profile.id
             val currentRank = currentUser?.profile?.rank ?: Rank.RANK_UNSPECIFIED
             return@combine args.profile.rank < currentRank && isNotCurrentUser && !banned
-        }.launchCollect(viewLifecycleScope, bd.toolbar.menu.findItem(R.id.ban)::setVisible)
+        }.launchCollect(viewLifecycleScope, action = bd.toolbar.menu.findItem(R.id.ban)::setVisible)
 
         cvm.isAuthenticated.launchCollect(viewLifecycleScope) { authenticated ->
             for (item in bd.toolbar.menu) {

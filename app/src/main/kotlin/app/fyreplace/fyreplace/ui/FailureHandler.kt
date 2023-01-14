@@ -40,6 +40,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     fun launch(
         scope: CoroutineScope = lifecycleScope,
         context: CoroutineContext = Dispatchers.Main.immediate,
+        retry: (() -> Unit)? = null,
         autoDisconnect: Boolean = true,
         block: suspend CoroutineScope.() -> Unit
     ) = scope.launch(context) {
@@ -48,20 +49,26 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
         } catch (e: CancellationException) {
             // Cancellation is a normal occurrence
         } catch (e: StatusException) {
-            onGrpcFailure(StatusRuntimeException(e.status), autoDisconnect)
+            onGrpcFailure(StatusRuntimeException(e.status), retry, autoDisconnect)
         } catch (e: StatusRuntimeException) {
-            onGrpcFailure(e, autoDisconnect)
+            onGrpcFailure(e, retry, autoDisconnect)
         } catch (e: Exception) {
             onFailure(e)
         }
     }
 
-    private fun onGrpcFailure(e: StatusRuntimeException, autoDisconnect: Boolean) = when {
-        e.status.code == Status.Code.UNAVAILABLE -> showBasicAlert(
-            R.string.error_unavailable_title,
-            R.string.error_unavailable_message,
-            error = true
-        )
+    private fun onGrpcFailure(
+        e: StatusRuntimeException,
+        retry: (() -> Unit)?,
+        autoDisconnect: Boolean
+    ) = when {
+        e.status.code == Status.Code.UNAVAILABLE ->
+            if (retry != null) retry()
+            else showBasicAlert(
+                R.string.error_unavailable_title,
+                R.string.error_unavailable_message,
+                error = true
+            )
         e.status.code == Status.Code.UNAUTHENTICATED && autoDisconnect -> {
             if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
                 showBasicAlert(
@@ -78,6 +85,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
 
     fun <T> Flow<T>.launchCollect(
         scope: CoroutineScope = lifecycleScope,
+        retry: (() -> Unit)? = null,
         action: FlowCollector<T>
-    ) = launch(scope) { collect(action) }
+    ) = launch(scope, retry = retry) { collect(action) }
 }

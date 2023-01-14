@@ -72,11 +72,11 @@ class PostFragment :
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(
             viewLifecycleOwner.lifecycleScope,
-            postAdapter::updatePost
+            action = postAdapter::updatePost
         )
         vm.selectedComment.launchCollect(
             viewLifecycleOwner.lifecycleScope,
-            postAdapter::updateSelectedComment
+            action = postAdapter::updateSelectedComment
         )
     }
 

@@ -5,14 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
+import app.fyreplace.fyreplace.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemRandomAccessListViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterIsInstance
 
 abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     ScrollingListFragment<Item>(R.layout.fragment_item_random_access_list),
@@ -21,6 +26,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     abstract override val vm: ItemRandomAccessListViewModel<Item, Items>
     protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
+    private var retryCount = 0
 
     abstract fun makeAdapter(): ItemRandomAccessListAdapter<Item, VH>
 
@@ -50,10 +56,15 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         return view
     }
 
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items, vm.totalSize)
         bd.recyclerView.adapter = adapter
+
+        vm.em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
+            .debounce(1000)
+            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
     }
 
     override fun onDestroyView() {
@@ -63,6 +74,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
+        retryCount = 0
         launch { startFetchingData() }
     }
 
@@ -98,10 +110,19 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     }
 
     open suspend fun startFetchingData() {
-        vm.startListing().launchCollect { (position, items) -> onFetchedItems(position, items) }
+        vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) { (position, items) ->
+            onFetchedItems(position, items)
+        }
+
+        retryCount++
 
         if (adapter.totalSize == 0) {
             vm.fetchAround(0)
         }
+    }
+
+    private fun retryListing() {
+        vm.stopListing()
+        launch { startFetchingData() }
     }
 }

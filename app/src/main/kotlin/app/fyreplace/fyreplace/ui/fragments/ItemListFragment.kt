@@ -6,14 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
+import app.fyreplace.fyreplace.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.events.PositionalEvent
 import app.fyreplace.fyreplace.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.viewmodels.ItemListViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlin.math.max
 
 abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
@@ -23,6 +28,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
     abstract override val vm: ItemListViewModel<Item, Items>
     protected lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
+    private var retryCount = 0
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>
 
@@ -54,6 +60,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         return view
     }
 
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items)
@@ -63,6 +70,10 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
             resetListing()
             startListing()
         }
+
+        vm.em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
+            .debounce(1000)
+            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
     }
 
     override fun onDestroyView() {
@@ -72,6 +83,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
+        retryCount = 0
         startListing()
     }
 
@@ -127,13 +139,19 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         startListing()
     }
 
+    private fun retryListing() {
+        stopListing()
+        startListing()
+    }
+
     private fun startListing() {
         launch {
-            vm.startListing().launchCollect {
+            vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
                 bd.swipe.isRefreshing = false
                 adapter.addAll(it)
             }
 
+            retryCount++
             val manualCount = max(vm.manuallyAddedCount, 0)
 
             if (adapter.itemCount - manualCount <= 0) {

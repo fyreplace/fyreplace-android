@@ -1,6 +1,10 @@
 package app.fyreplace.fyreplace
 
+import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.net.wifi.WifiManager
+import androidx.core.content.ContextCompat
+import app.fyreplace.fyreplace.broadcasts.NetworkBroadcastReceiver
 import app.fyreplace.fyreplace.events.ActivityWasStartedEvent
 import app.fyreplace.fyreplace.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.events.EventsManager
@@ -26,6 +30,12 @@ class App : BaseApp() {
     override fun onCreate() {
         super.onCreate()
         preferences.applySettings(this)
+        ContextCompat.registerReceiver(
+            this,
+            NetworkBroadcastReceiver(),
+            IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION),
+            ContextCompat.RECEIVER_EXPORTED
+        )
 
         scope.launch {
             em.events.filterIsInstance<ActivityWasStartedEvent>().collect { activityCount++ }
