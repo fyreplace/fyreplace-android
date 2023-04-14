@@ -56,6 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 getString(R.string.settings_environment_default_value)
             )
 
+            @Suppress("KotlinConstantConditions")
             return (environment != null && environment != getString(R.string.settings_environment_default_value))
                     || BuildConfig.VERSION_CODE % 10 == 0
         }
