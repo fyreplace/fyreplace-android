@@ -92,7 +92,7 @@ android {
 
     buildFeatures { dataBinding true }
 
-    flavorDimensions "freedom"
+    flavorDimensions = ["freedom"]
 
     productFlavors {
         google { dimension "freedom" }

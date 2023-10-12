@@ -32,7 +32,7 @@ class CentralViewModel @Inject constructor(
         preferences.unregisterOnSharedPreferenceChangeListener(this)
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
         if (key == "auth.token") {
             mIsAuthenticated.value = sharedPreferences.getString(key, null).isNotNullOrBlank()
         }
