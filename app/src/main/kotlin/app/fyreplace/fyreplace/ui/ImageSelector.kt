@@ -11,7 +11,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.exifinterface.media.ExifInterface
-import androidx.exifinterface.media.ExifInterface.*
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_FLIP_HORIZONTAL
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_FLIP_VERTICAL
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_180
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_270
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_ROTATE_90
+import androidx.exifinterface.media.ExifInterface.ORIENTATION_UNDEFINED
+import androidx.exifinterface.media.ExifInterface.TAG_ORIENTATION
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import app.fyreplace.fyreplace.R
@@ -163,8 +169,10 @@ class ImageSelector @AssistedInject constructor(
                         isTooBig -> CompressFormat.WEBP_LOSSY
                         else -> CompressFormat.WEBP_LOSSLESS
                     }
+
                     else -> @Suppress("DEPRECATION") CompressFormat.WEBP
                 }
+
                 "png" -> CompressFormat.PNG
                 else -> CompressFormat.JPEG
             }

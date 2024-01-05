@@ -184,6 +184,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             else -> R.string.error_validation_title to R.string.error_validation_message
         }
+
         else -> super.getFailureTexts(error)
     }
 
@@ -230,10 +231,12 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "settings.theme",
                 getString(R.string.settings_theme_auto_value)
             )
+
             "environment" -> preferences?.getString(
                 "app.environment",
                 getString(R.string.settings_environment_default_value)
             )
+
             else -> super.getString(key, defValue)
         }
 
@@ -246,14 +249,17 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                         R.string.settings_email_change_success_message
                     )
                 }
+
                 "theme" -> {
                     preferences?.edit { putString("settings.theme", value) }
                     preferences?.applySettings(requireContext())
                 }
+
                 "environment" -> {
                     preferences?.edit { putString("app.environment", value) }
                     activity?.run { startActivity(Intent.makeRestartActivityTask(componentName)) }
                 }
+
                 else -> super.putString(key, value)
             }
         }.let {}

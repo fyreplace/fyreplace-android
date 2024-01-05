@@ -2,7 +2,12 @@ package app.fyreplace.fyreplace.services
 
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
-import app.fyreplace.fyreplace.extensions.*
+import app.fyreplace.fyreplace.extensions.base64ShortString
+import app.fyreplace.fyreplace.extensions.byteString
+import app.fyreplace.fyreplace.extensions.date
+import app.fyreplace.fyreplace.extensions.deleteNotification
+import app.fyreplace.fyreplace.extensions.deleteNotifications
+import app.fyreplace.fyreplace.extensions.notificationTag
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.MessagingService
 import app.fyreplace.protos.NotificationServiceGrpcKt
@@ -12,7 +17,11 @@ import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
 import io.grpc.StatusException
 import io.grpc.StatusRuntimeException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint

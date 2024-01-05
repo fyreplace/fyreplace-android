@@ -20,7 +20,11 @@ import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.PostWasDeletedEvent
 import app.fyreplace.fyreplace.events.PostWasSubscribedToEvent
 import app.fyreplace.fyreplace.events.PostWasUnsubscribedFromEvent
-import app.fyreplace.fyreplace.extensions.*
+import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.isAdmin
+import app.fyreplace.fyreplace.extensions.mainActivity
+import app.fyreplace.fyreplace.extensions.makePreview
+import app.fyreplace.fyreplace.extensions.makeShareIntent
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.PrimaryActionStyle
 import app.fyreplace.fyreplace.ui.adapters.PostAdapter
@@ -95,10 +99,12 @@ class PostFragment :
             "caller_blocked" -> R.string.post_error_blocked_title to R.string.post_error_blocked_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
+
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "invalid_uuid" -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
             else -> R.string.post_error_comment_too_long_title to R.string.post_error_comment_too_long_message
         }
+
         else -> super.getFailureTexts(error)
     }
 
@@ -156,6 +162,7 @@ class PostFragment :
 
                 showComment(scrollTargetPosition)
             }
+
             position % ItemRandomAccessListViewModel.PAGE_SIZE == 0 ->
                 showComment(scrollTargetPosition)
         }
@@ -177,10 +184,12 @@ class PostFragment :
                     R.string.post_comment_report_title,
                     null
                 ) { launch { reportComment(comment) } }
+
                 R.id.delete -> showChoiceAlert(
                     R.string.post_comment_delete_title,
                     R.string.post_comment_delete_message
                 ) { launch { deleteComment(position, comment) } }
+
                 else -> return@setOnMenuItemClickListener false
             }
 
@@ -251,10 +260,12 @@ class PostFragment :
                 R.string.post_report_title,
                 null
             ) { launch { report() } }
+
             R.id.delete -> showChoiceAlert(
                 R.string.post_delete_title,
                 R.string.post_delete_message
             ) { launch { delete() } }
+
             else -> return false
         }
 

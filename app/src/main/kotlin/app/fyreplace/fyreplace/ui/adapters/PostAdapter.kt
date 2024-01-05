@@ -43,15 +43,19 @@ class PostAdapter(
             TYPE_CHAPTERS -> ChaptersHolder(
                 inflater.inflate(R.layout.item_chapters, parent, false)
             )
+
             TYPE_COMMENT -> CommentHolder(
                 inflater.inflate(R.layout.item_comment, parent, false)
             )
+
             TYPE_COMMENT_LOADER -> CommentLoaderHolder(
                 inflater.inflate(R.layout.item_comment_loader, parent, false)
             )
+
             TYPE_NEW_COMMENT -> NewCommentHolder(
                 inflater.inflate(R.layout.item_new_comment, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }

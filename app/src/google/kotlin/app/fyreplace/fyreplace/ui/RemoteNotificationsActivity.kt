@@ -14,7 +14,11 @@ import app.fyreplace.fyreplace.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.RemoteNotificationWasReceivedEvent
-import app.fyreplace.fyreplace.extensions.*
+import app.fyreplace.fyreplace.extensions.comment
+import app.fyreplace.fyreplace.extensions.createNotification
+import app.fyreplace.fyreplace.extensions.date
+import app.fyreplace.fyreplace.extensions.makeShareUri
+import app.fyreplace.fyreplace.extensions.notificationTag
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.MessagingService
 import app.fyreplace.protos.NotificationServiceGrpcKt

@@ -48,6 +48,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
             "email_taken" -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
             else -> R.string.login_error_existing_username_title to R.string.login_error_existing_username_message
         }
+
         Status.Code.PERMISSION_DENIED -> when (error.description) {
             "caller_pending" -> R.string.login_error_caller_pending_title to R.string.login_error_caller_pending_message
             "caller_deleted" -> R.string.login_error_caller_deleted_title to R.string.login_error_caller_deleted_message
@@ -56,12 +57,14 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
             "username_reserved" -> R.string.login_error_username_reserved_title to R.string.login_error_username_reserved_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
+
         Status.Code.INVALID_ARGUMENT -> when (error.description) {
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             "invalid_username" -> R.string.login_error_invalid_username_title to R.string.login_error_invalid_username_message
             "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
             else -> R.string.error_validation_title to R.string.error_validation_message
         }
+
         else -> super.getFailureTexts(error)
     }
 

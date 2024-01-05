@@ -3,7 +3,13 @@ package app.fyreplace.fyreplace.viewmodels
 import androidx.annotation.IdRes
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.*
+import app.fyreplace.fyreplace.events.DraftWasPublishedEvent
+import app.fyreplace.fyreplace.events.EventsManager
+import app.fyreplace.fyreplace.events.ItemEvent
+import app.fyreplace.fyreplace.events.PostWasDeletedEvent
+import app.fyreplace.fyreplace.events.PostWasSeenEvent
+import app.fyreplace.fyreplace.events.PostWasSubscribedToEvent
+import app.fyreplace.fyreplace.events.PostWasUnsubscribedFromEvent
 import app.fyreplace.protos.Cursor
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.PostServiceGrpcKt
@@ -11,7 +17,14 @@ import app.fyreplace.protos.Posts
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

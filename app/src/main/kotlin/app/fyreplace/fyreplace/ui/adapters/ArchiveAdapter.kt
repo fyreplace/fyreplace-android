@@ -20,9 +20,11 @@ class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
             TYPE_TEXT -> PreviewHolder(
                 inflater.inflate(R.layout.item_post_text, parent, false)
             )
+
             TYPE_IMAGE -> PreviewHolder(
                 inflater.inflate(R.layout.item_post_image, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }

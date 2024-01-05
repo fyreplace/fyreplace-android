@@ -16,7 +16,7 @@ import androidx.core.content.res.use
 import app.fyreplace.fyreplace.R
 import com.google.android.material.color.DynamicColors
 import com.google.protobuf.ByteString
-import java.util.*
+import java.util.Date
 
 val Context.mainPreferences: SharedPreferences
     get() = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)

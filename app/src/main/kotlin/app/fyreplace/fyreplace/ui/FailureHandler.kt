@@ -69,6 +69,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
                 R.string.error_unavailable_message,
                 error = true
             )
+
         e.status.code == Status.Code.UNAUTHENTICATED && autoDisconnect -> {
             if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
                 showBasicAlert(
@@ -80,6 +81,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
 
             preferences?.edit { putString("auth.token", "") }
         }
+
         else -> onFailure(e)
     }
 

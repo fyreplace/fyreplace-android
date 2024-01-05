@@ -39,9 +39,11 @@ class FeedAdapter(
             TYPE_TEXT -> TextPostHolder(
                 inflater.inflate(R.layout.item_feed_post_text, parent, false)
             )
+
             TYPE_IMAGE -> ImagePostHolder(
                 inflater.inflate(R.layout.item_feed_post_image, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }

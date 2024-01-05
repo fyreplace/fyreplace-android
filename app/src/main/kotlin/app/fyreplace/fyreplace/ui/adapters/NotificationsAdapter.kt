@@ -20,6 +20,7 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
             Notification.TargetCase.USER -> TYPE_USER
             Notification.TargetCase.POST ->
                 if (notification.post.firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
+
             Notification.TargetCase.COMMENT -> TYPE_TEXT
             else -> throw RuntimeException()
         }
@@ -31,12 +32,15 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
             TYPE_USER -> UserHolder(
                 inflater.inflate(R.layout.item_notification_user, parent, false)
             )
+
             TYPE_TEXT -> TextHolder(
                 inflater.inflate(R.layout.item_notification_text, parent, false)
             )
+
             TYPE_IMAGE -> ImageHolder(
                 inflater.inflate(R.layout.item_notification_image, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }

@@ -1,8 +1,13 @@
 package app.fyreplace.fyreplace.grpc
 
 import android.content.SharedPreferences
-import io.grpc.*
+import io.grpc.CallOptions
+import io.grpc.Channel
+import io.grpc.ClientCall
+import io.grpc.ClientInterceptor
 import io.grpc.ClientInterceptors.CheckedForwardingClientCall
+import io.grpc.Metadata
+import io.grpc.MethodDescriptor
 
 class AuthenticationInterceptor(private val preferences: SharedPreferences) : ClientInterceptor {
     override fun <Request, Response> interceptCall(

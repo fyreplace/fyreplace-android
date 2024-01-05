@@ -37,12 +37,19 @@ import app.fyreplace.fyreplace.databinding.ActivityMainBinding
 import app.fyreplace.fyreplace.events.ActivityWasStartedEvent
 import app.fyreplace.fyreplace.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.events.CommentWasSeenEvent
-import app.fyreplace.fyreplace.extensions.*
+import app.fyreplace.fyreplace.extensions.byteString
+import app.fyreplace.fyreplace.extensions.current
+import app.fyreplace.fyreplace.extensions.getDynamicColor
+import app.fyreplace.fyreplace.extensions.getUsername
+import app.fyreplace.fyreplace.extensions.isAvailable
+import app.fyreplace.fyreplace.extensions.loadAvatar
 import app.fyreplace.fyreplace.grpc.p
 import app.fyreplace.fyreplace.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
-import app.fyreplace.protos.*
+import app.fyreplace.protos.Comment
+import app.fyreplace.protos.Profile
+import app.fyreplace.protos.post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
@@ -173,11 +180,13 @@ class MainActivity :
             "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
             else -> R.string.error_authentication_title to R.string.error_authentication_message
         }
+
         Status.Code.PERMISSION_DENIED -> when (error.description) {
             "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
             "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
+
         else -> super.getFailureTexts(error)
     }
 
@@ -405,6 +414,7 @@ class MainActivity :
                     val parts = path.drop(3).split('/')
                     showPost(parts.first(), parts.getOrNull(1)?.toIntOrNull())
                 }
+
                 else -> showBasicAlert(
                     R.string.main_error_malformed_url_title,
                     R.string.main_error_malformed_url_message,
@@ -443,15 +453,18 @@ class MainActivity :
                 R.string.main_error_malformed_url_message,
                 error = true
             )
+
             !cvm.isAuthenticated.value -> showBasicAlert(
                 R.string.error_authentication_title,
                 R.string.error_authentication_message,
                 error = true
             )
+
             postFragment != null && commentPosition != null && postFragment.tryShowComment(
                 post.id,
                 commentPosition
             ) -> return
+
             postFragment != null && postFragment.args.post.id == post.id -> postFragment.showUnreadComments()
             else -> navHost.navController.navigate(
                 MainDirections.toPost(

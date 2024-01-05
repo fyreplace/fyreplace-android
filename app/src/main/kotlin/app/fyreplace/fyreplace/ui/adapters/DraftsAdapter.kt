@@ -27,12 +27,15 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
             TYPE_EMPTY -> EmptyHolder(
                 inflater.inflate(R.layout.item_draft_empty, parent, false)
             )
+
             TYPE_TEXT -> DraftHolder(
                 inflater.inflate(R.layout.item_draft_text, parent, false)
             )
+
             TYPE_IMAGE -> DraftHolder(
                 inflater.inflate(R.layout.item_draft_image, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }

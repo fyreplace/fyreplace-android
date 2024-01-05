@@ -110,9 +110,10 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     }
 
     open suspend fun startFetchingData() {
-        vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) { (position, items) ->
-            onFetchedItems(position, items)
-        }
+        vm.startListing()
+            .launchCollect(retry = if (retryCount < 3) ::retryListing else null) { (position, items) ->
+                onFetchedItems(position, items)
+            }
 
         retryCount++
 

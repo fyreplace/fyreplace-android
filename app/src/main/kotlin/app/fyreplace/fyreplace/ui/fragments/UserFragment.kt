@@ -17,7 +17,11 @@ import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.events.UserWasBannedEvent
 import app.fyreplace.fyreplace.events.UserWasBlockedEvent
 import app.fyreplace.fyreplace.events.UserWasUnblockedEvent
-import app.fyreplace.fyreplace.extensions.*
+import app.fyreplace.fyreplace.extensions.formatDate
+import app.fyreplace.fyreplace.extensions.getUsername
+import app.fyreplace.fyreplace.extensions.setAvatar
+import app.fyreplace.fyreplace.extensions.setLinkifiedText
+import app.fyreplace.fyreplace.extensions.setupTransitions
 import app.fyreplace.fyreplace.ui.FailureHandler
 import app.fyreplace.fyreplace.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.viewmodels.Sentence
@@ -174,10 +178,12 @@ class UserFragment : DialogFragment(), FailureHandler {
                 vm.ban(Sentence.WEEK)
                 finishBan()
             }
+
             1 -> launch {
                 vm.ban(Sentence.MONTH)
                 finishBan()
             }
+
             else -> showChoiceAlert(R.string.user_ban_permanently_title, null) {
                 launch {
                     vm.ban(Sentence.PERMANENTLY)

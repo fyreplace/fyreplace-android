@@ -49,11 +49,14 @@ class NotificationsFragment :
         val directions = when (item.targetCase) {
             Notification.TargetCase.USER ->
                 NotificationsFragmentDirections.toUser(profile = item.user.p)
+
             Notification.TargetCase.POST ->
                 NotificationsFragmentDirections.toPost(post = item.post.p)
                     .also { vm.em.post(PostWasSeenEvent(item.post)) }
+
             Notification.TargetCase.COMMENT ->
                 NotificationsFragmentDirections.toPost(post = post { id = item.comment.id }.p)
+
             else -> return
         }
         findNavController().navigate(directions)
@@ -85,6 +88,7 @@ class NotificationsFragment :
                     refreshListing()
                 }
             }
+
             else -> return false
         }
 

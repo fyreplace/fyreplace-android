@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.extensions
 import com.google.protobuf.Timestamp
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 private val dateTimeFormat = SimpleDateFormat.getDateTimeInstance()
 private val shortDateTimeFormat =

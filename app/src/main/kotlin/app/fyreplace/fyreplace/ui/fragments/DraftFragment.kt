@@ -1,7 +1,12 @@
 package app.fyreplace.fyreplace.ui.fragments
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -9,7 +14,11 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentDraftBinding
-import app.fyreplace.fyreplace.events.*
+import app.fyreplace.fyreplace.events.ChapterWasUpdatedEvent
+import app.fyreplace.fyreplace.events.DraftWasDeletedEvent
+import app.fyreplace.fyreplace.events.DraftWasPublishedEvent
+import app.fyreplace.fyreplace.events.DraftWasUpdatedEvent
+import app.fyreplace.fyreplace.events.EventsManager
 import app.fyreplace.fyreplace.extensions.mainActivity
 import app.fyreplace.fyreplace.extensions.makePreview
 import app.fyreplace.fyreplace.ui.ImageSelector
@@ -95,6 +104,7 @@ class DraftFragment :
             "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
             else -> R.string.error_validation_title to R.string.error_validation_message
         }
+
         else -> super.getFailureTexts(error)
     }
 

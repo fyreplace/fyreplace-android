@@ -41,12 +41,15 @@ class DraftAdapter(
             TYPE_TEXT -> DraftTextChapterHolder(
                 inflater.inflate(R.layout.item_chapter_text, parent, false)
             )
+
             TYPE_IMAGE -> ImageChapterHolder(
                 inflater.inflate(R.layout.item_chapter_image, parent, false)
             )
+
             TYPE_BUTTONS -> ButtonsChapterHolder(
                 inflater.inflate(R.layout.item_chapter_buttons, parent, false)
             )
+
             else -> throw RuntimeException()
         }
     }
