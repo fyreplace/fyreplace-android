@@ -27,7 +27,7 @@
         <item name="colorOutline">@color/md_theme_outline</item>
         <item name="colorOnSurfaceInverse">@color/md_theme_inverseOnSurface</item>
         <item name="colorSurfaceInverse">@color/md_theme_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_primaryInverse</item>
+        <item name="colorPrimaryInverse">@color/md_theme_inversePrimary</item>
         <item name="colorControlHighlight">?attr/colorPrimaryInverse</item>
     </style>
 

@@ -33,7 +33,7 @@ dependencyResolutionManagement {
             library("glide.glide-processor", "com.github.bumptech.glide", "ksp").versionRef("glide")
             library("google.firebase.bom", "com.google.firebase:firebase-bom:32.7.0")
             library("google.firebase.messaging", "com.google.firebase:firebase-messaging-ktx:23.4.0")
-            library("google.material", "com.google.android.material:material:1.11.0")
+            library("google.material", "com.google.android.material:material:1.10.0")
             library("google.play-services", "com.google.android.gms:play-services-basement:18.2.0")
             library("grpc.grpc-okhttp", "io.grpc", "grpc-okhttp").versionRef("grpc")
             library("grpc.grpc-protobuf", "io.grpc", "grpc-protobuf").versionRef("grpc")
