@@ -56,7 +56,7 @@ abstract class TextInputFragment : BaseFragment(R.layout.fragment_text_input), M
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.fragment_text_input, menu)
         vm.isLoading
-            .combine(vm.text) { isLoading, text -> !isLoading && (allowEmpty || text.isNotEmpty()) }
+            .combine(vm.text) { isLoading, text -> !isLoading && (allowEmpty || text.isNotBlank()) }
             .launchCollect(viewLifecycleOwner.lifecycleScope) {
                 menu.findItem(R.id.done)?.isEnabled = it
             }
