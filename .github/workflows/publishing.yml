@@ -16,12 +16,12 @@ jobs:
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -53,25 +53,25 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.apk
           path: app/build/outputs/apk/google/release/*.apk
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Fyreplace-libre.apk
           path: app/build/outputs/apk/libre/release/*.apk
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.aab
           path: app/build/outputs/bundle/googleRelease/*.aab
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Fyreplace-libre.aab
           path: app/build/outputs/bundle/libreRelease/*.aab
@@ -84,7 +84,7 @@ jobs:
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           submodules: true
@@ -92,7 +92,7 @@ jobs:
       - name: Set up artifact directory
         run: mkdir -p build
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: Fyreplace.aab
           path: build
