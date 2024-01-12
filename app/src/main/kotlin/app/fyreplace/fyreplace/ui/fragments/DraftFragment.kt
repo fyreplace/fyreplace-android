@@ -57,7 +57,7 @@ class DraftFragment :
     override val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }
-    val args by navArgs<DraftFragmentArgs>()
+    private val args by navArgs<DraftFragmentArgs>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 512 * 1024) }

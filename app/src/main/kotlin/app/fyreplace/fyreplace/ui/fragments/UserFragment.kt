@@ -45,11 +45,11 @@ class UserFragment : DialogFragment(), FailureHandler {
     lateinit var vmFactory: UserViewModelFactory
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
-    val args by navArgs<UserFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by viewModels<UserViewModel> {
         UserViewModel.provideFactory(vmFactory, args.profile.v)
     }
+    private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
     private lateinit var viewLifecycleScope: CoroutineScope
 
