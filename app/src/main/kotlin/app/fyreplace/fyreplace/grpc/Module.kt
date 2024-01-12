@@ -42,7 +42,7 @@ object GrpcModule {
 
         return channel
             .enableRetry()
-            .intercept(listOf(AuthenticationInterceptor(preferences)))
+            .intercept(RequestIdentificationInterceptor(), AuthenticationInterceptor(preferences))
             .build()
     }
 
