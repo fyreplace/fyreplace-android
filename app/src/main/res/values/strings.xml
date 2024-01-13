@@ -190,12 +190,12 @@
     <string name="post_snackbar_comment_created_action">See</string>
     <string name="post_error_not_found_title">Post not found</string>
     <string name="post_error_not_found_message">This post does not exist, or it has been deleted.</string>
-    <string name="post_error_blocked_title">Unable to comment</string>
-    <string name="post_error_blocked_message">You are blocked by this post\'s author.</string>
-    <string name="post_error_comment_too_long_title">Invalid comment</string>
-    <string name="post_error_comment_too_long_message">Your comment is too long.</string>
 
     <string name="comment_menu_action_post">Post</string>
+    <string name="comment_error_blocked_title">Unable to comment</string>
+    <string name="comment_error_blocked_message">You are blocked by this post\'s author.</string>
+    <string name="comment_error_too_long_title">Invalid comment</string>
+    <string name="comment_error_too_long_message">Your comment is too long.</string>
 
     <string name="draft_menu_action_delete">Delete</string>
     <string name="draft_primary_action_publish">Publish</string>

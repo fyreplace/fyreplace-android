@@ -44,7 +44,15 @@ class CommentFragment : TextInputFragment() {
     }
 
     override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> R.string.post_error_comment_too_long_title to R.string.post_error_comment_too_long_message
+        Status.Code.PERMISSION_DENIED -> when (error.description) {
+            "caller_blocked" -> R.string.comment_error_blocked_title to R.string.comment_error_blocked_message
+            else -> R.string.comment_error_too_long_title to R.string.comment_error_too_long_message
+        }
+
+        Status.Code.INVALID_ARGUMENT ->
+            if (vm.text.value.length > maxLength) R.string.comment_error_too_long_title to R.string.comment_error_too_long_message
+            else R.string.error_validation_title to R.string.error_validation_message
+
         else -> super.getFailureTexts(error)
     }
 
