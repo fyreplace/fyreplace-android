@@ -30,7 +30,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
             Log.e(getString(R.string.app_name), failure.message.orEmpty())
             Toast.makeText(
                 this,
-                getString(R.string.error_title, failure.localizedMessage),
+                getString(R.string.error_title, failure.localizedMessage ?: failure.message),
                 Toast.LENGTH_LONG
             ).show()
         } ?: Unit
