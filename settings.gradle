@@ -4,12 +4,12 @@ include ":app"
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-            version("androidx.lifecycle", "2.6.2")
-            version("androidx.navigation", "2.7.6")
+            version("androidx.lifecycle", "2.7.0")
+            version("androidx.navigation", "2.7.7")
             version("glide", "4.16.0")
-            version("grpc", "1.60.1")
-            version("hilt", "2.50")
-            version("protobuf", "3.25.1")
+            version("grpc", "1.62.2")
+            version("hilt", "2.51")
+            version("protobuf", "4.26.0")
 
             library("androidx.activity-ktx", "androidx.activity:activity-ktx:1.8.2")
             library("androidx.appcompat", "androidx.appcompat:appcompat:1.6.1")
@@ -31,10 +31,10 @@ dependencyResolutionManagement {
             library("glide.glide", "com.github.bumptech.glide", "glide").versionRef("glide")
             library("glide.glide-okhttp", "com.github.bumptech.glide", "okhttp3-integration").versionRef("glide")
             library("glide.glide-processor", "com.github.bumptech.glide", "ksp").versionRef("glide")
-            library("google.firebase.bom", "com.google.firebase:firebase-bom:32.7.0")
-            library("google.firebase.messaging", "com.google.firebase:firebase-messaging-ktx:23.4.0")
-            library("google.material", "com.google.android.material:material:1.10.0")
-            library("google.play-services", "com.google.android.gms:play-services-basement:18.2.0")
+            library("google.firebase.bom", "com.google.firebase:firebase-bom:32.7.4")
+            library("google.firebase.messaging", "com.google.firebase:firebase-messaging-ktx:23.4.1")
+            library("google.material", "com.google.android.material:material:1.11.0")
+            library("google.play-services", "com.google.android.gms:play-services-basement:18.3.0")
             library("grpc.grpc-okhttp", "io.grpc", "grpc-okhttp").versionRef("grpc")
             library("grpc.grpc-protobuf", "io.grpc", "grpc-protobuf").versionRef("grpc")
             library("grpc.grpc-stub", "io.grpc", "grpc-stub").versionRef("grpc")
@@ -43,7 +43,7 @@ dependencyResolutionManagement {
             library("grpc.protoc-kotlin", "io.grpc", "protoc-gen-grpc-kotlin").version("1.4.1:jdk8@jar")
             library("hilt.hilt", "com.google.dagger", "hilt-android").versionRef("hilt")
             library("hilt.hilt-compiler", "com.google.dagger", "hilt-android-compiler").versionRef("hilt")
-            library("kotlinx.coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+            library("kotlinx.coroutines", "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0")
             library("protobuf.protobuf-kotlin", "com.google.protobuf", "protobuf-kotlin").versionRef("protobuf")
             library("protobuf.protoc", "com.google.protobuf", "protoc").versionRef("protobuf")
 
