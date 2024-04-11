@@ -133,11 +133,11 @@ class PostAdapter(
         override val shortDate = true
         private val bd = ItemCommentBinding.bind(itemView)
         private val primaryColor =
-            itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimary)
+            itemView.context.theme.resolveStyleAttribute(androidx.appcompat.R.attr.colorPrimary)
         private val textColor =
-            itemView.context.theme.resolveStyleAttribute(R.attr.colorOnSurface)
+            itemView.context.theme.resolveStyleAttribute(com.google.android.material.R.attr.colorOnSurface)
         private val selectedContainerColor =
-            itemView.context.theme.resolveStyleAttribute(R.attr.colorPrimaryContainer)
+            itemView.context.theme.resolveStyleAttribute(com.google.android.material.R.attr.colorPrimaryContainer)
         private val commentPosition get() = bindingAdapterPosition - offset
         private lateinit var comment: Comment
 

@@ -16,9 +16,9 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 
 open class PreviewHolder(itemView: View) : ItemHolder(itemView) {
     protected val textAppearanceNormal =
-        itemView.context.theme.resolveStyleAttribute(R.attr.textAppearanceBodyLarge)
+        itemView.context.theme.resolveStyleAttribute(com.google.android.material.R.attr.textAppearanceBodyLarge)
     protected val textAppearanceTitle =
-        itemView.context.theme.resolveStyleAttribute(R.attr.textAppearanceHeadlineSmall)
+        itemView.context.theme.resolveStyleAttribute(com.google.android.material.R.attr.textAppearanceHeadlineSmall)
     protected val textMaxLines =
         itemView.context.resources.getInteger(R.integer.item_list_text_max_lines)
     protected val cornerSize =

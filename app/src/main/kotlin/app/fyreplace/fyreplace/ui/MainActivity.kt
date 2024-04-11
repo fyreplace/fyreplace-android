@@ -384,11 +384,17 @@ class MainActivity :
         window.navigationBarColor = if (colored)
             background.resolvedTintColor
         else
-            getDynamicColor(R.attr.colorSurface, getColor(R.color.navigation))
+            getDynamicColor(
+                com.google.android.material.R.attr.colorSurface,
+                getColor(R.color.navigation)
+            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             window.navigationBarDividerColor = if (colored)
-                getDynamicColor(R.attr.colorSurfaceVariant, window.navigationBarDividerColor)
+                getDynamicColor(
+                    com.google.android.material.R.attr.colorSurfaceVariant,
+                    window.navigationBarDividerColor
+                )
             else
                 defaultNavigationBarDividerColor
         }
@@ -520,7 +526,7 @@ class MainActivity :
 
                     with(TypedValue()) {
                         context.theme.resolveAttribute(
-                            R.attr.selectableItemBackgroundBorderless,
+                            androidx.appcompat.R.attr.selectableItemBackgroundBorderless,
                             this,
                             true
                         )

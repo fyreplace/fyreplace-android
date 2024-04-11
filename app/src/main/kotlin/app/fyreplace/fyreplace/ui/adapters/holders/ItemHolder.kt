@@ -14,9 +14,9 @@ import com.google.protobuf.Timestamp
 
 open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val textColorNormal =
-        itemView.context.theme.resolveStyleAttribute(R.attr.colorOnBackground)
+        itemView.context.theme.resolveStyleAttribute(com.google.android.material.R.attr.colorOnBackground)
     val textColorError =
-        itemView.context.theme.resolveStyleAttribute(R.attr.colorError)
+        itemView.context.theme.resolveStyleAttribute(androidx.appcompat.R.attr.colorError)
 
     protected val avatar: ImageView? = itemView.findViewById(R.id.avatar)
     protected val username: TextView? = itemView.findViewById(R.id.username)

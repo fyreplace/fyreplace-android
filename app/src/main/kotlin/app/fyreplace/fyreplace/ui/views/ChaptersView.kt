@@ -67,8 +67,9 @@ class ChaptersView : LinearLayout {
 
     private fun makeTextView(chapter: Chapter): View {
         val text = AppCompatTextView(context)
-        val style = if (chapter.isTitle) R.style.TextAppearance_Material3_HeadlineMedium
-        else R.style.TextAppearance_Material3_BodyLarge
+        val style =
+            if (chapter.isTitle) com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium
+            else com.google.android.material.R.style.TextAppearance_Material3_BodyLarge
 
         text.setTextAppearance(style)
         text.layoutParams = LayoutParams(
