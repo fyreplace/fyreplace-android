@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="isEmpty"
+            type="kotlinx.coroutines.flow.StateFlow&lt;Boolean&gt;" />
+
+        <variable
+            name="emptyText"
+            type="kotlinx.coroutines.flow.StateFlow&lt;Integer&gt;" />
+    </data>
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <app.fyreplace.fyreplace.ui.views.MaterialSwipeLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </app.fyreplace.fyreplace.ui.views.MaterialSwipeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/gap"
+            android:gravity="center"
+            android:text="@{emptyText}"
+            android:textAppearance="?attr/textAppearanceHeadlineLarge"
+            android:visibility="@{isEmpty ? View.VISIBLE : View.GONE}" />
+    </FrameLayout>
+</layout>

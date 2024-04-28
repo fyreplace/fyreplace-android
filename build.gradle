@@ -1,0 +1,35 @@
+buildscript {
+    ext {
+        configuration = [
+                compileSdk: 34,
+                targetSdk : 34,
+                minSdk    : 23,
+        ]
+    }
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.3.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.23"
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.23-1.0.19"
+        classpath "com.google.protobuf:protobuf-gradle-plugin:0.9.4"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:${libs.versions.androidx.navigation.get()}"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:${libs.versions.hilt.get()}"
+        classpath "com.google.gms:google-services:4.4.1"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
+}

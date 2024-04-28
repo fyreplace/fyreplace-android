@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="ui"
+            type="app.fyreplace.fyreplace.ui.fragments.LoginFragment" />
+
+        <variable
+            name="vm"
+            type="app.fyreplace.fyreplace.viewmodels.LoginViewModel" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/gap"
+            android:paddingTop="@dimen/gap_wide"
+            android:paddingEnd="@dimen/gap"
+            android:paddingBottom="@dimen/gap_wide">
+
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:layout_marginBottom="@dimen/gap"
+                android:contentDescription="@string/login_logo_desc"
+                android:src="@drawable/logo_tinted" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="@dimen/form_width"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:hint="@string/login_email"
+                app:counterEnabled="true"
+                app:counterMaxLength="@integer/email_max_size"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:maxLength="@integer/email_max_size"
+                    android:text="@={vm.email}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="@dimen/form_width"
+                android:layout_height="wrap_content"
+                android:hint="@string/login_username"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}"
+                app:counterEnabled="true"
+                app:counterMaxLength="@integer/username_max_size"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="@integer/username_max_size"
+                    android:text="@={vm.username}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:layout_width="@dimen/form_width"
+                android:layout_height="wrap_content"
+                android:checked="@={vm.conditionsAccepted}"
+                android:text="@string/login_conditions"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="@{vm.isRegistering ? View.VISIBLE : View.GONE}">
+
+                <Button
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{ui::onPrivacyPolicyClicked}"
+                    android:text="@string/legal_privacy_policy" />
+
+                <Button
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{ui::onTermsOfServiceClicked}"
+                    android:text="@string/legal_terms_of_service" />
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:enabled="@{vm.canProceed}"
+                android:onClick="@{ui::onRegisterOrLoginClicked}"
+                android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
+                android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/gap"
+                android:indeterminate="true"
+                android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}" />
+        </LinearLayout>
+    </ScrollView>
+</layout>

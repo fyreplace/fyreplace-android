@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="ui"
+            type="app.fyreplace.fyreplace.ui.fragments.ArchiveFragment" />
+    </data>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/pages"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <Button
+            android:id="@+id/all_posts"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{ui::onAllPostsClicked}"
+            android:text="@string/archive_page_all" />
+
+        <Button
+            android:id="@+id/own_posts"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{ui::onOwnPostsClicked}"
+            android:text="@string/archive_page_own" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+</layout>
