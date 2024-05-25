@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="api_host_default" translatable="false">@string/api_host_main</string>
-</resources>

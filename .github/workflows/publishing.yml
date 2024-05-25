@@ -21,7 +21,8 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - uses: actions/setup-java@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -41,7 +42,7 @@ jobs:
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS: ${{ vars.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
@@ -49,31 +50,35 @@ jobs:
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS: ${{ vars.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK (Google variant)
+        uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.apk
           path: app/build/outputs/apk/google/release/*.apk
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK (Libre variant)
+        uses: actions/upload-artifact@v4
         with:
-          name: Fyreplace-libre.apk
+          name: Fyreplace.libre.apk
           path: app/build/outputs/apk/libre/release/*.apk
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload bundle (Google variant)
+        uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.aab
           path: app/build/outputs/bundle/googleRelease/*.aab
           if-no-files-found: error
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload bundle (Libre variant)
+        uses: actions/upload-artifact@v4
         with:
-          name: Fyreplace-libre.aab
+          name: Fyreplace.libre.aab
           path: app/build/outputs/bundle/libreRelease/*.aab
           if-no-files-found: error
 
@@ -92,7 +97,8 @@ jobs:
       - name: Set up artifact directory
         run: mkdir -p build
 
-      - uses: actions/download-artifact@v4
+      - name: Download bundle
+        uses: actions/download-artifact@v4
         with:
           name: Fyreplace.aab
           path: build
@@ -117,4 +123,4 @@ jobs:
             --changes_not_sent_for_review true \
             --json_key build/google-service-account.json \
             --aab build/*.aab \
-            --package_name ${{ secrets.PACKAGE_NAME }}
+            --package_name ${{ vars.PACKAGE_NAME }}

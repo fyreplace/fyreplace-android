@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<app.fyreplace.fyreplace.ui.views.ChaptersView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chapters"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/gap_narrow"
-    android:layout_marginBottom="@dimen/gap_narrow"
-    android:background="?attr/colorSurface" />

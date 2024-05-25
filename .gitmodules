@@ -1,3 +1,0 @@
-[submodule "app/src/main/proto/protos"]
-	path = app/src/main/proto/protos
-	url = https://github.com/fyreplace/fyreplace-protos.git
