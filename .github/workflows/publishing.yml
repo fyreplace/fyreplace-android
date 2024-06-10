@@ -46,7 +46,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew assembleRelease
 
-      - name: Build bundles
+      - name: Build AABs
         env:
           KEYSTORE_PATH: /tmp/fyreplace.keystore
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -54,28 +54,28 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: ./gradlew bundleRelease
 
-      - name: Upload APK (Google variant)
+      - name: Upload Google APK
         uses: actions/upload-artifact@v4
         with:
-          name: Fyreplace.apk
+          name: Fyreplace.google.apk
           path: app/build/outputs/apk/google/release/*.apk
           if-no-files-found: error
 
-      - name: Upload APK (Libre variant)
+      - name: Upload Libre APK
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.apk
           path: app/build/outputs/apk/libre/release/*.apk
           if-no-files-found: error
 
-      - name: Upload bundle (Google variant)
+      - name: Upload Google AAB
         uses: actions/upload-artifact@v4
         with:
-          name: Fyreplace.aab
+          name: Fyreplace.google.aab
           path: app/build/outputs/bundle/googleRelease/*.aab
           if-no-files-found: error
 
-      - name: Upload bundle (Libre variant)
+      - name: Upload Libre AAB
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.aab
@@ -97,10 +97,10 @@ jobs:
       - name: Set up artifact directory
         run: mkdir -p build
 
-      - name: Download bundle
+      - name: Download Google AAB
         uses: actions/download-artifact@v4
         with:
-          name: Fyreplace.aab
+          name: Fyreplace.google.aab
           path: build
 
       - name: Set up Google service account
@@ -108,7 +108,7 @@ jobs:
           GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64: ${{ secrets.GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 }}
         run: echo $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS_B64 | base64 --decode > build/google-service-account.json
 
-      - name: Upload bundle to Google Play
+      - name: Upload AAB to Google Play
         run: |
           case "${{ github.ref_name }}" in
           v*.*.*)
