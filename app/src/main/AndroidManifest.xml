@@ -31,6 +31,10 @@
             android:value="@string/sentry_environment" />
 
         <meta-data
+            android:name="io.sentry.release"
+            android:value="@string/sentry_release" />
+
+        <meta-data
             android:name="io.sentry.attach-view-hierarchy"
             android:value="true" />
 
