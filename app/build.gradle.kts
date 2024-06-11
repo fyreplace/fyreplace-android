@@ -3,6 +3,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import kotlin.math.min
 
 plugins {
     alias(libs.plugins.android)
@@ -31,7 +32,10 @@ fun getVersionNumber(): Int = useGitRepository { repository, git ->
 }
 
 fun getVersionString(): String =
-    useGitRepository { _, git -> git.describe().setTags(true).call().removePrefix("v").trim() }
+    useGitRepository { _, git ->
+        val parts = git.describe().setTags(true).call().removePrefix("v").trim().split('-')
+        return@useGitRepository parts.subList(0, min(parts.size, 2)).joinToString("+")
+    }
 
 android {
     namespace = "app.fyreplace.fyreplace"
