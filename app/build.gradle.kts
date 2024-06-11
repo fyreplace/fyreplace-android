@@ -40,23 +40,25 @@ fun getVersionNumber() = useGitRepository { _, git ->
     (Iterables.size(git.log().call()).toString() + getVersionNumberSuffix().value).toInt()
 }
 
-fun getVersionString(variant: String? = null, addVariant: Boolean = true) =
+fun getVersionString(variant: String? = null) =
     useGitRepository { _, git ->
-        val parts = git.describe().setTags(true).call().removePrefix("v").trim().split('-')
-        val buildSuffix = (variant?.let { ".$it" } ?: "")
+        val parts = git.describe().setTags(true).call().trim().split('-')
         val build = if (parts.size > 1) getVersionNumber().toString() else ""
         val result = StringBuilder()
-        result.append(parts.first())
+        result.append(parts.first(), '+')
 
         if (build.isNotEmpty()) {
-            result.append('+', build)
+            result.append(build, '.')
+        }
 
-            if (addVariant) {
-                result.append(buildSuffix)
-            }
+        if (variant != null) {
+            result.append(variant)
         }
 
         return@useGitRepository result.toString()
+            .removePrefix("v")
+            .removeSuffix("+")
+            .removeSuffix(".")
     }
 
 android {
@@ -76,7 +78,7 @@ android {
 
         resValue("string", "sentry_dsn", System.getenv("SENTRY_DSN").orEmpty())
         resValue("string", "sentry_environment", getVersionNumberSuffix().name.lowercase())
-        resValue("string", "sentry_release", getVersionString(addVariant = false))
+        resValue("string", "sentry_release", getVersionString())
     }
 
     signingConfigs {
