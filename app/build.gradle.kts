@@ -3,12 +3,18 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import kotlin.math.min
 
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.compose)
+}
+
+enum class VersionSuffix(val value: Int) {
+    DEV(0),
+    RELEASE(1),
+    HOTFIX(2),
+    MAIN(3)
 }
 
 fun <R> useGitRepository(block: (Repository, Git) -> R) = RepositoryBuilder()
@@ -18,23 +24,34 @@ fun <R> useGitRepository(block: (Repository, Git) -> R) = RepositoryBuilder()
     .build()
     .use { repository -> Git(repository).use { git -> block(repository, git) } }
 
-fun getVersionNumber(): Int = useGitRepository { repository, git ->
-    val commitCount = Iterables.size(git.log().call())
+fun getVersionNumberSuffix() = useGitRepository { repository, git ->
     val ref = git.describe().setTags(true).call()
     val branch = repository.branch
-    val suffix = when {
-        ref.matches(Regex("v?\\d+\\.\\d+\\.\\d+")) -> 3
-        branch.startsWith("hotfix") -> 2
-        branch.startsWith("release") -> 1
-        else -> 0
+    return@useGitRepository when {
+        ref.matches(Regex("v?\\d+\\.\\d+\\.\\d+")) -> VersionSuffix.MAIN
+        branch.startsWith("hotfix") -> VersionSuffix.HOTFIX
+        branch.startsWith("release") -> VersionSuffix.RELEASE
+        else -> VersionSuffix.DEV
     }
-    return@useGitRepository (commitCount.toString() + suffix).toInt()
 }
 
-fun getVersionString(): String =
+fun getVersionNumber() = useGitRepository { _, git ->
+    (Iterables.size(git.log().call()).toString() + getVersionNumberSuffix().value).toInt()
+}
+
+fun getVersionString(variant: String? = null) =
     useGitRepository { _, git ->
         val parts = git.describe().setTags(true).call().removePrefix("v").trim().split('-')
-        return@useGitRepository parts.subList(0, min(parts.size, 2)).joinToString("+")
+        val buildSuffix = (variant?.let { ".$it" } ?: "")
+        val build = if (parts.size > 1) getVersionNumber().toString() else ""
+        val result = StringBuilder()
+        result.append(parts.first())
+
+        if (build.isNotEmpty()) {
+            result.append('+', build, buildSuffix)
+        }
+
+        return@useGitRepository result.toString()
     }
 
 android {
@@ -81,7 +98,7 @@ android {
     productFlavors {
         create("google") {
             dimension = "ecosystem"
-            versionNameSuffix = "-google"
+            versionName = getVersionString(name)
         }
 
         create("libre") {
