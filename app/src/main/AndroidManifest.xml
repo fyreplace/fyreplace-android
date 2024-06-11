@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Fyreplace">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -20,6 +21,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="io.sentry.dsn"
+            android:value="@string/sentry_dsn" />
+
+        <meta-data
+            android:name="io.sentry.environment"
+            android:value="@string/sentry_environment" />
+
+        <meta-data
+            android:name="io.sentry.attach-view-hierarchy"
+            android:value="true" />
+
+        <meta-data
+            android:name="io.sentry.traces.user-interaction.enable"
+            android:value="true" />
+
+        <meta-data
+            android:name="io.sentry.traces.profiling.enable-app-start"
+            android:value="true" />
+
+        <meta-data
+            android:name="io.sentry.breadcrumbs.user-interaction"
+            android:value="true" />
+
     </application>
 
 </manifest>

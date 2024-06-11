@@ -1,6 +1,7 @@
 [versions]
 androidPlugin = "8.4.2"
 kotlinPlugin = "2.0.0"
+sentryPlugin = "4.7.1"
 eclipseJgit = "6.9.0.202403050737-r"
 androidxComposeBom = "2024.05.00"
 androidxActivityCompose = "1.9.0"
@@ -36,3 +37,4 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 android = { id = "com.android.application", version.ref = "androidPlugin" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinPlugin" }
+sentry = { id = "io.sentry.android.gradle", version.ref = "sentryPlugin" }

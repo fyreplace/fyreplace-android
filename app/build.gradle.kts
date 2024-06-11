@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin)
     alias(libs.plugins.compose)
+    alias(libs.plugins.sentry)
 }
 
 enum class VersionSuffix(val value: Int) {
@@ -68,6 +69,9 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        resValue("string", "sentry_dsn", System.getenv("SENTRY_DSN").orEmpty())
+        resValue("string", "sentry_environment", getVersionNumberSuffix().name.lowercase())
     }
 
     signingConfigs {
@@ -124,6 +128,14 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+sentry {
+    org = System.getenv("SENTRY_ORG")
+    projectName = System.getenv("SENTRY_PROJECT")
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    includeSourceContext = true
+    ignoredFlavors = setOf("libre")
 }
 
 dependencies {
