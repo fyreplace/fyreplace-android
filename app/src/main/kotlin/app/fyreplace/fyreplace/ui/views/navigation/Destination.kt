@@ -118,10 +118,8 @@ fun Text(destination: Destination) {
     )
 }
 
-@Composable
 fun NavBackStackEntry.asDestination() = Destination.entries.find { it.route == destination.route }
 
-@Composable
 fun NavBackStackEntry?.isAt(destination: Destination, exactly: Boolean = true): Boolean = when {
     this?.destination?.route == destination.route -> true
     exactly -> false

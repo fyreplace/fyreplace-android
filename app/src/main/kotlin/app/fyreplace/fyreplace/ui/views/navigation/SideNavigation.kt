@@ -2,10 +2,8 @@ package app.fyreplace.fyreplace.ui.views.navigation
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -32,7 +30,7 @@ fun SideNavigation(
             content = content
         )
     } else {
-        Row(modifier = Modifier.padding(windowPadding.modify(end = 0.dp))) {
+        Row {
             SideNavigationRail(
                 navController = navController,
                 destinations = destinations,

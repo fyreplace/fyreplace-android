@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -101,16 +102,17 @@ fun MainContent() {
             Host(it)
         }
     } else {
-        Scaffold(topBar = {
-            TopBar(navController, onClickDestination = navController::navigate)
-        }) {
+        Scaffold {
             SideNavigation(
                 navController = navController,
                 destinations = Destination.entries,
                 windowPadding = it,
                 onClickDestination = navController::navigate,
             ) { contentPadding ->
-                Host(contentPadding)
+                Column {
+                    TopBar(navController, onClickDestination = navController::navigate)
+                    Host(contentPadding)
+                }
             }
         }
     }
