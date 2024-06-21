@@ -54,28 +54,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.google.apk
-          path: app/build/outputs/apk/google/release/*.apk
+          path: app/build/outputs/apk/google/release/app-google-release.apk
           if-no-files-found: error
 
       - name: Upload Libre APK
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.apk
-          path: app/build/outputs/apk/libre/release/*.apk
+          path: app/build/outputs/apk/libre/release/app-libre-release.apk
           if-no-files-found: error
 
       - name: Upload Google AAB
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.google.aab
-          path: app/build/outputs/bundle/googleRelease/*.aab
+          path: app/build/outputs/bundle/googleRelease/app-google-release.aab
           if-no-files-found: error
 
       - name: Upload Libre AAB
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.aab
-          path: app/build/outputs/bundle/libreRelease/*.aab
+          path: app/build/outputs/bundle/libreRelease/app-libre-release.aab
           if-no-files-found: error
 
   publish:
