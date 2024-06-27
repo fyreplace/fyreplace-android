@@ -78,7 +78,7 @@ android {
 
         resValue("string", "sentry_dsn", System.getenv("SENTRY_DSN").orEmpty())
         resValue("string", "sentry_environment", getVersionNumberSuffix().name.lowercase())
-        resValue("string", "sentry_release", "${rootProject.name}@${getVersionString()}")
+        resValue("string", "sentry_release", "$applicationId@${getVersionString()}")
     }
 
     signingConfigs {
