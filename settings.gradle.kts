@@ -22,5 +22,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "fyreplace-android"
+rootProject.name = "fyreplace"
 include(":app")
