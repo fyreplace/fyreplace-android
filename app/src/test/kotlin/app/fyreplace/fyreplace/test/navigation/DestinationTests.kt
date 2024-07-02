@@ -1,10 +1,12 @@
 package app.fyreplace.fyreplace.test.navigation
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 class DestinationTests {
     @Test
     fun testDestinationsAreUnique() {
@@ -21,14 +23,14 @@ class DestinationTests {
 
     @Test
     fun testEssentialsAreFewer() {
-        assertTrue(Destination.essentials.size < Destination.entries.size)
+        assertTrue(Destination.Set.topLevel(flatten = false).size < Destination.Set.topLevel(flatten = true).size)
     }
 
     @Test
-    fun testReplacementsDoNotLoop() {
+    fun testDestinationsDoNotLoop() {
         for (destination in Destination.entries) {
-            assertNotEquals(destination, destination.replacement)
-            assertNotEquals(destination, destination.replacement?.replacement)
+            assertNotEquals(destination, destination.parent)
+            assertNotEquals(destination, destination.parent?.parent)
         }
     }
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="form_min_width">280</integer>
+    <integer name="form_max_width">600</integer>
+</resources>

@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test
+package app.fyreplace.fyreplace.androidtest
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
@@ -19,6 +19,7 @@ class NavigationTests {
     fun testInitialScreenIsFeed() {
         for (destination in Destination.entries) {
             val node = composeRule.onNodeWithTag("screen:$destination")
+
             if (destination == Destination.FEED) {
                 node.assertIsDisplayed()
             } else {
@@ -32,20 +33,26 @@ class NavigationTests {
         for (destination in Destination.entries) {
             val node = composeRule.onNodeWithTag("navigation:$destination")
 
-            if (destination.replacement == null) {
+            if (destination.parent == null) {
                 node.assertIsDisplayed()
             } else if (node.isNotDisplayed()) {
-                composeRule.onNodeWithTag("navigation:${destination.replacement}").performClick()
+                composeRule.onNodeWithTag("navigation:${destination.parent}").performClick()
                 node.assertIsDisplayed()
             }
         }
     }
 
     @Test
-    fun testNavigationWorks() {
+    fun testNavigationShowsCorrectScreen() {
         for (destination in Destination.entries) {
             composeRule.onNodeWithTag("navigation:$destination").performClick()
-            composeRule.onNodeWithTag("screen:$destination").assertIsDisplayed()
+            val node = composeRule.onNodeWithTag("screen:$destination")
+
+            if (destination.visible()) {
+                node.assertIsDisplayed()
+            } else {
+                node.assertIsNotDisplayed()
+            }
         }
     }
 }

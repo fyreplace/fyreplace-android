@@ -5,6 +5,7 @@ sentryPlugin = "4.9.0"
 eclipseJgit = "6.10.0.202406032230-r"
 androidxComposeBom = "2024.06.00"
 androidxActivityCompose = "1.9.0"
+androidxComposeAnimation = "1.7.0-beta04"
 androidxComposeMaterialAdaptive = "1.0.0-beta04"
 androidxCore = "1.13.1"
 androidxEspressoCore = "3.6.1"
@@ -17,6 +18,7 @@ junit = "4.13.2"
 eclipse-jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "eclipseJgit" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
+androidx-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxComposeAnimation" }
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspressoCore" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }

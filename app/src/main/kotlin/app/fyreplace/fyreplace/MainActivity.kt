@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowHeightSizeClass
@@ -29,7 +32,6 @@ import app.fyreplace.fyreplace.ui.views.navigation.BottomNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.SideNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.asDestination
-import app.fyreplace.fyreplace.ui.views.navigation.composable
 import app.fyreplace.fyreplace.ui.views.navigation.sail
 
 class MainActivity : ComponentActivity() {
@@ -54,10 +56,20 @@ fun MainContent() {
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val compactWidth = sizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
     val compactHeight = sizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    val compact = compactWidth || compactHeight
     val navController = rememberNavController()
+    val entry by navController.currentBackStackEntryAsState()
+    val currentDestination = entry.asDestination()
+    val destinationSets = Destination.Set.topLevel(flatten = !compact)
+    val selectedDestinationSet =
+        destinationSets.find { (it.choices + it.root).contains(currentDestination) }
+    val savedDestinations = rememberSaveable(saver = destinationMapSaver()) {
+        mutableStateMapOf()
+    }
 
+    @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
-    fun Host(innerPadding: PaddingValues) {
+    fun Host(innerPadding: PaddingValues) = SharedTransitionLayout {
         NavHost(
             navController = navController,
             startDestination = "feed",
@@ -65,43 +77,47 @@ fun MainContent() {
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            Destination.entries.forEach(::composable)
+            Destination.entries.forEach { destination ->
+                composable(destination.route) {
+                    destination.content(this@SharedTransitionLayout, this)
+                }
+            }
         }
     }
 
-    if (compactWidth || compactHeight) {
-        val savedDestinations =
-            rememberSaveable(saver = destinationMapSaver()) { mutableStateMapOf() }
+    @Composable
+    fun Top() {
+        TopBar(
+            destinations = selectedDestinationSet?.choices ?: emptyList(),
+            selectedDestination = currentDestination,
+            onClickDestination = {
+                navController.sail(it)
+
+                if (selectedDestinationSet?.defaultDestination != null) {
+                    savedDestinations[selectedDestinationSet.defaultDestination] = it
+                }
+            }
+        )
+    }
+
+    fun onClickDestination(destination: Destination) {
+        val actualDestination = destinationSets.find { it.root == destination }
+            ?.choices
+            ?.firstOrNull()
+            ?: destination
+        navController.sail(savedDestinations[actualDestination] ?: actualDestination)
+    }
+
+    if (compact) {
         Scaffold(
             topBar = {
-                val entry by navController.currentBackStackEntryAsState()
-                val destination = entry?.asDestination()
-                val destinations = when {
-                    destination == null -> emptyList()
-                    destination.replaced.isNotEmpty() -> listOf(destination) + destination.replaced
-                    destination.replacement != null -> listOf(destination.replacement) + destination.replacement.replaced
-                    else -> emptyList()
-                }
-
-                TopBar(
-                    navController = navController,
-                    destinations = destinations,
-                    onClickDestination = {
-                        if (it.replacement != null) {
-                            savedDestinations[it.replacement] = it
-                        }
-
-                        navController.sail(it)
-                    }
-                )
+                Top()
             },
             bottomBar = {
                 BottomNavigation(
-                    navController = navController,
-                    destinations = Destination.essentials,
-                    onClickDestination = {
-                        navController.sail(savedDestinations.getOrDefault(it, it))
-                    }
+                    destinations = destinationSets.map(Destination.Set::root),
+                    selectedDestination = selectedDestinationSet?.root,
+                    onClickDestination = ::onClickDestination
                 )
             }
         ) {
@@ -110,13 +126,13 @@ fun MainContent() {
     } else {
         Scaffold {
             SideNavigation(
-                navController = navController,
-                destinations = Destination.entries,
+                destinations = destinationSets.map(Destination.Set::root),
+                selectedDestination = selectedDestinationSet?.root,
                 windowPadding = it,
-                onClickDestination = navController::navigate,
+                onClickDestination = ::onClickDestination
             ) { contentPadding ->
                 Column {
-                    TopBar(navController, onClickDestination = navController::navigate)
+                    Top()
                     Host(contentPadding)
                 }
             }

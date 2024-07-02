@@ -3,25 +3,19 @@ package app.fyreplace.fyreplace.ui.views.navigation
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun BottomNavigation(
-    navController: NavController,
     destinations: List<Destination>,
+    selectedDestination: Destination?,
     onClickDestination: (Destination) -> Unit
 ) {
     NavigationBar {
-        val entry by navController.currentBackStackEntryAsState()
-
         for (destination in destinations) {
-            val selected = entry.isAt(destination, exactly = false)
+            val selected = destination == selectedDestination
 
             NavigationBarItem(
                 selected = selected,
@@ -38,8 +32,8 @@ fun BottomNavigation(
 @Composable
 fun BottomNavigationPreview() {
     BottomNavigation(
-        navController = rememberNavController(),
-        destinations = Destination.essentials,
+        destinations = Destination.Set.topLevel(flatten = false).map(Destination.Set::root),
+        selectedDestination = Destination.FEED,
         onClickDestination = {}
     )
 }

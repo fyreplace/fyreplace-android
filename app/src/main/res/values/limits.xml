@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="username_min_length">3</integer>
+    <integer name="username_max_length">50</integer>
+    <integer name="email_min_length">3</integer>
+    <integer name="email_max_length">254</integer>
+</resources>

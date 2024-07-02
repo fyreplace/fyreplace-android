@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.window.core.layout.WindowWidthSizeClass
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationDrawer
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationRail
@@ -13,8 +12,8 @@ import app.fyreplace.fyreplace.util.modify
 
 @Composable
 fun SideNavigation(
-    navController: NavController,
     destinations: List<Destination>,
+    selectedDestination: Destination?,
     windowPadding: PaddingValues,
     onClickDestination: (Destination) -> Unit,
     content: @Composable (PaddingValues) -> Unit
@@ -23,8 +22,8 @@ fun SideNavigation(
 
     if (sizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
         SideNavigationDrawer(
-            navController = navController,
             destinations = destinations,
+            selectedDestination = selectedDestination,
             windowPadding = windowPadding,
             onClickDestination = onClickDestination,
             content = content
@@ -32,8 +31,8 @@ fun SideNavigation(
     } else {
         Row {
             SideNavigationRail(
-                navController = navController,
                 destinations = destinations,
+                selectedDestination = selectedDestination,
                 onClickDestination = onClickDestination
             )
             content(contentPadding(windowPadding))
