@@ -1,5 +1,10 @@
 package app.fyreplace.fyreplace.ui.views.bars
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SegmentedButton
@@ -16,7 +21,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.Icon
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun TopBar(
     destinations: List<Destination>,
@@ -24,11 +29,16 @@ fun TopBar(
     onClickDestination: (Destination) -> Unit
 ) = if (destinations.isNotEmpty()) {
     CenterAlignedTopAppBar(title = {
-        SegmentedChoice(
-            destinations = destinations,
-            selectedDestination = selectedDestination,
-            onClick = onClickDestination,
-        )
+        SharedTransitionLayout {
+            AnimatedContent(destinations, label = "Top bar segments") {
+                SegmentedChoice(
+                    destinations = it,
+                    selectedDestination = selectedDestination,
+                    visibilityScope = this,
+                    onClick = onClickDestination,
+                )
+            }
+        }
     })
 } else {
     TopAppBar(title = {
@@ -38,13 +48,19 @@ fun TopBar(
     })
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SegmentedChoice(
+fun SharedTransitionScope.SegmentedChoice(
     destinations: List<Destination>,
     selectedDestination: Destination?,
+    visibilityScope: AnimatedVisibilityScope,
     onClick: (Destination) -> Unit
-) = SingleChoiceSegmentedButtonRow {
+) = SingleChoiceSegmentedButtonRow(
+    modifier = Modifier.sharedElement(
+        rememberSharedContentState(key = "segments"),
+        visibilityScope
+    )
+) {
     for ((i, destination) in destinations.withIndex()) {
         val selected = destination == selectedDestination
 
