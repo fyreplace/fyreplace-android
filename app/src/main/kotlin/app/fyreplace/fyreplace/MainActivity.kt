@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,12 @@ import app.fyreplace.fyreplace.ui.views.navigation.navigate
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        val statusColor = getColor(R.color.status)
+        val navigationColor = getColor(R.color.navigation)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(statusColor, statusColor),
+            navigationBarStyle = SystemBarStyle.auto(navigationColor, navigationColor),
+        )
         setContent {
             AppTheme {
                 MainContent()
