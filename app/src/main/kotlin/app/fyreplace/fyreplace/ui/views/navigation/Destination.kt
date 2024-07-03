@@ -130,7 +130,7 @@ fun NavBackStackEntry?.isAt(destination: Destination, exactly: Boolean = true): 
 fun NavGraphBuilder.composable(destination: Destination) =
     composable(destination.route) { destination.content() }
 
-fun NavController.navigate(destination: Destination) = navigate(destination.route) {
+fun NavController.sail(destination: Destination) = navigate(destination.route) {
     popUpTo(graph.startDestinationId) {
         saveState = true
     }

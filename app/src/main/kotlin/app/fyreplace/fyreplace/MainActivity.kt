@@ -30,7 +30,7 @@ import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.SideNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.asDestination
 import app.fyreplace.fyreplace.ui.views.navigation.composable
-import app.fyreplace.fyreplace.ui.views.navigation.navigate
+import app.fyreplace.fyreplace.ui.views.navigation.sail
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +91,7 @@ fun MainContent() {
                             savedDestinations[it.replacement] = it
                         }
 
-                        navController.navigate(it)
+                        navController.sail(it)
                     }
                 )
             },
@@ -100,7 +100,7 @@ fun MainContent() {
                     navController = navController,
                     destinations = Destination.essentials,
                     onClickDestination = {
-                        navController.navigate(savedDestinations.getOrDefault(it, it))
+                        navController.sail(savedDestinations.getOrDefault(it, it))
                     }
                 )
             }

@@ -9,7 +9,7 @@ androidxComposeMaterialAdaptive = "1.0.0-beta04"
 androidxCore = "1.13.1"
 androidxEspressoCore = "3.6.1"
 androidxLifecycleRuntime = "2.8.2"
-androidxNavigationCompose = "2.7.7"
+androidxNavigationCompose = "2.8.0-beta04"
 androidxJunit = "1.2.1"
 junit = "4.13.2"
 
