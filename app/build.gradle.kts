@@ -7,8 +7,11 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose)
     alias(libs.plugins.sentry)
+    alias(libs.plugins.openapi)
+    alias(libs.plugins.protobuf)
 }
 
 enum class VersionSuffix(val value: Int) {
@@ -120,10 +123,17 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
         jvmTarget = JvmTarget.JVM_17.target
+    }
+
+    sourceSets {
+        named("main") {
+            java.srcDir("build/openapi/src/main")
+        }
     }
 
     buildFeatures {
@@ -145,11 +155,40 @@ sentry {
     ignoredFlavors = setOf("libre")
 }
 
+openApiGenerate {
+    generatorName = "kotlin"
+    apiPackage = "app.fyreplace.api"
+    modelPackage = "app.fyreplace.api.data"
+    library = "jvm-ktor"
+    validateSpec = false
+    inputSpec = "$projectDir/src/main/assets/openapi.yaml"
+    outputDir = "$projectDir/build/openapi"
+}
+
+tasks.named { it.matches(Regex("(compile.*kotlin)|(.*sentry.*)", RegexOption.IGNORE_CASE)) }
+    .all { dependsOn(tasks.named("openApiGenerate")) }
+
+protobuf {
+    protoc {
+        artifact = with(libs.protobuf.protoc.get()) { "${group}:${name}:${version}" }
+    }
+
+    generateProtoTasks {
+        all().all {
+            builtins {
+                create("java") { option("lite") }
+            }
+        }
+    }
+}
+
 dependencies {
+    coreLibraryDesugaring(libs.desugar)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.lifecycle.runtime)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.adaptive)
@@ -158,6 +197,11 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.coil.compose)
+    implementation(libs.ktor.client)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.moshi)
+    implementation(libs.protobuf.java)
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
     testImplementation(libs.junit)

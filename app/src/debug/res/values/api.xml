@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="api_url_local">https://10.0.2.2:8080</string>
+</resources>
