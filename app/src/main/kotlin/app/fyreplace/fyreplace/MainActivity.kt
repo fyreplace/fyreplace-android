@@ -33,7 +33,9 @@ import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.SideNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.asDestination
 import app.fyreplace.fyreplace.ui.views.navigation.sail
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

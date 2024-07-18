@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "app.fyreplace.fyreplace.protos";
+option java_multiple_files = true;
+
+message Connection {
+  Environment environment = 1;
+}
+
+enum Environment {
+  MAIN = 0;
+  DEV = 1;
+  LOCAL = 2;
+}

@@ -9,9 +9,11 @@ plugins {
     alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.compose)
+    alias(libs.plugins.hilt)
     alias(libs.plugins.sentry)
     alias(libs.plugins.openapi)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.ksp)
 }
 
 enum class VersionSuffix(val value: Int) {
@@ -96,7 +98,25 @@ android {
     }
 
     buildTypes {
+        val environmentType = "app.fyreplace.fyreplace.protos.Environment"
+
+        debug {
+            buildConfigField(
+                environmentType,
+                "ENVIRONMENT_DEFAULT",
+                "$environmentType.LOCAL"
+            )
+        }
+
         release {
+            val environment = if (getVersionNumberSuffix() == VersionSuffix.DEV) "DEV" else "MAIN"
+
+            buildConfigField(
+                environmentType,
+                "ENVIRONMENT_DEFAULT",
+                "$environmentType.$environment"
+            )
+
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -137,6 +157,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 
@@ -167,7 +188,14 @@ openApiGenerate {
     generateApiTests = false
 }
 
-tasks.named { it.matches(Regex("(compile.*kotlin)|(.*sentry.*)", RegexOption.IGNORE_CASE)) }
+tasks.named {
+    it.matches(
+        Regex(
+            "((compile|ksp).*kotlin)|(.*sentry.*)",
+            RegexOption.IGNORE_CASE
+        )
+    )
+}
     .all { dependsOn(tasks.named("openApiGenerate")) }
 
 protobuf {
@@ -191,7 +219,9 @@ dependencies {
     implementation(libs.androidx.animation)
     implementation(libs.androidx.core)
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.adaptive)
     implementation(libs.androidx.material.icons.extended)
@@ -200,6 +230,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
+    implementation(libs.hilt)
     implementation(libs.ktor.client)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.moshi)
@@ -211,4 +242,5 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    ksp(libs.hilt.compiler)
 }

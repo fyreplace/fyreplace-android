@@ -1,10 +1,7 @@
 package app.fyreplace.fyreplace.ui.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -38,16 +31,26 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
-import kotlin.math.min
+import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
+import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 
 @ExperimentalSharedTransitionApi
 @Composable
 fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) {
+    val viewModel = hiltViewModel<LoginViewModel>()
+    val identifier by viewModel.identifier.collectAsStateWithLifecycle()
+    val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
+    val keyboard = LocalSoftwareKeyboardController.current
+
+    fun submit() {
+        keyboard?.hide()
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -71,12 +74,15 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                 )
         )
 
-        var identifier by rememberSaveable { mutableStateOf("") }
-        val maxLength = integerResource(R.integer.email_max_length)
-        val keyboard = LocalSoftwareKeyboardController.current
-
-        fun submit() {
-            keyboard?.hide()
+        Box(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .sharedElement(
+                    rememberSharedContentState(key = "environment-selector"),
+                    visibilityScope
+                )
+        ) {
+            EnvironmentSelector()
         }
 
         OutlinedTextField(
@@ -89,7 +95,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = { submit() }),
-            onValueChange = { identifier = it.substring(0, min(maxLength, it.length)) },
+            onValueChange = viewModel::updateIdentifier,
             modifier = Modifier
                 .widthIn(
                     integerResource(R.integer.form_min_width).dp,
@@ -97,7 +103,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                 )
                 .padding(bottom = 32.dp)
                 .sharedElement(
-                    rememberSharedContentState(key = "field"),
+                    rememberSharedContentState(key = "first-field"),
                     visibilityScope
                 )
                 .testTag("login:identifier")
@@ -110,28 +116,13 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             )
         ) {
             Button(
-                enabled = identifier.isNotBlank() && identifier.length >= integerResource(R.integer.username_min_length),
+                enabled = canSubmit,
                 onClick = ::submit,
                 modifier = Modifier
                     .padding(bottom = 32.dp)
                     .testTag("login:submit")
             ) {
                 Text(stringResource(R.string.login_submit), maxLines = 1)
-            }
-        }
-    }
-}
-
-@SuppressLint("UnusedContentLambdaTargetStateParameter")
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    AppTheme {
-        SharedTransitionLayout {
-            val state = remember { 0 }
-            AnimatedContent(state, label = "Preview") {
-                LoginScreen(this)
             }
         }
     }

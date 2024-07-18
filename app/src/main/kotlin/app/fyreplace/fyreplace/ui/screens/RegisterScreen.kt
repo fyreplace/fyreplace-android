@@ -1,10 +1,7 @@
 package app.fyreplace.fyreplace.ui.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +22,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -40,16 +33,28 @@ import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
-import kotlin.math.min
+import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
+import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 
 @ExperimentalSharedTransitionApi
 @Composable
 fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScope) {
+    val viewModel = hiltViewModel<RegisterViewModel>()
+    val username by viewModel.username.collectAsStateWithLifecycle()
+    val email by viewModel.email.collectAsStateWithLifecycle()
+    val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
+    val keyboard = LocalSoftwareKeyboardController.current
+    val emailFocus = FocusRequester()
+
+    fun submit() {
+        keyboard?.hide()
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -73,15 +78,22 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 )
         )
 
-        var username by rememberSaveable { mutableStateOf("") }
-        var email by rememberSaveable { mutableStateOf("") }
-        val usernameMaxLength = integerResource(R.integer.username_max_length)
-        val emailMaxLength = integerResource(R.integer.email_max_length)
-        val keyboard = LocalSoftwareKeyboardController.current
-        val emailFocus = FocusRequester()
+        val baseModifier = Modifier
+            .widthIn(
+                integerResource(R.integer.form_min_width).dp,
+                integerResource(R.integer.form_max_width).dp
+            )
+            .padding(bottom = 32.dp)
 
-        fun submit() {
-            keyboard?.hide()
+        Box(
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+                .sharedElement(
+                    rememberSharedContentState(key = "environment-selector"),
+                    visibilityScope
+                )
+        ) {
+            EnvironmentSelector()
         }
 
         OutlinedTextField(
@@ -94,15 +106,10 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 imeAction = ImeAction.Next
             ),
             keyboardActions = KeyboardActions(onNext = { emailFocus.requestFocus() }),
-            onValueChange = { username = it.substring(0, min(usernameMaxLength, it.length)) },
-            modifier = Modifier
-                .widthIn(
-                    integerResource(R.integer.form_min_width).dp,
-                    integerResource(R.integer.form_max_width).dp
-                )
-                .padding(bottom = 32.dp)
+            onValueChange = viewModel::updateUsername,
+            modifier = baseModifier
                 .sharedElement(
-                    rememberSharedContentState(key = "field"),
+                    rememberSharedContentState(key = "first-field"),
                     visibilityScope
                 )
                 .testTag("register:username")
@@ -118,13 +125,8 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = { submit() }),
-            onValueChange = { email = it.substring(0, min(emailMaxLength, it.length)) },
-            modifier = Modifier
-                .widthIn(
-                    integerResource(R.integer.form_min_width).dp,
-                    integerResource(R.integer.form_max_width).dp
-                )
-                .padding(bottom = 32.dp)
+            onValueChange = viewModel::updateEmail,
+            modifier = baseModifier
                 .focusRequester(emailFocus)
                 .testTag("register:email")
         )
@@ -136,32 +138,13 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             )
         ) {
             Button(
-                enabled = username.isNotBlank()
-                        && username.length >= integerResource(R.integer.username_min_length)
-                        && email.isNotBlank()
-                        && email.length >= integerResource(R.integer.email_min_length)
-                        && email.contains('@'),
+                enabled = canSubmit,
                 onClick = ::submit,
                 modifier = Modifier
                     .padding(bottom = 32.dp)
                     .testTag("register:submit")
             ) {
                 Text(stringResource(R.string.register_submit), maxLines = 1)
-            }
-        }
-    }
-}
-
-@SuppressLint("UnusedContentLambdaTargetStateParameter")
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun RegisterScreenPreview() {
-    AppTheme {
-        SharedTransitionLayout {
-            val state = remember { 0 }
-            AnimatedContent(state, label = "Preview") {
-                RegisterScreen(this)
             }
         }
     }

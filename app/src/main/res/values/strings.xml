@@ -1,4 +1,6 @@
 <resources>
+    <string name="empty" />
+    <string name="loading">…</string>
     <string name="app_name">Fyreplace</string>
 
     <string name="main_destination_feed">Feed</string>
@@ -9,6 +11,13 @@
     <string name="main_destination_settings">Settings</string>
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
+
+    <string name="settings_environment_main">Production server</string>
+    <string name="settings_environment_dev">Testing server</string>
+    <string name="settings_environment_local">Local server</string>
+    <string name="settings_environment_default">(default)</string>
+    <string name="settings_environment_dialog_title">Select server</string>
+    <string name="settings_environment_dialog_text">If you don\'t know what this is, pick the default one.</string>
 
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>
