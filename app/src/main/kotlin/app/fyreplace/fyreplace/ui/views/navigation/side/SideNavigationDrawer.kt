@@ -16,12 +16,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.modify
+import app.fyreplace.fyreplace.extensions.plus
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.Icon
 import app.fyreplace.fyreplace.ui.views.navigation.Text
 import app.fyreplace.fyreplace.ui.views.navigation.contentPadding
-import app.fyreplace.fyreplace.util.modify
-import app.fyreplace.fyreplace.util.plus
 
 @Composable
 fun SideNavigationDrawer(

@@ -157,12 +157,14 @@ sentry {
 
 openApiGenerate {
     generatorName = "kotlin"
+    inputSpec = "$projectDir/src/main/assets/openapi.yaml"
+    outputDir = "$projectDir/build/openapi"
     apiPackage = "app.fyreplace.api"
     modelPackage = "app.fyreplace.api.data"
     library = "jvm-ktor"
     validateSpec = false
-    inputSpec = "$projectDir/src/main/assets/openapi.yaml"
-    outputDir = "$projectDir/build/openapi"
+    generateModelTests = false
+    generateApiTests = false
 }
 
 tasks.named { it.matches(Regex("(compile.*kotlin)|(.*sentry.*)", RegexOption.IGNORE_CASE)) }

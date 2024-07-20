@@ -6,9 +6,9 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.window.core.layout.WindowWidthSizeClass
+import app.fyreplace.fyreplace.extensions.modify
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationDrawer
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationRail
-import app.fyreplace.fyreplace.util.modify
 
 @Composable
 fun SideNavigation(

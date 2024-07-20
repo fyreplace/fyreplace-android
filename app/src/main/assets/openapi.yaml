@@ -7,15 +7,15 @@ paths:
   /emails:
     get:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: listEmails
       parameters:
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -32,10 +32,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     post:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: createEmail
       requestBody:
         content:
@@ -58,11 +58,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /emails/activate:
     post:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: activateEmail
       requestBody:
         content:
@@ -83,11 +83,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /emails/count:
     get:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: countEmails
       responses:
         default:
@@ -104,18 +104,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /emails/{id}:
     delete:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: deleteEmail
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -128,18 +128,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /emails/{id}/main:
     put:
       tags:
-      - Emails Endpoint
+        - Emails Endpoint
       operationId: setMainEmail
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -152,28 +152,28 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts:
     get:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: listPosts
       parameters:
-      - name: ascending
-        in: query
-        schema:
-          type: boolean
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
-      - name: type
-        in: query
-        required: true
-        schema:
-          $ref: "#/components/schemas/PostListingType"
+        - name: ascending
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
+        - name: type
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/PostListingType"
       responses:
         default:
           description: Unexpected error
@@ -192,10 +192,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     post:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: createPost
       responses:
         default:
@@ -213,18 +213,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/count:
     get:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: countPosts
       parameters:
-      - name: type
-        in: query
-        required: true
-        schema:
-          $ref: "#/components/schemas/PostListingType"
+        - name: type
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/PostListingType"
       responses:
         default:
           description: Unexpected error
@@ -242,11 +242,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/feed:
     get:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: listPostsFeed
       responses:
         default:
@@ -262,14 +262,14 @@ paths:
   /posts/{id}:
     get:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: getPost
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -283,14 +283,14 @@ paths:
           description: Not Found
     delete:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: deletePost
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -303,18 +303,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/chapters:
     post:
       tags:
-      - Chapters Endpoint
+        - Chapters Endpoint
       operationId: createChapter
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -331,24 +331,24 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}:
     delete:
       tags:
-      - Chapters Endpoint
+        - Chapters Endpoint
       operationId: deleteChapter
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -361,24 +361,24 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/image:
     put:
       tags:
-      - Chapters Endpoint
+        - Chapters Endpoint
       operationId: setChapterImage
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
       requestBody:
         content:
           application/octet-stream:
@@ -403,24 +403,24 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/position:
     put:
       tags:
-      - Chapters Endpoint
+        - Chapters Endpoint
       operationId: setChapterPosition
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
       requestBody:
         content:
           application/json:
@@ -440,24 +440,24 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/text:
     put:
       tags:
-      - Chapters Endpoint
+        - Chapters Endpoint
       operationId: setChapterText
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            type: integer
       requestBody:
         content:
           text/plain:
@@ -482,24 +482,24 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/comments:
     get:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: listComments
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -518,17 +518,17 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     post:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: createComment
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -550,22 +550,22 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/comments/count:
     get:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: countComments
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: read
-        in: query
-        schema:
-          type: boolean
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: read
+          in: query
+          schema:
+            type: boolean
       responses:
         default:
           description: Unexpected error
@@ -583,25 +583,25 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/comments/{position}:
     delete:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: deleteComment
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -614,25 +614,25 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/comments/{position}/acknowledge:
     post:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: acknowledgeComment
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -645,25 +645,25 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/comments/{position}/reported:
     put:
       tags:
-      - Comments Endpoint
+        - Comments Endpoint
       operationId: setCommentReported
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
-      - name: position
-        in: path
-        required: true
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
+        - name: position
+          in: path
+          required: true
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       requestBody:
         content:
           application/json:
@@ -681,18 +681,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/publish:
     post:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: publishPost
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -712,18 +712,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/reported:
     put:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: setPostReported
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -741,18 +741,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/subscribed:
     put:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: setPostSubscribed
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -772,18 +772,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /posts/{id}/vote:
     post:
       tags:
-      - Posts Endpoint
+        - Posts Endpoint
       operationId: votePost
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -803,19 +803,19 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /reports:
     get:
       tags:
-      - Reports Endpoint
+        - Reports Endpoint
       operationId: listReports
       parameters:
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -832,19 +832,19 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /stored-files/{path}:
     get:
       tags:
-      - Stored Files Endpoint
+        - Stored Files Endpoint
       operationId: getStoredFile
       parameters:
-      - name: path
-        in: path
-        required: true
-        schema:
-          pattern: .*
-          type: string
+        - name: path
+          in: path
+          required: true
+          schema:
+            pattern: .*
+            type: string
       responses:
         default:
           description: Unexpected error
@@ -857,15 +857,15 @@ paths:
   /subscriptions/unread:
     get:
       tags:
-      - Subscriptions Endpoint
+        - Subscriptions Endpoint
       operationId: listUnreadSubscriptions
       parameters:
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -884,10 +884,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     delete:
       tags:
-      - Subscriptions Endpoint
+        - Subscriptions Endpoint
       operationId: clearUnreadSubscriptions
       responses:
         default:
@@ -899,18 +899,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /subscriptions/{id}:
     delete:
       tags:
-      - Subscriptions Endpoint
+        - Subscriptions Endpoint
       operationId: deleteSubscription
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -923,11 +923,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /tokens:
     post:
       tags:
-      - Tokens Endpoint
+        - Tokens Endpoint
       operationId: createToken
       requestBody:
         content:
@@ -950,7 +950,7 @@ paths:
   /tokens/new:
     get:
       tags:
-      - Tokens Endpoint
+        - Tokens Endpoint
       operationId: getNewToken
       responses:
         default:
@@ -966,10 +966,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     post:
       tags:
-      - Tokens Endpoint
+        - Tokens Endpoint
       operationId: createNewToken
       requestBody:
         content:
@@ -988,7 +988,7 @@ paths:
   /users:
     post:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: createUser
       requestBody:
         content:
@@ -1013,15 +1013,15 @@ paths:
   /users/blocked:
     get:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: listBlockedUsers
       parameters:
-      - name: page
-        in: query
-        schema:
-          format: int32
-          minimum: 0
-          type: integer
+        - name: page
+          in: query
+          schema:
+            format: int32
+            minimum: 0
+            type: integer
       responses:
         default:
           description: Unexpected error
@@ -1038,11 +1038,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/blocked/count:
     get:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: countBlockedUsers
       responses:
         default:
@@ -1059,11 +1059,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/current:
     get:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: getCurrentUser
       responses:
         default:
@@ -1079,10 +1079,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     delete:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: deleteCurrentUser
       responses:
         default:
@@ -1094,11 +1094,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/current/avatar:
     put:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: setCurrentUserAvatar
       requestBody:
         content:
@@ -1124,10 +1124,10 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
     delete:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: deleteCurrentUserAvatar
       responses:
         default:
@@ -1139,11 +1139,11 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/current/bio:
     put:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: setCurrentUserBio
       requestBody:
         content:
@@ -1167,18 +1167,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/{id}:
     get:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: getUser
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -1193,14 +1193,14 @@ paths:
   /users/{id}/banned:
     put:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: setUserBanned
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       responses:
         default:
           description: Unexpected error
@@ -1213,18 +1213,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/{id}/blocked:
     put:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: setUserBlocked
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1244,18 +1244,18 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
   /users/{id}/reported:
     put:
       tags:
-      - Users Endpoint
+        - Users Endpoint
       operationId: setUserReported
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          $ref: "#/components/schemas/UUID"
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/UUID"
       requestBody:
         content:
           application/json:
@@ -1273,7 +1273,7 @@ paths:
         "403":
           description: Not Allowed
       security:
-      - SecurityScheme: []
+        - SecurityScheme: [ ]
 components:
   schemas:
     BlockUpdate:
@@ -1283,7 +1283,7 @@ components:
           type: boolean
     Chapter:
       required:
-      - id
+        - id
       type: object
       properties:
         id:
@@ -1307,10 +1307,10 @@ components:
           type: integer
     Comment:
       required:
-      - id
-      - dateCreated
-      - anonymous
-      - text
+        - id
+        - dateCreated
+        - anonymous
+        - text
       type: object
       properties:
         id:
@@ -1318,7 +1318,7 @@ components:
         dateCreated:
           type: string
           allOf:
-          - $ref: "#/components/schemas/Instant"
+            - $ref: "#/components/schemas/Instant"
         anonymous:
           type: boolean
         author:
@@ -1327,7 +1327,7 @@ components:
           type: string
     CommentCreation:
       required:
-      - text
+        - text
       type: object
       properties:
         text:
@@ -1337,10 +1337,10 @@ components:
           type: boolean
     Email:
       required:
-      - id
-      - email
-      - verified
-      - main
+        - id
+        - email
+        - verified
+        - main
       type: object
       properties:
         id:
@@ -1353,8 +1353,8 @@ components:
           type: boolean
     EmailActivation:
       required:
-      - email
-      - code
+        - email
+        - code
       type: object
       properties:
         email:
@@ -1365,7 +1365,7 @@ components:
           type: string
     EmailCreation:
       required:
-      - email
+        - email
       type: object
       properties:
         email:
@@ -1377,7 +1377,7 @@ components:
       example: 2022-03-10T16:15:50Z
     NewTokenCreation:
       required:
-      - identifier
+        - identifier
       type: object
       properties:
         identifier:
@@ -1385,12 +1385,12 @@ components:
           type: string
     Post:
       required:
-      - id
-      - dateCreated
-      - anonymous
-      - published
-      - commentCount
-      - voteCount
+        - id
+        - dateCreated
+        - anonymous
+        - published
+        - commentCount
+        - voteCount
       type: object
       properties:
         id:
@@ -1398,7 +1398,7 @@ components:
         dateCreated:
           type: string
           allOf:
-          - $ref: "#/components/schemas/Instant"
+            - $ref: "#/components/schemas/Instant"
         anonymous:
           type: boolean
         author:
@@ -1417,9 +1417,9 @@ components:
             $ref: "#/components/schemas/Chapter"
     PostListingType:
       enum:
-      - SUBSCRIBED_TO
-      - PUBLISHED
-      - DRAFTS
+        - SUBSCRIBED_TO
+        - PUBLISHED
+        - DRAFTS
       type: string
     PostPublication:
       type: object
@@ -1428,10 +1428,10 @@ components:
           type: boolean
     Profile:
       required:
-      - id
-      - username
-      - avatar
-      - tint
+        - id
+        - username
+        - avatar
+        - tint
       type: object
       properties:
         id:
@@ -1444,17 +1444,17 @@ components:
           type: string
     Rank:
       enum:
-      - CITIZEN
-      - MODERATOR
-      - ADMINISTRATOR
+        - CITIZEN
+        - MODERATOR
+        - ADMINISTRATOR
       type: string
     Report:
       required:
-      - id
-      - dateCreated
-      - targetId
-      - source
-      - targetModel
+        - id
+        - dateCreated
+        - targetId
+        - source
+        - targetModel
       type: object
       properties:
         id:
@@ -1462,7 +1462,7 @@ components:
         dateCreated:
           type: string
           allOf:
-          - $ref: "#/components/schemas/Instant"
+            - $ref: "#/components/schemas/Instant"
         targetId:
           $ref: "#/components/schemas/UUID"
         source:
@@ -1476,9 +1476,9 @@ components:
           type: boolean
     Subscription:
       required:
-      - id
-      - post
-      - unreadCommentCount
+        - id
+        - post
+        - unreadCommentCount
       type: object
       properties:
         id:
@@ -1495,8 +1495,8 @@ components:
           type: boolean
     TokenCreation:
       required:
-      - identifier
-      - secret
+        - identifier
+        - secret
       type: object
       properties:
         identifier:
@@ -1511,14 +1511,14 @@ components:
       type: string
     User:
       required:
-      - id
-      - dateCreated
-      - username
-      - rank
-      - avatar
-      - bio
-      - banned
-      - tint
+        - id
+        - dateCreated
+        - username
+        - rank
+        - avatar
+        - bio
+        - banned
+        - tint
       type: object
       properties:
         id:
@@ -1526,7 +1526,7 @@ components:
         dateCreated:
           type: string
           allOf:
-          - $ref: "#/components/schemas/Instant"
+            - $ref: "#/components/schemas/Instant"
         username:
           type: string
         rank:
@@ -1541,8 +1541,8 @@ components:
           type: string
     UserCreation:
       required:
-      - email
-      - username
+        - email
+        - username
       type: object
       properties:
         email:
