@@ -81,7 +81,12 @@ fun MainContent() {
         ) {
             Destination.entries.forEach { destination ->
                 composable(destination.route) {
-                    destination.content(this@SharedTransitionLayout, this)
+                    destination.content(
+                        Destination.ContentInfo(
+                            transitionScope = this@SharedTransitionLayout,
+                            visibilityScope = this
+                        )
+                    )
                 }
             }
         }
@@ -158,7 +163,12 @@ private fun destinationMapSaver() = mapSaver(
     },
     restore = {
         mutableMapOf<Destination, Destination>().apply {
-            it.forEach { (key, value) -> put(Destination.byRoute(key)!!, value as Destination) }
+            it.forEach { (key, value) ->
+                put(
+                    requireNotNull(Destination.byRoute(key)),
+                    value as Destination
+                )
+            }
         }
     }
 )

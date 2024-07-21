@@ -52,21 +52,21 @@ enum class Destination(
     val activeIcon: ImageVector,
     val inactiveIcon: ImageVector,
     @StringRes val labelRes: Int,
-    val content: @Composable (SharedTransitionScope, AnimatedVisibilityScope) -> Unit
+    val content: @Composable (ContentInfo) -> Unit
 ) {
     FEED(
         route = "feed",
         activeIcon = Icons.Filled.Home,
         inactiveIcon = Icons.Outlined.Home,
         labelRes = R.string.main_destination_feed,
-        content = { _, _ -> FeedScreen() }
+        content = { FeedScreen() }
     ),
     NOTIFICATIONS(
         route = "notifications",
         activeIcon = Icons.Filled.Notifications,
         inactiveIcon = Icons.Outlined.Notifications,
         labelRes = R.string.main_destination_notifications,
-        content = { _, _ -> NotificationsScreen() }
+        content = { NotificationsScreen() }
     ),
     ARCHIVE(
         route = "archive",
@@ -74,14 +74,14 @@ enum class Destination(
         activeIcon = Icons.Filled.BookmarkAdded,
         inactiveIcon = Icons.Outlined.BookmarkAdded,
         labelRes = R.string.main_destination_archive,
-        content = { _, _ -> ArchiveScreen() }
+        content = { ArchiveScreen() }
     ),
     DRAFTS(
         route = "drafts",
         activeIcon = Icons.Filled.Description,
         inactiveIcon = Icons.Outlined.Description,
         labelRes = R.string.main_destination_drafts,
-        content = { _, _ -> DraftsScreen() }
+        content = { DraftsScreen() }
     ),
     PUBLISHED(
         route = "published",
@@ -89,7 +89,7 @@ enum class Destination(
         activeIcon = Icons.Filled.Inventory2,
         inactiveIcon = Icons.Outlined.Inventory2,
         labelRes = R.string.main_destination_published,
-        content = { _, _ -> PublishedScreen() }
+        content = { PublishedScreen() }
     ),
     SETTINGS(
         route = "settings",
@@ -98,7 +98,7 @@ enum class Destination(
         activeIcon = Icons.Filled.Settings,
         inactiveIcon = Icons.Outlined.Settings,
         labelRes = R.string.main_destination_settings,
-        content = { _, _ -> SettingsScreen() }
+        content = { SettingsScreen() }
     ),
     LOGIN(
         route = "login",
@@ -106,7 +106,7 @@ enum class Destination(
         activeIcon = Icons.Filled.AccountCircle,
         inactiveIcon = Icons.Outlined.AccountCircle,
         labelRes = R.string.main_destination_login,
-        content = { t, v -> t.LoginScreen(v) }
+        content = { it.transitionScope.LoginScreen(visibilityScope = it.visibilityScope) }
     ),
     REGISTER(
         route = "register",
@@ -114,7 +114,7 @@ enum class Destination(
         activeIcon = Icons.Filled.AddCircle,
         inactiveIcon = Icons.Outlined.AddCircleOutline,
         labelRes = R.string.main_destination_register,
-        content = { t, v -> t.RegisterScreen(v) }
+        content = { it.transitionScope.RegisterScreen(visibilityScope = it.visibilityScope) }
     );
 
     override fun toString() = route
@@ -141,6 +141,12 @@ enum class Destination(
             }
         }
     }
+
+    @Immutable
+    data class ContentInfo(
+        val transitionScope: SharedTransitionScope,
+        val visibilityScope: AnimatedVisibilityScope
+    )
 }
 
 @Composable
