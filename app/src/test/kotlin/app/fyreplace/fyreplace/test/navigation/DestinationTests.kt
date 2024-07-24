@@ -1,12 +1,10 @@
 package app.fyreplace.fyreplace.test.navigation
 
-import androidx.compose.animation.ExperimentalSharedTransitionApi
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 class DestinationTests {
     @Test
     fun testDestinationsAreUnique() {

@@ -76,7 +76,8 @@ android {
         targetSdk = 34
         versionCode = getVersionNumber()
         versionName = getVersionString()
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "app.fyreplace.fyreplace.androidtest.TestRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -242,5 +243,6 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.hilt.testing)
     ksp(libs.hilt.compiler)
 }
