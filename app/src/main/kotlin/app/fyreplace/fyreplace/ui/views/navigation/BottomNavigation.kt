@@ -19,7 +19,7 @@ fun BottomNavigation(
 
             NavigationBarItem(
                 selected = selected,
-                icon = { Icon(destination, selected = selected) },
+                icon = { Icon(destination, active = selected) },
                 label = { Text(destination) },
                 onClick = { onClickDestination(destination) },
                 modifier = Modifier.testTag("navigation:$destination")

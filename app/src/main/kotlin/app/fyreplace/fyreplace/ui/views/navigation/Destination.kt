@@ -150,9 +150,9 @@ enum class Destination(
 }
 
 @Composable
-fun Icon(destination: Destination, selected: Boolean) {
+fun Icon(destination: Destination, active: Boolean) {
     Icon(
-        if (selected) destination.activeIcon else destination.inactiveIcon,
+        if (active) destination.activeIcon else destination.inactiveIcon,
         contentDescription = stringResource(destination.labelRes)
     )
 }

@@ -71,13 +71,13 @@ fun SharedTransitionScope.SegmentedChoice(
                 if (booleanResource(R.bool.cramped_width)) {
                     SegmentedButtonDefaults.Icon(active = selected)
                 } else {
-                    Icon(destination, selected = selected)
+                    Icon(destination, active = selected)
                 }
             },
             onClick = { onClick(destination) },
             modifier = Modifier.testTag("navigation:$destination")
         ) {
-            Text(stringResource(destination.labelRes))
+            Text(stringResource(destination.labelRes), maxLines = 1)
         }
     }
 }
