@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.integerResource
@@ -97,6 +98,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             keyboardActions = KeyboardActions(onDone = { submit() }),
             onValueChange = viewModel::updateIdentifier,
             modifier = Modifier
+                .onKeyEvent { true }
                 .widthIn(
                     integerResource(R.integer.form_min_width).dp,
                     integerResource(R.integer.form_max_width).dp

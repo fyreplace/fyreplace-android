@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.integerResource
@@ -78,7 +79,8 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 )
         )
 
-        val baseModifier = Modifier
+        val textFieldModifier = Modifier
+            .onKeyEvent { true }
             .widthIn(
                 integerResource(R.integer.form_min_width).dp,
                 integerResource(R.integer.form_max_width).dp
@@ -107,7 +109,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             ),
             keyboardActions = KeyboardActions(onNext = { emailFocus.requestFocus() }),
             onValueChange = viewModel::updateUsername,
-            modifier = baseModifier
+            modifier = textFieldModifier
                 .sharedElement(
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
@@ -126,7 +128,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             ),
             keyboardActions = KeyboardActions(onDone = { submit() }),
             onValueChange = viewModel::updateEmail,
-            modifier = baseModifier
+            modifier = textFieldModifier
                 .focusRequester(emailFocus)
                 .testTag("register:email")
         )

@@ -3,6 +3,8 @@
     <string name="loading">…</string>
     <string name="app_name">Fyreplace</string>
 
+    <string name="keyboard_shortcuts_navigation">Navigation</string>
+
     <string name="main_destination_feed">Feed</string>
     <string name="main_destination_notifications">Notifications</string>
     <string name="main_destination_archive">Archive</string>

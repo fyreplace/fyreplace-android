@@ -29,6 +29,7 @@ fun SideNavigationDrawer(
     selectedDestination: Destination?,
     windowPadding: PaddingValues,
     onClickDestination: (Destination) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {
     PermanentNavigationDrawer(
@@ -57,7 +58,8 @@ fun SideNavigationDrawer(
                     )
                 }
             }
-        }
+        },
+        modifier = modifier
     ) {
         content(contentPadding(windowPadding))
     }

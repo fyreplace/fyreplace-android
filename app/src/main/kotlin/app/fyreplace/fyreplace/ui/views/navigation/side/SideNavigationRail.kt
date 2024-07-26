@@ -14,9 +14,10 @@ import app.fyreplace.fyreplace.ui.views.navigation.Text
 fun SideNavigationRail(
     destinations: List<Destination>,
     selectedDestination: Destination?,
-    onClickDestination: (Destination) -> Unit
+    onClickDestination: (Destination) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    NavigationRail {
+    NavigationRail(modifier = modifier) {
         for (destination in destinations) {
             val selected = destination == selectedDestination
 

@@ -1,6 +1,8 @@
 package app.fyreplace.fyreplace
 
 import android.os.Bundle
+import android.view.KeyboardShortcutGroup
+import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -19,6 +21,9 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,6 +31,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
+import app.fyreplace.fyreplace.input.DestinationKeyboardShortcut
+import app.fyreplace.fyreplace.input.getShortcut
+import app.fyreplace.fyreplace.input.keyboardShortcuts
 import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.bars.TopBar
 import app.fyreplace.fyreplace.ui.views.navigation.BottomNavigation
@@ -51,6 +59,20 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    override fun onProvideKeyboardShortcuts(
+        data: MutableList<KeyboardShortcutGroup>,
+        menu: Menu?,
+        deviceId: Int
+    ) {
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
+        data.add(
+            KeyboardShortcutGroup(
+                getString(R.string.keyboard_shortcuts_navigation),
+                keyboardShortcuts.map { it.getInfo(this) }
+            )
+        )
+    }
 }
 
 @Composable
@@ -65,17 +87,38 @@ fun MainContent() {
     val destinationSets = Destination.Set.topLevel(flatten = !compact)
     val selectedDestinationSet =
         destinationSets.find { (it.choices + it.root).contains(currentDestination) }
-    val savedDestinations = rememberSaveable(saver = destinationMapSaver()) {
-        mutableStateMapOf()
+    val savedDestinations = rememberSaveable(saver = destinationMapSaver()) { mutableStateMapOf() }
+
+    fun onClickDestination(destination: Destination) {
+        val actualDestination = destinationSets.find { it.root == destination }
+            ?.choices
+            ?.firstOrNull()
+            ?: destination
+        navController.sail(savedDestinations[actualDestination] ?: actualDestination)
+    }
+
+    val keyboardHandler = Modifier.onKeyEvent { event ->
+        when (event.type) {
+            KeyEventType.KeyUp -> {
+                val shortcut = getShortcut(event)
+
+                if (shortcut is DestinationKeyboardShortcut) {
+                    onClickDestination(shortcut.destination)
+                    return@onKeyEvent true
+                }
+            }
+        }
+
+        return@onKeyEvent false
     }
 
     @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
-    fun Host(innerPadding: PaddingValues) = SharedTransitionLayout {
+    fun Host(innerPadding: PaddingValues, modifier: Modifier = Modifier) = SharedTransitionLayout {
         NavHost(
             navController = navController,
             startDestination = "feed",
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
@@ -107,14 +150,6 @@ fun MainContent() {
         )
     }
 
-    fun onClickDestination(destination: Destination) {
-        val actualDestination = destinationSets.find { it.root == destination }
-            ?.choices
-            ?.firstOrNull()
-            ?: destination
-        navController.sail(savedDestinations[actualDestination] ?: actualDestination)
-    }
-
     if (compact) {
         Scaffold(
             topBar = {
@@ -128,7 +163,7 @@ fun MainContent() {
                 )
             }
         ) {
-            Host(it)
+            Host(it, modifier = keyboardHandler)
         }
     } else {
         Scaffold {
@@ -136,7 +171,8 @@ fun MainContent() {
                 destinations = destinationSets.map(Destination.Set::root),
                 selectedDestination = selectedDestinationSet?.root,
                 windowPadding = it,
-                onClickDestination = ::onClickDestination
+                onClickDestination = ::onClickDestination,
+                modifier = keyboardHandler
             ) { contentPadding ->
                 Column {
                     Top()
