@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="secure_warning_title">HTTP communication might be insecure</string>
+    <string name="secure_warning_description">The Google Play Services security provider could not be installed.\nIf you do not have access to Google Play Services, try installing the Libre version of the app.</string>
+</resources>

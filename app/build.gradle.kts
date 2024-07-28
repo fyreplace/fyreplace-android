@@ -236,6 +236,8 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.moshi)
     implementation(libs.protobuf.java)
+    "googleImplementation"(libs.play.services.base)
+    "libreImplementation"(libs.conscrypt)
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
     testImplementation(libs.junit)

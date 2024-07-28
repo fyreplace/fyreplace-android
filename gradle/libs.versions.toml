@@ -19,10 +19,12 @@ androidxLifecycle = "2.8.3"
 androidxNavigation = "2.8.0-beta05"
 androidxJunit = "1.2.1"
 coilCompose = "2.7.0"
+conscrypt = "2.5.2"
 hilt = "2.51.1"
 junit = "4.13.2"
 ktor = "2.3.12"
 moshi = "1.15.1"
+play-services-base = "18.5.0"
 protobuf = "4.27.2"
 
 [libraries]
@@ -49,6 +51,7 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
+conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
@@ -56,6 +59,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 ktor-client = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+play-services-base = { group = "com.google.android.gms", name = "play-services-base", version.ref = "play-services-base" }
 protobuf-java = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 
