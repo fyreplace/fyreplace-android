@@ -21,10 +21,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.key.onKeyEvent
@@ -50,6 +52,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
     val email by viewModel.email.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
+    val usernameFocus = FocusRequester()
     val emailFocus = FocusRequester()
 
     fun submit() {
@@ -107,9 +110,10 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 autoCorrectEnabled = false,
                 imeAction = ImeAction.Next
             ),
-            keyboardActions = KeyboardActions(onNext = { emailFocus.requestFocus() }),
             onValueChange = viewModel::updateUsername,
             modifier = textFieldModifier
+                .focusRequester(usernameFocus)
+                .focusProperties { next = emailFocus }
                 .sharedElement(
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
@@ -147,6 +151,13 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                     .testTag("register:submit")
             ) {
                 Text(stringResource(R.string.register_submit), maxLines = 1)
+            }
+        }
+
+        LaunchedEffect(true) {
+            when {
+                username.isBlank() -> usernameFocus.requestFocus()
+                email.isBlank() -> emailFocus.requestFocus()
             }
         }
     }

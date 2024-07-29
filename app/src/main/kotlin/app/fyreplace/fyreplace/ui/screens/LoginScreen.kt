@@ -21,9 +21,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -47,6 +50,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
     val identifier by viewModel.identifier.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
+    val identifierFocus = FocusRequester()
 
     fun submit() {
         keyboard?.hide()
@@ -67,7 +71,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             contentDescription = null,
             modifier = Modifier
-                .padding(top = 32.dp, bottom = 32.dp)
+                .padding(vertical = 32.dp)
                 .size(96.dp)
                 .sharedElement(
                     rememberSharedContentState(key = "image"),
@@ -99,6 +103,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             onValueChange = viewModel::updateIdentifier,
             modifier = Modifier
                 .onKeyEvent { true }
+                .focusRequester(identifierFocus)
                 .widthIn(
                     integerResource(R.integer.form_min_width).dp,
                     integerResource(R.integer.form_max_width).dp
@@ -125,6 +130,12 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                     .testTag("login:submit")
             ) {
                 Text(stringResource(R.string.login_submit), maxLines = 1)
+            }
+        }
+
+        LaunchedEffect(true) {
+            if (identifier.isBlank()) {
+                identifierFocus.requestFocus()
             }
         }
     }

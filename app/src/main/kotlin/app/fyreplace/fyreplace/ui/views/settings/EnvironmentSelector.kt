@@ -18,6 +18,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -78,15 +79,19 @@ private fun SelectorDialog(
                             selected = env == selectedEnvironment,
                             onClick = onClick
                         )
-                        Text(buildAnnotatedString {
-                            val link = LinkAnnotation.Clickable("name") { onClick() }
-                            withLink(link) { append(name(env)) }
+                        Text(
+                            buildAnnotatedString {
+                                withLink(LinkAnnotation.Clickable("name") { onClick() }) {
+                                    append(name(env))
 
-                            if (env == BuildConfig.ENVIRONMENT_DEFAULT) {
-                                append(" ")
-                                append(stringResource(R.string.settings_environment_default))
-                            }
-                        })
+                                    if (env == BuildConfig.ENVIRONMENT_DEFAULT) {
+                                        append(" ")
+                                        append(stringResource(R.string.settings_environment_default))
+                                    }
+                                }
+                            },
+                            modifier = Modifier.focusProperties { canFocus = false }
+                        )
                     }
                 }
             }
