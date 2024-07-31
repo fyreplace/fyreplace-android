@@ -151,6 +151,8 @@ android {
         jvmTarget = JvmTarget.JVM_17.target
     }
 
+    testOptions.unitTests.isIncludeAndroidResources = true
+
     sourceSets {
         named("main") {
             java.srcDir("build/openapi/src/main")
@@ -241,6 +243,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

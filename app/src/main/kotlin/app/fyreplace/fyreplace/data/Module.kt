@@ -10,5 +10,8 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 interface Module {
     @Binds
+    fun bindResourceResolver(resolver: ResourceResolverImpl): ResourceResolver
+
+    @Binds
     fun bindConnectionStoreResolver(resolver: StoreResolverImpl): StoreResolver
 }
