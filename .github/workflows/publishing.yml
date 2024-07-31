@@ -77,10 +77,31 @@ jobs:
           name: Fyreplace.libre.aab
           path: app/build/outputs/bundle/libreRelease/app-libre-release.aab
           if-no-files-found: error
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Run tests
+        run: ./gradlew test
 
   publish:
     name: Publish
-    needs: build
+    needs:
+      - build
+      - test
     runs-on: ubuntu-latest
     environment: google-play-store
     steps:
