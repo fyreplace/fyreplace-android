@@ -3,4 +3,5 @@
     <string name="api_url_main">https://rest.api.fyreplace.app</string>
     <string name="api_url_dev">https://dev.rest.api.fyreplace.app</string>
     <string name="api_url_local" />
+    <bool name="allow_insecure_connections">false</bool>
 </resources>
