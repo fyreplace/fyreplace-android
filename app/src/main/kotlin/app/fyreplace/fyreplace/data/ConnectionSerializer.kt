@@ -1,10 +1,7 @@
 package app.fyreplace.fyreplace.data
 
-import android.content.Context
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.Serializer
-import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
-import androidx.datastore.dataStore
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.protos.Connection
 import java.io.IOException
@@ -18,8 +15,6 @@ object ConnectionSerializer : Serializer<Connection> {
             .setEnvironment(BuildConfig.ENVIRONMENT_DEFAULT)
             .build()
 
-    val corruptionHandler = ReplaceFileCorruptionHandler { defaultValue }
-
     override suspend fun readFrom(input: InputStream): Connection {
         try {
             return Connection.parseFrom(input)
@@ -30,9 +25,3 @@ object ConnectionSerializer : Serializer<Connection> {
 
     override suspend fun writeTo(t: Connection, output: OutputStream) = t.writeTo(output)
 }
-
-val Context.connectionStore by dataStore(
-    fileName = "connection.pb",
-    serializer = ConnectionSerializer,
-    corruptionHandler = ConnectionSerializer.corruptionHandler
-)
