@@ -30,7 +30,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,7 +63,6 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .imePadding()
-            .testTag("screen:${Destination.LOGIN}")
     ) {
         Image(
             painter = painterResource(R.drawable.logo),
@@ -113,7 +111,6 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
                 )
-                .testTag("login:identifier")
         )
 
         Box(
@@ -125,9 +122,7 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
             Button(
                 enabled = canSubmit,
                 onClick = ::submit,
-                modifier = Modifier
-                    .padding(bottom = 32.dp)
-                    .testTag("login:submit")
+                modifier = Modifier.padding(bottom = 32.dp)
             ) {
                 Text(stringResource(R.string.login_submit), maxLines = 1)
             }

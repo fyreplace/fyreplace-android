@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.stringResource
 import app.fyreplace.fyreplace.R
@@ -74,8 +73,7 @@ fun SharedTransitionScope.SegmentedChoice(
                     Icon(destination, active = selected)
                 }
             },
-            onClick = { onClick(destination) },
-            modifier = Modifier.testTag("navigation:$destination")
+            onClick = { onClick(destination) }
         ) {
             Text(stringResource(destination.labelRes), maxLines = 1)
         }

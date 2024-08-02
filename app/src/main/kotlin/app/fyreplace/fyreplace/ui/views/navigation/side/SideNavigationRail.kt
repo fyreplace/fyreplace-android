@@ -4,7 +4,6 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.Icon
@@ -25,8 +24,7 @@ fun SideNavigationRail(
                 selected = selected,
                 icon = { Icon(destination, active = selected) },
                 label = { Text(destination) },
-                onClick = { onClickDestination(destination) },
-                modifier = Modifier.testTag("navigation:$destination")
+                onClick = { onClickDestination(destination) }
             )
         }
     }

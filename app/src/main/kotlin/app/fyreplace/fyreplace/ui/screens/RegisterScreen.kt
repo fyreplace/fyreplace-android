@@ -31,7 +31,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 
@@ -67,7 +65,6 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .imePadding()
-            .testTag("screen:${Destination.REGISTER}")
     ) {
         Image(
             painter = painterResource(R.drawable.logo),
@@ -118,7 +115,6 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
                 )
-                .testTag("register:username")
         )
 
         OutlinedTextField(
@@ -132,9 +128,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             ),
             keyboardActions = KeyboardActions(onDone = { submit() }),
             onValueChange = viewModel::updateEmail,
-            modifier = textFieldModifier
-                .focusRequester(emailFocus)
-                .testTag("register:email")
+            modifier = textFieldModifier.focusRequester(emailFocus)
         )
 
         Box(
@@ -146,9 +140,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             Button(
                 enabled = canSubmit,
                 onClick = ::submit,
-                modifier = Modifier
-                    .padding(bottom = 32.dp)
-                    .testTag("register:submit")
+                modifier = Modifier.padding(bottom = 32.dp)
             ) {
                 Text(stringResource(R.string.register_submit), maxLines = 1)
             }

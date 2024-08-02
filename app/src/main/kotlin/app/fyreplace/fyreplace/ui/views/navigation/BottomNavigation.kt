@@ -3,8 +3,6 @@ package app.fyreplace.fyreplace.ui.views.navigation
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -21,8 +19,7 @@ fun BottomNavigation(
                 selected = selected,
                 icon = { Icon(destination, active = selected) },
                 label = { Text(destination) },
-                onClick = { onClickDestination(destination) },
-                modifier = Modifier.testTag("navigation:$destination")
+                onClick = { onClickDestination(destination) }
             )
         }
     }
