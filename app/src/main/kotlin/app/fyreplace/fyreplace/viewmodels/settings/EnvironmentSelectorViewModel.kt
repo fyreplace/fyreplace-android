@@ -11,17 +11,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EnvironmentSelectorViewModel @Inject constructor(
-    storeResolver: StoreResolver
+    private val storeResolver: StoreResolver
 ) : ViewModelBase() {
-    private val connectionStore = storeResolver.connectionStoreIn(viewModelScope)
-
-    val environment = connectionStore.data
+    val environment = storeResolver.connectionStore.data
         .map { it.environment }
         .asState(Environment.UNRECOGNIZED)
 
     fun updateEnvironment(environment: Environment) {
         viewModelScope.launch {
-            connectionStore.updateData {
+            storeResolver.connectionStore.updateData {
                 it.toBuilder().setEnvironment(environment).build()
             }
         }

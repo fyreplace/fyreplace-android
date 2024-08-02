@@ -3,11 +3,11 @@ package app.fyreplace.fyreplace.data
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ViewModelComponent
 
 @Suppress("unused")
 @Module
-@InstallIn(SingletonComponent::class)
+@InstallIn(ViewModelComponent::class)
 interface Module {
     @Binds
     fun bindResourceResolver(resolver: ResourceResolverImpl): ResourceResolver
