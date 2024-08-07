@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.1.0
+  version: v0.2.0
 paths:
   /emails:
     get:
@@ -42,6 +42,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EmailCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -69,6 +70,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/EmailActivation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -385,6 +387,7 @@ paths:
             schema:
               format: binary
               type: string
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -426,6 +429,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ChapterPositionUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -534,6 +538,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CommentCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -669,6 +674,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ReportUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -698,6 +704,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/PostPublication"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -729,6 +736,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ReportUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -758,6 +766,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/SubscriptionUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -789,6 +798,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/VoteCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -934,6 +944,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/TokenCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -976,6 +987,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/NewTokenCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -995,6 +1007,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserCreation"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -1106,6 +1119,7 @@ paths:
             schema:
               format: binary
               type: string
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -1230,6 +1244,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/BlockUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -1261,6 +1276,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/ReportUpdate"
+        required: true
       responses:
         default:
           description: Unexpected error
@@ -1518,6 +1534,7 @@ components:
         - avatar
         - bio
         - banned
+        - blocked
         - tint
       type: object
       properties:
@@ -1536,6 +1553,8 @@ components:
         bio:
           type: string
         banned:
+          type: boolean
+        blocked:
           type: boolean
         tint:
           type: string
