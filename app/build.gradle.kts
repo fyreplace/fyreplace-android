@@ -68,12 +68,12 @@ fun getVersionString(variant: String? = null) =
 
 android {
     namespace = "app.fyreplace.fyreplace"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "app.fyreplace.fyreplace"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = getVersionNumber()
         versionName = getVersionString()
         testInstrumentationRunner = "app.fyreplace.fyreplace.androidtest.TestRunner"
