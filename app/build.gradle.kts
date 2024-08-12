@@ -185,10 +185,14 @@ openApiGenerate {
     outputDir = "$projectDir/build/openapi"
     apiPackage = "app.fyreplace.api"
     modelPackage = "app.fyreplace.api.data"
-    library = "jvm-ktor"
     validateSpec = false
     generateModelTests = false
     generateApiTests = false
+    library = "jvm-retrofit2"
+    configOptions = mapOf(
+        "useCoroutines" to "true",
+        "serializationLibrary" to "kotlinx_serialization"
+    )
 }
 
 tasks.named {
@@ -234,10 +238,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.hilt)
-    implementation(libs.ktor.client)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.moshi)
+    implementation(libs.kotlin.serialization.json)
+    implementation(libs.okhttp.logging.interceptor)
     implementation(libs.protobuf.java)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx)
+    implementation(libs.retrofit.converter.scalars)
     "googleImplementation"(libs.play.services.base)
     "libreImplementation"(libs.conscrypt)
     debugImplementation(libs.androidx.ui.test.manifest)

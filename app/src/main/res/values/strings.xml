@@ -1,7 +1,7 @@
 <resources>
     <string name="empty" />
     <string name="loading">…</string>
-    <string name="app_name">Fyreplace</string>
+    <string name="app_name" translatable="false">Fyreplace</string>
 
     <string name="keyboard_shortcuts_navigation">Navigation</string>
 
@@ -13,6 +13,10 @@
     <string name="main_destination_settings">Settings</string>
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
+    <string name="main_error_connection_title">Connection error</string>
+    <string name="main_error_connection_message">The server seems to be unreachable.</string>
+    <string name="main_error_unknown_title">An error just occurred</string>
+    <string name="main_error_unknown_message">Unknown error. This should never happen…</string>
 
     <string name="settings_environment_main">Production server</string>
     <string name="settings_environment_dev">Testing server</string>
@@ -24,10 +28,12 @@
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>
     <string name="login_submit">@string/main_destination_login</string>
+    <string name="login_error_404_title">User not found</string>
+    <string name="login_error_404_message">No user account was found with this username or email.</string>
 
     <string name="register_username">Username</string>
     <string name="register_username_placeholder">Only letters, numbers and dashes</string>
     <string name="register_email">Email</string>
-    <string name="register_email_placeholder">email@example.org</string>
+    <string name="register_email_placeholder" translatable="false">email@example.org</string>
     <string name="register_submit">@string/main_destination_register</string>
 </resources>

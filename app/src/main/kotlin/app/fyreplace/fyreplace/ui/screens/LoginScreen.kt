@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.integerResource
@@ -37,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.views.navigation.Destination
+import app.fyreplace.fyreplace.ui.views.SmallCircularProgressIndicator
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
 import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 
@@ -47,11 +48,16 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
     val viewModel = hiltViewModel<LoginViewModel>()
     val identifier by viewModel.identifier.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
     val identifierFocus = FocusRequester()
 
     fun submit() {
         keyboard?.hide()
+
+        if (canSubmit) {
+            viewModel.sendEmail()
+        }
     }
 
     Column(
@@ -122,7 +128,17 @@ fun SharedTransitionScope.LoginScreen(visibilityScope: AnimatedVisibilityScope) 
                 onClick = ::submit,
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
-                Text(stringResource(R.string.login_submit), maxLines = 1)
+                Box {
+                    Text(
+                        stringResource(R.string.login_submit),
+                        color = if (isLoading) Color.Transparent else Color.Unspecified,
+                        maxLines = 1
+                    )
+
+                    if (isLoading) {
+                        SmallCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                }
             }
         }
 
