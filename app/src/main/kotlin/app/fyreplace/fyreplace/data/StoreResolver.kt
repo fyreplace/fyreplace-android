@@ -10,7 +10,7 @@ interface StoreResolver {
     val connectionStore: DataStore<Connection>
 }
 
-class StoreResolverImpl @Inject constructor(
+class ContextStoreResolver @Inject constructor(
     @ApplicationContext private val context: Context
 ) : StoreResolver {
     override val connectionStore = context.connectionStore

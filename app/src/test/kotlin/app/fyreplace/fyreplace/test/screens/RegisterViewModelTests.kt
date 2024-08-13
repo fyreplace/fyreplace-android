@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.test.screens
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.test.TestsBase
-import app.fyreplace.fyreplace.test.fakes.ResourceResolverFake
+import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -21,7 +21,7 @@ class RegisterViewModelTests : TestsBase() {
     fun `Username must have correct length`() = runTest {
         val minLength = 5
         val maxLength = 100
-        val resolver = ResourceResolverFake(
+        val resolver = FakeResourceResolver(
             mapOf(
                 R.integer.username_min_length to minLength,
                 R.integer.username_max_length to maxLength,
@@ -56,7 +56,7 @@ class RegisterViewModelTests : TestsBase() {
     fun `Email must have correct length`() = runTest {
         val minLength = 5
         val maxLength = 100
-        val resolver = ResourceResolverFake(
+        val resolver = FakeResourceResolver(
             mapOf(
                 R.integer.username_min_length to minLength,
                 R.integer.username_max_length to maxLength,
@@ -91,7 +91,7 @@ class RegisterViewModelTests : TestsBase() {
     fun `Email must have @`() = runTest {
         val minLength = 5
         val maxLength = 100
-        val resolver = ResourceResolverFake(
+        val resolver = FakeResourceResolver(
             mapOf(
                 R.integer.username_min_length to minLength,
                 R.integer.username_max_length to maxLength,

@@ -1,7 +1,9 @@
 package app.fyreplace.fyreplace.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -31,16 +33,23 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.data.ContextResourceResolver
+import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.FakeStoreResolver
+import app.fyreplace.fyreplace.fakes.FakeTokensEndpointApi
+import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.SmallCircularProgressIndicator
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
 import app.fyreplace.fyreplace.viewmodels.screens.EnvironmentViewModel
@@ -154,6 +163,29 @@ fun SharedTransitionScope.LoginScreen(
         LaunchedEffect(true) {
             if (identifier.isBlank()) {
                 identifierFocus.requestFocus()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    AppTheme {
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                LoginScreen(
+                    visibilityScope = this,
+                    viewModel = LoginViewModel(
+                        eventBus = EventBus(),
+                        resourceResolver = ContextResourceResolver(LocalContext.current),
+                        tokensEndpoint = FakeTokensEndpointApi()
+                    ),
+                    environmentViewModel = EnvironmentViewModel(
+                        storeResolver = FakeStoreResolver()
+                    )
+                )
             }
         }
     }

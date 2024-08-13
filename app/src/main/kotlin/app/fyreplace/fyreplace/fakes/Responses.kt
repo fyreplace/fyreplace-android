@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test.fakes
+package app.fyreplace.fyreplace.fakes
 
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response

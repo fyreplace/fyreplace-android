@@ -1,12 +1,13 @@
-package app.fyreplace.fyreplace.test.fakes
+package app.fyreplace.fyreplace.fakes
 
 import app.fyreplace.api.TokensEndpointApi
 import app.fyreplace.api.data.NewTokenCreation
 import app.fyreplace.api.data.TokenCreation
+import app.fyreplace.fyreplace.api.Endpoint
 import retrofit2.Response
 import retrofit2.Response.success
 
-class TokensEndpointApiFake : TokensEndpointApi {
+class FakeTokensEndpointApi : TokensEndpointApi, Endpoint<TokensEndpointApi> {
     override suspend fun createNewToken(newTokenCreation: NewTokenCreation): Response<Unit> =
         when (newTokenCreation.identifier) {
             GOOD_IDENTIFIER -> success(Unit)
@@ -22,6 +23,8 @@ class TokensEndpointApiFake : TokensEndpointApi {
         }
 
     override suspend fun getNewToken(): Response<String> = success(GOOD_TOKEN)
+
+    override suspend fun get() = this
 
     companion object {
         const val BAD_IDENTIFIER = "bad-identifier"

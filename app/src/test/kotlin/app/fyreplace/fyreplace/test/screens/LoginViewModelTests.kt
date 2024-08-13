@@ -4,9 +4,8 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.events.FailureEvent
 import app.fyreplace.fyreplace.test.TestsBase
-import app.fyreplace.fyreplace.test.fakes.EndpointFake
-import app.fyreplace.fyreplace.test.fakes.ResourceResolverFake
-import app.fyreplace.fyreplace.test.fakes.TokensEndpointApiFake
+import app.fyreplace.fyreplace.fakes.FakeResourceResolver
+import app.fyreplace.fyreplace.fakes.FakeTokensEndpointApi
 import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -61,7 +60,7 @@ class LoginViewModelTests : TestsBase() {
             assertEquals(FailureEvent::class, event!!::class)
         }
 
-        viewModel.updateIdentifier(TokensEndpointApiFake.BAD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeTokensEndpointApi.BAD_IDENTIFIER)
         viewModel.sendEmail()
         runCurrent()
     }
@@ -76,7 +75,7 @@ class LoginViewModelTests : TestsBase() {
             assertNull(event)
         }
 
-        viewModel.updateIdentifier(TokensEndpointApiFake.GOOD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
         viewModel.sendEmail()
         runCurrent()
     }
@@ -85,13 +84,14 @@ class LoginViewModelTests : TestsBase() {
         eventBus: EventBus,
         identifierMinLength: Int,
         identifierMaxLength: Int
-    ): LoginViewModel {
-        val resolver = ResourceResolverFake(
+    ) = LoginViewModel(
+        eventBus = eventBus,
+        resourceResolver = FakeResourceResolver(
             mapOf(
                 R.integer.username_min_length to identifierMinLength,
                 R.integer.email_max_length to identifierMaxLength
             )
-        )
-        return LoginViewModel(eventBus, resolver, EndpointFake(::TokensEndpointApiFake))
-    }
+        ),
+        tokensEndpoint = FakeTokensEndpointApi()
+    )
 }

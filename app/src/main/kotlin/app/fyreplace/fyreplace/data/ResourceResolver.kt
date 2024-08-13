@@ -9,7 +9,7 @@ interface ResourceResolver {
     fun getInteger(@IntegerRes resId: Int): Int
 }
 
-class ResourceResolverImpl @Inject constructor(
+class ContextResourceResolver @Inject constructor(
     @ApplicationContext private val context: Context
 ) : ResourceResolver {
     override fun getInteger(resId: Int) = context.resources.getInteger(resId)

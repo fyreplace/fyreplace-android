@@ -10,8 +10,8 @@ import dagger.hilt.android.components.ViewModelComponent
 @InstallIn(ViewModelComponent::class)
 interface Module {
     @Binds
-    fun bindResourceResolver(resolver: ResourceResolverImpl): ResourceResolver
+    fun bindResourceResolver(resolver: ContextResourceResolver): ResourceResolver
 
     @Binds
-    fun bindConnectionStoreResolver(resolver: StoreResolverImpl): StoreResolver
+    fun bindConnectionStoreResolver(resolver: ContextStoreResolver): StoreResolver
 }
