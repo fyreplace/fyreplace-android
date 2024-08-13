@@ -3,6 +3,14 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use(localProperties::load)
+}
 
 plugins {
     alias(libs.plugins.android)
@@ -89,12 +97,19 @@ android {
 
     signingConfigs {
         create("release") {
-            if (!System.getenv("KEYSTORE_PATH").isNullOrBlank()) {
-                storeFile = file(System.getenv("KEYSTORE_PATH"))
-                storePassword = System.getenv("KEYSTORE_PASSWORD")
-                keyAlias = System.getenv("KEY_ALIAS")
-                keyPassword = System.getenv("KEY_PASSWORD")
+            val storeFilePath = System.getenv("KEYSTORE_PATH")
+                ?: localProperties.getProperty("keystore.path")
+
+            if (storeFilePath != null) {
+                storeFile = file(storeFilePath)
             }
+
+            storePassword = System.getenv("KEYSTORE_PASSWORD")
+                ?: localProperties.getProperty("keystore.password")
+            keyAlias = System.getenv("KEY_ALIAS")
+                ?: localProperties.getProperty("key.alias")
+            keyPassword = System.getenv("KEY_PASSWORD")
+                ?: localProperties.getProperty("key.password")
         }
     }
 
@@ -177,6 +192,10 @@ sentry {
     authToken = System.getenv("SENTRY_AUTH_TOKEN")
     includeSourceContext = true
     ignoredFlavors = setOf("libre")
+
+    if (localProperties.getProperty("sentry.disabled") == "true") {
+        ignoredBuildTypes = setOf("debug", "release")
+    }
 }
 
 openApiGenerate {
