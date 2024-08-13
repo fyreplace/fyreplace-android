@@ -24,7 +24,6 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.stringResource
@@ -43,7 +42,6 @@ import app.fyreplace.fyreplace.ui.screens.RegisterScreen
 import app.fyreplace.fyreplace.ui.screens.SettingsScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Immutable
 enum class Destination(
     val route: String,
     val parent: Destination? = null,
@@ -123,7 +121,6 @@ enum class Destination(
         fun byRoute(route: String) = entries.find { it.route == route }
     }
 
-    @Immutable
     data class Set(val root: Destination, val choices: List<Destination> = emptyList()) {
         val defaultDestination = choices.firstOrNull() ?: root
 
@@ -142,7 +139,6 @@ enum class Destination(
         }
     }
 
-    @Immutable
     data class ContentInfo(
         val transitionScope: SharedTransitionScope,
         val visibilityScope: AnimatedVisibilityScope

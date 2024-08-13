@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.KeyboardShortcutGroup
 import android.view.Menu
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.ReportDrawn
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import app.fyreplace.fyreplace.input.keyboardShortcuts
@@ -25,6 +26,8 @@ class MainActivity : SecureActivity() {
             AppTheme {
                 MainContent()
             }
+
+            ReportDrawn()
         }
     }
 

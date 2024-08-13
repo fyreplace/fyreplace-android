@@ -186,6 +186,12 @@ android {
     }
 }
 
+composeCompiler {
+    val outputDirectory = layout.buildDirectory.dir("compose_compiler")
+    reportsDestination = outputDirectory
+    metricsDestination = outputDirectory
+}
+
 sentry {
     org = System.getenv("SENTRY_ORG")
     projectName = System.getenv("SENTRY_PROJECT")
@@ -210,7 +216,8 @@ openApiGenerate {
     library = "jvm-retrofit2"
     configOptions = mapOf(
         "useCoroutines" to "true",
-        "serializationLibrary" to "kotlinx_serialization"
+        "serializationLibrary" to "kotlinx_serialization",
+        "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Stable"
     )
 }
 

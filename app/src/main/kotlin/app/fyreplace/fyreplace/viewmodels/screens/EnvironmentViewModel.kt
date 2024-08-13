@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.viewmodels.settings
+package app.fyreplace.fyreplace.viewmodels.screens
 
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.data.StoreResolver
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EnvironmentSelectorViewModel @Inject constructor(
+class EnvironmentViewModel @Inject constructor(
     private val storeResolver: StoreResolver
 ) : ViewModelBase() {
     val environment = storeResolver.connectionStore.data

@@ -23,38 +23,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.activity
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
+import app.fyreplace.fyreplace.viewmodels.screens.EnvironmentViewModel
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 
 @ExperimentalSharedTransitionApi
 @Composable
-fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScope) {
-    val viewModel = hiltViewModel<RegisterViewModel>()
+fun SharedTransitionScope.RegisterScreen(
+    visibilityScope: AnimatedVisibilityScope,
+    viewModel: RegisterViewModel = hiltViewModel(),
+    environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
+) {
+    val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val username by viewModel.username.collectAsStateWithLifecycle()
     val email by viewModel.email.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
-    val usernameFocus = FocusRequester()
-    val emailFocus = FocusRequester()
-
-    fun submit() {
-        keyboard?.hide()
-    }
+    val usernameFocus = remember(::FocusRequester)
+    val emailFocus = remember(::FocusRequester)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +70,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
             .imePadding()
     ) {
         Image(
-            painter = painterResource(R.drawable.logo),
+            imageVector = ImageVector.vectorResource(R.drawable.logo),
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             contentDescription = null,
             modifier = Modifier
@@ -93,7 +97,10 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                     visibilityScope
                 )
         ) {
-            EnvironmentSelector()
+            EnvironmentSelector(
+                environment = environment,
+                onEnvironmentChange = environmentViewModel::updateEnvironment
+            )
         }
 
         OutlinedTextField(
@@ -124,7 +131,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
                 autoCorrectEnabled = false,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(onDone = { submit() }),
+            keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
             onValueChange = viewModel::updateEmail,
             modifier = textFieldModifier.focusRequester(emailFocus)
         )
@@ -137,7 +144,7 @@ fun SharedTransitionScope.RegisterScreen(visibilityScope: AnimatedVisibilityScop
         ) {
             Button(
                 enabled = canSubmit,
-                onClick = ::submit,
+                onClick = {},
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
                 Text(stringResource(R.string.register_submit), maxLines = 1)

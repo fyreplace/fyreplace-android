@@ -12,6 +12,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,18 +26,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.extensions.activity
 import app.fyreplace.fyreplace.protos.Environment
-import app.fyreplace.fyreplace.viewmodels.settings.EnvironmentSelectorViewModel
 
 @Composable
-fun EnvironmentSelector(modifier: Modifier = Modifier) {
-    val viewModel = hiltViewModel<EnvironmentSelectorViewModel>(requireNotNull(activity))
-    val environment by viewModel.environment.collectAsStateWithLifecycle()
+fun EnvironmentSelector(
+    environment: Environment,
+    onEnvironmentChange: (Environment) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
     OutlinedButton(onClick = { showDialog = true }, modifier = modifier) {
@@ -47,7 +46,7 @@ fun EnvironmentSelector(modifier: Modifier = Modifier) {
     if (showDialog) {
         SelectorDialog(
             environment = environment,
-            onSelect = viewModel::updateEnvironment,
+            onSelect = onEnvironmentChange,
             onClose = { showDialog = false }
         )
     }
@@ -117,9 +116,10 @@ private fun SelectorDialog(
 
 @Preview
 @Composable
-fun SelectorDialogPreview() = SelectorDialog(Environment.MAIN, {}, {})
+fun SelectorDialogPreview() = SelectorDialog(Environment.LOCAL, {}, {})
 
 @Composable
+@ReadOnlyComposable
 private fun name(env: Environment) = stringResource(
     when (env) {
         Environment.MAIN -> R.string.settings_environment_main
@@ -130,6 +130,7 @@ private fun name(env: Environment) = stringResource(
 )
 
 @Composable
+@ReadOnlyComposable
 private fun url(env: Environment) = stringResource(
     when (env) {
         Environment.MAIN -> R.string.api_url_main

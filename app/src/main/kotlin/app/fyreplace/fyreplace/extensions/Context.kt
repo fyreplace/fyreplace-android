@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
 
 @Suppress("RecursivePropertyAccessor")
@@ -14,4 +15,7 @@ val Context.activity
         else -> null
     }
 
-val activity @Composable get() = LocalContext.current.activity
+val activity
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalContext.current.activity

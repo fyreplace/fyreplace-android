@@ -10,7 +10,6 @@ import app.fyreplace.fyreplace.events.FailureEvent
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
 import retrofit2.Response
@@ -70,6 +69,5 @@ abstract class ApiViewModelBase(private val eventBus: EventBus) : ViewModelBase(
 @Immutable
 data class Failure(val code: Int, val explanation: ExplainedFailure?)
 
-@Serializable
 @Immutable
 data class ExplainedFailure(val title: String, val reason: String)
