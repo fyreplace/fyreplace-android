@@ -24,16 +24,16 @@ abstract class KeyboardShortcut(
     )
 }
 
-class DestinationKeyboardShortcut(val destination: Destination, key: Key) :
+class DestinationKeyboardShortcut(val destination: Destination.Singleton, key: Key) :
     KeyboardShortcut(destination.labelRes, key, false, true)
 
 val keyboardShortcuts: List<KeyboardShortcut> = listOf(
-    DestinationKeyboardShortcut(Destination.FEED, Key.One),
-    DestinationKeyboardShortcut(Destination.NOTIFICATIONS, Key.Two),
-    DestinationKeyboardShortcut(Destination.ARCHIVE, Key.Three),
-    DestinationKeyboardShortcut(Destination.DRAFTS, Key.Four),
-    DestinationKeyboardShortcut(Destination.PUBLISHED, Key.Five),
-    DestinationKeyboardShortcut(Destination.SETTINGS, Key.Six)
+    DestinationKeyboardShortcut(Destination.Feed, Key.One),
+    DestinationKeyboardShortcut(Destination.Notifications, Key.Two),
+    DestinationKeyboardShortcut(Destination.Archive, Key.Three),
+    DestinationKeyboardShortcut(Destination.Drafts, Key.Four),
+    DestinationKeyboardShortcut(Destination.Published, Key.Five),
+    DestinationKeyboardShortcut(Destination.Settings, Key.Six)
 )
 
 fun getShortcut(keyEvent: androidx.compose.ui.input.key.KeyEvent) = keyboardShortcuts.find {

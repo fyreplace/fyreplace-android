@@ -248,6 +248,7 @@ protobuf {
 dependencies {
     coreLibraryDesugaring(libs.desugar)
     implementation(platform(libs.androidx.compose.bom))
+    implementation(kotlin("reflect"))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.core)

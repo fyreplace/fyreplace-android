@@ -13,10 +13,10 @@ import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationRail
 
 @Composable
 fun SideNavigation(
-    destinations: List<Destination>,
-    selectedDestination: Destination?,
+    destinations: List<Destination.Singleton>,
+    selectedDestination: Destination.Singleton?,
     windowPadding: PaddingValues,
-    onClickDestination: (Destination) -> Unit,
+    onClickDestination: (Destination.Singleton) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {

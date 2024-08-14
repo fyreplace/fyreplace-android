@@ -23,9 +23,9 @@ import app.fyreplace.fyreplace.ui.views.navigation.Icon
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun TopBar(
-    destinations: List<Destination>,
-    selectedDestination: Destination?,
-    onClickDestination: (Destination) -> Unit
+    destinations: List<Destination.Singleton>,
+    selectedDestination: Destination.Singleton?,
+    onClickDestination: (Destination.Singleton) -> Unit
 ) = if (destinations.isNotEmpty()) {
     CenterAlignedTopAppBar(title = {
         SharedTransitionLayout {
@@ -50,10 +50,10 @@ fun TopBar(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.SegmentedChoice(
-    destinations: List<Destination>,
-    selectedDestination: Destination?,
+    destinations: List<Destination.Singleton>,
+    selectedDestination: Destination.Singleton?,
     visibilityScope: AnimatedVisibilityScope,
-    onClick: (Destination) -> Unit
+    onClick: (Destination.Singleton) -> Unit
 ) = SingleChoiceSegmentedButtonRow(
     modifier = Modifier.sharedElement(
         rememberSharedContentState(key = "segments"),

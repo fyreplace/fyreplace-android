@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.modify
 import app.fyreplace.fyreplace.extensions.plus
+import app.fyreplace.fyreplace.ui.topLevelDestinationGroups
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.Icon
 import app.fyreplace.fyreplace.ui.views.navigation.Text
@@ -24,10 +25,10 @@ import app.fyreplace.fyreplace.ui.views.navigation.contentPadding
 
 @Composable
 fun SideNavigationDrawer(
-    destinations: List<Destination>,
-    selectedDestination: Destination?,
+    destinations: List<Destination.Singleton>,
+    selectedDestination: Destination.Singleton?,
     windowPadding: PaddingValues,
-    onClickDestination: (Destination) -> Unit,
+    onClickDestination: (Destination.Singleton) -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -67,8 +68,9 @@ fun SideNavigationDrawer(
 @Composable
 fun SideNavigationDrawerPreview() {
     SideNavigationDrawer(
-        destinations = Destination.Set.topLevel(flatten = true).map(Destination.Set::root),
-        selectedDestination = Destination.FEED,
+        destinations = topLevelDestinationGroups(expanded = true, userAuthenticated = false)
+            .map(Destination.Singleton.Group::root),
+        selectedDestination = Destination.Feed,
         windowPadding = PaddingValues(),
         onClickDestination = {},
         content = {}

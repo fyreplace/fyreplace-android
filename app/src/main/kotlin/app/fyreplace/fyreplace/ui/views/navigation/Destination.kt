@@ -1,9 +1,6 @@
 package app.fyreplace.fyreplace.ui.views.navigation
 
 import androidx.annotation.StringRes
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.AddCircle
@@ -31,122 +28,109 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.screens.ArchiveScreen
-import app.fyreplace.fyreplace.ui.screens.DraftsScreen
-import app.fyreplace.fyreplace.ui.screens.FeedScreen
-import app.fyreplace.fyreplace.ui.screens.LoginScreen
-import app.fyreplace.fyreplace.ui.screens.NotificationsScreen
-import app.fyreplace.fyreplace.ui.screens.PublishedScreen
-import app.fyreplace.fyreplace.ui.screens.RegisterScreen
-import app.fyreplace.fyreplace.ui.screens.SettingsScreen
+import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalSharedTransitionApi::class)
-enum class Destination(
-    val route: String,
-    val parent: Destination? = null,
-    val keepsChildren: Boolean = false,
-    val visible: () -> Boolean = { true },
-    val activeIcon: ImageVector,
-    val inactiveIcon: ImageVector,
-    @StringRes val labelRes: Int,
-    val content: @Composable (ContentInfo) -> Unit
-) {
-    FEED(
-        route = "feed",
-        activeIcon = Icons.Filled.Home,
-        inactiveIcon = Icons.Outlined.Home,
-        labelRes = R.string.main_destination_feed,
-        content = { FeedScreen() }
-    ),
-    NOTIFICATIONS(
-        route = "notifications",
-        activeIcon = Icons.Filled.Notifications,
-        inactiveIcon = Icons.Outlined.Notifications,
-        labelRes = R.string.main_destination_notifications,
-        content = { NotificationsScreen() }
-    ),
-    ARCHIVE(
-        route = "archive",
-        parent = NOTIFICATIONS,
-        activeIcon = Icons.Filled.BookmarkAdded,
-        inactiveIcon = Icons.Outlined.BookmarkAdded,
-        labelRes = R.string.main_destination_archive,
-        content = { ArchiveScreen() }
-    ),
-    DRAFTS(
-        route = "drafts",
-        activeIcon = Icons.Filled.Description,
-        inactiveIcon = Icons.Outlined.Description,
-        labelRes = R.string.main_destination_drafts,
-        content = { DraftsScreen() }
-    ),
-    PUBLISHED(
-        route = "published",
-        parent = DRAFTS,
-        activeIcon = Icons.Filled.Inventory2,
-        inactiveIcon = Icons.Outlined.Inventory2,
-        labelRes = R.string.main_destination_published,
-        content = { PublishedScreen() }
-    ),
-    SETTINGS(
-        route = "settings",
-        keepsChildren = true,
-        visible = { false },
-        activeIcon = Icons.Filled.Settings,
-        inactiveIcon = Icons.Outlined.Settings,
-        labelRes = R.string.main_destination_settings,
-        content = { SettingsScreen() }
-    ),
-    LOGIN(
-        route = "login",
-        parent = SETTINGS,
-        activeIcon = Icons.Filled.AccountCircle,
-        inactiveIcon = Icons.Outlined.AccountCircle,
-        labelRes = R.string.main_destination_login,
-        content = { it.transitionScope.LoginScreen(visibilityScope = it.visibilityScope) }
-    ),
-    REGISTER(
-        route = "register",
-        parent = SETTINGS,
-        activeIcon = Icons.Filled.AddCircle,
-        inactiveIcon = Icons.Outlined.AddCircleOutline,
-        labelRes = R.string.main_destination_register,
-        content = { it.transitionScope.RegisterScreen(visibilityScope = it.visibilityScope) }
-    );
+sealed interface Destination {
+    sealed interface Singleton : Destination {
+        val parent: Singleton?
+        val keepsChildren: Boolean
+        val activeIcon: ImageVector
+        val inactiveIcon: ImageVector
 
-    override fun toString() = route
-
-    companion object {
-        fun byRoute(route: String) = entries.find { it.route == route }
-    }
-
-    data class Set(val root: Destination, val choices: List<Destination> = emptyList()) {
-        val defaultDestination = choices.firstOrNull() ?: root
+        @get:StringRes
+        val labelRes: Int
 
         companion object {
-            fun topLevel(flatten: Boolean) = entries.mapNotNull { destination ->
-                if (destination.parent != null && (!flatten || destination.parent.keepsChildren)) null
-                else Set(
-                    root = destination,
-                    choices = entries.filter { it.parent == destination }
-                        .let { mutableListOf(destination).apply { addAll(it) } }
-                        .filter { it.visible() }
-                        .takeIf { it.size > 1 && (!flatten || destination.keepsChildren) }
-                        ?: emptyList()
-                )
-            }
+            val all = Destination::class.nestedClasses
+                .filter { it.java.interfaces.contains(Singleton::class.java) }
+                .map { it.objectInstance as Singleton }
+        }
+
+        data class Group(
+            val root: Singleton,
+            val choices: List<Singleton> = emptyList()
+        ) {
+            val defaultDestination = choices.firstOrNull() ?: root
         }
     }
 
-    data class ContentInfo(
-        val transitionScope: SharedTransitionScope,
-        val visibilityScope: AnimatedVisibilityScope
-    )
+    @Serializable
+    data object Feed : Singleton {
+        override val parent = null
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.Home
+        override val inactiveIcon = Icons.Outlined.Home
+        override val labelRes = R.string.main_destination_feed
+    }
+
+    @Serializable
+    data object Notifications : Singleton {
+        override val parent = null
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.Notifications
+        override val inactiveIcon = Icons.Outlined.Notifications
+        override val labelRes = R.string.main_destination_notifications
+    }
+
+    @Serializable
+    data object Archive : Singleton {
+        override val parent = Notifications
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.BookmarkAdded
+        override val inactiveIcon = Icons.Outlined.BookmarkAdded
+        override val labelRes = R.string.main_destination_archive
+    }
+
+    @Serializable
+    data object Drafts : Singleton {
+        override val parent = null
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.Description
+        override val inactiveIcon = Icons.Outlined.Description
+        override val labelRes = R.string.main_destination_drafts
+    }
+
+    @Serializable
+    data object Published : Singleton {
+        override val parent = Drafts
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.Inventory2
+        override val inactiveIcon = Icons.Outlined.Inventory2
+        override val labelRes = R.string.main_destination_published
+    }
+
+    @Serializable
+    data object Settings : Singleton {
+        override val parent = null
+        override val keepsChildren = true
+        override val activeIcon = Icons.Filled.Settings
+        override val inactiveIcon = Icons.Outlined.Settings
+        override val labelRes = R.string.main_destination_settings
+    }
+
+    @Serializable
+    data object Login : Singleton {
+        override val parent = Settings
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.AccountCircle
+        override val inactiveIcon = Icons.Outlined.AccountCircle
+        override val labelRes = R.string.main_destination_login
+    }
+
+    @Serializable
+    data object Register : Singleton {
+        override val parent = Settings
+        override val keepsChildren = false
+        override val activeIcon = Icons.Filled.AddCircle
+        override val inactiveIcon = Icons.Outlined.AddCircleOutline
+        override val labelRes = R.string.main_destination_register
+    }
 }
 
 @Composable
-fun Icon(destination: Destination, active: Boolean) {
+fun Icon(destination: Destination.Singleton, active: Boolean) {
     Icon(
         if (active) destination.activeIcon else destination.inactiveIcon,
         contentDescription = stringResource(destination.labelRes)
@@ -154,7 +138,7 @@ fun Icon(destination: Destination, active: Boolean) {
 }
 
 @Composable
-fun Text(destination: Destination) {
+fun Text(destination: Destination.Singleton) {
     val crampedText = booleanResource(R.bool.cramped_width)
     Text(
         stringResource(destination.labelRes),
@@ -163,13 +147,15 @@ fun Text(destination: Destination) {
     )
 }
 
-fun NavBackStackEntry?.asDestination() = Destination.byRoute(this?.destination?.route ?: "")
-
-fun NavController.sail(destination: Destination) = navigate(destination.route) {
-    popUpTo(graph.startDestinationId) {
-        saveState = true
+fun NavBackStackEntry.toSingletonDestination() =
+    Destination.Singleton.all.first { destinationClass ->
+        destination.hierarchy.any {
+            it.route == destinationClass::class.qualifiedName
+        }
     }
 
+fun NavController.navigatePoppingBackStack(destination: Destination) = navigate(destination) {
+    popUpTo(graph.startDestinationId) { saveState = true }
     launchSingleTop = true
     restoreState = true
 }

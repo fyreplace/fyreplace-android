@@ -4,12 +4,13 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import app.fyreplace.fyreplace.ui.topLevelDestinationGroups
 
 @Composable
 fun BottomNavigation(
-    destinations: List<Destination>,
-    selectedDestination: Destination?,
-    onClickDestination: (Destination) -> Unit
+    destinations: List<Destination.Singleton>,
+    selectedDestination: Destination.Singleton?,
+    onClickDestination: (Destination.Singleton) -> Unit
 ) {
     NavigationBar {
         for (destination in destinations) {
@@ -29,8 +30,9 @@ fun BottomNavigation(
 @Composable
 fun BottomNavigationPreview() {
     BottomNavigation(
-        destinations = Destination.Set.topLevel(flatten = false).map(Destination.Set::root),
-        selectedDestination = Destination.FEED,
+        destinations = topLevelDestinationGroups(expanded = false, userAuthenticated = false)
+            .map(Destination.Singleton.Group::root),
+        selectedDestination = Destination.Feed,
         onClickDestination = {}
     )
 }
