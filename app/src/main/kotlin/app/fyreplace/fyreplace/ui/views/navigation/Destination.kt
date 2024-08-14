@@ -32,6 +32,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import app.fyreplace.fyreplace.R
 import kotlinx.serialization.Serializable
 
+@Serializable
 sealed interface Destination {
     sealed interface Singleton : Destination {
         val parent: Singleton?

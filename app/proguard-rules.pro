@@ -1,1 +1,2 @@
 -keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+-keepnames class app.fyreplace.fyreplace.ui.views.navigation.**
