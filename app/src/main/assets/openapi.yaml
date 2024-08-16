@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.2.0
+  version: v0.3.0
 paths:
   /emails:
     get:
@@ -350,6 +350,7 @@ paths:
           required: true
           schema:
             format: int32
+            minimum: 0
             type: integer
       responses:
         default:
@@ -380,6 +381,7 @@ paths:
           required: true
           schema:
             format: int32
+            minimum: 0
             type: integer
       requestBody:
         content:
@@ -423,6 +425,7 @@ paths:
           required: true
           schema:
             format: int32
+            minimum: 0
             type: integer
       requestBody:
         content:
@@ -461,11 +464,13 @@ paths:
           required: true
           schema:
             format: int32
+            minimum: 0
             type: integer
       requestBody:
         content:
           text/plain:
             schema:
+              maxLength: 500
               type: string
         required: true
       responses:
@@ -843,27 +848,6 @@ paths:
           description: Not Allowed
       security:
         - SecurityScheme: [ ]
-  /stored-files/{path}:
-    get:
-      tags:
-        - Stored Files Endpoint
-      operationId: getStoredFile
-      parameters:
-        - name: path
-          in: path
-          required: true
-          schema:
-            pattern: .*
-            type: string
-      responses:
-        default:
-          description: Unexpected error
-        "200":
-          description: OK
-        "303":
-          description: See Other
-        "404":
-          description: Not Found
   /subscriptions/unread:
     get:
       tags:
@@ -1293,6 +1277,8 @@ paths:
 components:
   schemas:
     BlockUpdate:
+      required:
+        - blocked
       type: object
       properties:
         blocked:
@@ -1305,14 +1291,17 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         text:
+          maxLength: 500
           type: string
         image:
           type: string
         width:
           format: int32
+          minimum: 0
           type: integer
         height:
           format: int32
+          minimum: 0
           type: integer
     ChapterPositionUpdate:
       type: object
@@ -1340,6 +1329,7 @@ components:
         author:
           $ref: "#/components/schemas/Profile"
         text:
+          maxLength: 1500
           type: string
     CommentCreation:
       required:
@@ -1347,6 +1337,8 @@ components:
       type: object
       properties:
         text:
+          maxLength: 1500
+          minLength: 1
           pattern: \S
           type: string
         anonymous:
@@ -1362,6 +1354,8 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         email:
+          maxLength: 254
+          minLength: 3
           type: string
         verified:
           type: boolean
@@ -1374,6 +1368,8 @@ components:
       type: object
       properties:
         email:
+          maxLength: 254
+          minLength: 3
           pattern: \S
           type: string
         code:
@@ -1385,6 +1381,8 @@ components:
       type: object
       properties:
         email:
+          maxLength: 254
+          minLength: 3
           pattern: \S
           type: string
     Instant:
@@ -1397,6 +1395,7 @@ components:
       type: object
       properties:
         identifier:
+          maxLength: 254
           pattern: \S
           type: string
     Post:
@@ -1423,9 +1422,11 @@ components:
           type: boolean
         commentCount:
           format: int64
+          minimum: 0
           type: integer
         voteCount:
           format: int64
+          minimum: 0
           type: integer
         chapters:
           type: array
@@ -1438,6 +1439,8 @@ components:
         - DRAFTS
       type: string
     PostPublication:
+      required:
+        - anonymous
       type: object
       properties:
         anonymous:
@@ -1486,6 +1489,8 @@ components:
         targetModel:
           type: string
     ReportUpdate:
+      required:
+        - reported
       type: object
       properties:
         reported:
@@ -1503,8 +1508,11 @@ components:
           $ref: "#/components/schemas/Post"
         unreadCommentCount:
           format: int64
+          minimum: 0
           type: integer
     SubscriptionUpdate:
+      required:
+        - subscribed
       type: object
       properties:
         subscribed:
@@ -1516,6 +1524,7 @@ components:
       type: object
       properties:
         identifier:
+          maxLength: 254
           pattern: \S
           type: string
         secret:
@@ -1545,6 +1554,9 @@ components:
           allOf:
             - $ref: "#/components/schemas/Instant"
         username:
+          maxLength: 50
+          minLength: 3
+          pattern: "^[\\w.@+-]+$"
           type: string
         rank:
           $ref: "#/components/schemas/Rank"
@@ -1557,6 +1569,7 @@ components:
         blocked:
           type: boolean
         tint:
+          pattern: "^#[A-F0-9]{6}$"
           type: string
     UserCreation:
       required:
@@ -1565,12 +1578,18 @@ components:
       type: object
       properties:
         email:
+          maxLength: 254
+          minLength: 3
           pattern: \S
           type: string
         username:
-          pattern: \S
+          maxLength: 50
+          minLength: 3
+          pattern: "^[\\w.@+-]+$"
           type: string
     VoteCreation:
+      required:
+        - spread
       type: object
       properties:
         spread:
