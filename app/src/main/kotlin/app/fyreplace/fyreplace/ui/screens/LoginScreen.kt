@@ -35,12 +35,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
@@ -75,7 +74,7 @@ fun SharedTransitionScope.LoginScreen(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = dimensionResource(R.dimen.spacing_medium))
             .imePadding()
     ) {
         Image(
@@ -83,8 +82,8 @@ fun SharedTransitionScope.LoginScreen(
             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
             contentDescription = null,
             modifier = Modifier
-                .padding(vertical = 32.dp)
-                .size(96.dp)
+                .padding(vertical = dimensionResource(R.dimen.spacing_large))
+                .size(dimensionResource(R.dimen.logo_size))
                 .sharedElement(
                     rememberSharedContentState(key = "image"),
                     visibilityScope
@@ -93,7 +92,7 @@ fun SharedTransitionScope.LoginScreen(
 
         Box(
             modifier = Modifier
-                .padding(bottom = 16.dp)
+                .padding(bottom = dimensionResource(R.dimen.spacing_medium))
                 .sharedElement(
                     rememberSharedContentState(key = "environment-selector"),
                     visibilityScope
@@ -125,10 +124,10 @@ fun SharedTransitionScope.LoginScreen(
             modifier = Modifier
                 .focusRequester(identifierFocus)
                 .widthIn(
-                    integerResource(R.integer.form_min_width).dp,
-                    integerResource(R.integer.form_max_width).dp
+                    dimensionResource(R.dimen.form_min_width),
+                    dimensionResource(R.dimen.form_max_width)
                 )
-                .padding(bottom = 32.dp)
+                .padding(bottom = dimensionResource(R.dimen.spacing_large))
                 .sharedElement(
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
@@ -144,7 +143,7 @@ fun SharedTransitionScope.LoginScreen(
             Button(
                 enabled = canSubmit,
                 onClick = viewModel::sendEmail,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.spacing_large))
             ) {
                 Box {
                     Text(

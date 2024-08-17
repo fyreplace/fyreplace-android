@@ -20,12 +20,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.protos.Environment
@@ -40,7 +40,10 @@ fun EnvironmentSelector(
 
     OutlinedButton(onClick = { showDialog = true }, modifier = modifier) {
         Icon(Icons.TwoTone.Cloud, contentDescription = null)
-        Text(name(environment), modifier = Modifier.padding(start = 8.dp))
+        Text(
+            name(environment),
+            modifier = Modifier.padding(start = dimensionResource(R.dimen.spacing_small))
+        )
     }
 
     if (showDialog) {

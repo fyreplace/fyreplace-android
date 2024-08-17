@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer name="form_min_width">280</integer>
-    <integer name="form_max_width">600</integer>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_large">32dp</dimen>
+    <dimen name="form_min_width">280dp</dimen>
+    <dimen name="form_max_width">600dp</dimen>
+    <dimen name="logo_size">96dp</dimen>
 </resources>
