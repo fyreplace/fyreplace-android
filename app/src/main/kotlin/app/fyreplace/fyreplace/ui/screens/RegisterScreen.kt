@@ -39,13 +39,16 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ContextResourceResolver
-import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
@@ -62,6 +65,7 @@ fun SharedTransitionScope.RegisterScreen(
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val username by viewModel.username.collectAsStateWithLifecycle()
     val email by viewModel.email.collectAsStateWithLifecycle()
+    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
     val usernameFocus = remember(::FocusRequester)
@@ -89,13 +93,6 @@ fun SharedTransitionScope.RegisterScreen(
                 )
         )
 
-        val textFieldModifier = Modifier
-            .widthIn(
-                dimensionResource(R.dimen.form_min_width),
-                dimensionResource(R.dimen.form_max_width)
-            )
-            .padding(bottom = dimensionResource(R.dimen.spacing_large))
-
         Box(
             modifier = Modifier
                 .padding(bottom = dimensionResource(R.dimen.spacing_medium))
@@ -106,14 +103,22 @@ fun SharedTransitionScope.RegisterScreen(
         ) {
             EnvironmentSelector(
                 environment = environment,
-                onEnvironmentChange = environmentViewModel::updateEnvironment
+                onEnvironmentChange = environmentViewModel::updateEnvironment,
+                enabled = !isWaitingForRandomCode
             )
         }
 
+        val textFieldModifier = Modifier
+            .widthIn(
+                dimensionResource(R.dimen.form_min_width),
+                dimensionResource(R.dimen.form_max_width)
+            )
+            .padding(bottom = dimensionResource(R.dimen.spacing_large))
+
         OutlinedTextField(
             value = username,
-            label = { Text(text = stringResource(R.string.register_username)) },
-            placeholder = { Text(text = stringResource(R.string.register_username_placeholder)) },
+            label = { Text(stringResource(R.string.register_username)) },
+            placeholder = { Text(stringResource(R.string.register_username_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
@@ -131,11 +136,13 @@ fun SharedTransitionScope.RegisterScreen(
 
         OutlinedTextField(
             value = email,
-            label = { Text(text = stringResource(R.string.register_email)) },
-            placeholder = { Text(text = stringResource(R.string.register_email_placeholder)) },
+            label = { Text(stringResource(R.string.register_email)) },
+            placeholder = { Text(stringResource(R.string.register_email_placeholder)) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
                 autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
@@ -158,7 +165,7 @@ fun SharedTransitionScope.RegisterScreen(
             }
         }
 
-        LaunchedEffect(true) {
+        LaunchedEffect(Unit) {
             when {
                 username.isBlank() -> usernameFocus.requestFocus()
                 email.isBlank() -> emailFocus.requestFocus()
@@ -174,14 +181,17 @@ fun RegisterScreenPreview() {
     AppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
+                val storeResolver = FakeStoreResolver()
                 RegisterScreen(
                     visibilityScope = this,
                     viewModel = RegisterViewModel(
-                        eventBus = EventBus(),
-                        resourceResolver = ContextResourceResolver(LocalContext.current)
+                        state = SavedStateHandle(),
+                        eventBus = FakeEventBus(),
+                        resourceResolver = ContextResourceResolver(LocalContext.current),
+                        storeResolver = storeResolver
                     ),
                     environmentViewModel = EnvironmentViewModel(
-                        storeResolver = FakeStoreResolver()
+                        storeResolver = storeResolver
                     )
                 )
             }

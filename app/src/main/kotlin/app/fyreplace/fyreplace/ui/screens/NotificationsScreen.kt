@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.theme.AppTheme
 fun NotificationsScreen() {
     Box {
         Text(
-            stringResource(R.string.main_destination_notifications),
+            text = stringResource(R.string.main_destination_notifications),
             modifier = Modifier.align(Alignment.Center)
         )
     }

@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.theme.AppTheme
 fun ArchiveScreen() {
     Box {
         Text(
-            stringResource(R.string.main_destination_archive),
+            text = stringResource(R.string.main_destination_archive),
             modifier = Modifier.align(Alignment.Center)
         )
     }

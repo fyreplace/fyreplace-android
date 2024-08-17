@@ -7,16 +7,24 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -44,10 +52,12 @@ import app.fyreplace.fyreplace.ui.views.navigation.SideNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.navigatePoppingBackStack
 import app.fyreplace.fyreplace.ui.views.navigation.toSingletonDestination
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainContent() {
     val viewModel = hiltViewModel<MainViewModel>()
+    val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
     val failure by viewModel.currentFailure.collectAsStateWithLifecycle()
 
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -55,11 +65,12 @@ fun MainContent() {
     val compactHeight = sizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
     val compact = compactWidth || compactHeight
 
+    val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
     val currentDestination = entry?.toSingletonDestination()
     val destinationGroups =
-        topLevelDestinationGroups(expanded = !compact, userAuthenticated = false)
+        topLevelDestinationGroups(expanded = !compact, userAuthenticated = isAuthenticated)
     val currentDestinationGroup =
         destinationGroups.find { (it.choices + it.root).contains(currentDestination) }
     val savedDestinations = rememberSaveable(saver = destinationMapSaver()) { mutableStateMapOf() }
@@ -127,6 +138,9 @@ fun MainContent() {
 
     if (compact) {
         Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            },
             topBar = {
                 Top()
             },
@@ -141,7 +155,11 @@ fun MainContent() {
             Host(it, modifier = keyboardHandler)
         }
     } else {
-        Scaffold {
+        Scaffold(
+            snackbarHost = {
+                SnackbarHost(hostState = snackbarHostState)
+            }
+        ) {
             SideNavigation(
                 destinations = destinationGroups.map(Destination.Singleton.Group::root),
                 selectedDestination = currentDestinationGroup?.root,
@@ -162,6 +180,36 @@ fun MainContent() {
     if (smartCastableFailure != null) {
         FailureDialog(failure = smartCastableFailure, dismiss = viewModel::dismissError)
     }
+
+    LaunchedEffect(isAuthenticated) {
+        val accountEntryDestinations = setOf(Destination.Login, Destination.Register)
+
+        if (isAuthenticated && currentDestination in accountEntryDestinations) {
+            navController.navigatePoppingBackStack(Destination.Settings)
+        } else if (!isAuthenticated && currentDestination == Destination.Settings) {
+            navController.navigatePoppingBackStack(Destination.Login)
+        }
+    }
+
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    LaunchedEffect(scope) {
+        scope.launch {
+            viewModel.snackbarEvents.collect {
+                val result = snackbarHostState.showSnackbar(
+                    message = context.getString(it.message),
+                    actionLabel = it.action?.label?.let(context::getString),
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Long
+                )
+
+                if (result == SnackbarResult.ActionPerformed) {
+                    it.action?.action?.invoke(context)
+                }
+            }
+        }
+    }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
@@ -172,7 +220,7 @@ fun MainContentPreview() {
     }
 }
 
-fun topLevelDestinationGroups(expanded: Boolean, userAuthenticated: Boolean) =
+private fun topLevelDestinationGroups(expanded: Boolean, userAuthenticated: Boolean) =
     Destination.Singleton.all
         .filter { it.parent == null || (expanded && !it.parent!!.keepsChildren) }
         .map { destination ->

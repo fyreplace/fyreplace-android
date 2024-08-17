@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.theme.AppTheme
 fun PublishedScreen() {
     Box {
         Text(
-            stringResource(R.string.main_destination_published),
+            text = stringResource(R.string.main_destination_published),
             modifier = Modifier.align(Alignment.Center)
         )
     }

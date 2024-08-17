@@ -18,22 +18,34 @@
     <string name="main_error_unknown_title">An error just occurred</string>
     <string name="main_error_unknown_message">Unknown error. This should never happen…</string>
 
-    <string name="settings_environment_main">Production server</string>
-    <string name="settings_environment_dev">Testing server</string>
-    <string name="settings_environment_local">Local server</string>
-    <string name="settings_environment_default">(default)</string>
-    <string name="settings_environment_dialog_title">Select server</string>
-    <string name="settings_environment_dialog_text">If you don\'t know what this is, pick the default one.</string>
+    <string name="settings_logout">Logout</string>
+
+    <string name="account_environment_main">Production server</string>
+    <string name="account_environment_dev">Testing server</string>
+    <string name="account_environment_local">Local server</string>
+    <string name="account_environment_default">(default)</string>
+    <string name="account_environment_dialog_title">Select server</string>
+    <string name="account_environment_dialog_text">If you don\'t know what this is, pick the default one.</string>
+    <string name="account_random_code">One-time code</string>
+    <string name="account_random_code_placeholder">123456</string>
 
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>
     <string name="login_submit">@string/main_destination_login</string>
+    <string name="login_tip_email_sent">A one-time use code has been sent to your email address</string>
+    <string name="login_tip_email_sent_action">Check</string>
+    <string name="login_tip_email_sent_action_failed">No email client found</string>
     <string name="login_error_404_title">User not found</string>
     <string name="login_error_404_message">No user account was found with this username or email.</string>
+    <string name="login_error_create_token_400_title">Invalid code</string>
+    <string name="login_error_create_token_400_message">Check if the code you provided is correct.</string>
 
     <string name="register_username">Username</string>
     <string name="register_username_placeholder">Only letters, numbers and dashes</string>
     <string name="register_email">Email</string>
     <string name="register_email_placeholder" translatable="false">email@example.org</string>
     <string name="register_submit">@string/main_destination_register</string>
+
+    <string name="error_400_title">Bad request</string>
+    <string name="error_400_message">An incorrect request was sent to the server.</string>
 </resources>

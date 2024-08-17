@@ -8,7 +8,8 @@ message Connection {
 }
 
 enum Environment {
-  MAIN = 0;
-  DEV = 1;
-  LOCAL = 2;
+  UNSPECIFIED = 0;
+  MAIN = 1;
+  DEV = 2;
+  LOCAL = 3;
 }

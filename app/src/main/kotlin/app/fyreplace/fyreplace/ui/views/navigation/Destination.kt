@@ -39,6 +39,7 @@ sealed interface Destination {
         val keepsChildren: Boolean
         val activeIcon: ImageVector
         val inactiveIcon: ImageVector
+        val requiresAuthentication: Boolean
 
         @get:StringRes
         val labelRes: Int
@@ -46,7 +47,7 @@ sealed interface Destination {
         companion object {
             val all = Destination::class.nestedClasses
                 .filter { it.java.interfaces.contains(Singleton::class.java) }
-                .map { it.objectInstance as Singleton }
+                .mapNotNull { it.objectInstance as Singleton? }
         }
 
         data class Group(
@@ -64,6 +65,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.Home
         override val inactiveIcon = Icons.Outlined.Home
         override val labelRes = R.string.main_destination_feed
+        override val requiresAuthentication = false
     }
 
     @Serializable
@@ -73,6 +75,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.Notifications
         override val inactiveIcon = Icons.Outlined.Notifications
         override val labelRes = R.string.main_destination_notifications
+        override val requiresAuthentication = true
     }
 
     @Serializable
@@ -82,6 +85,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.BookmarkAdded
         override val inactiveIcon = Icons.Outlined.BookmarkAdded
         override val labelRes = R.string.main_destination_archive
+        override val requiresAuthentication = true
     }
 
     @Serializable
@@ -91,6 +95,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.Description
         override val inactiveIcon = Icons.Outlined.Description
         override val labelRes = R.string.main_destination_drafts
+        override val requiresAuthentication = true
     }
 
     @Serializable
@@ -100,6 +105,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.Inventory2
         override val inactiveIcon = Icons.Outlined.Inventory2
         override val labelRes = R.string.main_destination_published
+        override val requiresAuthentication = true
     }
 
     @Serializable
@@ -109,6 +115,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.Settings
         override val inactiveIcon = Icons.Outlined.Settings
         override val labelRes = R.string.main_destination_settings
+        override val requiresAuthentication = false
     }
 
     @Serializable
@@ -118,6 +125,7 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.AccountCircle
         override val inactiveIcon = Icons.Outlined.AccountCircle
         override val labelRes = R.string.main_destination_login
+        override val requiresAuthentication = false
     }
 
     @Serializable
@@ -127,13 +135,14 @@ sealed interface Destination {
         override val activeIcon = Icons.Filled.AddCircle
         override val inactiveIcon = Icons.Outlined.AddCircleOutline
         override val labelRes = R.string.main_destination_register
+        override val requiresAuthentication = false
     }
 }
 
 @Composable
 fun Icon(destination: Destination.Singleton, active: Boolean) {
     Icon(
-        if (active) destination.activeIcon else destination.inactiveIcon,
+        imageVector = if (active) destination.activeIcon else destination.inactiveIcon,
         contentDescription = stringResource(destination.labelRes)
     )
 }
@@ -142,7 +151,7 @@ fun Icon(destination: Destination.Singleton, active: Boolean) {
 fun Text(destination: Destination.Singleton) {
     val crampedText = booleanResource(R.bool.cramped_width)
     Text(
-        stringResource(destination.labelRes),
+        text = stringResource(destination.labelRes),
         fontSize = if (crampedText) 10.sp else TextUnit.Unspecified,
         letterSpacing = if (crampedText) 0.sp else TextUnit.Unspecified
     )

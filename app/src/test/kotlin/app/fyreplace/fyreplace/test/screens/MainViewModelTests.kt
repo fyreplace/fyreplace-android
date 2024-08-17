@@ -1,7 +1,9 @@
 package app.fyreplace.fyreplace.test.screens
 
-import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.events.FailureEvent
+import androidx.lifecycle.SavedStateHandle
+import app.fyreplace.fyreplace.events.Event
+import app.fyreplace.fyreplace.events.HotEventBus
+import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.test.TestsBase
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,16 +19,19 @@ import org.junit.Test
 class MainViewModelTests : TestsBase() {
     @Test
     fun `Failures can be dismissed`() = runTest {
-        val eventBus = EventBus()
-        val viewModel = MainViewModel(eventBus)
-
+        val eventBus = HotEventBus()
+        val viewModel = MainViewModel(
+            state = SavedStateHandle(),
+            eventBus = eventBus,
+            storeResolver = FakeStoreResolver()
+        )
         backgroundScope.launch { viewModel.currentFailure.collect() }
 
         runCurrent()
         assertNull(viewModel.currentFailure.value)
 
-        eventBus.publish(FailureEvent())
-        eventBus.publish(FailureEvent())
+        eventBus.publish(Event.Failure())
+        eventBus.publish(Event.Failure())
         runCurrent()
         assertNotNull(viewModel.currentFailure.value)
 

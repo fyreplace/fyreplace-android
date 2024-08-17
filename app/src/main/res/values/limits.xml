@@ -4,4 +4,5 @@
     <integer name="username_max_length">50</integer>
     <integer name="email_min_length">3</integer>
     <integer name="email_max_length">254</integer>
+    <integer name="random_code_length">6</integer>
 </resources>

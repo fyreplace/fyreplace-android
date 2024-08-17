@@ -29,8 +29,8 @@ class FakeTokensEndpointApi : TokensEndpointApi, Endpoint<TokensEndpointApi> {
     companion object {
         const val BAD_IDENTIFIER = "bad-identifier"
         const val GOOD_IDENTIFIER = "good-identifier"
-        const val BAD_SECRET = "bad-secret"
-        const val GOOD_SECRET = "good-secret"
+        const val BAD_SECRET = "000000"
+        const val GOOD_SECRET = "123456"
         const val BAD_TOKEN = "bad-token"
         const val GOOD_TOKEN = "good-token"
     }

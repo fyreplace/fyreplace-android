@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.api
 import android.content.Context
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.extensions.orDefault
 import app.fyreplace.fyreplace.protos.Environment
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
@@ -21,7 +22,7 @@ class RemoteEndpoint<E>(
     override suspend fun get() = resolver.connectionStore
         .data
         .map {
-            when (it.environment) {
+            when (it.environment.orDefault) {
                 Environment.MAIN -> R.string.api_url_main
                 Environment.DEV -> R.string.api_url_dev
                 Environment.LOCAL -> R.string.api_url_local

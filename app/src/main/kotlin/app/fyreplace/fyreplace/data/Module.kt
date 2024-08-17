@@ -13,5 +13,8 @@ interface Module {
     fun bindResourceResolver(resolver: ContextResourceResolver): ResourceResolver
 
     @Binds
-    fun bindConnectionStoreResolver(resolver: ContextStoreResolver): StoreResolver
+    fun bindStoreResolver(resolver: ContextStoreResolver): StoreResolver
+
+    @Binds
+    fun bindSecretsHandler(resolver: EncryptedSecretsHandler): SecretsHandler
 }

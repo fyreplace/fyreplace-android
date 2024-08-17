@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.theme.AppTheme
 fun FeedScreen() {
     Box {
         Text(
-            stringResource(R.string.main_destination_feed),
+            text = stringResource(R.string.main_destination_feed),
             modifier = Modifier.align(Alignment.Center)
         )
     }

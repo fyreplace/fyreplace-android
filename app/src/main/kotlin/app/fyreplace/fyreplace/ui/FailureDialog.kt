@@ -8,10 +8,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import app.fyreplace.fyreplace.events.FailureEvent
+import app.fyreplace.fyreplace.events.Event
 
 @Composable
-fun FailureDialog(failure: FailureEvent, dismiss: () -> Unit) {
+fun FailureDialog(failure: Event.Failure, dismiss: () -> Unit) {
     AlertDialog(
         icon = {
             Icon(Icons.TwoTone.Error, null)

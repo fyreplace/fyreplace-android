@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_package = "app.fyreplace.fyreplace.protos";
+option java_multiple_files = true;
+
+message Account {
+  string identifier = 1;
+  string username = 2;
+  string email = 3;
+  bool isWaitingForRandomCode = 4;
+}

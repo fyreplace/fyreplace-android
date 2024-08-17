@@ -34,11 +34,16 @@ import app.fyreplace.fyreplace.protos.Environment
 fun EnvironmentSelector(
     environment: Environment,
     onEnvironmentChange: (Environment) -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     var showDialog by rememberSaveable { mutableStateOf(false) }
 
-    OutlinedButton(onClick = { showDialog = true }, modifier = modifier) {
+    OutlinedButton(
+        onClick = { showDialog = true },
+        enabled = enabled,
+        modifier = modifier
+    ) {
         Icon(Icons.TwoTone.Cloud, contentDescription = null)
         Text(
             name(environment),
@@ -68,11 +73,11 @@ private fun SelectorDialog(
             Icon(Icons.TwoTone.Cloud, null)
         },
         title = {
-            Text(stringResource(R.string.settings_environment_dialog_title))
+            Text(stringResource(R.string.account_environment_dialog_title))
         },
         text = {
             Column {
-                Text(stringResource(R.string.settings_environment_dialog_text))
+                Text(stringResource(R.string.account_environment_dialog_text))
 
                 for (env in Environment.entries.filter { url(it).isNotEmpty() }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,7 +93,7 @@ private fun SelectorDialog(
 
                                     if (env == BuildConfig.ENVIRONMENT_DEFAULT) {
                                         append(" ")
-                                        append(stringResource(R.string.settings_environment_default))
+                                        append(stringResource(R.string.account_environment_default))
                                     }
                                 }
                             },
@@ -125,9 +130,10 @@ fun SelectorDialogPreview() = SelectorDialog(Environment.LOCAL, {}, {})
 @ReadOnlyComposable
 private fun name(env: Environment) = stringResource(
     when (env) {
-        Environment.MAIN -> R.string.settings_environment_main
-        Environment.DEV -> R.string.settings_environment_dev
-        Environment.LOCAL -> R.string.settings_environment_local
+        Environment.MAIN -> R.string.account_environment_main
+        Environment.DEV -> R.string.account_environment_dev
+        Environment.LOCAL -> R.string.account_environment_local
+        Environment.UNSPECIFIED,
         Environment.UNRECOGNIZED -> R.string.loading
     }
 )
@@ -139,6 +145,7 @@ private fun url(env: Environment) = stringResource(
         Environment.MAIN -> R.string.api_url_main
         Environment.DEV -> R.string.api_url_dev
         Environment.LOCAL -> R.string.api_url_local
+        Environment.UNSPECIFIED,
         Environment.UNRECOGNIZED -> R.string.empty
     }
 )

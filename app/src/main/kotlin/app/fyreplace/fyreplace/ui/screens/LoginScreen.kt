@@ -5,6 +5,10 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +23,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -39,13 +44,16 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ContextResourceResolver
-import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.FakeEventBus
+import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.fakes.FakeTokensEndpointApi
 import app.fyreplace.fyreplace.ui.theme.AppTheme
@@ -53,6 +61,8 @@ import app.fyreplace.fyreplace.ui.views.SmallCircularProgressIndicator
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
 import app.fyreplace.fyreplace.viewmodels.screens.EnvironmentViewModel
 import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalSharedTransitionApi
 @Composable
@@ -63,6 +73,8 @@ fun SharedTransitionScope.LoginScreen(
 ) {
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val identifier by viewModel.identifier.collectAsStateWithLifecycle()
+    val randomCode by viewModel.randomCode.collectAsStateWithLifecycle()
+    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -100,14 +112,23 @@ fun SharedTransitionScope.LoginScreen(
         ) {
             EnvironmentSelector(
                 environment = environment,
-                onEnvironmentChange = environmentViewModel::updateEnvironment
+                onEnvironmentChange = environmentViewModel::updateEnvironment,
+                enabled = !isWaitingForRandomCode
             )
         }
 
+        val textFieldModifier = Modifier
+            .widthIn(
+                dimensionResource(R.dimen.form_min_width),
+                dimensionResource(R.dimen.form_max_width)
+            )
+            .padding(bottom = dimensionResource(R.dimen.spacing_large))
+
         OutlinedTextField(
             value = identifier,
-            label = { Text(text = stringResource(R.string.login_identifier)) },
-            placeholder = { Text(text = stringResource(R.string.login_identifier_placeholder)) },
+            label = { Text(stringResource(R.string.login_identifier)) },
+            placeholder = { Text(stringResource(R.string.login_identifier_placeholder)) },
+            enabled = !isWaitingForRandomCode,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
@@ -117,33 +138,47 @@ fun SharedTransitionScope.LoginScreen(
                 keyboard?.hide()
 
                 if (canSubmit) {
-                    viewModel.sendEmail()
+                    viewModel.submit()
                 }
             }),
             onValueChange = viewModel::updateIdentifier,
-            modifier = Modifier
+            modifier = textFieldModifier
                 .focusRequester(identifierFocus)
-                .widthIn(
-                    dimensionResource(R.dimen.form_min_width),
-                    dimensionResource(R.dimen.form_max_width)
-                )
-                .padding(bottom = dimensionResource(R.dimen.spacing_large))
                 .sharedElement(
                     rememberSharedContentState(key = "first-field"),
                     visibilityScope
                 )
         )
 
-        Box(
-            modifier = Modifier.sharedElement(
-                rememberSharedContentState(key = "submit"),
-                visibilityScope
+        AnimatedVisibility(isWaitingForRandomCode) {
+            OutlinedTextField(
+                value = randomCode,
+                label = { Text(stringResource(R.string.account_random_code)) },
+                placeholder = { Text(stringResource(R.string.account_random_code_placeholder)) },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    autoCorrectEnabled = false,
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Done
+                ),
+                onValueChange = viewModel::updateRandomCode,
+                modifier = textFieldModifier
             )
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(R.dimen.spacing_large))
+                .sharedElement(
+                    rememberSharedContentState(key = "submit"),
+                    visibilityScope
+                )
         ) {
             Button(
                 enabled = canSubmit,
-                onClick = viewModel::sendEmail,
-                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.spacing_large))
+                onClick = viewModel::submit
             ) {
                 Box {
                     Text(
@@ -157,9 +192,25 @@ fun SharedTransitionScope.LoginScreen(
                     }
                 }
             }
+
+            AnimatedVisibility(
+                visible = isWaitingForRandomCode,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                FilledTonalButton(
+                    enabled = !isLoading,
+                    onClick = viewModel::cancel
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+            }
+
         }
 
-        LaunchedEffect(true) {
+        LaunchedEffect(Unit) {
+            delay(100.milliseconds)
+
             if (identifier.isBlank()) {
                 identifierFocus.requestFocus()
             }
@@ -174,15 +225,19 @@ fun LoginScreenPreview() {
     AppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
+                val storeResolver = FakeStoreResolver()
                 LoginScreen(
                     visibilityScope = this,
                     viewModel = LoginViewModel(
-                        eventBus = EventBus(),
+                        state = SavedStateHandle(),
+                        eventBus = FakeEventBus(),
                         resourceResolver = ContextResourceResolver(LocalContext.current),
+                        storeResolver = storeResolver,
+                        secretsHandler = FakeSecretsHandler(),
                         tokensEndpoint = FakeTokensEndpointApi()
                     ),
                     environmentViewModel = EnvironmentViewModel(
-                        storeResolver = FakeStoreResolver()
+                        storeResolver = storeResolver
                     )
                 )
             }

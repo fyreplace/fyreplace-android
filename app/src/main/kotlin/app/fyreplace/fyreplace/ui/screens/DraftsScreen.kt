@@ -14,7 +14,7 @@ import app.fyreplace.fyreplace.ui.theme.AppTheme
 fun DraftsScreen() {
     Box {
         Text(
-            stringResource(R.string.main_destination_drafts),
+            text = stringResource(R.string.main_destination_drafts),
             modifier = Modifier.align(Alignment.Center)
         )
     }

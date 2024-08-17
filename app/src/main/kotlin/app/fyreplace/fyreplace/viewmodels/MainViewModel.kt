@@ -1,32 +1,45 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.events.FailureEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(eventBus: EventBus) : ViewModelBase() {
-    private val failures = MutableStateFlow(emptyList<FailureEvent>())
+class MainViewModel @Inject constructor(
+    private val state: SavedStateHandle,
+    eventBus: EventBus,
+    storeResolver: StoreResolver
+) : ViewModelBase() {
+    private val failures: StateFlow<List<Event.Failure>> =
+        state.getStateFlow(::failures.name, emptyList())
+
+    val snackbarEvents = eventBus.events.filterIsInstance<Event.Snackbar>()
+
+    val isAuthenticated = storeResolver.secretsStore.data
+        .map { !it.token.isEmpty }
+        .asState(true)
 
     val currentFailure = failures
-        .map(List<FailureEvent>::firstOrNull)
+        .map(List<Event.Failure>::firstOrNull)
         .asState(null)
 
     init {
         viewModelScope.launch {
             eventBus.events
-                .filterIsInstance<FailureEvent>()
-                .collect { failures.value += it }
+                .filterIsInstance<Event.Failure>()
+                .collect { state[::failures.name] = failures.value + it }
         }
     }
 
     fun dismissError() {
-        failures.value = failures.value.drop(1)
+        state[::failures.name] = failures.value.drop(1)
     }
 }

@@ -1,9 +1,11 @@
 package app.fyreplace.fyreplace.test.screens
 
+import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.test.TestsBase
+import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeResourceResolver
+import app.fyreplace.fyreplace.fakes.FakeStoreResolver
+import app.fyreplace.fyreplace.test.TestsBase
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
@@ -19,19 +21,8 @@ import org.junit.Test
 class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Username must have correct length`() = runTest {
-        val minLength = 5
-        val maxLength = 100
-        val resolver = FakeResourceResolver(
-            mapOf(
-                R.integer.username_min_length to minLength,
-                R.integer.username_max_length to maxLength,
-                R.integer.email_min_length to minLength,
-                R.integer.email_max_length to maxLength
-            )
-        )
-        val viewModel = RegisterViewModel(EventBus(), resolver)
+        val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateEmail("email@example")
-
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -54,19 +45,8 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Email must have correct length`() = runTest {
-        val minLength = 5
-        val maxLength = 100
-        val resolver = FakeResourceResolver(
-            mapOf(
-                R.integer.username_min_length to minLength,
-                R.integer.username_max_length to maxLength,
-                R.integer.email_min_length to minLength,
-                R.integer.email_max_length to maxLength
-            )
-        )
-        val viewModel = RegisterViewModel(EventBus(), resolver)
+        val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateUsername("Example")
-
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -89,21 +69,9 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Email must have @`() = runTest {
-        val minLength = 5
-        val maxLength = 100
-        val resolver = FakeResourceResolver(
-            mapOf(
-                R.integer.username_min_length to minLength,
-                R.integer.username_max_length to maxLength,
-                R.integer.email_min_length to minLength,
-                R.integer.email_max_length to maxLength
-            )
-        )
-        val viewModel = RegisterViewModel(EventBus(), resolver)
+        val (_, _, viewModel) = makeViewModel()
         viewModel.updateUsername("Example")
-
         backgroundScope.launch { viewModel.canSubmit.collect() }
-
 
         viewModel.updateEmail("email")
         runCurrent()
@@ -111,5 +79,25 @@ class RegisterViewModelTests : TestsBase() {
         viewModel.updateEmail("email@example")
         runCurrent()
         assertTrue(viewModel.canSubmit.value)
+    }
+
+    private fun makeViewModel(): Triple<Int, Int, RegisterViewModel> {
+        val minLength = 5
+        val maxLength = 100
+        val resources = FakeResourceResolver(
+            mapOf(
+                R.integer.username_min_length to minLength,
+                R.integer.username_max_length to maxLength,
+                R.integer.email_min_length to minLength,
+                R.integer.email_max_length to maxLength
+            )
+        )
+        val viewModel = RegisterViewModel(
+            state = SavedStateHandle(),
+            eventBus = FakeEventBus(),
+            resourceResolver = resources,
+            storeResolver = FakeStoreResolver()
+        )
+        return Triple(minLength, maxLength, viewModel)
     }
 }

@@ -1,13 +1,28 @@
 package app.fyreplace.fyreplace.events
 
+import android.content.Context
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
 import app.fyreplace.fyreplace.R
+import kotlinx.parcelize.Parcelize
 
-interface Event
+sealed interface Event {
+    @Immutable
+    @Parcelize
+    data class Failure(
+        @StringRes val title: Int = R.string.main_error_unknown_title,
+        @StringRes val message: Int = R.string.main_error_unknown_message
+    ) : Event, Parcelable
 
-@Immutable
-data class FailureEvent(
-    @StringRes val title: Int = R.string.main_error_unknown_title,
-    @StringRes val message: Int = R.string.main_error_unknown_message
-) : Event
+    @Immutable
+    data class Snackbar(
+        @StringRes val message: Int,
+        val action: Action? = null
+    ) : Event {
+        data class Action(
+            @StringRes val label: Int,
+            val action: suspend Context.() -> Unit
+        )
+    }
+}
