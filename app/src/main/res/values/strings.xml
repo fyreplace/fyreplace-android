@@ -48,4 +48,6 @@
 
     <string name="error_400_title">Bad request</string>
     <string name="error_400_message">An incorrect request was sent to the server.</string>
+    <string name="error_401_title">You have been disconnected</string>
+    <string name="error_401_message">It looks like your session has expired.</string>
 </resources>

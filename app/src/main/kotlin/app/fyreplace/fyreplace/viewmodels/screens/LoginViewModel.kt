@@ -3,17 +3,17 @@ package app.fyreplace.fyreplace.viewmodels.screens
 import android.content.Intent
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import app.fyreplace.api.TokensEndpointApi
 import app.fyreplace.api.data.NewTokenCreation
 import app.fyreplace.api.data.TokenCreation
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.api.Endpoint
+import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
+import app.fyreplace.fyreplace.protos.Account
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -33,8 +33,8 @@ class LoginViewModel @Inject constructor(
     resourceResolver: ResourceResolver,
     storeResolver: StoreResolver,
     private val secretsHandler: SecretsHandler,
-    private val tokensEndpoint: Endpoint<TokensEndpointApi>
-) : AccountViewModelBase(state, eventBus, resourceResolver, storeResolver) {
+    private val apiResolver: ApiResolver
+) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver) {
     private val storedIdentifier = storeResolver.accountStore.data
         .map { it.identifier }
         .asState("")
@@ -69,7 +69,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun sendEmail() = callWhileLoading(tokensEndpoint) {
+    private fun sendEmail() = callWhileLoading(apiResolver::tokens) {
         createNewToken(NewTokenCreation(identifier.value)).failWith {
             when (it.code) {
                 400 -> Event.Failure(
@@ -108,7 +108,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun createToken() = callWhileLoading(tokensEndpoint) {
+    private fun createToken() = callWhileLoading(apiResolver::tokens) {
         val token = createToken(TokenCreation(identifier.value, randomCode.value)).failWith {
             when (it.code) {
                 400 -> Event.Failure(
@@ -127,7 +127,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
             storeResolver.secretsStore.update { setToken(secretsHandler.encrypt(token)) }
-            storeResolver.accountStore.update { setIsWaitingForRandomCode(false) }
+            storeResolver.accountStore.update(Account.Builder::clear)
         }
     }
 }

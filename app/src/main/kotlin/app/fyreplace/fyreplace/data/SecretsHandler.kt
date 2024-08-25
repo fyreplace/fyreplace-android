@@ -66,10 +66,10 @@ class EncryptedSecretsHandler @Inject constructor() : SecretsHandler {
             Transformation(KEY_ALGORITHM_AES, BLOCK_MODE_CBC, ENCRYPTION_PADDING_PKCS7)
 
         val ByteArray.encodedString: String
-            get() = Base64.encodeToString(this, Base64.DEFAULT)
+            get() = Base64.encodeToString(this, Base64.NO_WRAP)
 
         val String.decodedBytes: ByteArray
-            get() = Base64.decode(this, Base64.DEFAULT)
+            get() = Base64.decode(this, Base64.NO_WRAP)
     }
 
     private data class Transformation(

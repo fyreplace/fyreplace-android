@@ -52,10 +52,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ContextResourceResolver
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
-import app.fyreplace.fyreplace.fakes.FakeTokensEndpointApi
 import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.SmallCircularProgressIndicator
 import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
@@ -235,7 +235,7 @@ fun LoginScreenPreview() {
                         resourceResolver = ContextResourceResolver(LocalContext.current),
                         storeResolver = storeResolver,
                         secretsHandler = FakeSecretsHandler(),
-                        tokensEndpoint = FakeTokensEndpointApi()
+                        apiResolver = FakeApiResolver()
                     ),
                     environmentViewModel = EnvironmentViewModel(
                         storeResolver = storeResolver

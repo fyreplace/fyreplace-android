@@ -26,7 +26,7 @@ class RegisterViewModel @Inject constructor(
     eventBus: EventBus,
     resourceResolver: ResourceResolver,
     storeResolver: StoreResolver
-) : AccountViewModelBase(state, eventBus, resourceResolver, storeResolver) {
+) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver) {
     private val storedUsername = storeResolver.accountStore.data
         .map { it.username }
         .asState("")

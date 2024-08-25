@@ -3,9 +3,10 @@ package app.fyreplace.fyreplace.viewmodels
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.api.Endpoint
+import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.extensions.update
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -15,11 +16,14 @@ import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-abstract class ApiViewModelBase(protected val eventBus: EventBus) : ViewModelBase() {
-    fun <T> call(api: Endpoint<T>, block: suspend T.() -> Unit) {
+abstract class ApiViewModelBase(
+    protected val eventBus: EventBus,
+    protected val storeResolver: StoreResolver
+) : ViewModelBase() {
+    fun <T> call(api: suspend () -> T, block: suspend T.() -> Unit) {
         viewModelScope.launch {
             try {
-                block(api.get())
+                block(api())
             } catch (e: UnknownHostException) {
                 postConnectionFailure()
             } catch (e: SocketTimeoutException) {
@@ -33,26 +37,31 @@ abstract class ApiViewModelBase(protected val eventBus: EventBus) : ViewModelBas
 
     @OptIn(ExperimentalSerializationApi::class)
     suspend fun <T> Response<T>.failWith(failureHandler: (Failure) -> Event.Failure?): T? {
-        if (!isSuccessful) {
-            val failure = Failure(
-                code(),
-                errorBody()?.let {
-                    if (it.contentLength() > 0) {
-                        Json.decodeFromStream(it.byteStream())
-                    } else {
-                        null
-                    }
-                }
-            )
-
-            val failureEvent = failureHandler(failure)
-
-            if (failureEvent != null) {
-                eventBus.publish(failureEvent)
-            }
+        if (isSuccessful) {
+            return body()
         }
 
-        return body()
+        if (code() == 401) {
+            storeResolver.secretsStore.update { clearToken() }
+            eventBus.publish(Event.Failure(R.string.error_401_title, R.string.error_401_message))
+            return null
+        }
+
+        val failureEvent = failureHandler(Failure(
+            code(),
+            errorBody()?.let {
+                when {
+                    it.contentLength() > 0 -> Json.decodeFromStream(it.byteStream())
+                    else -> null
+                }
+            }
+        ))
+
+        if (failureEvent != null) {
+            eventBus.publish(failureEvent)
+        }
+
+        return null
     }
 
     private suspend fun postConnectionFailure() = eventBus.publish(

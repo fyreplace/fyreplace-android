@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
@@ -151,6 +152,6 @@ class LoginViewModelTests : TestsBase() {
         ),
         storeResolver = FakeStoreResolver(),
         secretsHandler = FakeSecretsHandler(),
-        tokensEndpoint = FakeTokensEndpointApi()
+        apiResolver = FakeApiResolver()
     )
 }

@@ -2,7 +2,6 @@ package app.fyreplace.fyreplace.viewmodels.screens
 
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.api.Endpoint
 import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.EventBus
@@ -22,9 +21,9 @@ import kotlinx.coroutines.flow.update
 abstract class AccountViewModelBase(
     protected val state: SavedStateHandle,
     eventBus: EventBus,
-    protected val resourceResolver: ResourceResolver,
-    protected val storeResolver: StoreResolver
-) : ApiViewModelBase(eventBus) {
+    storeResolver: StoreResolver,
+    protected val resourceResolver: ResourceResolver
+) : ApiViewModelBase(eventBus, storeResolver) {
     private val mIsLoading = MutableStateFlow(false)
 
     abstract val isFirstStepValid: Flow<Boolean>
@@ -54,12 +53,13 @@ abstract class AccountViewModelBase(
         state[::hasStartedTyping.name] = true
     }
 
-    protected fun <T> callWhileLoading(api: Endpoint<T>, block: suspend T.() -> Unit) = call(api) {
-        try {
-            mIsLoading.update { true }
-            block()
-        } finally {
-            mIsLoading.update { false }
+    protected fun <T> callWhileLoading(api: suspend () -> T, block: suspend T.() -> Unit) =
+        call(api) {
+            try {
+                mIsLoading.update { true }
+                block()
+            } finally {
+                mIsLoading.update { false }
+            }
         }
-    }
 }

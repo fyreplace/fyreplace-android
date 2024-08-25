@@ -183,12 +183,14 @@ fun MainContent() {
 
     LaunchedEffect(isAuthenticated) {
         val accountEntryDestinations = setOf(Destination.Login, Destination.Register)
-
-        if (isAuthenticated && currentDestination in accountEntryDestinations) {
-            navController.navigatePoppingBackStack(Destination.Settings)
-        } else if (!isAuthenticated && currentDestination == Destination.Settings) {
-            navController.navigatePoppingBackStack(Destination.Login)
+        val newDestination = when {
+            isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
+            !isAuthenticated && currentDestination == Destination.Settings -> Destination.Login
+            !isAuthenticated && currentDestination?.requiresAuthentication ?: false -> Destination.Feed
+            else -> null
         }
+
+        newDestination?.let(navController::navigatePoppingBackStack)
     }
 
     val scope = rememberCoroutineScope()

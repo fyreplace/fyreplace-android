@@ -33,6 +33,11 @@
             </intent-filter>
         </activity>
 
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
+
         <meta-data
             android:name="io.sentry.dsn"
             android:value="@string/sentry_dsn" />
