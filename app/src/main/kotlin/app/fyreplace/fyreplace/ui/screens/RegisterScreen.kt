@@ -122,6 +122,7 @@ fun SharedTransitionScope.RegisterScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Ascii,
                 imeAction = ImeAction.Next
             ),
             onValueChange = viewModel::updateUsername,

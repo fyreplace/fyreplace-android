@@ -48,7 +48,7 @@ class RegisterViewModel @Inject constructor(
         .flatMapLatest { if (it) typedEmail else storedEmail }
         .asState("")
 
-    val canSubmit = username
+    override val isFirstStepValid = username
         .combine(email) { username, email ->
             val usernameMinLength = resourceResolver.getInteger(R.integer.username_min_length)
             val emailMinLength = resourceResolver.getInteger(R.integer.email_min_length)

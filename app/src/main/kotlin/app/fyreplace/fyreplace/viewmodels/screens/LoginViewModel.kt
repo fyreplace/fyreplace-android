@@ -17,8 +17,6 @@ import app.fyreplace.fyreplace.extensions.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -47,15 +45,8 @@ class LoginViewModel @Inject constructor(
     val identifier = hasStartedTyping
         .flatMapLatest { if (it) typedIdentifier else storedIdentifier }
         .asState("")
-    val canSubmit = isWaitingForRandomCode
-        .flatMapLatest { if (it) isRandomCodeValid else isIdentifierValid }
-        .combine(isLoading) { canSubmit, isLoading -> canSubmit && !isLoading }
-        .distinctUntilChanged()
-        .asState(false)
 
-    private val isRandomCodeValid = randomCode
-        .map { it.isNotBlank() && it.length == resourceResolver.getInteger(R.integer.random_code_length) }
-    private val isIdentifierValid = identifier
+    override val isFirstStepValid = identifier
         .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.username_min_length) }
 
     fun updateIdentifier(value: String) {

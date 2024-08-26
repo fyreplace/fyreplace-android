@@ -27,7 +27,7 @@
     <string name="account_environment_dialog_title">Select server</string>
     <string name="account_environment_dialog_text">If you don\'t know what this is, pick the default one.</string>
     <string name="account_random_code">One-time code</string>
-    <string name="account_random_code_placeholder">123456</string>
+    <string name="account_random_code_placeholder" translatable="false">abcd1234</string>
 
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>

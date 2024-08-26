@@ -7,13 +7,18 @@ import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlin.math.min
 
+@OptIn(ExperimentalCoroutinesApi::class)
 abstract class AccountViewModelBase(
     protected val state: SavedStateHandle,
     eventBus: EventBus,
@@ -22,19 +27,27 @@ abstract class AccountViewModelBase(
 ) : ApiViewModelBase(eventBus) {
     private val mIsLoading = MutableStateFlow(false)
 
+    abstract val isFirstStepValid: Flow<Boolean>
+
     val isWaitingForRandomCode = storeResolver.accountStore.data
         .map { it.isWaitingForRandomCode }
         .asState(false)
     val isLoading = mIsLoading.asStateFlow()
     val randomCode: StateFlow<String> =
         state.getStateFlow(::randomCode.name, "")
+    val canSubmit = isWaitingForRandomCode
+        .flatMapLatest { if (it) isRandomCodeValid else isFirstStepValid }
+        .combine(isLoading) { canSubmit, isLoading -> canSubmit && !isLoading }
+        .distinctUntilChanged()
+        .asState(false)
 
     protected val hasStartedTyping: StateFlow<Boolean> =
         state.getStateFlow(::hasStartedTyping.name, false)
+    private val isRandomCodeValid = randomCode
+        .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.random_code_min_length) }
 
     fun updateRandomCode(randomCode: String) {
-        val maxLength = resourceResolver.getInteger(R.integer.random_code_length)
-        state[::randomCode.name] = randomCode.substring(0, min(maxLength, randomCode.length))
+        state[::randomCode.name] = randomCode
     }
 
     protected fun startTyping() {

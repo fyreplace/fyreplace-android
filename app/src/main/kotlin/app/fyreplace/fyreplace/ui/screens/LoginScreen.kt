@@ -132,6 +132,7 @@ fun SharedTransitionScope.LoginScreen(
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
+                keyboardType = KeyboardType.Ascii,
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions(onDone = {
@@ -158,7 +159,7 @@ fun SharedTransitionScope.LoginScreen(
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     autoCorrectEnabled = false,
-                    keyboardType = KeyboardType.NumberPassword,
+                    keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
                 ),
                 onValueChange = viewModel::updateRandomCode,

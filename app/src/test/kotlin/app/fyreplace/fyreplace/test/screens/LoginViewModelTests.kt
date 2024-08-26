@@ -27,7 +27,7 @@ class LoginViewModelTests : TestsBase() {
     fun `Identifier must have correct length`() = runTest {
         val minLength = 5
         val maxLength = 100
-        val viewModel = makeViewModel(FakeEventBus(), minLength, maxLength)
+        val viewModel = makeViewModel(FakeEventBus(), minLength, maxLength, 8)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -51,7 +51,7 @@ class LoginViewModelTests : TestsBase() {
     @Test
     fun `Invalid identifier produces a failure`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = makeViewModel(eventBus, 3, 50)
+        val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
@@ -65,7 +65,7 @@ class LoginViewModelTests : TestsBase() {
     @Test
     fun `Valid identifier produces no failures`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = makeViewModel(eventBus, 3, 50)
+        val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
@@ -78,28 +78,30 @@ class LoginViewModelTests : TestsBase() {
 
     @Test
     fun `Random code must have correct length`() = runTest {
-        val viewModel = makeViewModel(FakeEventBus(), 3, 50)
+        val minLength = 10
+        val viewModel = makeViewModel(FakeEventBus(), 3, 50, minLength)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
         runCurrent()
         viewModel.submit()
         runCurrent()
-        viewModel.updateRandomCode("12345")
-        runCurrent()
-        assertFalse(viewModel.canSubmit.value)
-        viewModel.updateRandomCode("123456")
+
+        for (i in 0..<minLength) {
+            viewModel.updateRandomCode("a".repeat(i))
+            runCurrent()
+            assertFalse(viewModel.canSubmit.value)
+        }
+
+        viewModel.updateRandomCode("a".repeat(minLength))
         runCurrent()
         assertTrue(viewModel.canSubmit.value)
-        viewModel.updateRandomCode("1234567")
-        runCurrent()
-        assertEquals(6, viewModel.randomCode.value.length)
     }
 
     @Test
     fun `Invalid random code produces failure`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = makeViewModel(eventBus, 3, 50)
+        val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
@@ -117,7 +119,7 @@ class LoginViewModelTests : TestsBase() {
     @Test
     fun `Valid random code produces no failures`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = makeViewModel(eventBus, 3, 50)
+        val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
@@ -135,7 +137,8 @@ class LoginViewModelTests : TestsBase() {
     private fun makeViewModel(
         eventBus: EventBus,
         identifierMinLength: Int,
-        identifierMaxLength: Int
+        identifierMaxLength: Int,
+        randomCodeMinLength: Int
     ) = LoginViewModel(
         state = SavedStateHandle(),
         eventBus = eventBus,
@@ -143,7 +146,7 @@ class LoginViewModelTests : TestsBase() {
             mapOf(
                 R.integer.username_min_length to identifierMinLength,
                 R.integer.email_max_length to identifierMaxLength,
-                R.integer.random_code_length to 6
+                R.integer.random_code_min_length to randomCodeMinLength
             )
         ),
         storeResolver = FakeStoreResolver(),
