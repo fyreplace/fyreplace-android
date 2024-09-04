@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.3.0
+  version: v0.4.0
 paths:
   /emails:
     get:
@@ -979,6 +979,8 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "403":
+          description: Not Allowed
         "404":
           description: Not Found
   /users:
@@ -1321,9 +1323,7 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         dateCreated:
-          type: string
-          allOf:
-            - $ref: "#/components/schemas/Instant"
+          $ref: "#/components/schemas/Instant"
         anonymous:
           type: boolean
         author:
@@ -1411,9 +1411,7 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         dateCreated:
-          type: string
-          allOf:
-            - $ref: "#/components/schemas/Instant"
+          $ref: "#/components/schemas/Instant"
         anonymous:
           type: boolean
         author:
@@ -1479,9 +1477,7 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         dateCreated:
-          type: string
-          allOf:
-            - $ref: "#/components/schemas/Instant"
+          $ref: "#/components/schemas/Instant"
         targetId:
           $ref: "#/components/schemas/UUID"
         source:
@@ -1550,9 +1546,7 @@ components:
         id:
           $ref: "#/components/schemas/UUID"
         dateCreated:
-          type: string
-          allOf:
-            - $ref: "#/components/schemas/Instant"
+          $ref: "#/components/schemas/Instant"
         username:
           maxLength: 50
           minLength: 3
