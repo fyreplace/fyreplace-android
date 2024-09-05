@@ -14,6 +14,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -69,8 +70,11 @@ fun MainContent() {
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
     val currentDestination = entry?.toSingletonDestination()
-    val destinationGroups =
-        topLevelDestinationGroups(expanded = !compact, userAuthenticated = isAuthenticated)
+    val destinationGroups by remember {
+        derivedStateOf {
+            topLevelDestinationGroups(expanded = !compact, userAuthenticated = isAuthenticated)
+        }
+    }
     val currentDestinationGroup =
         destinationGroups.find { (it.choices + it.root).contains(currentDestination) }
     val savedDestinations = rememberSaveable(saver = destinationMapSaver()) { mutableStateMapOf() }

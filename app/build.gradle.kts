@@ -217,7 +217,6 @@ openApiGenerate {
     library = "jvm-retrofit2"
     configOptions = mapOf(
         "useCoroutines" to "true",
-        "serializationLibrary" to "kotlinx_serialization",
         "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Stable"
     )
 }
@@ -269,10 +268,12 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.hilt)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.moshi)
+    implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.protobuf.java)
     implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.kotlinx)
+    implementation(libs.retrofit.converter.moshi)
     implementation(libs.retrofit.converter.scalars)
     "googleImplementation"(libs.play.services.base)
     "libreImplementation"(libs.conscrypt)
