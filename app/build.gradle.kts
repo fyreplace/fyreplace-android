@@ -217,6 +217,7 @@ openApiGenerate {
     library = "jvm-retrofit2"
     configOptions = mapOf(
         "useCoroutines" to "true",
+        "moshiCodeGen" to "true",
         "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Stable"
     )
 }
@@ -288,4 +289,5 @@ dependencies {
     androidTestImplementation(libs.hilt.testing)
     ksp(libs.androidx.hilt.compiler)
     ksp(libs.hilt.compiler)
+    ksp(libs.moshi.codegen)
 }
