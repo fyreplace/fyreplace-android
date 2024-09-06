@@ -11,7 +11,11 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.Response
 import org.openapitools.client.infrastructure.ApiClient
+import java.util.UUID
 import javax.inject.Inject
 
 interface ApiResolver {
@@ -36,7 +40,7 @@ class RemoteApiResolver @Inject constructor(
             }
         }
         .map(context::getString)
-        .map(::ApiClient)
+        .map { ApiClient(it, OkHttpClient().newBuilder().addInterceptor(RequestIdInterceptor())) }
         .combine(resolver.secretsStore.data) { apiClient, secrets ->
             apiClient.apply {
                 if (!secrets.token.isEmpty) {
@@ -46,4 +50,23 @@ class RemoteApiResolver @Inject constructor(
         }
         .map { it.createService(clazz) }
         .first()
+}
+
+class RequestIdInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        return chain.proceed(
+            request
+                .newBuilder()
+                .header(
+                    HEADER_NAME,
+                    request.header(HEADER_NAME) ?: UUID.randomUUID().toString()
+                )
+                .build()
+        )
+    }
+
+    private companion object {
+        const val HEADER_NAME = "X-Request-Id"
+    }
 }
