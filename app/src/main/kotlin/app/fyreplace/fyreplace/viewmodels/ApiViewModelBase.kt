@@ -2,16 +2,16 @@ package app.fyreplace.fyreplace.viewmodels
 
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
+import app.fyreplace.api.data.ExplainedFailure
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
+import com.squareup.moshi.JsonClass
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
+import org.openapitools.client.infrastructure.getErrorResponse
 import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -35,7 +35,6 @@ abstract class ApiViewModelBase(
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     suspend fun <T> Response<T>.failWith(failureHandler: (Failure) -> Event.Failure?): T? {
         if (isSuccessful) {
             return body()
@@ -47,15 +46,16 @@ abstract class ApiViewModelBase(
             return null
         }
 
-        val failureEvent = failureHandler(Failure(
-            code(),
-            errorBody()?.let {
-                when {
-                    it.contentLength() > 0 -> Json.decodeFromStream(it.byteStream())
-                    else -> null
+        val failureEvent = failureHandler(
+            Failure(
+                code(),
+                try {
+                    getErrorResponse()
+                } catch (_: Exception) {
+                    null
                 }
-            }
-        ))
+            )
+        )
 
         if (failureEvent != null) {
             eventBus.publish(failureEvent)
@@ -73,7 +73,5 @@ abstract class ApiViewModelBase(
 }
 
 @Immutable
+@JsonClass(generateAdapter = true)
 data class Failure(val code: Int, val explanation: ExplainedFailure?)
-
-@Immutable
-data class ExplainedFailure(val title: String, val reason: String)

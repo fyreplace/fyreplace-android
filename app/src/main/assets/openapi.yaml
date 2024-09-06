@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.4.0
+  version: v0.5.0
 paths:
   /emails:
     get:
@@ -54,6 +54,10 @@ paths:
                 $ref: "#/components/schemas/Email"
         "409":
           description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "401":
           description: Not Authorized
         "403":
@@ -123,12 +127,16 @@ paths:
           description: Unexpected error
         "204":
           description: No Content
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /emails/{id}/main:
@@ -147,12 +155,16 @@ paths:
           description: Unexpected error
         "200":
           description: OK
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /posts:
@@ -208,8 +220,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Post"
-        "400":
-          description: Bad Request
         "401":
           description: Not Authorized
         "403":
@@ -326,12 +336,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Chapter"
-        "404":
-          description: Not found
-        "401":
-          description: Not Authorized
         "403":
           description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
+        "404":
+          description: Not Found
+        "401":
+          description: Not Authorized
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}:
@@ -356,9 +370,11 @@ paths:
         default:
           description: Unexpected error
         "204":
-          description: No content
+          description: No Content
+        "400":
+          description: Bad Request
         "404":
-          description: Not found
+          description: Not Found
         "401":
           description: Not Authorized
         "403":
@@ -399,10 +415,12 @@ paths:
             text/plain:
               schema:
                 type: string
-        "400":
-          description: Bad request
         "404":
-          description: Not found
+          description: Not Found
+        "413":
+          description: Payload Too Large
+        "415":
+          description: Unsupported Media Type
         "401":
           description: Not Authorized
         "403":
@@ -439,9 +457,9 @@ paths:
         "200":
           description: OK
         "400":
-          description: Bad request
+          description: Bad Request
         "404":
-          description: Not found
+          description: Not Found
         "401":
           description: Not Authorized
         "403":
@@ -483,9 +501,9 @@ paths:
               schema:
                 type: string
         "400":
-          description: Bad request
+          description: Bad Request
         "404":
-          description: Not found
+          description: Not Found
         "401":
           description: Not Authorized
         "403":
@@ -520,6 +538,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Comment"
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
         "401":
@@ -553,12 +573,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Comment"
+        "400":
+          description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/count:
@@ -586,6 +612,8 @@ paths:
               schema:
                 format: int64
                 type: integer
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
         "401":
@@ -617,12 +645,18 @@ paths:
           description: Unexpected error
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/{position}/acknowledge:
@@ -648,6 +682,8 @@ paths:
           description: Unexpected error
         "200":
           description: OK
+        "400":
+          description: Bad Request
         "404":
           description: Not Found
         "401":
@@ -685,12 +721,18 @@ paths:
           description: Unexpected error
         "200":
           description: OK
+        "400":
+          description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /posts/{id}/publish:
@@ -717,12 +759,16 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /posts/{id}/reported:
@@ -811,12 +857,16 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /reports:
@@ -842,6 +892,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Report"
+        "400":
+          description: Bad Request
         "401":
           description: Not Authorized
         "403":
@@ -981,6 +1033,10 @@ paths:
           description: Bad Request
         "403":
           description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
   /users:
@@ -1005,10 +1061,22 @@ paths:
                 $ref: "#/components/schemas/User"
         "400":
           description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ViolationReport"
         "403":
           description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "409":
           description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
   /users/blocked:
     get:
       tags:
@@ -1238,12 +1306,16 @@ paths:
           description: OK
         "400":
           description: Bad Request
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
   /users/{id}/reported:
@@ -1268,12 +1340,16 @@ paths:
           description: Unexpected error
         "200":
           description: OK
+        "403":
+          description: Not Allowed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
         "401":
           description: Not Authorized
-        "403":
-          description: Not Allowed
       security:
         - SecurityScheme: [ ]
 components:
@@ -1384,6 +1460,16 @@ components:
           maxLength: 254
           minLength: 3
           pattern: \S
+          type: string
+    ExplainedFailure:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          format: int32
+          type: integer
+        reason:
           type: string
     Instant:
       format: date-time
@@ -1581,6 +1667,25 @@ components:
           minLength: 3
           pattern: "^[\\w.@+-]+$"
           type: string
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    ViolationReport:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          format: int32
+          type: integer
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
     VoteCreation:
       required:
         - spread
