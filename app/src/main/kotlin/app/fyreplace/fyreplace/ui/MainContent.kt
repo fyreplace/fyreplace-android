@@ -91,11 +91,12 @@ fun MainContent() {
 
     val keyboardHandler = Modifier.onKeyEvent { event ->
         when (event.type) {
-            KeyEventType.KeyUp -> {
-                val shortcut = getShortcut(event)
+            KeyEventType.KeyUp -> when (val shortcut = getShortcut(event)) {
+                is DestinationKeyboardShortcut -> {
+                    if (!shortcut.destination.requiresAuthentication || isAuthenticated) {
+                        onClickDestination(shortcut.destination)
+                    }
 
-                if (shortcut is DestinationKeyboardShortcut) {
-                    onClickDestination(shortcut.destination)
                     return@onKeyEvent true
                 }
             }
