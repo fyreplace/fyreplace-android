@@ -27,6 +27,10 @@ class MainViewModel @Inject constructor(
         .map { !it.token.isEmpty }
         .asState(true)
 
+    val isRegistering = storeResolver.accountStore.data
+        .map { it.isRegistering }
+        .asState(false)
+
     val currentFailure = failures
         .map(List<Event.Failure>::firstOrNull)
         .asState(null)

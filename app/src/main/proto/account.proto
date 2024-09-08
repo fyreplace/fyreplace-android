@@ -8,4 +8,5 @@ message Account {
   string username = 2;
   string email = 3;
   bool isWaitingForRandomCode = 4;
+  bool isRegistering = 5;
 }

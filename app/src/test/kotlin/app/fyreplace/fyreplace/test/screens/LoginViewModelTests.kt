@@ -9,12 +9,13 @@ import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
-import app.fyreplace.fyreplace.fakes.FakeTokensEndpointApi
+import app.fyreplace.fyreplace.fakes.api.FakeTokensEndpointApi
 import app.fyreplace.fyreplace.test.TestsBase
 import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -135,7 +136,7 @@ class LoginViewModelTests : TestsBase() {
         assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
     }
 
-    private fun makeViewModel(
+    private fun TestScope.makeViewModel(
         eventBus: EventBus,
         identifierMinLength: Int,
         identifierMaxLength: Int,
@@ -153,5 +154,5 @@ class LoginViewModelTests : TestsBase() {
         storeResolver = FakeStoreResolver(),
         secretsHandler = FakeSecretsHandler(),
         apiResolver = FakeApiResolver()
-    )
+    ).also { runCurrent() }
 }

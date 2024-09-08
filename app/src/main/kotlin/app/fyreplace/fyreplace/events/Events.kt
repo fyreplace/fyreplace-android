@@ -11,8 +11,8 @@ sealed interface Event {
     @Immutable
     @Parcelize
     data class Failure(
-        @StringRes val title: Int = R.string.main_error_unknown_title,
-        @StringRes val message: Int = R.string.main_error_unknown_message
+        @StringRes val title: Int = R.string.error_unknown_title,
+        @StringRes val message: Int = R.string.error_unknown_message
     ) : Event, Parcelable
 
     @Immutable

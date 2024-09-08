@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.ui.views.settings
+package app.fyreplace.fyreplace.ui.views.account
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

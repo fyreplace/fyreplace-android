@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.api
 
 import android.content.Context
 import app.fyreplace.api.TokensEndpointApi
+import app.fyreplace.api.UsersEndpointApi
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
@@ -20,6 +21,8 @@ import javax.inject.Inject
 
 interface ApiResolver {
     suspend fun tokens(): TokensEndpointApi
+
+    suspend fun users(): UsersEndpointApi
 }
 
 class RemoteApiResolver @Inject constructor(
@@ -28,6 +31,8 @@ class RemoteApiResolver @Inject constructor(
     private val secretsHandler: SecretsHandler
 ) : ApiResolver {
     override suspend fun tokens() = get(TokensEndpointApi::class.java)
+
+    override suspend fun users() = get(UsersEndpointApi::class.java)
 
     private suspend fun <T> get(clazz: Class<T>) = resolver.connectionStore
         .data

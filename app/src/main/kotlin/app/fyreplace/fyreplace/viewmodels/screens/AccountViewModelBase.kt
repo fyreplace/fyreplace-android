@@ -1,10 +1,16 @@
 package app.fyreplace.fyreplace.viewmodels.screens
 
+import android.content.Intent
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ResourceResolver
+import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.extensions.update
+import app.fyreplace.fyreplace.protos.Account
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -16,13 +22,15 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 abstract class AccountViewModelBase(
     protected val state: SavedStateHandle,
     eventBus: EventBus,
     storeResolver: StoreResolver,
-    protected val resourceResolver: ResourceResolver
+    protected val resourceResolver: ResourceResolver,
+    private val secretsHandler: SecretsHandler
 ) : ApiViewModelBase(eventBus, storeResolver) {
     private val mIsLoading = MutableStateFlow(false)
 
@@ -40,8 +48,6 @@ abstract class AccountViewModelBase(
         .distinctUntilChanged()
         .asState(false)
 
-    protected val hasStartedTyping: StateFlow<Boolean> =
-        state.getStateFlow(::hasStartedTyping.name, false)
     private val isRandomCodeValid = randomCode
         .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.random_code_min_length) }
 
@@ -49,9 +55,26 @@ abstract class AccountViewModelBase(
         state[::randomCode.name] = randomCode
     }
 
-    protected fun startTyping() {
-        state[::hasStartedTyping.name] = true
+    fun submit() {
+        if (isWaitingForRandomCode.value) {
+            createToken()
+        } else {
+            sendEmail()
+        }
     }
+
+    fun cancel() {
+        viewModelScope.launch {
+            storeResolver.accountStore.update {
+                setIsWaitingForRandomCode(false)
+                setIsRegistering(false)
+            }
+        }
+    }
+
+    protected abstract fun sendEmail()
+
+    protected abstract fun createToken()
 
     protected fun <T> callWhileLoading(api: suspend () -> T, block: suspend T.() -> Unit) =
         call(api) {
@@ -62,4 +85,44 @@ abstract class AccountViewModelBase(
                 mIsLoading.update { false }
             }
         }
+
+    protected fun onEmailSent(isRegistering: Boolean) {
+        viewModelScope.launch {
+            storeResolver.accountStore.update {
+                setIsWaitingForRandomCode(true)
+                setIsRegistering(isRegistering)
+            }
+
+            showEmailSentTip()
+        }
+    }
+
+    protected fun onTokenCreated(token: String) {
+        viewModelScope.launch {
+            storeResolver.secretsStore.update { setToken(secretsHandler.encrypt(token)) }
+            storeResolver.accountStore.update(Account.Builder::clear)
+            updateRandomCode("")
+        }
+    }
+
+    private suspend fun showEmailSentTip() {
+        eventBus.publish(
+            Event.Snackbar(
+                message = R.string.account_tip_email_sent,
+                action = Event.Snackbar.Action(
+                    label = R.string.account_tip_email_sent_action,
+                    action = {
+                        try {
+                            startActivity(
+                                Intent(Intent.ACTION_MAIN)
+                                    .addCategory(Intent.CATEGORY_APP_EMAIL)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            )
+                        } catch (e: Exception) {
+                            eventBus.publish(Event.Snackbar(R.string.account_tip_email_sent_action_failed))
+                        }
+                    }
+                )
+            ))
+    }
 }

@@ -13,10 +13,6 @@
     <string name="main_destination_settings">Settings</string>
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
-    <string name="main_error_connection_title">Connection error</string>
-    <string name="main_error_connection_message">The server seems to be unreachable.</string>
-    <string name="main_error_unknown_title">An error just occurred</string>
-    <string name="main_error_unknown_message">Unknown error. This should never happen…</string>
 
     <string name="settings_logout">Logout</string>
 
@@ -28,24 +24,40 @@
     <string name="account_environment_dialog_text">If you don\'t know what this is, pick the default one.</string>
     <string name="account_random_code">One-time code</string>
     <string name="account_random_code_placeholder" translatable="false">abcd1234</string>
+    <string name="account_tip_email_sent">A one-time use code has been sent to your email address</string>
+    <string name="account_tip_email_sent_action">Check</string>
+    <string name="account_tip_email_sent_action_failed">No email client found</string>
+    <string name="account_error_create_token_400_title">Invalid code</string>
+    <string name="account_error_create_token_400_message">Check if the code you provided is correct.</string>
 
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>
     <string name="login_submit">@string/main_destination_login</string>
-    <string name="login_tip_email_sent">A one-time use code has been sent to your email address</string>
-    <string name="login_tip_email_sent_action">Check</string>
-    <string name="login_tip_email_sent_action_failed">No email client found</string>
     <string name="login_error_404_title">User not found</string>
     <string name="login_error_404_message">No user account was found with this username or email.</string>
-    <string name="login_error_create_token_400_title">Invalid code</string>
-    <string name="login_error_create_token_400_message">Check if the code you provided is correct.</string>
 
     <string name="register_username">Username</string>
     <string name="register_username_placeholder">Only letters, numbers and dashes</string>
     <string name="register_email">Email</string>
     <string name="register_email_placeholder" translatable="false">email@example.org</string>
     <string name="register_submit">@string/main_destination_register</string>
+    <string name="register_error_create_user_400_username_title">Invalid username</string>
+    <string name="register_error_create_user_400_username_message">This username is not valid.</string>
+    <string name="register_error_create_user_400_email_title">Invalid email</string>
+    <string name="register_error_create_user_400_email_message">This email address is not valid.</string>
+    <string name="register_error_create_user_403_title">Username forbidden</string>
+    <string name="register_error_create_user_403_message">This username is not allowed.</string>
+    <string name="register_error_create_user_409_username_title">Username unavailable</string>
+    <string name="register_error_create_user_409_username_message">This username is already used by someone else.</string>
+    <string name="register_error_create_user_409_email_title">Email unavailable</string>
+    <string name="register_error_create_user_409_email_message">This email is already used by someone else.</string>
+    <string name="register_error_create_token_404_title">User not found</string>
+    <string name="register_error_create_token_404_message">No user account was found with this email. It might have been deleted if you didn\'t activate it within one hour.</string>
 
+    <string name="error_connection_title">Connection error</string>
+    <string name="error_connection_message">The server seems to be unreachable.</string>
+    <string name="error_unknown_title">An error just occurred</string>
+    <string name="error_unknown_message">Unknown error. This should never happen…</string>
     <string name="error_400_title">Bad request</string>
     <string name="error_400_message">An incorrect request was sent to the server.</string>
     <string name="error_401_title">You have been disconnected</string>

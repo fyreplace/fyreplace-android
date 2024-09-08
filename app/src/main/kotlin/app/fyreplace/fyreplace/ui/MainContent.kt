@@ -59,6 +59,7 @@ import kotlinx.coroutines.launch
 fun MainContent() {
     val viewModel = hiltViewModel<MainViewModel>()
     val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
+    val isRegistering by viewModel.isRegistering.collectAsStateWithLifecycle()
     val failure by viewModel.currentFailure.collectAsStateWithLifecycle()
 
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
@@ -80,10 +81,13 @@ fun MainContent() {
     val savedDestinations = rememberSaveable(saver = destinationMapSaver()) { mutableStateMapOf() }
 
     fun onClickDestination(destination: Destination.Singleton) {
-        val actualDestination = destinationGroups.find { it.root == destination }
-            ?.choices
-            ?.firstOrNull()
-            ?: destination
+        val actualDestination = when {
+            !isAuthenticated && isRegistering && destination == Destination.Settings -> Destination.Register
+            else -> destinationGroups.find { it.root == destination }
+                ?.choices
+                ?.firstOrNull()
+                ?: destination
+        }
         navController.navigatePoppingBackStack(
             savedDestinations[actualDestination] ?: actualDestination
         )
@@ -188,14 +192,15 @@ fun MainContent() {
 
     LaunchedEffect(isAuthenticated) {
         val accountEntryDestinations = setOf(Destination.Login, Destination.Register)
-        val newDestination = when {
-            isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
-            !isAuthenticated && currentDestination == Destination.Settings -> Destination.Login
-            !isAuthenticated && currentDestination?.requiresAuthentication ?: false -> Destination.Feed
-            else -> null
-        }
-
-        newDestination?.let(navController::navigatePoppingBackStack)
+        navController.navigatePoppingBackStack(
+            when {
+                isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
+                isAuthenticated -> return@LaunchedEffect
+                currentDestination == Destination.Settings -> Destination.Login
+                currentDestination?.requiresAuthentication == true -> Destination.Feed
+                else -> return@LaunchedEffect
+            }
+        )
     }
 
     val scope = rememberCoroutineScope()

@@ -5,21 +5,17 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,13 +27,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,10 +41,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ContextResourceResolver
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
+import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.ui.theme.AppTheme
-import app.fyreplace.fyreplace.ui.views.settings.EnvironmentSelector
+import app.fyreplace.fyreplace.ui.views.account.EnvironmentSelector
+import app.fyreplace.fyreplace.ui.views.account.Logo
+import app.fyreplace.fyreplace.ui.views.account.RandomCodeInput
+import app.fyreplace.fyreplace.ui.views.account.SubmitOrCancel
 import app.fyreplace.fyreplace.viewmodels.screens.EnvironmentViewModel
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 
@@ -65,8 +63,10 @@ fun SharedTransitionScope.RegisterScreen(
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val username by viewModel.username.collectAsStateWithLifecycle()
     val email by viewModel.email.collectAsStateWithLifecycle()
+    val randomCode by viewModel.randomCode.collectAsStateWithLifecycle()
     val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
     val usernameFocus = remember(::FocusRequester)
     val emailFocus = remember(::FocusRequester)
@@ -80,13 +80,9 @@ fun SharedTransitionScope.RegisterScreen(
             .padding(horizontal = dimensionResource(R.dimen.spacing_medium))
             .imePadding()
     ) {
-        Image(
-            imageVector = ImageVector.vectorResource(R.drawable.logo),
-            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
-            contentDescription = null,
+        Logo(
             modifier = Modifier
                 .padding(vertical = dimensionResource(R.dimen.spacing_large))
-                .size(dimensionResource(R.dimen.logo_size))
                 .sharedElement(
                     rememberSharedContentState(key = "image"),
                     visibilityScope
@@ -119,6 +115,7 @@ fun SharedTransitionScope.RegisterScreen(
             value = username,
             label = { Text(stringResource(R.string.register_username)) },
             placeholder = { Text(stringResource(R.string.register_username_placeholder)) },
+            enabled = !isWaitingForRandomCode,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
@@ -139,6 +136,7 @@ fun SharedTransitionScope.RegisterScreen(
             value = email,
             label = { Text(stringResource(R.string.register_email)) },
             placeholder = { Text(stringResource(R.string.register_email_placeholder)) },
+            enabled = !isWaitingForRandomCode,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
@@ -151,20 +149,29 @@ fun SharedTransitionScope.RegisterScreen(
             modifier = textFieldModifier.focusRequester(emailFocus)
         )
 
-        Box(
-            modifier = Modifier.sharedElement(
-                rememberSharedContentState(key = "submit"),
-                visibilityScope
+        AnimatedVisibility(isWaitingForRandomCode) {
+            RandomCodeInput(
+                randomCode = randomCode,
+                onValueChange = viewModel::updateRandomCode,
+                modifier = textFieldModifier
             )
-        ) {
-            Button(
-                enabled = canSubmit,
-                onClick = {},
-                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.spacing_large))
-            ) {
-                Text(stringResource(R.string.register_submit), maxLines = 1)
-            }
         }
+
+        SubmitOrCancel(
+            submitLabel = stringResource(R.string.register_submit),
+            canSubmit = canSubmit,
+            canCancel = isWaitingForRandomCode,
+            isLoading = isLoading,
+            onSubmit = viewModel::submit,
+            onCancel = viewModel::cancel,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = dimensionResource(R.dimen.spacing_large))
+                .sharedElement(
+                    rememberSharedContentState(key = "submit"),
+                    visibilityScope
+                )
+        )
 
         LaunchedEffect(Unit) {
             when {
@@ -189,7 +196,9 @@ fun RegisterScreenPreview() {
                         state = SavedStateHandle(),
                         eventBus = FakeEventBus(),
                         resourceResolver = ContextResourceResolver(LocalContext.current),
-                        storeResolver = storeResolver
+                        storeResolver = storeResolver,
+                        secretsHandler = FakeSecretsHandler(),
+                        apiResolver = FakeApiResolver()
                     ),
                     environmentViewModel = EnvironmentViewModel(
                         storeResolver = storeResolver

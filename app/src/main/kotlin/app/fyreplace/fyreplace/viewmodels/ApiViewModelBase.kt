@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.viewmodels
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.api.data.ExplainedFailure
+import app.fyreplace.api.data.ViolationReport
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
@@ -49,11 +50,8 @@ abstract class ApiViewModelBase(
         val failureEvent = failureHandler(
             Failure(
                 code(),
-                try {
-                    getErrorResponse()
-                } catch (_: Exception) {
-                    null
-                }
+                if (code() == 400) getErrorResponseOrNull() else null,
+                if (code() != 400) getErrorResponseOrNull() else null
             )
         )
 
@@ -66,12 +64,22 @@ abstract class ApiViewModelBase(
 
     private suspend fun postConnectionFailure() = eventBus.publish(
         Event.Failure(
-            R.string.main_error_connection_title,
-            R.string.main_error_connection_message
+            R.string.error_connection_title,
+            R.string.error_connection_message
         )
     )
 }
 
+private inline fun <T, reified R> Response<T>.getErrorResponseOrNull(): R? = try {
+    getErrorResponse()
+} catch (_: Exception) {
+    null
+}
+
 @Immutable
 @JsonClass(generateAdapter = true)
-data class Failure(val code: Int, val explanation: ExplainedFailure?)
+data class Failure(
+    val code: Int,
+    val violationReport: ViolationReport?,
+    val explainedFailure: ExplainedFailure?
+)
