@@ -9,11 +9,13 @@ import app.fyreplace.fyreplace.fakes.notFound
 import app.fyreplace.fyreplace.fakes.ok
 
 class FakeTokensEndpointApi : TokensEndpointApi {
-    override suspend fun createNewToken(newTokenCreation: NewTokenCreation) =
-        when (newTokenCreation.identifier) {
-            GOOD_IDENTIFIER -> ok(Unit)
-            else -> notFound()
-        }
+    override suspend fun createNewToken(
+        newTokenCreation: NewTokenCreation,
+        customDeepLinks: Boolean?
+    ) = when (newTokenCreation.identifier) {
+        GOOD_IDENTIFIER -> ok(Unit)
+        else -> notFound()
+    }
 
     override suspend fun createToken(tokenCreation: TokenCreation) = when {
         tokenCreation.identifier != GOOD_IDENTIFIER -> notFound()

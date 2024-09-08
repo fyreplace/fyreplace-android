@@ -20,7 +20,10 @@ class FakeUsersEndpointApi : UsersEndpointApi {
     override suspend fun countBlockedUsers(): Response<Long> =
         throw NotImplementedError()
 
-    override suspend fun createUser(userCreation: UserCreation) = when {
+    override suspend fun createUser(
+        userCreation: UserCreation,
+        customDeepLinks: Boolean?
+    ) = when {
         userCreation.username == BAD_USERNAME -> badRequest()
         userCreation.username == RESERVED_USERNAME -> forbidden()
         userCreation.username == USED_USERNAME -> conflict()

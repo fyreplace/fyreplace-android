@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.5.0
+  version: v0.6.0
 paths:
   /emails:
     get:
@@ -37,6 +37,11 @@ paths:
       tags:
         - Emails Endpoint
       operationId: createEmail
+      parameters:
+        - name: customDeepLinks
+          in: query
+          schema:
+            type: boolean
       requestBody:
         content:
           application/json:
@@ -1018,6 +1023,11 @@ paths:
       tags:
         - Tokens Endpoint
       operationId: createNewToken
+      parameters:
+        - name: customDeepLinks
+          in: query
+          schema:
+            type: boolean
       requestBody:
         content:
           application/json:
@@ -1044,6 +1054,11 @@ paths:
       tags:
         - Users Endpoint
       operationId: createUser
+      parameters:
+        - name: customDeepLinks
+          in: query
+          schema:
+            type: boolean
       requestBody:
         content:
           application/json:
