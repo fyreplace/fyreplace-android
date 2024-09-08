@@ -2,6 +2,8 @@
     <string name="empty" />
     <string name="loading">…</string>
     <string name="app_name" translatable="false">Fyreplace</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel" translatable="false">Cancel</string>
 
     <string name="keyboard_shortcuts_navigation">Navigation</string>
 

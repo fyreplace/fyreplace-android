@@ -111,12 +111,12 @@ private fun SelectorDialog(
                     onClose()
                 }
             ) {
-                Text(stringResource(android.R.string.ok))
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {
             TextButton(onClick = onClose) {
-                Text(stringResource(android.R.string.cancel))
+                Text(stringResource(R.string.cancel))
             }
         }
     )

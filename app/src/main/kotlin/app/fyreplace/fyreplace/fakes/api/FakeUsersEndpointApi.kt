@@ -17,9 +17,8 @@ import java.time.OffsetDateTime
 import java.util.UUID
 
 class FakeUsersEndpointApi : UsersEndpointApi {
-    override suspend fun countBlockedUsers(): Response<Long> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun countBlockedUsers(): Response<Long> =
+        throw NotImplementedError()
 
     override suspend fun createUser(userCreation: UserCreation) = when {
         userCreation.username == BAD_USERNAME -> badRequest()
@@ -42,45 +41,35 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         )
     }
 
-    override suspend fun deleteCurrentUser(): Response<Unit> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun deleteCurrentUser(): Response<Unit> =
+        throw NotImplementedError()
 
-    override suspend fun deleteCurrentUserAvatar(): Response<Unit> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun deleteCurrentUserAvatar(): Response<Unit> =
+        throw NotImplementedError()
 
-    override suspend fun getCurrentUser(): Response<User> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getCurrentUser(): Response<User> =
+        throw NotImplementedError()
 
-    override suspend fun getUser(id: UUID): Response<User> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getUser(id: UUID): Response<User> =
+        throw NotImplementedError()
 
-    override suspend fun listBlockedUsers(page: Int?): Response<List<Profile>> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun listBlockedUsers(page: Int?): Response<List<Profile>> =
+        throw NotImplementedError()
 
-    override suspend fun setCurrentUserAvatar(body: File): Response<String> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun setCurrentUserAvatar(body: File): Response<String> =
+        throw NotImplementedError()
 
-    override suspend fun setCurrentUserBio(body: String): Response<String> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun setCurrentUserBio(body: String): Response<String> =
+        throw NotImplementedError()
 
-    override suspend fun setUserBanned(id: UUID): Response<Unit> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun setUserBanned(id: UUID): Response<Unit> =
+        throw NotImplementedError()
 
-    override suspend fun setUserBlocked(id: UUID, blockUpdate: BlockUpdate): Response<Unit> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun setUserBlocked(id: UUID, blockUpdate: BlockUpdate): Response<Unit> =
+        throw NotImplementedError()
 
-    override suspend fun setUserReported(id: UUID, reportUpdate: ReportUpdate): Response<Unit> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun setUserReported(id: UUID, reportUpdate: ReportUpdate): Response<Unit> =
+        throw NotImplementedError()
 
     companion object {
         const val BAD_USERNAME = "bad-username"

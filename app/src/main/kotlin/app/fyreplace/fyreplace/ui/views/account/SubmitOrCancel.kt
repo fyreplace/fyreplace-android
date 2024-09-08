@@ -61,7 +61,7 @@ fun SubmitOrCancel(
                 enabled = !isLoading,
                 onClick = onCancel
             ) {
-                Text(stringResource(android.R.string.cancel))
+                Text(stringResource(R.string.cancel))
             }
         }
     }

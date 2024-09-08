@@ -144,7 +144,13 @@ fun SharedTransitionScope.RegisterScreen(
                 keyboardType = KeyboardType.Email,
                 imeAction = ImeAction.Done
             ),
-            keyboardActions = KeyboardActions(onDone = { keyboard?.hide() }),
+            keyboardActions = KeyboardActions(onDone = {
+                keyboard?.hide()
+
+                if (canSubmit) {
+                    viewModel.submit()
+                }
+            }),
             onValueChange = viewModel::updateEmail,
             modifier = textFieldModifier.focusRequester(emailFocus)
         )

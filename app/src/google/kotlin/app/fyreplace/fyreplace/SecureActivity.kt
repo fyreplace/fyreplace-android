@@ -30,7 +30,7 @@ abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderI
         AlertDialog.Builder(this)
             .setTitle(R.string.secure_warning_title)
             .setMessage(R.string.secure_warning_description)
-            .setPositiveButton(android.R.string.ok, null)
+            .setPositiveButton(R.string.ok, null)
             .show()
     }
 
