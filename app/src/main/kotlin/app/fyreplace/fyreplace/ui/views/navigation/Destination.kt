@@ -45,12 +45,16 @@ sealed interface Destination {
         val labelRes: Int
 
         companion object {
-            val all = Destination::class.nestedClasses
-                .filter { it.java.interfaces.contains(Singleton::class.java) }
-                .mapNotNull {
-                    (it.objectInstance ?: it.java.declaredConstructors.first()
-                        .newInstance()) as Singleton?
-                }
+            val all = listOf(
+                Feed,
+                Notifications,
+                Archive,
+                Drafts,
+                Published,
+                Settings,
+                Login(),
+                Register()
+            )
         }
 
         data class Group(
