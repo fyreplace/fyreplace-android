@@ -21,7 +21,7 @@ class MainViewModel @Inject constructor(
     private val failures: StateFlow<List<Event.Failure>> =
         state.getStateFlow(::failures.name, emptyList())
 
-    val snackbarEvents = eventBus.events.filterIsInstance<Event.Snackbar>()
+    val events = eventBus.events
 
     val isAuthenticated = storeResolver.secretsStore.data
         .map { !it.token.isEmpty }

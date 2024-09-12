@@ -48,6 +48,8 @@ abstract class AccountViewModelBase(
         .distinctUntilChanged()
         .asState(false)
 
+    private val lastDeepLinkRandomCode: StateFlow<String?> =
+        state.getStateFlow(::lastDeepLinkRandomCode.name, null)
     private val isRandomCodeValid = randomCode
         .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.random_code_min_length) }
 
@@ -55,12 +57,22 @@ abstract class AccountViewModelBase(
         state[::randomCode.name] = randomCode
     }
 
-    fun submit() {
-        if (isWaitingForRandomCode.value) {
-            createToken()
-        } else {
-            sendEmail()
+    fun trySubmitDeepLinkRandomCode(randomCode: String) {
+        if (randomCode == lastDeepLinkRandomCode.value || !isWaitingForRandomCode.value) {
+            return
         }
+
+        state[::lastDeepLinkRandomCode.name] = randomCode
+
+        if (randomCode.isNotEmpty()) {
+            updateRandomCode(randomCode)
+            submit()
+        }
+    }
+
+    fun submit() = when {
+        isWaitingForRandomCode.value -> createToken()
+        else -> sendEmail()
     }
 
     fun cancel() {

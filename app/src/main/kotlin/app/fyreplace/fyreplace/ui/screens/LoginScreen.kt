@@ -57,6 +57,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun SharedTransitionScope.LoginScreen(
     visibilityScope: AnimatedVisibilityScope,
+    deepLinkRandomCode: String? = null,
     viewModel: LoginViewModel = hiltViewModel(),
     environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
 ) {
@@ -159,6 +160,11 @@ fun SharedTransitionScope.LoginScreen(
                     visibilityScope
                 )
         )
+
+        LaunchedEffect(deepLinkRandomCode) {
+            delay(100.milliseconds)
+            deepLinkRandomCode?.let(viewModel::trySubmitDeepLinkRandomCode)
+        }
 
         LaunchedEffect(Unit) {
             delay(100.milliseconds)

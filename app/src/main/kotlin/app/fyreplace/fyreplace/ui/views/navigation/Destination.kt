@@ -47,7 +47,10 @@ sealed interface Destination {
         companion object {
             val all = Destination::class.nestedClasses
                 .filter { it.java.interfaces.contains(Singleton::class.java) }
-                .mapNotNull { it.objectInstance as Singleton? }
+                .mapNotNull {
+                    (it.objectInstance ?: it.java.declaredConstructors.first()
+                        .newInstance()) as Singleton?
+                }
         }
 
         data class Group(
@@ -119,21 +122,21 @@ sealed interface Destination {
     }
 
     @Serializable
-    data object Login : Singleton {
-        override val parent = Settings
+    data class Login(val deepLinkFragment: String? = null) : Singleton {
+        override val parent get() = Settings
         override val keepsChildren = false
-        override val activeIcon = Icons.Filled.AccountCircle
-        override val inactiveIcon = Icons.Outlined.AccountCircle
+        override val activeIcon get() = Icons.Filled.AccountCircle
+        override val inactiveIcon get() = Icons.Outlined.AccountCircle
         override val labelRes = R.string.main_destination_login
         override val requiresAuthentication = false
     }
 
     @Serializable
-    data object Register : Singleton {
-        override val parent = Settings
+    data class Register(val deepLinkFragment: String? = null) : Singleton {
+        override val parent get() = Settings
         override val keepsChildren = false
-        override val activeIcon = Icons.Filled.AddCircle
-        override val inactiveIcon = Icons.Outlined.AddCircleOutline
+        override val activeIcon get() = Icons.Filled.AddCircle
+        override val inactiveIcon get() = Icons.Outlined.AddCircleOutline
         override val labelRes = R.string.main_destination_register
         override val requiresAuthentication = false
     }
@@ -160,12 +163,12 @@ fun Text(destination: Destination.Singleton) {
 fun NavBackStackEntry.toSingletonDestination() =
     Destination.Singleton.all.first { destinationClass ->
         destination.hierarchy.any {
-            it.route == destinationClass::class.qualifiedName
+            it.route?.startsWith(destinationClass::class.qualifiedName ?: return@any false) == true
         }
     }
 
 fun NavController.navigatePoppingBackStack(destination: Destination) = navigate(destination) {
-    popUpTo(graph.startDestinationId) { saveState = true }
-    launchSingleTop = true
-    restoreState = true
+    if (destination is Destination.Singleton) {
+        popUpTo(graph.startDestinationId)
+    }
 }

@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.events
 
 import android.content.Context
+import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
@@ -25,4 +26,7 @@ sealed interface Event {
             val action: suspend Context.() -> Unit
         )
     }
+
+    @Immutable
+    data class DeepLink(val uri: Uri) : Event
 }

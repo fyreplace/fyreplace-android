@@ -52,11 +52,14 @@ import app.fyreplace.fyreplace.ui.views.account.RandomCodeInput
 import app.fyreplace.fyreplace.ui.views.account.SubmitOrCancel
 import app.fyreplace.fyreplace.viewmodels.screens.EnvironmentViewModel
 import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @ExperimentalSharedTransitionApi
 @Composable
 fun SharedTransitionScope.RegisterScreen(
     visibilityScope: AnimatedVisibilityScope,
+    deepLinkRandomCode: String? = null,
     viewModel: RegisterViewModel = hiltViewModel(),
     environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
 ) {
@@ -179,7 +182,14 @@ fun SharedTransitionScope.RegisterScreen(
                 )
         )
 
+        LaunchedEffect(deepLinkRandomCode) {
+            delay(100.milliseconds)
+            deepLinkRandomCode?.let(viewModel::trySubmitDeepLinkRandomCode)
+        }
+
         LaunchedEffect(Unit) {
+            delay(100.milliseconds)
+
             when {
                 username.isBlank() -> usernameFocus.requestFocus()
                 email.isBlank() -> emailFocus.requestFocus()
