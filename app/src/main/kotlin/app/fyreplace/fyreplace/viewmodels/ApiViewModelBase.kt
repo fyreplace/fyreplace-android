@@ -13,6 +13,7 @@ import com.squareup.moshi.JsonClass
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
 import org.openapitools.client.infrastructure.getErrorResponse
+import retrofit2.HttpException
 import retrofit2.Response
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -57,6 +58,10 @@ abstract class ApiViewModelBase(
 
         if (failureEvent != null) {
             eventBus.publish(failureEvent)
+
+            if (failureEvent.title == R.string.error_unknown_title) {
+                Sentry.captureException(HttpException(this))
+            }
         }
 
         return null
