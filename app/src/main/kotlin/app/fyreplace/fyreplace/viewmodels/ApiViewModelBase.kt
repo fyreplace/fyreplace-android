@@ -26,13 +26,16 @@ abstract class ApiViewModelBase(
         viewModelScope.launch {
             try {
                 block(api())
-            } catch (e: UnknownHostException) {
+            } catch (_: UnknownHostException) {
                 postConnectionFailure()
-            } catch (e: SocketTimeoutException) {
+            } catch (_: SocketTimeoutException) {
                 postConnectionFailure()
             } catch (e: Exception) {
                 eventBus.publish(Event.Failure())
-                Sentry.captureException(e)
+
+                if (e !is HttpException) {
+                    Sentry.captureException(e)
+                }
             }
         }
     }
@@ -59,7 +62,7 @@ abstract class ApiViewModelBase(
         if (failureEvent != null) {
             eventBus.publish(failureEvent)
 
-            if (failureEvent.title == R.string.error_unknown_title) {
+            if (code() < 500 && failureEvent.title == R.string.error_unknown_title) {
                 Sentry.captureException(HttpException(this))
             }
         }

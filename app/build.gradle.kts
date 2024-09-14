@@ -5,13 +5,6 @@ import org.eclipse.jgit.lib.RepositoryBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use(localProperties::load)
-}
-
 plugins {
     alias(libs.plugins.android)
     alias(libs.plugins.kotlin)
@@ -24,6 +17,17 @@ plugins {
     alias(libs.plugins.protobuf)
     alias(libs.plugins.ksp)
 }
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use(localProperties::load)
+}
+
+fun getValue(name: String): String? =
+    System.getenv(name.replace('.', '_').uppercase())
+        ?: localProperties.getProperty(name)
 
 enum class VersionSuffix(val value: Int) {
     DEV(0),
@@ -91,26 +95,22 @@ android {
             useSupportLibrary = true
         }
 
-        resValue("string", "sentry_dsn", System.getenv("SENTRY_DSN").orEmpty())
+        resValue("string", "sentry_dsn", getValue("sentry.dsn").orEmpty())
         resValue("string", "sentry_environment", getVersionNumberSuffix().name.lowercase())
         resValue("string", "sentry_release", "$applicationId@${getVersionString()}")
     }
 
     signingConfigs {
         create("release") {
-            val storeFilePath = System.getenv("KEYSTORE_PATH")
-                ?: localProperties.getProperty("keystore.path")
+            val storeFilePath = getValue("keystore.path")
 
             if (storeFilePath != null) {
                 storeFile = file(storeFilePath)
             }
 
-            storePassword = System.getenv("KEYSTORE_PASSWORD")
-                ?: localProperties.getProperty("keystore.password")
-            keyAlias = System.getenv("KEY_ALIAS")
-                ?: localProperties.getProperty("key.alias")
-            keyPassword = System.getenv("KEY_PASSWORD")
-                ?: localProperties.getProperty("key.password")
+            storePassword = getValue("keystore.password")
+            keyAlias = getValue("key.alias")
+            keyPassword = getValue("key.password")
         }
     }
 
@@ -194,15 +194,11 @@ composeCompiler {
 }
 
 sentry {
-    org = System.getenv("SENTRY_ORG")
-    projectName = System.getenv("SENTRY_PROJECT")
-    authToken = System.getenv("SENTRY_AUTH_TOKEN")
+    org = getValue("sentry.org")
+    projectName = getValue("sentry.project")
+    authToken = getValue("sentry.auth.token")
     includeSourceContext = true
     ignoredFlavors = setOf("libre")
-
-    if (localProperties.getProperty("sentry.disabled") == "true") {
-        ignoredBuildTypes = setOf("debug", "release")
-    }
 }
 
 openApiGenerate {

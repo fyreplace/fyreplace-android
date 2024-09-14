@@ -8,5 +8,4 @@
     <string name="deep_link_path_login" translatable="false">/login</string>
     <string name="deep_link_path_register" translatable="false">/register</string>
     <string name="deep_link_custom_scheme" translatable="false">fyreplace</string>
-    <bool name="allow_insecure_connections">false</bool>
 </resources>
