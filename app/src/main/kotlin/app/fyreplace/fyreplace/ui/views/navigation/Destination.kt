@@ -174,5 +174,6 @@ fun NavBackStackEntry.toSingletonDestination() =
 fun NavController.navigatePoppingBackStack(destination: Destination) = navigate(destination) {
     if (destination is Destination.Singleton) {
         popUpTo(graph.startDestinationId)
+        launchSingleTop = true
     }
 }
