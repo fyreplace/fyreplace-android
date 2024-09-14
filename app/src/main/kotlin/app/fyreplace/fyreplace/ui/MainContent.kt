@@ -63,6 +63,7 @@ fun MainContent() {
     val context = LocalContext.current
     val viewModel = hiltViewModel<MainViewModel>()
     val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
+    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
     val isRegistering by viewModel.isRegistering.collectAsStateWithLifecycle()
     val failure by viewModel.currentFailure.collectAsStateWithLifecycle()
 
@@ -158,6 +159,7 @@ fun MainContent() {
         TopBar(
             destinations = currentDestinationGroup?.choices ?: emptyList(),
             selectedDestination = currentDestination,
+            enabled = isWaitingForRandomCode,
             onClickDestination = {
                 navController.navigatePoppingBackStack(it)
 
@@ -180,6 +182,7 @@ fun MainContent() {
                 BottomNavigation(
                     destinations = destinationGroups.map(Destination.Singleton.Group::root),
                     selectedDestination = currentDestinationGroup?.root,
+                    isAuthenticated = isAuthenticated,
                     onClickDestination = ::onClickDestination
                 )
             }
@@ -195,6 +198,7 @@ fun MainContent() {
             SideNavigation(
                 destinations = destinationGroups.map(Destination.Singleton.Group::root),
                 selectedDestination = currentDestinationGroup?.root,
+                isAuthenticated = isAuthenticated,
                 windowPadding = it,
                 onClickDestination = ::onClickDestination,
                 modifier = keyboardHandler

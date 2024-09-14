@@ -27,6 +27,10 @@ class MainViewModel @Inject constructor(
         .map { !it.token.isEmpty }
         .asState(true)
 
+    val isWaitingForRandomCode = storeResolver.accountStore.data
+        .map { it.isWaitingForRandomCode }
+        .asState(false)
+
     val isRegistering = storeResolver.accountStore.data
         .map { it.isRegistering }
         .asState(false)

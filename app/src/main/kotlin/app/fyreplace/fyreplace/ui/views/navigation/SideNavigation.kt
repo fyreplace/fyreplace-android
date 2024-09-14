@@ -15,6 +15,7 @@ import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationRail
 fun SideNavigation(
     destinations: List<Destination.Singleton>,
     selectedDestination: Destination.Singleton?,
+    isAuthenticated: Boolean,
     windowPadding: PaddingValues,
     onClickDestination: (Destination.Singleton) -> Unit,
     modifier: Modifier = Modifier,
@@ -26,6 +27,7 @@ fun SideNavigation(
         SideNavigationDrawer(
             destinations = destinations,
             selectedDestination = selectedDestination,
+            isAuthenticated = isAuthenticated,
             windowPadding = windowPadding,
             onClickDestination = onClickDestination,
             content = content,
@@ -36,6 +38,7 @@ fun SideNavigation(
             SideNavigationRail(
                 destinations = destinations,
                 selectedDestination = selectedDestination,
+                isAuthenticated = isAuthenticated,
                 onClickDestination = onClickDestination,
                 modifier = modifier
             )

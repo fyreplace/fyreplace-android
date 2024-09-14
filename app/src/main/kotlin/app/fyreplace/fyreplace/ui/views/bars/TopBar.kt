@@ -13,22 +13,20 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.tooling.preview.Preview
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.Icon
-import app.fyreplace.fyreplace.viewmodels.bar.TopBarViewModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun TopBar(
     destinations: List<Destination.Singleton>,
     selectedDestination: Destination.Singleton?,
+    enabled: Boolean,
     onClickDestination: (Destination.Singleton) -> Unit
 ) = if (destinations.isNotEmpty()) {
     CenterAlignedTopAppBar(title = {
@@ -37,6 +35,7 @@ fun TopBar(
                 SegmentedChoice(
                     destinations = it,
                     selectedDestination = selectedDestination,
+                    enabled = enabled,
                     visibilityScope = this,
                     onClick = onClickDestination,
                 )
@@ -51,28 +50,37 @@ fun TopBar(
     })
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+fun TopBarPreview() {
+    TopBar(
+        destinations = listOf(Destination.Login(), Destination.Register()),
+        selectedDestination = Destination.Login(),
+        enabled = true,
+        onClickDestination = {}
+    )
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.SegmentedChoice(
     destinations: List<Destination.Singleton>,
     selectedDestination: Destination.Singleton?,
+    enabled: Boolean,
     visibilityScope: AnimatedVisibilityScope,
-    onClick: (Destination.Singleton) -> Unit,
-    viewModel: TopBarViewModel = hiltViewModel()
+    onClick: (Destination.Singleton) -> Unit
 ) = SingleChoiceSegmentedButtonRow(
     modifier = Modifier.sharedElement(
         rememberSharedContentState(key = "segments"),
         visibilityScope
     )
 ) {
-    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
-
     for ((i, destination) in destinations.withIndex()) {
         val selected = destination == selectedDestination
 
         SegmentedButton(
             selected = selected,
-            enabled = !isWaitingForRandomCode,
+            enabled = enabled,
             shape = SegmentedButtonDefaults.itemShape(index = i, count = destinations.size),
             colors = SegmentedButtonDefaults.patchedColors(),
             icon = {
@@ -92,7 +100,6 @@ fun SharedTransitionScope.SegmentedChoice(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SegmentedButtonDefaults.patchedColors() = colors().copy(
     disabledInactiveContentColor = colors().disabledActiveContentColor,
