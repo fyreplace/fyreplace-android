@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import org.openapitools.client.infrastructure.ApiClient
 import java.util.UUID
 import javax.inject.Inject
@@ -45,27 +44,30 @@ class RemoteApiResolver @Inject constructor(
             }
         }
         .map(context::getString)
-        .map { ApiClient(it, OkHttpClient().newBuilder().addInterceptor(RequestIdInterceptor())) }
-        .combine(resolver.secretsStore.data) { apiClient, secrets ->
-            apiClient.apply {
-                if (!secrets.token.isEmpty) {
-                    setBearerToken(secretsHandler.decrypt(secrets.token))
+        .combine(resolver.secretsStore.data) { url, secrets ->
+            ApiClient(
+                baseUrl = url,
+                okHttpClientBuilder = OkHttpClient()
+                    .newBuilder()
+                    .addInterceptor(RequestIdInterceptor()),
+                authName = "SecurityScheme",
+                bearerToken = when {
+                    secrets.token.isEmpty -> ""
+                    else -> secretsHandler.decrypt(secrets.token)
                 }
-            }
+            )
         }
         .map { it.createService(clazz) }
         .first()
 }
 
 class RequestIdInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request()
-        return chain.proceed(
-            request
-                .newBuilder()
+    override fun intercept(chain: Interceptor.Chain) = with(chain.request()) {
+        chain.proceed(
+            newBuilder()
                 .header(
                     HEADER_NAME,
-                    request.header(HEADER_NAME) ?: UUID.randomUUID().toString()
+                    header(HEADER_NAME) ?: UUID.randomUUID().toString()
                 )
                 .build()
         )
