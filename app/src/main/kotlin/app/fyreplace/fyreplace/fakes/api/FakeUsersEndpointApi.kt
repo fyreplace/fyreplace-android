@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.fakes.api
 
 import app.fyreplace.api.UsersEndpointApi
 import app.fyreplace.api.data.BlockUpdate
+import app.fyreplace.api.data.Color
 import app.fyreplace.api.data.Profile
 import app.fyreplace.api.data.Rank
 import app.fyreplace.api.data.ReportUpdate
@@ -39,7 +40,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
                 bio = "",
                 banned = false,
                 blocked = false,
-                tint = "#7F7F7F"
+                tint = Color(0x7F, 0x7F, 0x7F),
             )
         )
     }

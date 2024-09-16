@@ -2,7 +2,7 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.6.0
+  version: v0.7.0
 paths:
   /emails:
     get:
@@ -994,6 +994,7 @@ paths:
           content:
             text/plain:
               schema:
+                format: password
                 type: string
         "400":
           description: Bad Request
@@ -1012,6 +1013,7 @@ paths:
           content:
             text/plain:
               schema:
+                format: password
                 type: string
         "401":
           description: Not Authorized
@@ -1403,6 +1405,28 @@ components:
           format: int32
           minimum: 0
           type: integer
+    Color:
+      required:
+        - r
+        - g
+        - b
+      type: object
+      properties:
+        r:
+          format: uint8
+          maximum: 255
+          minimum: 0
+          type: integer
+        g:
+          format: uint8
+          maximum: 255
+          minimum: 0
+          type: integer
+        b:
+          format: uint8
+          maximum: 255
+          minimum: 0
+          type: integer
     Comment:
       required:
         - id
@@ -1559,7 +1583,7 @@ components:
         avatar:
           type: string
         tint:
-          type: string
+          $ref: "#/components/schemas/Color"
     Rank:
       enum:
         - CITIZEN
@@ -1625,6 +1649,7 @@ components:
           pattern: \S
           type: string
         secret:
+          format: password
           pattern: \S
           type: string
     UUID:
@@ -1664,8 +1689,7 @@ components:
         blocked:
           type: boolean
         tint:
-          pattern: "^#[A-F0-9]{6}$"
-          type: string
+          $ref: "#/components/schemas/Color"
     UserCreation:
       required:
         - email
