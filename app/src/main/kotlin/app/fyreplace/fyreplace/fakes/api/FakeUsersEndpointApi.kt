@@ -2,9 +2,7 @@ package app.fyreplace.fyreplace.fakes.api
 
 import app.fyreplace.api.UsersEndpointApi
 import app.fyreplace.api.data.BlockUpdate
-import app.fyreplace.api.data.Color
 import app.fyreplace.api.data.Profile
-import app.fyreplace.api.data.Rank
 import app.fyreplace.api.data.ReportUpdate
 import app.fyreplace.api.data.User
 import app.fyreplace.api.data.UserCreation
@@ -12,9 +10,9 @@ import app.fyreplace.fyreplace.fakes.badRequest
 import app.fyreplace.fyreplace.fakes.conflict
 import app.fyreplace.fyreplace.fakes.created
 import app.fyreplace.fyreplace.fakes.forbidden
+import app.fyreplace.fyreplace.fakes.placeholder
 import retrofit2.Response
 import java.io.File
-import java.time.OffsetDateTime
 import java.util.UUID
 
 class FakeUsersEndpointApi : UsersEndpointApi {
@@ -30,19 +28,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         userCreation.username == USED_USERNAME -> conflict()
         userCreation.email == BAD_EMAIL -> badRequest()
         userCreation.email == USED_EMAIL -> conflict()
-        else -> created(
-            User(
-                id = UUID.randomUUID(),
-                dateCreated = OffsetDateTime.now(),
-                username = userCreation.username,
-                rank = Rank.CITIZEN,
-                avatar = "",
-                bio = "",
-                banned = false,
-                blocked = false,
-                tint = Color(0x7F, 0x7F, 0x7F),
-            )
-        )
+        else -> created(User.placeholder)
     }
 
     override suspend fun deleteCurrentUser(): Response<Unit> =

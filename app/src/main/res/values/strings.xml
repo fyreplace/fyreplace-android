@@ -16,6 +16,7 @@
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
 
+    <string name="settings_date_joined">Joined: %1$s</string>
     <string name="settings_logout">Logout</string>
 
     <string name="account_environment_main">Production server</string>
