@@ -159,7 +159,7 @@ fun MainContent() {
         TopBar(
             destinations = currentDestinationGroup?.choices ?: emptyList(),
             selectedDestination = currentDestination,
-            enabled = isWaitingForRandomCode,
+            enabled = !isWaitingForRandomCode,
             onClickDestination = {
                 navController.navigatePoppingBackStack(it)
 
@@ -211,11 +211,7 @@ fun MainContent() {
         }
     }
 
-    val smartCastableFailure = failure
-
-    if (smartCastableFailure != null) {
-        FailureDialog(failure = smartCastableFailure, dismiss = viewModel::dismissError)
-    }
+    failure?.let { FailureDialog(failure = it, dismiss = viewModel::dismissError) }
 
     LaunchedEffect(isAuthenticated) {
         val accountEntryDestinations = setOf(Destination.Login(), Destination.Register())
