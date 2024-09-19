@@ -10,6 +10,7 @@ import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.fakes.api.FakeTokensEndpointApi
+import app.fyreplace.fyreplace.fakes.api.FakeUsersEndpointApi
 import app.fyreplace.fyreplace.test.TestsBase
 import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -56,12 +57,14 @@ class LoginViewModelTests : TestsBase() {
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
 
-        viewModel.updateIdentifier(FakeTokensEndpointApi.BAD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeUsersEndpointApi.BAD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertFalse(viewModel.isWaitingForRandomCode.value)
     }
 
     @Test
@@ -70,12 +73,30 @@ class LoginViewModelTests : TestsBase() {
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
 
-        viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(viewModel.isWaitingForRandomCode.value)
+    }
+
+    @Test
+    fun `Password identifier produces a failure`() = runTest {
+        val eventBus = FakeEventBus()
+        val viewModel = makeViewModel(eventBus, 3, 50, 8)
+        backgroundScope.launch { eventBus.events.collect() }
+        backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
+
+        viewModel.updateIdentifier(FakeTokensEndpointApi.PASSWORD_IDENTIFIER)
+        runCurrent()
+        viewModel.submit()
+        runCurrent()
+        assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(viewModel.isWaitingForRandomCode.value)
     }
 
     @Test
@@ -84,7 +105,7 @@ class LoginViewModelTests : TestsBase() {
         val viewModel = makeViewModel(FakeEventBus(), 3, 50, minLength)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
-        viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
@@ -107,7 +128,7 @@ class LoginViewModelTests : TestsBase() {
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
-        viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
@@ -125,7 +146,7 @@ class LoginViewModelTests : TestsBase() {
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
-        viewModel.updateIdentifier(FakeTokensEndpointApi.GOOD_IDENTIFIER)
+        viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()

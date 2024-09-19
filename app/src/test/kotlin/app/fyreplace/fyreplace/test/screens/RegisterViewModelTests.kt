@@ -99,6 +99,7 @@ class RegisterViewModelTests : TestsBase() {
         )
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
 
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
 
@@ -108,6 +109,7 @@ class RegisterViewModelTests : TestsBase() {
             viewModel.submit()
             runCurrent()
             assertEquals(i + 1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+            assertFalse(viewModel.isWaitingForRandomCode.value)
         }
     }
 
@@ -121,6 +123,7 @@ class RegisterViewModelTests : TestsBase() {
         )
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
 
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
 
@@ -130,6 +133,7 @@ class RegisterViewModelTests : TestsBase() {
             viewModel.submit()
             runCurrent()
             assertEquals(i + 1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+            assertFalse(viewModel.isWaitingForRandomCode.value)
         }
     }
 
@@ -139,6 +143,7 @@ class RegisterViewModelTests : TestsBase() {
         val (_, _, viewModel) = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
         backgroundScope.launch { viewModel.canSubmit.collect() }
+        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
 
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
@@ -146,6 +151,7 @@ class RegisterViewModelTests : TestsBase() {
         viewModel.submit()
         runCurrent()
         assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(viewModel.isWaitingForRandomCode.value)
     }
 
     @Test

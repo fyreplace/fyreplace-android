@@ -26,6 +26,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         userCreation.username == BAD_USERNAME -> badRequest()
         userCreation.username == RESERVED_USERNAME -> forbidden()
         userCreation.username == USED_USERNAME -> conflict()
+        userCreation.username == PASSWORD_USERNAME -> conflict()
         userCreation.email == BAD_EMAIL -> badRequest()
         userCreation.email == USED_EMAIL -> conflict()
         else -> created(User.placeholder)
@@ -65,6 +66,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         const val BAD_USERNAME = "bad-username"
         const val RESERVED_USERNAME = "reserved-username"
         const val USED_USERNAME = "used-username"
+        const val PASSWORD_USERNAME = "password-username"
         const val GOOD_USERNAME = "good-username"
         const val BAD_EMAIL = "bad-email"
         const val USED_EMAIL = "used-email"

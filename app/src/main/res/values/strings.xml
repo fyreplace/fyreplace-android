@@ -36,6 +36,8 @@
     <string name="login_identifier">Identifier</string>
     <string name="login_identifier_placeholder">Username or email</string>
     <string name="login_submit">@string/main_destination_login</string>
+    <string name="login_error_403_title">Use a password</string>
+    <string name="login_error_403_message">This account does not use an email for logging in. Please use your password instead.</string>
     <string name="login_error_404_title">User not found</string>
     <string name="login_error_404_message">No user account was found with this username or email.</string>
 

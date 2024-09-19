@@ -98,14 +98,16 @@ abstract class AccountViewModelBase(
             }
         }
 
-    protected fun onEmailSent(isRegistering: Boolean) {
+    protected fun onEmailSent(isRegistering: Boolean, showEmailTip: Boolean = true) {
         viewModelScope.launch {
             storeResolver.accountStore.update {
                 setIsWaitingForRandomCode(true)
                 setIsRegistering(isRegistering)
             }
 
-            showEmailSentTip()
+            if (showEmailTip) {
+                showEmailSentTip()
+            }
         }
     }
 
