@@ -265,7 +265,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
     implementation(libs.hilt)
-    implementation(libs.kotlin.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.moshi)
     implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)

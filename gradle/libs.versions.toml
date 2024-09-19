@@ -1,29 +1,29 @@
 [versions]
-androidPlugin = "8.6.0"
+androidPlugin = "8.6.1"
 kotlinPlugin = "2.0.20"
 sentryPlugin = "4.11.0"
-eclipseJgit = "6.10.0.202406032230-r"
+eclipseJgit = "7.0.0.202409031743-r"
 openapiPlugin = "7.8.0"
 protobufPlugin = "0.9.4"
 kspPlugin = "2.0.20-1.0.25"
 desugar = "2.1.2"
-androidxComposeBom = "2024.09.01"
+androidxComposeBom = "2024.09.02"
 androidxActivity = "1.9.2"
-androidxComposeAnimation = "1.7.1"
+androidxComposeAnimation = "1.7.2"
 androidxComposeMaterialAdaptive = "1.0.0"
 androidxCore = "1.13.1"
 androidxDatastore = "1.1.1"
 androidxEspressoCore = "3.6.1"
 androidxHilt = "1.2.0"
-androidxLifecycle = "2.8.5"
-androidxNavigation = "2.8.0"
+androidxLifecycle = "2.8.6"
+androidxNavigation = "2.8.1"
 androidxJunit = "1.2.1"
 androidxWork = "2.9.1"
 coilCompose = "2.7.0"
 conscrypt = "2.5.3"
 hilt = "2.52"
 junit = "4.13.2"
-kotlinCouroutines = "1.9.0"
+kotlinxCouroutines = "1.9.0"
 kotlinxSerialization = "1.7.2"
 moshi = "1.15.1"
 okhttp = "4.12.0"
@@ -63,8 +63,8 @@ hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
-kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCouroutines" }
-kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCouroutines" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", version.ref = "moshi" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
