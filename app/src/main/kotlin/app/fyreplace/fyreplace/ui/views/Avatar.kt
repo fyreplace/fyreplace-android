@@ -38,9 +38,10 @@ fun Avatar(
             !tinted || hasAvatar || user == null -> null
             else -> ColorFilter.tint(user.tint.composeColor)
         },
-        modifier = modifier
+        modifier = Modifier
             .size(size)
             .scale(if (hasAvatar) 1f else 1.2f)
             .clip(CircleShape)
+            .then(modifier)
     )
 }

@@ -18,7 +18,7 @@ fun Logo(modifier: Modifier = Modifier) {
         imageVector = ImageVector.vectorResource(R.drawable.logo),
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         contentDescription = null,
-        modifier = modifier.size(dimensionResource(R.dimen.logo_size))
+        modifier = Modifier.size(dimensionResource(R.dimen.logo_size)).then(modifier)
     )
 }
 

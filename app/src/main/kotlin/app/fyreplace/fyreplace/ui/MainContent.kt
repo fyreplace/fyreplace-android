@@ -121,9 +121,10 @@ fun MainContent() {
         NavHost(
             navController = navController,
             startDestination = Destination.Feed,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .then(modifier)
         ) {
             composable<Destination.Feed> { FeedScreen() }
             composable<Destination.Notifications> { NotificationsScreen() }
