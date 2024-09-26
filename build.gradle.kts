@@ -10,9 +10,3 @@ plugins {
     alias(libs.plugins.protobuf) apply false
     alias(libs.plugins.ksp) apply false
 }
-
-buildscript {
-    dependencies {
-        classpath(libs.eclipse.jgit)
-    }
-}

@@ -1,8 +1,5 @@
-import com.google.common.collect.Iterables
-import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.lib.Repository
-import org.eclipse.jgit.lib.RepositoryBuilder
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.io.ByteArrayOutputStream
 import java.util.Properties
 
 plugins {
@@ -36,17 +33,20 @@ enum class VersionSuffix(val value: Int) {
     MAIN(3)
 }
 
-fun <R> useGitRepository(block: (Repository, Git) -> R) = RepositoryBuilder()
-    .readEnvironment()
-    .setWorkTree(File("."))
-    .findGitDir()
-    .build()
-    .use { repository -> Git(repository).use { git -> block(repository, git) } }
 
-fun getVersionNumberSuffix() = useGitRepository { repository, git ->
-    val ref = git.describe().setTags(true).call()
-    val branch = repository.branch
-    return@useGitRepository when {
+fun git(vararg args: String): String {
+    val outputStream = ByteArrayOutputStream()
+    exec {
+        commandLine("git", *args)
+        standardOutput = outputStream
+    }
+    return outputStream.toString().trim()
+}
+
+fun getVersionNumberSuffix(): VersionSuffix {
+    val ref = git("describe", "--tags", "--always")
+    val branch = git("branch")
+    return when {
         ref.matches(Regex("v?\\d+\\.\\d+\\.\\d+")) -> VersionSuffix.MAIN
         branch.startsWith("hotfix") -> VersionSuffix.HOTFIX
         branch.startsWith("release") -> VersionSuffix.RELEASE
@@ -54,30 +54,29 @@ fun getVersionNumberSuffix() = useGitRepository { repository, git ->
     }
 }
 
-fun getVersionNumber() = useGitRepository { _, git ->
-    (Iterables.size(git.log().call()).toString() + getVersionNumberSuffix().value).toInt()
+fun getVersionNumber(): Int {
+    return (git("rev-list", "--count", "HEAD") + getVersionNumberSuffix().value).toInt()
 }
 
-fun getVersionString(variant: String? = null) =
-    useGitRepository { _, git ->
-        val parts = git.describe().setTags(true).call().trim().split('-')
-        val build = if (parts.size > 1) getVersionNumber().toString() else ""
-        val result = StringBuilder()
-        result.append(parts.first(), '+')
+fun getVersionString(variant: String? = null): String {
+    val parts = git("describe", "--tags", "--always").split('-')
+    val build = if (parts.size > 1) getVersionNumber().toString() else ""
+    val result = StringBuilder()
+    result.append(parts.first(), '+')
 
-        if (build.isNotEmpty()) {
-            result.append(build, '.')
-        }
-
-        if (variant != null) {
-            result.append(variant)
-        }
-
-        return@useGitRepository result.toString()
-            .removePrefix("v")
-            .removeSuffix("+")
-            .removeSuffix(".")
+    if (build.isNotEmpty()) {
+        result.append(build, '.')
     }
+
+    if (variant != null) {
+        result.append(variant)
+    }
+
+    return result.toString()
+        .removePrefix("v")
+        .removeSuffix("+")
+        .removeSuffix(".")
+}
 
 android {
     namespace = "app.fyreplace.fyreplace"

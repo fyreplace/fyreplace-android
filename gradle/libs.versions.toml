@@ -2,7 +2,6 @@
 androidPlugin = "8.6.1"
 kotlinPlugin = "2.0.20"
 sentryPlugin = "4.11.0"
-eclipseJgit = "7.0.0.202409031743-r"
 openapiPlugin = "7.8.0"
 protobufPlugin = "0.9.4"
 kspPlugin = "2.0.20-1.0.25"
@@ -32,7 +31,6 @@ protobuf = "4.28.1"
 retrofit = "2.11.0"
 
 [libraries]
-eclipse-jgit = { group = "org.eclipse.jgit", name = "org.eclipse.jgit", version.ref = "eclipseJgit" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
