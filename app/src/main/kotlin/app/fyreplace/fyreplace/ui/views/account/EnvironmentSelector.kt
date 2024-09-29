@@ -44,7 +44,7 @@ fun EnvironmentSelector(
         enabled = enabled,
         modifier = modifier
     ) {
-        Icon(Icons.TwoTone.Cloud, contentDescription = null)
+        Icon(Icons.TwoTone.Cloud, null)
         Text(
             name(environment),
             modifier = Modifier.padding(start = dimensionResource(R.dimen.spacing_small))

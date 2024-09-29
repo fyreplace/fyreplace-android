@@ -80,12 +80,10 @@ fun SharedTransitionScope.LoginScreen(
             .imePadding()
     ) {
         Logo(
-            modifier = Modifier
-                .padding(vertical = dimensionResource(R.dimen.spacing_large))
-                .sharedElement(
-                    rememberSharedContentState(key = "image"),
-                    visibilityScope
-                )
+            modifier = Modifier.sharedElement(
+                rememberSharedContentState(key = "image"),
+                visibilityScope
+            )
         )
 
         Box(

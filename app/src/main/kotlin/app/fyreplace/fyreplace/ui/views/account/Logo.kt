@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.ui.views.account
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ fun Logo(modifier: Modifier = Modifier) {
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         contentDescription = null,
         modifier = Modifier
+            .padding(vertical = dimensionResource(R.dimen.spacing_large))
             .size(dimensionResource(R.dimen.logo_size))
             .then(modifier)
     )
