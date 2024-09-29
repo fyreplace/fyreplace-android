@@ -10,7 +10,7 @@ import app.fyreplace.fyreplace.fakes.badRequest
 import app.fyreplace.fyreplace.fakes.conflict
 import app.fyreplace.fyreplace.fakes.created
 import app.fyreplace.fyreplace.fakes.forbidden
-import app.fyreplace.fyreplace.fakes.placeholder
+import app.fyreplace.fyreplace.fakes.make
 import retrofit2.Response
 import java.io.File
 import java.util.UUID
@@ -29,7 +29,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         userCreation.username == PASSWORD_USERNAME -> conflict()
         userCreation.email == BAD_EMAIL -> badRequest()
         userCreation.email == USED_EMAIL -> conflict()
-        else -> created(User.placeholder)
+        else -> created(User.make(userCreation.username))
     }
 
     override suspend fun deleteCurrentUser(): Response<Unit> =
