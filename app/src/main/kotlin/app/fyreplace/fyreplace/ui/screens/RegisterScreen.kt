@@ -61,7 +61,7 @@ fun SharedTransitionScope.RegisterScreen(
     visibilityScope: AnimatedVisibilityScope,
     deepLinkRandomCode: String? = null,
     viewModel: RegisterViewModel = hiltViewModel(),
-    environmentViewModel: EnvironmentViewModel = hiltViewModel(activity)
+    environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
 ) {
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val username by viewModel.username.collectAsStateWithLifecycle()

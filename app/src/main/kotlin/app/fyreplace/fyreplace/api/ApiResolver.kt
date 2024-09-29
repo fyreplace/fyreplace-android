@@ -14,7 +14,17 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import org.openapitools.client.auth.HttpBearerAuth
 import org.openapitools.client.infrastructure.ApiClient
+import org.openapitools.client.infrastructure.Serializer
+import retrofit2.Converter
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.io.File
+import java.lang.reflect.Type
 import java.util.UUID
 import javax.inject.Inject
 
@@ -45,23 +55,32 @@ class RemoteApiResolver @Inject constructor(
         }
         .map(context::getString)
         .combine(resolver.secretsStore.data) { url, secrets ->
+            val moshiBuilder = Serializer.moshiBuilder
             ApiClient(
                 baseUrl = url,
                 okHttpClientBuilder = OkHttpClient()
                     .newBuilder()
                     .addInterceptor(RequestIdInterceptor()),
-                authName = "SecurityScheme",
-                bearerToken = when {
-                    secrets.token.isEmpty -> ""
-                    else -> secretsHandler.decrypt(secrets.token)
-                }
+                serializerBuilder = moshiBuilder,
+                converterFactories = listOf(
+                    ScalarsConverterFactory.create(),
+                    FileConverterFactory.create(),
+                    MoshiConverterFactory.create(moshiBuilder.build())
+                )
             )
+                .addAuthorization("SecurityScheme", HttpBearerAuth("bearer"))
+                .setBearerToken(
+                    when {
+                        secrets.token.isEmpty -> ""
+                        else -> secretsHandler.decrypt(secrets.token)
+                    }
+                )
         }
         .map { it.createService(clazz) }
         .first()
 }
 
-class RequestIdInterceptor : Interceptor {
+private class RequestIdInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain) = with(chain.request()) {
         chain.proceed(
             newBuilder()
@@ -75,5 +94,21 @@ class RequestIdInterceptor : Interceptor {
 
     private companion object {
         const val HEADER_NAME = "X-Request-Id"
+    }
+}
+
+private class FileConverterFactory : Converter.Factory() {
+    override fun requestBodyConverter(
+        type: Type,
+        parameterAnnotations: Array<out Annotation>,
+        methodAnnotations: Array<out Annotation>,
+        retrofit: Retrofit
+    ) = when (type) {
+        File::class.java -> Converter<File, RequestBody> { it.asRequestBody(null) }
+        else -> null
+    }
+
+    companion object {
+        fun create() = FileConverterFactory()
     }
 }

@@ -59,7 +59,7 @@ fun SharedTransitionScope.LoginScreen(
     visibilityScope: AnimatedVisibilityScope,
     deepLinkRandomCode: String? = null,
     viewModel: LoginViewModel = hiltViewModel(),
-    environmentViewModel: EnvironmentViewModel = hiltViewModel(activity)
+    environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
 ) {
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val identifier by viewModel.identifier.collectAsStateWithLifecycle()

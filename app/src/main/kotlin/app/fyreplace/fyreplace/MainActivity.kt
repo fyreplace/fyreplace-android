@@ -17,21 +17,16 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import app.fyreplace.fyreplace.api.TokenRefreshWorker
 import app.fyreplace.fyreplace.events.Event
-import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.input.keyboardShortcuts
 import app.fyreplace.fyreplace.ui.MainContent
 import app.fyreplace.fyreplace.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
 import kotlin.time.toJavaDuration
 
 @AndroidEntryPoint
-class MainActivity : SecureActivity() {
-    @Inject
-    lateinit var eventBus: EventBus
-
+class MainActivity : ImageSelectorActivity() {
     private var lastUriHandled: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

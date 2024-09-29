@@ -18,6 +18,10 @@
 
     <string name="settings_date_joined">Joined: %1$s</string>
     <string name="settings_logout">Logout</string>
+    <string name="settings_error_413_title">File too large</string>
+    <string name="settings_error_413_message">This file is too heavy; please select a file under 1M.</string>
+    <string name="settings_error_415_title">Unsupported file format</string>
+    <string name="settings_error_415_message">This file you have selected is not supported.</string>
 
     <string name="account_environment_main">Production server</string>
     <string name="account_environment_dev">Testing server</string>

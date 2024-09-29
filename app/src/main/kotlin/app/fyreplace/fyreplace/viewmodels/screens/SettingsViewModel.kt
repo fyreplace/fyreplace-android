@@ -3,8 +3,10 @@ package app.fyreplace.fyreplace.viewmodels.screens
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.api.data.User
+import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
 import app.fyreplace.fyreplace.protos.Connection
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +26,7 @@ class SettingsViewModel @Inject constructor(
     private val state: SavedStateHandle,
     eventBus: EventBus,
     storeResolver: StoreResolver,
-    apiResolver: ApiResolver
+    private val apiResolver: ApiResolver,
 ) : ApiViewModelBase(eventBus, storeResolver) {
     val currentUser: StateFlow<User?> =
         state.getStateFlow(::currentUser.name, null)
@@ -39,6 +42,28 @@ class SettingsViewModel @Inject constructor(
                         state[::currentUser.name] = getCurrentUser().require()
                     }
                 }
+        }
+    }
+
+    fun updateAvatar(file: File) {
+        call(apiResolver::users) {
+            val avatar = setCurrentUserAvatar(file).failWith {
+                when (it.code) {
+                    413 -> Event.Failure(
+                        R.string.settings_error_413_title,
+                        R.string.settings_error_413_message
+                    )
+
+                    415 -> Event.Failure(
+                        R.string.settings_error_415_title,
+                        R.string.settings_error_415_message
+                    )
+
+                    else -> Event.Failure()
+                }
+            } ?: return@call
+
+            state[::currentUser.name] = currentUser.value?.copy(avatar = avatar)
         }
     }
 

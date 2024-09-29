@@ -19,4 +19,4 @@ val Context.activity
 val activity
     @Composable
     @ReadOnlyComposable
-    get() = LocalContext.current.activity as MainActivity
+    get() = LocalContext.current.activity as? MainActivity

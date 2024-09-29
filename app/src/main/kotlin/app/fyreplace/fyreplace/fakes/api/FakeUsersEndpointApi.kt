@@ -11,6 +11,10 @@ import app.fyreplace.fyreplace.fakes.conflict
 import app.fyreplace.fyreplace.fakes.created
 import app.fyreplace.fyreplace.fakes.forbidden
 import app.fyreplace.fyreplace.fakes.make
+import app.fyreplace.fyreplace.fakes.ok
+import app.fyreplace.fyreplace.fakes.payloadTooLarge
+import app.fyreplace.fyreplace.fakes.placeholder
+import app.fyreplace.fyreplace.fakes.unsupportedMediaType
 import retrofit2.Response
 import java.io.File
 import java.util.UUID
@@ -38,8 +42,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
     override suspend fun deleteCurrentUserAvatar(): Response<Unit> =
         throw NotImplementedError()
 
-    override suspend fun getCurrentUser(): Response<User> =
-        throw NotImplementedError()
+    override suspend fun getCurrentUser() = ok(User.placeholder)
 
     override suspend fun getUser(id: UUID): Response<User> =
         throw NotImplementedError()
@@ -47,8 +50,11 @@ class FakeUsersEndpointApi : UsersEndpointApi {
     override suspend fun listBlockedUsers(page: Int?): Response<List<Profile>> =
         throw NotImplementedError()
 
-    override suspend fun setCurrentUserAvatar(body: File): Response<String> =
-        throw NotImplementedError()
+    override suspend fun setCurrentUserAvatar(body: File) = when (body.path) {
+        NORMAL_IMAGE_FILE.path -> created(NORMAL_IMAGE_FILE.path)
+        LARGE_IMAGE_FILE.path -> payloadTooLarge()
+        else -> unsupportedMediaType()
+    }
 
     override suspend fun setCurrentUserBio(body: String): Response<String> =
         throw NotImplementedError()
@@ -68,8 +74,13 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         const val USED_USERNAME = "used-username"
         const val PASSWORD_USERNAME = "password-username"
         const val GOOD_USERNAME = "good-username"
+
         const val BAD_EMAIL = "bad-email"
         const val USED_EMAIL = "used-email"
         const val GOOD_EMAIL = "good-email"
+
+        val NOT_IMAGE_FILE = File("text.txt")
+        val LARGE_IMAGE_FILE = File("large.png")
+        val NORMAL_IMAGE_FILE = File("normal.png")
     }
 }
