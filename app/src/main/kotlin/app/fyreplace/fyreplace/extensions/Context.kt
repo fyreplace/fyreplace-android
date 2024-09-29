@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalContext
+import app.fyreplace.fyreplace.MainActivity
 
 @Suppress("RecursivePropertyAccessor")
 val Context.activity
@@ -18,4 +19,4 @@ val Context.activity
 val activity
     @Composable
     @ReadOnlyComposable
-    get() = LocalContext.current.activity
+    get() = LocalContext.current.activity as MainActivity
