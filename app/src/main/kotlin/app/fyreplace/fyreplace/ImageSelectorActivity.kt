@@ -4,6 +4,12 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draganddrop.DragAndDropEvent
+import androidx.compose.ui.draganddrop.DragAndDropTarget
+import androidx.compose.ui.draganddrop.toAndroidDragEvent
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.events.EventBus
 import kotlinx.coroutines.Dispatchers
@@ -34,13 +40,50 @@ abstract class ImageSelectorActivity : SecureActivity() {
     }
 
 
-    private suspend fun makeFileFromUri(uri: Uri) = withContext(Dispatchers.IO) {
-        val file = File.createTempFile("image", ".tmp")
+    suspend fun makeFileFromUri(uri: Uri): File = withContext(Dispatchers.IO) {
+        val file = File.createTempFile("image", null)
+        file.deleteOnExit()
 
         contentResolver.openInputStream(uri)?.use { stream ->
             file.outputStream().use(stream::copyTo)
         }
 
         return@withContext file
+    }
+
+    fun makeFileDropTarget(onFile: suspend (File) -> Unit) = FileDropTarget(onFile)
+
+    inner class FileDropTarget(private val onFile: suspend (File) -> Unit) : DragAndDropTarget {
+        var isReady by mutableStateOf(false)
+            private set
+
+        override fun onDrop(event: DragAndDropEvent): Boolean {
+            val dragEvent = event.toAndroidDragEvent()
+            val uri = dragEvent.clipData?.getItemAt(0)?.uri ?: return false
+
+            lifecycleScope.launch {
+                val permissions = requestDragAndDropPermissions(dragEvent)
+
+                try {
+                    onFile(makeFileFromUri(uri))
+                } finally {
+                    permissions.release()
+                }
+            }
+
+            return true
+        }
+
+        override fun onEnded(event: DragAndDropEvent) {
+            isReady = false
+        }
+
+        override fun onEntered(event: DragAndDropEvent) {
+            isReady = true
+        }
+
+        override fun onExited(event: DragAndDropEvent) {
+            isReady = false
+        }
     }
 }

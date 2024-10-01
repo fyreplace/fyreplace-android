@@ -4,8 +4,10 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
@@ -19,7 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Edit
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -72,6 +75,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun UserInfo(user: User?, onAvatarFile: (File) -> Unit) {
     val activity = activity
@@ -80,7 +84,12 @@ private fun UserInfo(user: User?, onAvatarFile: (File) -> Unit) {
     val avatarSize = 128.dp
     val avatarInteraction = remember { MutableInteractionSource() }
     val isAvatarHovered by avatarInteraction.collectIsHoveredAsState()
-    val avatarBlur by animateDpAsState(if (isAvatarHovered) 1.dp else 0.dp, label = "Avatar blur")
+    val avatarDropTarget = remember { requireNotNull(activity).makeFileDropTarget(onAvatarFile) }
+    val isAvatarUpdatable = isAvatarHovered || avatarDropTarget.isReady
+    val avatarBlur by animateDpAsState(
+        targetValue = if (isAvatarUpdatable) 1.dp else 0.dp,
+        label = "Avatar blur"
+    )
 
     Box(contentAlignment = Alignment.Center) {
         Avatar(
@@ -91,15 +100,23 @@ private fun UserInfo(user: User?, onAvatarFile: (File) -> Unit) {
                 .blur(avatarBlur)
                 .hoverable(avatarInteraction)
                 .clickable { activity?.selectImage(onAvatarFile) }
+                .dragAndDropTarget(
+                    shouldStartDragAndDrop = { dropEvent ->
+                        dropEvent
+                            .mimeTypes()
+                            .any { it.startsWith("image/") }
+                    },
+                    target = avatarDropTarget
+                )
         )
 
         AnimatedVisibility(
-            visible = isAvatarHovered,
+            visible = isAvatarUpdatable,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
             Icon(
-                imageVector = Icons.TwoTone.Edit,
+                imageVector = Icons.Default.Upload,
                 contentDescription = null,
                 tint = Color.White,
                 modifier = Modifier
