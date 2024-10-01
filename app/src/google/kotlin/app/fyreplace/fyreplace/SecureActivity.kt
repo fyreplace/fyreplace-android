@@ -7,9 +7,14 @@ import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
 
 abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderInstallListener {
+    private var hasShownWarning = false
+
     override fun onPostResume() {
         super.onPostResume()
-        ProviderInstaller.installIfNeededAsync(this, this)
+
+        if (!hasShownWarning) {
+            ProviderInstaller.installIfNeededAsync(this, this)
+        }
     }
 
     override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {
@@ -27,6 +32,7 @@ abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderI
     override fun onProviderInstalled() = Unit
 
     private fun warnUser() {
+        hasShownWarning = true
         AlertDialog.Builder(this)
             .setTitle(R.string.secure_warning_title)
             .setMessage(R.string.secure_warning_description)
