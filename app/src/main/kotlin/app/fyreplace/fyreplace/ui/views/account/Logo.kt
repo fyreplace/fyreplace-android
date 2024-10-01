@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import app.fyreplace.fyreplace.R
 
 @Composable
@@ -21,7 +22,7 @@ fun Logo(modifier: Modifier = Modifier) {
         contentDescription = null,
         modifier = Modifier
             .padding(vertical = dimensionResource(R.dimen.spacing_large))
-            .size(dimensionResource(R.dimen.logo_size))
+            .size(96.dp)
             .then(modifier)
     )
 }

@@ -5,5 +5,4 @@
     <dimen name="spacing_large">32dp</dimen>
     <dimen name="form_min_width">280dp</dimen>
     <dimen name="form_max_width">600dp</dimen>
-    <dimen name="logo_size">96dp</dimen>
 </resources>
