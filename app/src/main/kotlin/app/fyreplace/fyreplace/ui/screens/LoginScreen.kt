@@ -76,7 +76,7 @@ fun SharedTransitionScope.LoginScreen(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.spacing_medium))
+            .padding(horizontal = dimensionResource(R.dimen.spacing_large))
             .imePadding()
     ) {
         Logo(
@@ -101,11 +101,12 @@ fun SharedTransitionScope.LoginScreen(
             )
         }
 
-        val textFieldModifier = Modifier
+        val fieldModifier = Modifier
             .widthIn(
                 dimensionResource(R.dimen.form_min_width),
                 dimensionResource(R.dimen.form_max_width)
             )
+            .fillMaxWidth()
             .padding(bottom = dimensionResource(R.dimen.spacing_large))
 
         OutlinedTextField(
@@ -127,7 +128,7 @@ fun SharedTransitionScope.LoginScreen(
                 }
             }),
             onValueChange = viewModel::updateIdentifier,
-            modifier = textFieldModifier
+            modifier = fieldModifier
                 .focusRequester(identifierFocus)
                 .sharedElement(
                     rememberSharedContentState(key = "first-field"),
@@ -139,7 +140,7 @@ fun SharedTransitionScope.LoginScreen(
             RandomCodeInput(
                 randomCode = randomCode,
                 onValueChange = viewModel::updateRandomCode,
-                modifier = textFieldModifier
+                modifier = fieldModifier
             )
         }
 

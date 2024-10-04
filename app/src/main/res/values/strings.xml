@@ -49,6 +49,9 @@
     <string name="register_username_placeholder">Only letters, numbers and dashes</string>
     <string name="register_email">Email</string>
     <string name="register_email_placeholder" translatable="false">email@example.org</string>
+    <string name="register_terms_acceptance">I accept the terms of service and the privacy policy</string>
+    <string name="register_terms_of_service">Terms of service</string>
+    <string name="register_privacy_policy">Privacy policy</string>
     <string name="register_submit">@string/main_destination_register</string>
     <string name="register_error_create_user_400_username_title">Invalid username</string>
     <string name="register_error_create_user_400_username_message">This username is not valid.</string>

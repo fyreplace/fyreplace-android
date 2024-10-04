@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -16,8 +17,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,11 +32,15 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
@@ -66,6 +73,7 @@ fun SharedTransitionScope.RegisterScreen(
     val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
     val username by viewModel.username.collectAsStateWithLifecycle()
     val email by viewModel.email.collectAsStateWithLifecycle()
+    val hasAcceptedTerms by viewModel.hasAcceptedTerms.collectAsStateWithLifecycle()
     val randomCode by viewModel.randomCode.collectAsStateWithLifecycle()
     val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
     val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
@@ -80,7 +88,7 @@ fun SharedTransitionScope.RegisterScreen(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.spacing_medium))
+            .padding(horizontal = dimensionResource(R.dimen.spacing_large))
             .imePadding()
     ) {
         Logo(
@@ -105,11 +113,12 @@ fun SharedTransitionScope.RegisterScreen(
             )
         }
 
-        val textFieldModifier = Modifier
+        val fieldModifier = Modifier
             .widthIn(
                 dimensionResource(R.dimen.form_min_width),
                 dimensionResource(R.dimen.form_max_width)
             )
+            .fillMaxWidth()
             .padding(bottom = dimensionResource(R.dimen.spacing_large))
 
         OutlinedTextField(
@@ -124,7 +133,7 @@ fun SharedTransitionScope.RegisterScreen(
                 imeAction = ImeAction.Next
             ),
             onValueChange = viewModel::updateUsername,
-            modifier = textFieldModifier
+            modifier = fieldModifier
                 .focusRequester(usernameFocus)
                 .focusProperties { next = emailFocus }
                 .sharedElement(
@@ -153,15 +162,57 @@ fun SharedTransitionScope.RegisterScreen(
                 }
             }),
             onValueChange = viewModel::updateEmail,
-            modifier = textFieldModifier.focusRequester(emailFocus)
+            modifier = fieldModifier.focusRequester(emailFocus)
         )
 
         AnimatedVisibility(isWaitingForRandomCode) {
             RandomCodeInput(
                 randomCode = randomCode,
                 onValueChange = viewModel::updateRandomCode,
-                modifier = textFieldModifier
+                modifier = fieldModifier
             )
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = fieldModifier
+        ) {
+            Checkbox(
+                checked = hasAcceptedTerms,
+                enabled = !isWaitingForRandomCode,
+                onCheckedChange = viewModel::updateHasAcceptedTerms
+            )
+
+            Text(
+                text = buildAnnotatedString {
+                    withLink(LinkAnnotation.Clickable("terms") {
+                        viewModel.updateHasAcceptedTerms(!hasAcceptedTerms)
+                    }) {
+                        append(stringResource(R.string.register_terms_acceptance))
+                    }
+                },
+                modifier = Modifier.focusProperties { canFocus = false }
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(
+                space = dimensionResource(R.dimen.spacing_small),
+                alignment = Alignment.CenterHorizontally
+            ),
+            modifier = fieldModifier
+        ) {
+            val uriHandler = LocalUriHandler.current
+            val termsUri = stringResource(R.string.info_url_terms_of_service)
+            val privacyUri = stringResource(R.string.info_url_privacy_policy)
+
+            TextButton(onClick = { uriHandler.openUri(termsUri) }) {
+                Text(stringResource(R.string.register_terms_of_service))
+            }
+
+            TextButton(onClick = { uriHandler.openUri(privacyUri) }) {
+                Text(stringResource(R.string.register_privacy_policy))
+            }
         }
 
         SubmitOrCancel(

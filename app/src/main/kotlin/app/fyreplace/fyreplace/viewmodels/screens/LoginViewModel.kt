@@ -16,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.min
@@ -32,15 +33,11 @@ class LoginViewModel @Inject constructor(
 ) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver, secretsHandler) {
     val identifier: StateFlow<String> =
         state.getStateFlow(::identifier.name, "")
+            .onStart { updateIdentifier(storeResolver.accountStore.data.first().identifier) }
+            .asState("")
 
     override val isFirstStepValid = identifier
         .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.username_min_length) }
-
-    init {
-        viewModelScope.launch {
-            updateIdentifier(storeResolver.accountStore.data.map { it.identifier }.first())
-        }
-    }
 
     fun updateIdentifier(value: String) {
         val maxLength = resourceResolver.getInteger(R.integer.email_max_length)

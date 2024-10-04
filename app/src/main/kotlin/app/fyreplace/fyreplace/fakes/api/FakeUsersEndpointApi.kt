@@ -75,9 +75,9 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         const val PASSWORD_USERNAME = "password-username"
         const val GOOD_USERNAME = "good-username"
 
-        const val BAD_EMAIL = "bad-email"
-        const val USED_EMAIL = "used-email"
-        const val GOOD_EMAIL = "good-email"
+        const val BAD_EMAIL = "bad@email"
+        const val USED_EMAIL = "used@email"
+        const val GOOD_EMAIL = "good@email"
 
         val NOT_IMAGE_FILE = File("text.txt")
         val LARGE_IMAGE_FILE = File("large.png")

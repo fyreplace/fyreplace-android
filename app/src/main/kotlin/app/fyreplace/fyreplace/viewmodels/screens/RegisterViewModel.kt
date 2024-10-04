@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.min
@@ -32,16 +33,18 @@ class RegisterViewModel @Inject constructor(
 ) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver, secretsHandler) {
     val username: StateFlow<String> =
         state.getStateFlow(::username.name, "")
+            .onStart { updateUsername(storeResolver.accountStore.data.first().username) }
+            .asState("")
     val email: StateFlow<String> =
         state.getStateFlow(::email.name, "")
-
-    init {
-        viewModelScope.launch {
-            val account = storeResolver.accountStore.data.first()
-            updateUsername(account.username)
-            updateEmail(account.email)
-        }
-    }
+            .onStart { updateEmail(storeResolver.accountStore.data.first().email) }
+            .asState("")
+    val hasAcceptedTerms: StateFlow<Boolean> =
+        state.getStateFlow(::hasAcceptedTerms.name, false)
+            .combine(isWaitingForRandomCode) { hasAcceptedTerms, isWaitingForRandomCode ->
+                hasAcceptedTerms || isWaitingForRandomCode
+            }
+            .asState(false)
 
     override val isFirstStepValid = username
         .combine(email) { username, email ->
@@ -53,6 +56,7 @@ class RegisterViewModel @Inject constructor(
                     && email.length >= emailMinLength
                     && email.contains('@'))
         }
+        .combine(hasAcceptedTerms) { isDataValid, hasAcceptedTerms -> isDataValid && hasAcceptedTerms }
         .distinctUntilChanged()
         .asState(false)
 
@@ -68,6 +72,10 @@ class RegisterViewModel @Inject constructor(
         val newValue = value.substring(0, min(maxLength, value.length))
         state[::email.name] = newValue
         viewModelScope.launch { storeResolver.accountStore.update { setEmail(newValue) } }
+    }
+
+    fun updateHasAcceptedTerms(value: Boolean) {
+        state[::hasAcceptedTerms.name] = value
     }
 
     override fun sendEmail() = callWhileLoading(apiResolver::users) {

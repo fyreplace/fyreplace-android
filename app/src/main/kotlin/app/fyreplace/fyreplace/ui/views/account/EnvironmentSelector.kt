@@ -87,7 +87,7 @@ private fun SelectorDialog(
                             onClick = onClick
                         )
                         Text(
-                            buildAnnotatedString {
+                            text = buildAnnotatedString {
                                 withLink(LinkAnnotation.Clickable("name") { onClick() }) {
                                     append(name(env))
 

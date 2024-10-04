@@ -29,7 +29,8 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Username must have correct length`() = runTest {
         val (minLength, maxLength, viewModel) = makeViewModel(FakeEventBus())
-        viewModel.updateEmail("email@example")
+        viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
+        viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -53,7 +54,8 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Email must have correct length`() = runTest {
         val (minLength, maxLength, viewModel) = makeViewModel(FakeEventBus())
-        viewModel.updateUsername("Example")
+        viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
+        viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -77,7 +79,8 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Email must have @`() = runTest {
         val (_, _, viewModel) = makeViewModel(FakeEventBus())
-        viewModel.updateUsername("Example")
+        viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
+        viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         viewModel.updateEmail("email")
