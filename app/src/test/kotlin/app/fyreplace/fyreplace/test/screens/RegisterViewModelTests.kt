@@ -86,7 +86,24 @@ class RegisterViewModelTests : TestsBase() {
         viewModel.updateEmail("email")
         runCurrent()
         assertFalse(viewModel.canSubmit.value)
+
         viewModel.updateEmail("email@example")
+        runCurrent()
+        assertTrue(viewModel.canSubmit.value)
+    }
+
+    @Test
+    fun `Terms must be accepted`() = runTest {
+        val (_, _, viewModel) = makeViewModel(FakeEventBus())
+        viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
+        viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
+        backgroundScope.launch { viewModel.canSubmit.collect() }
+
+        viewModel.updateHasAcceptedTerms(false)
+        runCurrent()
+        assertFalse(viewModel.canSubmit.value)
+
+        viewModel.updateHasAcceptedTerms(true)
         runCurrent()
         assertTrue(viewModel.canSubmit.value)
     }
