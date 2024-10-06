@@ -34,12 +34,12 @@ class SettingsViewModelTests : TestsBase() {
     }
 
     @Test
-    fun `Too large avatar produces a failure`() = runTest {
+    fun `Updating avatar with a too large image produces a failure`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
-        runCurrent()
         viewModel.updateAvatar(FakeUsersEndpointApi.LARGE_IMAGE_FILE)
         runCurrent()
         assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
@@ -47,12 +47,12 @@ class SettingsViewModelTests : TestsBase() {
     }
 
     @Test
-    fun `Not image avatar produces a failure`() = runTest {
+    fun `Updating avatar with an invalid produces a failure`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
-        runCurrent()
         viewModel.updateAvatar(FakeUsersEndpointApi.NOT_IMAGE_FILE)
         runCurrent()
         assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
@@ -60,12 +60,12 @@ class SettingsViewModelTests : TestsBase() {
     }
 
     @Test
-    fun `Valid avatar produces no failures`() = runTest {
+    fun `Updating avatar with a valid image produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
-        runCurrent()
         viewModel.updateAvatar(FakeUsersEndpointApi.NORMAL_IMAGE_FILE)
         runCurrent()
         assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
@@ -73,6 +73,19 @@ class SettingsViewModelTests : TestsBase() {
             FakeUsersEndpointApi.NORMAL_IMAGE_FILE.path,
             viewModel.currentUser.value?.avatar
         )
+    }
+
+    @Test
+    fun `Removing avatar produces no failures`() = runTest {
+        val eventBus = FakeEventBus()
+        val viewModel = makeViewModel(eventBus)
+        viewModel.updateAvatar(FakeUsersEndpointApi.NORMAL_IMAGE_FILE)
+        backgroundScope.launch { viewModel.currentUser.collect() }
+
+        viewModel.removeAvatar()
+        runCurrent()
+        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertEquals("", viewModel.currentUser.value?.avatar)
     }
 
     private suspend fun makeViewModel(eventBus: EventBus) = SettingsViewModel(

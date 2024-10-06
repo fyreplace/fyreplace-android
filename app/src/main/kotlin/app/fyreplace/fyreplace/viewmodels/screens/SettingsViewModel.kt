@@ -45,26 +45,29 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-    fun updateAvatar(file: File) {
-        call(apiResolver::users) {
-            val avatar = setCurrentUserAvatar(file).failWith {
-                when (it.code) {
-                    413 -> Event.Failure(
-                        R.string.settings_error_413_title,
-                        R.string.settings_error_413_message
-                    )
+    fun updateAvatar(file: File) = call(apiResolver::users) {
+        val avatar = setCurrentUserAvatar(file).failWith {
+            when (it.code) {
+                413 -> Event.Failure(
+                    R.string.settings_error_413_title,
+                    R.string.settings_error_413_message
+                )
 
-                    415 -> Event.Failure(
-                        R.string.settings_error_415_title,
-                        R.string.settings_error_415_message
-                    )
+                415 -> Event.Failure(
+                    R.string.settings_error_415_title,
+                    R.string.settings_error_415_message
+                )
 
-                    else -> Event.Failure()
-                }
-            } ?: return@call
+                else -> Event.Failure()
+            }
+        } ?: return@call
 
-            state[::currentUser.name] = currentUser.value?.copy(avatar = avatar)
-        }
+        state[::currentUser.name] = currentUser.value?.copy(avatar = avatar)
+    }
+
+    fun removeAvatar() = call(apiResolver::users) {
+        deleteCurrentUserAvatar().require()
+        state[::currentUser.name] = currentUser.value?.copy(avatar = "")
     }
 
     fun logout() {

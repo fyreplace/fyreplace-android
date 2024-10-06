@@ -11,6 +11,7 @@ import app.fyreplace.fyreplace.fakes.conflict
 import app.fyreplace.fyreplace.fakes.created
 import app.fyreplace.fyreplace.fakes.forbidden
 import app.fyreplace.fyreplace.fakes.make
+import app.fyreplace.fyreplace.fakes.noContent
 import app.fyreplace.fyreplace.fakes.ok
 import app.fyreplace.fyreplace.fakes.payloadTooLarge
 import app.fyreplace.fyreplace.fakes.placeholder
@@ -39,8 +40,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
     override suspend fun deleteCurrentUser(): Response<Unit> =
         throw NotImplementedError()
 
-    override suspend fun deleteCurrentUserAvatar(): Response<Unit> =
-        throw NotImplementedError()
+    override suspend fun deleteCurrentUserAvatar() = noContent<Unit>()
 
     override suspend fun getCurrentUser() = ok(User.placeholder)
 

@@ -88,7 +88,7 @@ fun SharedTransitionScope.RegisterScreen(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .fillMaxWidth()
-            .padding(horizontal = dimensionResource(R.dimen.spacing_large))
+            .padding(horizontal = dimensionResource(R.dimen.spacing_huge))
             .imePadding()
     ) {
         Logo(
@@ -119,7 +119,7 @@ fun SharedTransitionScope.RegisterScreen(
                 dimensionResource(R.dimen.form_max_width)
             )
             .fillMaxWidth()
-            .padding(bottom = dimensionResource(R.dimen.spacing_large))
+            .padding(bottom = dimensionResource(R.dimen.spacing_huge))
 
         OutlinedTextField(
             value = username,
@@ -224,7 +224,7 @@ fun SharedTransitionScope.RegisterScreen(
             onCancel = viewModel::cancel,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = dimensionResource(R.dimen.spacing_large))
+                .padding(bottom = dimensionResource(R.dimen.spacing_huge))
                 .sharedElement(
                     rememberSharedContentState(key = "submit"),
                     visibilityScope

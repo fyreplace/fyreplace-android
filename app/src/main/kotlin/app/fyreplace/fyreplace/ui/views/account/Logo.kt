@@ -21,7 +21,7 @@ fun Logo(modifier: Modifier = Modifier) {
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary),
         contentDescription = null,
         modifier = Modifier
-            .padding(vertical = dimensionResource(R.dimen.spacing_large))
+            .padding(vertical = dimensionResource(R.dimen.spacing_huge))
             .size(96.dp)
             .then(modifier)
     )

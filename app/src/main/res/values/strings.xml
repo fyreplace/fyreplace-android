@@ -16,8 +16,12 @@
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
 
+    <string name="settings_header_profile">Profile</string>
     <string name="settings_date_joined">Joined: %1$s</string>
+    <string name="settings_avatar_change">Change avatar</string>
+    <string name="settings_avatar_remove">Remove avatar</string>
     <string name="settings_logout">Logout</string>
+    <string name="settings_logout_summary">Disconnect from this account</string>
     <string name="settings_error_413_title">File too large</string>
     <string name="settings_error_413_message">This file is too heavy; please select a file under 1M.</string>
     <string name="settings_error_415_title">Unsupported file format</string>
