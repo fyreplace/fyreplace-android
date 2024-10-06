@@ -214,7 +214,7 @@ openApiGenerate {
         "useCoroutines" to "true",
         "moshiCodeGen" to "true",
         "serializableModel" to "true",
-        "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Stable"
+        "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Immutable"
     )
 }
 
