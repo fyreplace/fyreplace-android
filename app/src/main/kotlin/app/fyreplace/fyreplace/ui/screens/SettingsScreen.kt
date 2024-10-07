@@ -1,13 +1,20 @@
 package app.fyreplace.fyreplace.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.Code
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -24,8 +31,8 @@ import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.fakes.placeholder
 import app.fyreplace.fyreplace.ui.theme.AppTheme
-import app.fyreplace.fyreplace.ui.views.settings.AvatarPreference
-import app.fyreplace.fyreplace.ui.views.settings.Preference
+import app.fyreplace.fyreplace.ui.views.settings.AvatarListItem
+import app.fyreplace.fyreplace.ui.views.settings.LinkListItem
 import app.fyreplace.fyreplace.ui.views.settings.Section
 import app.fyreplace.fyreplace.viewmodels.screens.SettingsViewModel
 
@@ -39,18 +46,45 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
     ) {
         val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
 
-        Section(stringResource(R.string.settings_header_profile)) {
-            AvatarPreference(
+        Section(stringResource(R.string.settings_profile_header)) {
+            AvatarListItem(
                 user = currentUser,
                 onUpdateAvatar = viewModel::updateAvatar,
                 onRemoveAvatar = viewModel::removeAvatar
             )
 
-            Preference(
-                title = stringResource(R.string.settings_logout),
-                summary = stringResource(R.string.settings_logout_summary),
-                icon = { Icon(Icons.AutoMirrored.Filled.Logout, null) },
-                onClick = viewModel::logout
+
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_profile_logout)) },
+                supportingContent = { Text(stringResource(R.string.settings_profile_logout_summary)) },
+                leadingContent = { Icon(Icons.AutoMirrored.Outlined.Logout, null) },
+                modifier = Modifier.clickable(onClick = viewModel::logout)
+            )
+        }
+
+        Section(stringResource(R.string.settings_about_header)) {
+            LinkListItem(
+                title = stringResource(R.string.settings_about_website),
+                uri = stringResource(R.string.info_url_website),
+                icon = Icons.Outlined.Info
+            )
+
+            LinkListItem(
+                title = stringResource(R.string.settings_about_terms_of_service),
+                uri = stringResource(R.string.info_url_terms_of_service),
+                icon = Icons.Outlined.Shield
+            )
+
+            LinkListItem(
+                title = stringResource(R.string.settings_about_privacy_policy),
+                uri = stringResource(R.string.info_url_privacy_policy),
+                icon = Icons.Outlined.Lock
+            )
+
+            LinkListItem(
+                title = stringResource(R.string.settings_about_source_code),
+                uri = stringResource(R.string.info_url_source_code),
+                icon = Icons.Outlined.Code
             )
         }
     }

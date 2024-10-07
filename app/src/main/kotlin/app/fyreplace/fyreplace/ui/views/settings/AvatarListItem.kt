@@ -2,6 +2,7 @@ package app.fyreplace.fyreplace.ui.views.settings
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -11,6 +12,7 @@ import androidx.compose.material.icons.outlined.Upload
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +36,7 @@ import java.time.format.FormatStyle
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AvatarPreference(
+fun AvatarListItem(
     user: User?,
     onUpdateAvatar: (File) -> Unit,
     onRemoveAvatar: () -> Unit
@@ -64,30 +66,34 @@ fun AvatarPreference(
     }
 
     Box(modifier = dropModifier) {
-        Preference(
-            title = user?.username ?: stringResource(R.string.loading),
-            summary = when (dateJoined) {
-                null -> stringResource(R.string.loading)
-                else -> stringResource(
-                    R.string.settings_date_joined,
-                    dateFormatter.format(dateJoined)
+        ListItem(
+            headlineContent = { Text(user?.username ?: stringResource(R.string.loading)) },
+            supportingContent = {
+                Text(
+                    when (dateJoined) {
+                        null -> stringResource(R.string.loading)
+                        else -> stringResource(
+                            R.string.settings_profile_date_joined,
+                            dateFormatter.format(dateJoined)
+                        )
+                    }
                 )
             },
-            icon = {
-                Avatar(user = user, modifier = Modifier.size(64.dp))
-            },
-            onClick = ::selectImage,
-            onLongClick = {
-                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                isAvatarMenuExpanded = true
-            }
+            leadingContent = { Avatar(user = user, modifier = Modifier.size(56.dp)) },
+            modifier = Modifier.combinedClickable(
+                onClick = ::selectImage,
+                onLongClick = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    isAvatarMenuExpanded = true
+                }
+            )
         )
 
         DropdownMenu(
             isAvatarMenuExpanded,
             onDismissRequest = { isAvatarMenuExpanded = false }) {
             DropdownMenuItem(
-                text = { Text(stringResource(R.string.settings_avatar_change)) },
+                text = { Text(stringResource(R.string.settings_profile_avatar_change)) },
                 leadingIcon = { Icon(Icons.Outlined.Upload, null) },
                 onClick = {
                     selectImage()
@@ -96,7 +102,7 @@ fun AvatarPreference(
             )
             DropdownMenuItem(
                 enabled = !user?.avatar.isNullOrEmpty(),
-                text = { Text(stringResource(R.string.settings_avatar_remove)) },
+                text = { Text(stringResource(R.string.settings_profile_avatar_remove)) },
                 leadingIcon = { Icon(Icons.Outlined.Delete, null) },
                 onClick = {
                     onRemoveAvatar()

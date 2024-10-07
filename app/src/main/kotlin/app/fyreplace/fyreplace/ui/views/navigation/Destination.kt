@@ -40,7 +40,6 @@ sealed interface Destination {
         val activeIcon: ImageVector
         val inactiveIcon: ImageVector
         val requiresAuthentication: Boolean
-        val hasLargeTitle: Boolean get() = false
 
         @get:StringRes
         val labelRes: Int
@@ -124,7 +123,6 @@ sealed interface Destination {
         override val inactiveIcon = Icons.Outlined.Settings
         override val labelRes = R.string.main_destination_settings
         override val requiresAuthentication = false
-        override val hasLargeTitle = true
     }
 
     @Serializable

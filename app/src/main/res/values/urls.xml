@@ -6,6 +6,7 @@
     <string name="info_url_website" translatable="false">https://fyreplace.net</string>
     <string name="info_url_terms_of_service" translatable="false">https://fyreplace.net/terms-of-service</string>
     <string name="info_url_privacy_policy" translatable="false">https://fyreplace.net/privacy-policy</string>
+    <string name="info_url_source_code" translatable="false">https://github.com/fyreplace</string>
     <string name="deep_link_host_main" translatable="false">fyreplace.app</string>
     <string name="deep_link_host_dev" translatable="false">dev.fyreplace.app</string>
     <string name="deep_link_path_login" translatable="false">/login</string>

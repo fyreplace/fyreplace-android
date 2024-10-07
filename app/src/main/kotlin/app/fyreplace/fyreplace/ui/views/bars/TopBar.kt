@@ -7,7 +7,6 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -29,16 +28,9 @@ fun TopBar(
     selectedDestination: Destination.Singleton?,
     enabled: Boolean,
     onClickDestination: (Destination.Singleton) -> Unit
-) {
-    @Composable
-    fun MaybeTitle() {
-        if (selectedDestination != null) {
-            Text(stringResource(selectedDestination.labelRes))
-        }
-    }
-
-    if (destinations.isNotEmpty()) {
-        CenterAlignedTopAppBar(title = {
+) = if (destinations.isNotEmpty()) {
+    CenterAlignedTopAppBar(
+        title = {
             SharedTransitionLayout {
                 AnimatedContent(destinations, label = "Top bar segments") {
                     SegmentedChoice(
@@ -50,12 +42,16 @@ fun TopBar(
                     )
                 }
             }
-        })
-    } else if (selectedDestination?.hasLargeTitle == true) {
-        LargeTopAppBar(title = { MaybeTitle() })
-    } else {
-        TopAppBar(title = { MaybeTitle() })
-    }
+        }
+    )
+} else {
+    TopAppBar(
+        title = {
+            if (selectedDestination != null) {
+                Text(stringResource(selectedDestination.labelRes))
+            }
+        }
+    )
 }
 
 @Preview
