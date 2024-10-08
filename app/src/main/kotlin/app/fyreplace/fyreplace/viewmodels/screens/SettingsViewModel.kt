@@ -30,6 +30,8 @@ class SettingsViewModel @Inject constructor(
 ) : ApiViewModelBase(eventBus, storeResolver) {
     val currentUser: StateFlow<User?> =
         state.getStateFlow(::currentUser.name, null)
+    val isLoadingAvatar: StateFlow<Boolean> =
+        state.getStateFlow(::isLoadingAvatar.name, false)
 
     init {
         viewModelScope.launch {
@@ -46,6 +48,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun updateAvatar(file: File) = call(apiResolver::users) {
+        state[::isLoadingAvatar.name] = true
+
         val avatar = setCurrentUserAvatar(file).failWith {
             when (it.code) {
                 413 -> Event.Failure(
@@ -60,9 +64,13 @@ class SettingsViewModel @Inject constructor(
 
                 else -> Event.Failure()
             }
-        } ?: return@call
+        }
 
-        state[::currentUser.name] = currentUser.value?.copy(avatar = avatar)
+        state[::isLoadingAvatar.name] = false
+
+        if (avatar != null) {
+            state[::currentUser.name] = currentUser.value?.copy(avatar = avatar)
+        }
     }
 
     fun removeAvatar() = call(apiResolver::users) {

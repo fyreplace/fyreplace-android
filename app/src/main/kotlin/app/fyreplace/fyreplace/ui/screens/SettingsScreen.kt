@@ -45,10 +45,12 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             .verticalScroll(rememberScrollState())
     ) {
         val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+        val isLoadingAvatar by viewModel.isLoadingAvatar.collectAsStateWithLifecycle()
 
         Section(stringResource(R.string.settings_profile_header)) {
             AvatarListItem(
                 user = currentUser,
+                isLoading = isLoadingAvatar,
                 onUpdateAvatar = viewModel::updateAvatar,
                 onRemoveAvatar = viewModel::removeAvatar
             )

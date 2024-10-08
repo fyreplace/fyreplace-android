@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Upload
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -19,16 +20,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.mimeTypes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.activity
+import app.fyreplace.fyreplace.fakes.placeholder
 import app.fyreplace.fyreplace.ui.views.Avatar
 import java.io.File
 import java.time.format.DateTimeFormatter
@@ -38,6 +42,7 @@ import java.time.format.FormatStyle
 @Composable
 fun AvatarListItem(
     user: User?,
+    isLoading: Boolean,
     onUpdateAvatar: (File) -> Unit,
     onRemoveAvatar: () -> Unit
 ) {
@@ -79,7 +84,20 @@ fun AvatarListItem(
                     }
                 )
             },
-            leadingContent = { Avatar(user = user, modifier = Modifier.size(56.dp)) },
+            leadingContent = {
+                val modifier = Modifier.size(56.dp)
+
+                if (isLoading) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = modifier
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    Avatar(user = user, modifier = modifier)
+                }
+            },
             modifier = Modifier.combinedClickable(
                 onClick = ::selectImage,
                 onLongClick = {
@@ -111,4 +129,26 @@ fun AvatarListItem(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun AvatarListItemPreview() {
+    AvatarListItem(
+        user = User.placeholder,
+        isLoading = false,
+        onUpdateAvatar = {},
+        onRemoveAvatar = {}
+    )
+}
+
+@Preview
+@Composable
+fun AvatarListItemLoadingPreview() {
+    AvatarListItem(
+        user = User.placeholder,
+        isLoading = true,
+        onUpdateAvatar = {},
+        onRemoveAvatar = {}
+    )
 }
