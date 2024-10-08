@@ -58,6 +58,17 @@ fun TopBar(
 @Composable
 fun TopBarPreview() {
     TopBar(
+        destinations = emptyList(),
+        selectedDestination = Destination.Feed,
+        enabled = true,
+        onClickDestination = {}
+    )
+}
+
+@Preview
+@Composable
+fun TopBarWithButtonsPreview() {
+    TopBar(
         destinations = listOf(Destination.Login(), Destination.Register()),
         selectedDestination = Destination.Login(),
         enabled = true,

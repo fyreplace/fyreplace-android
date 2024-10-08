@@ -8,8 +8,11 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.ui.views.SmallCircularProgressIndicator
 
 @Composable
 fun SubmitOrCancel(
@@ -36,7 +39,7 @@ fun SubmitOrCancel(
         modifier = modifier
     ) {
         Button(
-            enabled = canSubmit,
+            enabled = canSubmit && !isLoading,
             onClick = onSubmit
         ) {
             Box {
@@ -47,7 +50,12 @@ fun SubmitOrCancel(
                 )
 
                 if (isLoading) {
-                    SmallCircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    CircularProgressIndicator(
+                        strokeWidth = ProgressIndicatorDefaults.CircularStrokeWidth / 2,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center)
+                    )
                 }
             }
         }
@@ -75,6 +83,20 @@ fun SubmitOrCancelPreview() {
         canSubmit = true,
         canCancel = true,
         isLoading = false,
+        onSubmit = {},
+        onCancel = {},
+        modifier = Modifier.padding(dimensionResource(R.dimen.spacing_medium))
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SubmitOrCancelLoadingPreview() {
+    SubmitOrCancel(
+        submitLabel = "Submit",
+        canSubmit = true,
+        canCancel = true,
+        isLoading = true,
         onSubmit = {},
         onCancel = {},
         modifier = Modifier.padding(dimensionResource(R.dimen.spacing_medium))
