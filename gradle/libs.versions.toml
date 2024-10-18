@@ -1,25 +1,25 @@
 [versions]
-androidPlugin = "8.7.0"
-kotlinPlugin = "2.0.20"
-sentryPlugin = "4.11.0"
-openapiPlugin = "7.8.0"
+androidPlugin = "8.7.1"
+kotlinPlugin = "2.0.21"
+sentryPlugin = "4.12.0"
+openapiPlugin = "7.9.0"
 protobufPlugin = "0.9.4"
-kspPlugin = "2.0.20-1.0.25"
-desugar = "2.1.2"
-androidxComposeBom = "2024.09.03"
-androidxActivity = "1.9.2"
-androidxComposeAnimation = "1.7.3"
+kspPlugin = "2.0.21-1.0.25"
+androidxComposeBom = "2024.10.00"
+androidxActivity = "1.9.3"
+androidxComposeAnimation = "1.7.4"
 androidxComposeMaterialAdaptive = "1.0.0"
 androidxCore = "1.13.1"
 androidxDatastore = "1.1.1"
 androidxEspressoCore = "3.6.1"
 androidxHilt = "1.2.0"
 androidxLifecycle = "2.8.6"
-androidxNavigation = "2.8.2"
+androidxNavigation = "2.8.3"
 androidxJunit = "1.2.1"
 androidxWork = "2.9.1"
 coilCompose = "2.7.0"
 conscrypt = "2.5.3"
+desugar = "2.1.2"
 hilt = "2.52"
 junit = "4.13.2"
 kotlinxCouroutines = "1.9.0"
@@ -31,7 +31,6 @@ protobuf = "4.28.2"
 retrofit = "2.11.0"
 
 [libraries]
-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
 androidx-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "androidxComposeAnimation" }
@@ -57,6 +56,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
 conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
+desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hilt" }
