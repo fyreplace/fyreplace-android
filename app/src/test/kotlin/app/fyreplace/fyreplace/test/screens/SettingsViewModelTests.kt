@@ -79,6 +79,7 @@ class SettingsViewModelTests : TestsBase() {
     fun `Removing avatar produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        runCurrent()
         viewModel.updateAvatar(FakeUsersEndpointApi.NORMAL_IMAGE_FILE)
         backgroundScope.launch { viewModel.currentUser.collect() }
 

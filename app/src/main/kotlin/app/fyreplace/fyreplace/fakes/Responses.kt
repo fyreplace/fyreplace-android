@@ -8,7 +8,7 @@ fun <T> ok(body: T): Response<T> = Response.success(body)
 
 fun <T> created(body: T): Response<T> = Response.success(body)
 
-fun <T> noContent(): Response<T> = Response.success(null)
+fun noContent(): Response<Unit> = Response.success(Unit)
 
 fun <T> badRequest(): Response<T> = error(400, "Bad Request".toResponseBody())
 

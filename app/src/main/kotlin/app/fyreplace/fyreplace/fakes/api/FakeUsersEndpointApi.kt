@@ -40,7 +40,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
     override suspend fun deleteCurrentUser(): Response<Unit> =
         throw NotImplementedError()
 
-    override suspend fun deleteCurrentUserAvatar() = noContent<Unit>()
+    override suspend fun deleteCurrentUserAvatar() = noContent()
 
     override suspend fun getCurrentUser() = ok(User.placeholder)
 
