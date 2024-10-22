@@ -3,7 +3,10 @@ package app.fyreplace.fyreplace.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -12,13 +15,16 @@ import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,8 +32,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.extensions.codePointCount
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
+import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.fakes.placeholder
 import app.fyreplace.fyreplace.ui.theme.AppTheme
@@ -43,8 +51,11 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
         modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
+            .imePadding()
     ) {
         val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
+        val bio by viewModel.bio.collectAsStateWithLifecycle()
+        val canUpdateBio by viewModel.canUpdateBio.collectAsStateWithLifecycle()
         val isLoadingAvatar by viewModel.isLoadingAvatar.collectAsStateWithLifecycle()
 
         Section(stringResource(R.string.settings_profile_header)) {
@@ -62,6 +73,41 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 leadingContent = { Icon(Icons.AutoMirrored.Outlined.Logout, null) },
                 modifier = Modifier.clickable(onClick = viewModel::logout)
             )
+        }
+
+        Section(stringResource(R.string.settings_bio_header)) {
+            TextField(
+                value = bio,
+                maxLines = 10,
+                placeholder = { Text(stringResource(R.string.settings_bio_placeholder)) },
+                supportingText = {
+                    Text(
+                        stringResource(
+                            R.string.settings_bio_length,
+                            bio.codePointCount,
+                            integerResource(R.integer.bio_max_length)
+                        )
+                    )
+                },
+                onValueChange = viewModel::updatePendingBio,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(R.dimen.spacing_medium))
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = dimensionResource(R.dimen.spacing_small))
+            ) {
+                Button(
+                    enabled = canUpdateBio,
+                    onClick = viewModel::updateBio
+                ) {
+                    Text(stringResource(R.string.settings_bio_save))
+                }
+            }
         }
 
         Section(stringResource(R.string.settings_about_header)) {
@@ -100,8 +146,10 @@ fun SettingsScreenPreview() {
             viewModel = SettingsViewModel(
                 SavedStateHandle().apply {
                     this[SettingsViewModel::currentUser.name] = User.placeholder
+                    this[SettingsViewModel::bio.name] = User.placeholder.bio
                 },
                 FakeEventBus(),
+                FakeResourceResolver(mapOf(R.integer.bio_max_length to 100)),
                 FakeStoreResolver(),
                 FakeApiResolver()
             )

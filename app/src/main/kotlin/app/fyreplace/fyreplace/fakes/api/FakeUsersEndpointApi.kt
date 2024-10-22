@@ -56,8 +56,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         else -> unsupportedMediaType()
     }
 
-    override suspend fun setCurrentUserBio(body: String): Response<String> =
-        throw NotImplementedError()
+    override suspend fun setCurrentUserBio(body: String) = ok(body)
 
     override suspend fun setUserBanned(id: UUID): Response<Unit> =
         throw NotImplementedError()

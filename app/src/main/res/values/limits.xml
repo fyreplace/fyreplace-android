@@ -5,4 +5,5 @@
     <integer name="email_min_length">3</integer>
     <integer name="email_max_length">254</integer>
     <integer name="random_code_min_length">8</integer>
+    <integer name="bio_max_length">3000</integer>
 </resources>

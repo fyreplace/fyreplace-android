@@ -5,15 +5,18 @@ import androidx.lifecycle.viewModelScope
 import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.api.ApiResolver
+import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.extensions.codePointCount
 import app.fyreplace.fyreplace.extensions.update
 import app.fyreplace.fyreplace.protos.Connection
 import app.fyreplace.fyreplace.protos.Secrets
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -25,13 +28,21 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val state: SavedStateHandle,
     eventBus: EventBus,
+    resourceResolver: ResourceResolver,
     storeResolver: StoreResolver,
     private val apiResolver: ApiResolver,
 ) : ApiViewModelBase(eventBus, storeResolver) {
     val currentUser: StateFlow<User?> =
         state.getStateFlow(::currentUser.name, null)
+    val bio: StateFlow<String> =
+        state.getStateFlow(::bio.name, "")
     val isLoadingAvatar: StateFlow<Boolean> =
         state.getStateFlow(::isLoadingAvatar.name, false)
+    val canUpdateBio = bio
+        .combine(currentUser) { bio, currentUser ->
+            bio != currentUser?.bio.orEmpty() && bio.codePointCount <= resourceResolver.getInteger(R.integer.bio_max_length)
+        }
+        .asState(false)
 
     init {
         viewModelScope.launch {
@@ -42,6 +53,7 @@ class SettingsViewModel @Inject constructor(
                 .collect {
                     call(apiResolver::users) {
                         state[::currentUser.name] = getCurrentUser().require()
+                        state[::bio.name] = currentUser.value?.bio.orEmpty()
                     }
                 }
         }
@@ -74,8 +86,17 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun removeAvatar() = call(apiResolver::users) {
-        deleteCurrentUserAvatar().require()
+        deleteCurrentUserAvatar().require() ?: return@call
         state[::currentUser.name] = currentUser.value?.copy(avatar = "")
+    }
+
+    fun updatePendingBio(bio: String) {
+        state[::bio.name] = bio
+    }
+
+    fun updateBio() = call(apiResolver::users) {
+        state[::bio.name] = setCurrentUserBio(bio.value).require() ?: return@call
+        state[::currentUser.name] = currentUser.value?.copy(bio = bio.value)
     }
 
     fun logout() {

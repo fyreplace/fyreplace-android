@@ -22,6 +22,10 @@
     <string name="settings_profile_avatar_remove">Remove avatar</string>
     <string name="settings_profile_logout">Logout</string>
     <string name="settings_profile_logout_summary">Disconnect from this account</string>
+    <string name="settings_bio_header">Bio</string>
+    <string name="settings_bio_placeholder">Tell the community about yourself</string>
+    <string name="settings_bio_length">%1$d/%2$d</string>
+    <string name="settings_bio_save">Save</string>
     <string name="settings_about_header">About</string>
     <string name="settings_about_website">Website</string>
     <string name="settings_about_terms_of_service">Terms of service</string>
