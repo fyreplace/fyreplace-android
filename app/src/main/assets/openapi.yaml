@@ -2,12 +2,13 @@
 openapi: 3.0.3
 info:
   title: Fyreplace API
-  version: v0.7.0
+  version: v0.8.0
 paths:
   /emails:
     get:
       tags:
         - Emails Endpoint
+      description: List Emails
       operationId: listEmails
       parameters:
         - name: page
@@ -36,6 +37,7 @@ paths:
     post:
       tags:
         - Emails Endpoint
+      description: Create Email
       operationId: createEmail
       parameters:
         - name: customDeepLinks
@@ -73,6 +75,7 @@ paths:
     post:
       tags:
         - Emails Endpoint
+      description: Activate Email
       operationId: activateEmail
       requestBody:
         content:
@@ -99,6 +102,7 @@ paths:
     get:
       tags:
         - Emails Endpoint
+      description: Count Emails
       operationId: countEmails
       responses:
         default:
@@ -106,7 +110,7 @@ paths:
         "200":
           description: OK
           content:
-            text/plain:
+            application/json:
               schema:
                 format: int64
                 type: integer
@@ -120,6 +124,7 @@ paths:
     delete:
       tags:
         - Emails Endpoint
+      description: Delete Email
       operationId: deleteEmail
       parameters:
         - name: id
@@ -148,6 +153,7 @@ paths:
     put:
       tags:
         - Emails Endpoint
+      description: Set Main Email
       operationId: setMainEmail
       parameters:
         - name: id
@@ -176,6 +182,7 @@ paths:
     get:
       tags:
         - Posts Endpoint
+      description: List Posts
       operationId: listPosts
       parameters:
         - name: ascending
@@ -215,6 +222,7 @@ paths:
     post:
       tags:
         - Posts Endpoint
+      description: Create Post
       operationId: createPost
       responses:
         default:
@@ -235,6 +243,7 @@ paths:
     get:
       tags:
         - Posts Endpoint
+      description: Count Posts
       operationId: countPosts
       parameters:
         - name: type
@@ -248,7 +257,7 @@ paths:
         "200":
           description: OK
           content:
-            text/plain:
+            application/json:
               schema:
                 format: int64
                 type: integer
@@ -264,6 +273,7 @@ paths:
     get:
       tags:
         - Posts Endpoint
+      description: List Posts Feed
       operationId: listPostsFeed
       responses:
         default:
@@ -280,6 +290,7 @@ paths:
     get:
       tags:
         - Posts Endpoint
+      description: Get Post
       operationId: getPost
       parameters:
         - name: id
@@ -301,6 +312,7 @@ paths:
     delete:
       tags:
         - Posts Endpoint
+      description: Delete Post
       operationId: deletePost
       parameters:
         - name: id
@@ -325,6 +337,7 @@ paths:
     post:
       tags:
         - Chapters Endpoint
+      description: Create Chapter
       operationId: createChapter
       parameters:
         - name: id
@@ -357,6 +370,7 @@ paths:
     delete:
       tags:
         - Chapters Endpoint
+      description: Delete Chapter
       operationId: deleteChapter
       parameters:
         - name: id
@@ -390,6 +404,7 @@ paths:
     put:
       tags:
         - Chapters Endpoint
+      description: Set Chapter Image
       operationId: setChapterImage
       parameters:
         - name: id
@@ -436,6 +451,7 @@ paths:
     put:
       tags:
         - Chapters Endpoint
+      description: Set Chapter Position
       operationId: setChapterPosition
       parameters:
         - name: id
@@ -475,6 +491,7 @@ paths:
     put:
       tags:
         - Chapters Endpoint
+      description: Set Chapter Text
       operationId: setChapterText
       parameters:
         - name: id
@@ -519,6 +536,7 @@ paths:
     get:
       tags:
         - Comments Endpoint
+      description: List Comments
       operationId: listComments
       parameters:
         - name: id
@@ -556,6 +574,7 @@ paths:
     post:
       tags:
         - Comments Endpoint
+      description: Create Comment
       operationId: createComment
       parameters:
         - name: id
@@ -596,6 +615,7 @@ paths:
     get:
       tags:
         - Comments Endpoint
+      description: Count Comments
       operationId: countComments
       parameters:
         - name: id
@@ -613,7 +633,7 @@ paths:
         "200":
           description: OK
           content:
-            text/plain:
+            application/json:
               schema:
                 format: int64
                 type: integer
@@ -631,6 +651,7 @@ paths:
     delete:
       tags:
         - Comments Endpoint
+      description: Delete Comment
       operationId: deleteComment
       parameters:
         - name: id
@@ -668,6 +689,7 @@ paths:
     post:
       tags:
         - Comments Endpoint
+      description: Acknowledge Comment
       operationId: acknowledgeComment
       parameters:
         - name: id
@@ -701,6 +723,7 @@ paths:
     put:
       tags:
         - Comments Endpoint
+      description: Set Comment Reported
       operationId: setCommentReported
       parameters:
         - name: id
@@ -744,6 +767,7 @@ paths:
     post:
       tags:
         - Posts Endpoint
+      description: Publish Post
       operationId: publishPost
       parameters:
         - name: id
@@ -780,6 +804,7 @@ paths:
     put:
       tags:
         - Posts Endpoint
+      description: Set Post Reported
       operationId: setPostReported
       parameters:
         - name: id
@@ -810,6 +835,7 @@ paths:
     put:
       tags:
         - Posts Endpoint
+      description: Set Post Subscribed
       operationId: setPostSubscribed
       parameters:
         - name: id
@@ -842,6 +868,7 @@ paths:
     post:
       tags:
         - Posts Endpoint
+      description: Vote Post
       operationId: votePost
       parameters:
         - name: id
@@ -878,6 +905,7 @@ paths:
     get:
       tags:
         - Reports Endpoint
+      description: List Reports
       operationId: listReports
       parameters:
         - name: page
@@ -909,6 +937,7 @@ paths:
     get:
       tags:
         - Subscriptions Endpoint
+      description: List Unread Subscriptions
       operationId: listUnreadSubscriptions
       parameters:
         - name: page
@@ -939,6 +968,7 @@ paths:
     delete:
       tags:
         - Subscriptions Endpoint
+      description: Clear Unread Subscriptions
       operationId: clearUnreadSubscriptions
       responses:
         default:
@@ -955,6 +985,7 @@ paths:
     delete:
       tags:
         - Subscriptions Endpoint
+      description: Delete Subscription
       operationId: deleteSubscription
       parameters:
         - name: id
@@ -979,6 +1010,7 @@ paths:
     post:
       tags:
         - Tokens Endpoint
+      description: Create Token
       operationId: createToken
       requestBody:
         content:
@@ -1004,6 +1036,7 @@ paths:
     get:
       tags:
         - Tokens Endpoint
+      description: Get New Token
       operationId: getNewToken
       responses:
         default:
@@ -1024,6 +1057,7 @@ paths:
     post:
       tags:
         - Tokens Endpoint
+      description: Create New Token
       operationId: createNewToken
       parameters:
         - name: customDeepLinks
@@ -1055,6 +1089,7 @@ paths:
     post:
       tags:
         - Users Endpoint
+      description: Create User
       operationId: createUser
       parameters:
         - name: customDeepLinks
@@ -1098,6 +1133,7 @@ paths:
     get:
       tags:
         - Users Endpoint
+      description: List Blocked Users
       operationId: listBlockedUsers
       parameters:
         - name: page
@@ -1127,6 +1163,7 @@ paths:
     get:
       tags:
         - Users Endpoint
+      description: Count Blocked Users
       operationId: countBlockedUsers
       responses:
         default:
@@ -1134,7 +1171,7 @@ paths:
         "200":
           description: OK
           content:
-            text/plain:
+            application/json:
               schema:
                 format: int64
                 type: integer
@@ -1148,6 +1185,7 @@ paths:
     get:
       tags:
         - Users Endpoint
+      description: Get Current User
       operationId: getCurrentUser
       responses:
         default:
@@ -1167,6 +1205,7 @@ paths:
     delete:
       tags:
         - Users Endpoint
+      description: Delete Current User
       operationId: deleteCurrentUser
       responses:
         default:
@@ -1183,6 +1222,7 @@ paths:
     put:
       tags:
         - Users Endpoint
+      description: Set Current User Avatar
       operationId: setCurrentUserAvatar
       requestBody:
         content:
@@ -1213,6 +1253,7 @@ paths:
     delete:
       tags:
         - Users Endpoint
+      description: Delete Current User Avatar
       operationId: deleteCurrentUserAvatar
       responses:
         default:
@@ -1229,6 +1270,7 @@ paths:
     put:
       tags:
         - Users Endpoint
+      description: Set Current User Bio
       operationId: setCurrentUserBio
       requestBody:
         content:
@@ -1257,6 +1299,7 @@ paths:
     get:
       tags:
         - Users Endpoint
+      description: Get User
       operationId: getUser
       parameters:
         - name: id
@@ -1279,6 +1322,7 @@ paths:
     put:
       tags:
         - Users Endpoint
+      description: Set User Banned
       operationId: setUserBanned
       parameters:
         - name: id
@@ -1303,6 +1347,7 @@ paths:
     put:
       tags:
         - Users Endpoint
+      description: Set User Blocked
       operationId: setUserBlocked
       parameters:
         - name: id
@@ -1339,6 +1384,7 @@ paths:
     put:
       tags:
         - Users Endpoint
+      description: Set User Reported
       operationId: setUserReported
       parameters:
         - name: id
