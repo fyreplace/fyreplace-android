@@ -18,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
@@ -42,6 +44,7 @@ import app.fyreplace.fyreplace.input.DestinationKeyboardShortcut
 import app.fyreplace.fyreplace.input.getShortcut
 import app.fyreplace.fyreplace.ui.screens.ArchiveScreen
 import app.fyreplace.fyreplace.ui.screens.DraftsScreen
+import app.fyreplace.fyreplace.ui.screens.EmailsScreen
 import app.fyreplace.fyreplace.ui.screens.FeedScreen
 import app.fyreplace.fyreplace.ui.screens.LoginScreen
 import app.fyreplace.fyreplace.ui.screens.NotificationsScreen
@@ -54,7 +57,7 @@ import app.fyreplace.fyreplace.ui.views.navigation.BottomNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.Destination
 import app.fyreplace.fyreplace.ui.views.navigation.SideNavigation
 import app.fyreplace.fyreplace.ui.views.navigation.navigatePoppingBackStack
-import app.fyreplace.fyreplace.ui.views.navigation.toSingletonDestination
+import app.fyreplace.fyreplace.ui.views.navigation.toDestination
 import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -75,28 +78,34 @@ fun MainContent() {
     val snackbarHostState = remember { SnackbarHostState() }
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
-    val currentDestination = entry?.toSingletonDestination()
-    val destinationGroups by remember {
+    val currentDestination = entry?.toDestination()
+    val singletonDestinationGroups by remember {
         derivedStateOf {
             topLevelDestinationGroups(expanded = !compact, userAuthenticated = isAuthenticated)
         }
     }
-    val currentDestinationGroup =
-        destinationGroups.find { (it.choices + it.root).contains(currentDestination) }
-    val savedDestinations =
-        remember { mutableMapOf<Destination.Singleton, Destination.Singleton>() }
+    val currentSingletonDestinationGroup = singletonDestinationGroups
+        .find { (it.choices + it.root).contains(currentDestination) }
+    var selectedSingletonDestination by remember {
+        mutableStateOf<Destination.Singleton>(Destination.Feed)
+    }
+    val savedDestinations = remember {
+        mutableMapOf<Destination.Singleton, Destination.Singleton>()
+    }
+
+    fun navigate(destination: Destination) {
+        navController.navigatePoppingBackStack(destination)
+    }
 
     fun onClickDestination(destination: Destination.Singleton) {
         val actualDestination = when {
             !isAuthenticated && isRegistering && destination == Destination.Settings -> Destination.Register()
-            else -> destinationGroups.find { it.root == destination }
+            else -> singletonDestinationGroups.find { it.root == destination }
                 ?.choices
                 ?.firstOrNull()
                 ?: destination
         }
-        navController.navigatePoppingBackStack(
-            savedDestinations[actualDestination] ?: actualDestination
-        )
+        navigate(savedDestinations[actualDestination] ?: actualDestination)
     }
 
     val keyboardHandler = Modifier.onKeyEvent { event ->
@@ -131,7 +140,10 @@ fun MainContent() {
             composable<Destination.Archive> { ArchiveScreen() }
             composable<Destination.Drafts> { DraftsScreen() }
             composable<Destination.Published> { PublishedScreen() }
-            composable<Destination.Settings> { SettingsScreen() }
+            composable<Destination.Settings> {
+                SettingsScreen { navigate(Destination.Emails) }
+            }
+            composable<Destination.Emails> { EmailsScreen() }
 
             composable<Destination.Login>(
                 deepLinks = context.makeDeepLinks(context.getString(R.string.deep_link_path_login))
@@ -158,15 +170,19 @@ fun MainContent() {
     @Composable
     fun Top() {
         TopBar(
-            destinations = currentDestinationGroup?.choices ?: emptyList(),
+            destinations = currentSingletonDestinationGroup?.choices ?: emptyList(),
             selectedDestination = currentDestination,
             enabled = !isWaitingForRandomCode,
             onClickDestination = {
-                navController.navigatePoppingBackStack(it)
+                navigate(it)
 
-                if (currentDestinationGroup?.defaultDestination != null) {
-                    savedDestinations[currentDestinationGroup.defaultDestination] = it
+                if (currentSingletonDestinationGroup?.defaultDestination != null) {
+                    savedDestinations[currentSingletonDestinationGroup.defaultDestination] = it
                 }
+            },
+            onBack = when (currentDestination) {
+                null, is Destination.Singleton -> null
+                else -> { -> navController.navigateUp() }
             }
         )
     }
@@ -180,9 +196,10 @@ fun MainContent() {
                 Top()
             },
             bottomBar = {
+                val destinations = singletonDestinationGroups.map(Destination.Singleton.Group::root)
                 BottomNavigation(
-                    destinations = destinationGroups.map(Destination.Singleton.Group::root),
-                    selectedDestination = currentDestinationGroup?.root,
+                    destinations = destinations,
+                    selectedDestination = selectedSingletonDestination,
                     isAuthenticated = isAuthenticated,
                     onClickDestination = ::onClickDestination
                 )
@@ -197,8 +214,8 @@ fun MainContent() {
             }
         ) {
             SideNavigation(
-                destinations = destinationGroups.map(Destination.Singleton.Group::root),
-                selectedDestination = currentDestinationGroup?.root,
+                destinations = singletonDestinationGroups.map(Destination.Singleton.Group::root),
+                selectedDestination = selectedSingletonDestination,
                 isAuthenticated = isAuthenticated,
                 windowPadding = it,
                 onClickDestination = ::onClickDestination,
@@ -216,15 +233,20 @@ fun MainContent() {
 
     LaunchedEffect(isAuthenticated) {
         val accountEntryDestinations = setOf(Destination.Login(), Destination.Register())
-        navController.navigatePoppingBackStack(
+        navigate(
             when {
                 isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
                 isAuthenticated -> return@LaunchedEffect
                 currentDestination == Destination.Settings -> Destination.Login()
-                currentDestination?.requiresAuthentication == true -> Destination.Feed
+                currentDestination is Destination.Singleton && currentDestination.requiresAuthentication == true -> Destination.Feed
                 else -> return@LaunchedEffect
             }
         )
+    }
+
+    LaunchedEffect(currentSingletonDestinationGroup?.root) {
+        selectedSingletonDestination =
+            currentSingletonDestinationGroup?.root ?: return@LaunchedEffect
     }
 
     val scope = rememberCoroutineScope()

@@ -13,6 +13,7 @@
     <string name="main_destination_published">Published</string>
     <string name="main_destination_drafts">Drafts</string>
     <string name="main_destination_settings">Settings</string>
+    <string name="main_destination_emails">Emails</string>
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
 
@@ -26,6 +27,9 @@
     <string name="settings_bio_placeholder">Tell the community about yourself</string>
     <string name="settings_bio_length">%1$d/%2$d</string>
     <string name="settings_bio_save">Save</string>
+    <string name="settings_connection_header">Connection</string>
+    <string name="settings_connection_emails">Emails</string>
+    <string name="settings_connection_emails_summary">Add or remove email addresses</string>
     <string name="settings_about_header">About</string>
     <string name="settings_about_website">Website</string>
     <string name="settings_about_terms_of_service">Terms of service</string>
@@ -35,6 +39,8 @@
     <string name="settings_error_413_message">Uploaded files can only go up to 10M.</string>
     <string name="settings_error_415_title">Unsupported file format</string>
     <string name="settings_error_415_message">The type of file you have selected is not supported.</string>
+
+    <string name="emails_main">Main address</string>
 
     <string name="account_environment_main">Production server</string>
     <string name="account_environment_dev">Testing server</string>

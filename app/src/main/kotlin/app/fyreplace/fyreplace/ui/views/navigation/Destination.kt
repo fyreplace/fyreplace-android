@@ -34,6 +34,23 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Destination {
+    @get:StringRes
+    val labelRes: Int
+
+    companion object {
+        val all = listOf(
+            Feed,
+            Notifications,
+            Archive,
+            Drafts,
+            Published,
+            Settings,
+            Emails,
+            Login(),
+            Register()
+        )
+    }
+
     sealed interface Singleton : Destination {
         val parent: Singleton?
         val keepsChildren: Boolean
@@ -41,20 +58,8 @@ sealed interface Destination {
         val inactiveIcon: ImageVector
         val requiresAuthentication: Boolean
 
-        @get:StringRes
-        val labelRes: Int
-
         companion object {
-            val all = listOf(
-                Feed,
-                Notifications,
-                Archive,
-                Drafts,
-                Published,
-                Settings,
-                Login(),
-                Register()
-            )
+            val all = Destination.all.filterIsInstance<Singleton>()
         }
 
         data class Group(
@@ -67,82 +72,87 @@ sealed interface Destination {
 
     @Serializable
     data object Feed : Singleton {
+        override val labelRes = R.string.main_destination_feed
         override val parent = null
         override val keepsChildren = false
         override val activeIcon = Icons.Filled.Home
         override val inactiveIcon = Icons.Outlined.Home
-        override val labelRes = R.string.main_destination_feed
         override val requiresAuthentication = false
     }
 
     @Serializable
     data object Notifications : Singleton {
+        override val labelRes = R.string.main_destination_notifications
         override val parent = null
         override val keepsChildren = false
         override val activeIcon = Icons.Filled.Notifications
         override val inactiveIcon = Icons.Outlined.Notifications
-        override val labelRes = R.string.main_destination_notifications
         override val requiresAuthentication = true
     }
 
     @Serializable
     data object Archive : Singleton {
+        override val labelRes = R.string.main_destination_archive
         override val parent = Notifications
         override val keepsChildren = false
         override val activeIcon = Icons.Filled.BookmarkAdded
         override val inactiveIcon = Icons.Outlined.BookmarkAdded
-        override val labelRes = R.string.main_destination_archive
         override val requiresAuthentication = true
     }
 
     @Serializable
     data object Drafts : Singleton {
+        override val labelRes = R.string.main_destination_drafts
         override val parent = null
         override val keepsChildren = false
         override val activeIcon = Icons.Filled.Description
         override val inactiveIcon = Icons.Outlined.Description
-        override val labelRes = R.string.main_destination_drafts
         override val requiresAuthentication = true
     }
 
     @Serializable
     data object Published : Singleton {
+        override val labelRes = R.string.main_destination_published
         override val parent = Drafts
         override val keepsChildren = false
         override val activeIcon = Icons.Filled.Inventory2
         override val inactiveIcon = Icons.Outlined.Inventory2
-        override val labelRes = R.string.main_destination_published
         override val requiresAuthentication = true
     }
 
     @Serializable
     data object Settings : Singleton {
+        override val labelRes = R.string.main_destination_settings
         override val parent = null
         override val keepsChildren = true
         override val activeIcon = Icons.Filled.Settings
         override val inactiveIcon = Icons.Outlined.Settings
-        override val labelRes = R.string.main_destination_settings
         override val requiresAuthentication = false
     }
 
     @Serializable
     data class Login(val deepLinkFragment: String? = null) : Singleton {
+        override val labelRes = R.string.main_destination_login
         override val parent get() = Settings
         override val keepsChildren = false
         override val activeIcon get() = Icons.Filled.AccountCircle
         override val inactiveIcon get() = Icons.Outlined.AccountCircle
-        override val labelRes = R.string.main_destination_login
         override val requiresAuthentication = false
     }
 
     @Serializable
     data class Register(val deepLinkFragment: String? = null) : Singleton {
+        override val labelRes = R.string.main_destination_register
         override val parent get() = Settings
         override val keepsChildren = false
         override val activeIcon get() = Icons.Filled.AddCircle
         override val inactiveIcon get() = Icons.Outlined.AddCircleOutline
-        override val labelRes = R.string.main_destination_register
         override val requiresAuthentication = false
+    }
+
+    @Serializable
+    data object Emails : Destination {
+        override val labelRes = R.string.main_destination_emails
     }
 }
 
@@ -164,12 +174,12 @@ fun Text(destination: Destination.Singleton) {
     )
 }
 
-fun NavBackStackEntry.toSingletonDestination() =
-    Destination.Singleton.all.first { destinationClass ->
-        destination.hierarchy.any {
-            it.route?.startsWith(destinationClass::class.qualifiedName ?: return@any false) == true
-        }
+fun NavBackStackEntry.toDestination() = destination.hierarchy.firstNotNullOfOrNull {
+    Destination.all.firstOrNull { destinationClass ->
+        val routeName = destinationClass::class.qualifiedName ?: return@firstOrNull false
+        return@firstOrNull it.route?.startsWith(routeName) == true
     }
+}
 
 fun NavController.navigatePoppingBackStack(destination: Destination) = navigate(destination) {
     if (destination is Destination.Singleton) {

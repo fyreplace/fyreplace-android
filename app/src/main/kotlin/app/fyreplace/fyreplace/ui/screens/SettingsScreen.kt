@@ -11,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
+import androidx.compose.material.icons.outlined.AlternateEmail
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Lock
@@ -44,7 +45,7 @@ import app.fyreplace.fyreplace.ui.views.settings.Section
 import app.fyreplace.fyreplace.viewmodels.screens.SettingsViewModel
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEmails: () -> Unit) {
     Column(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_medium)),
         modifier = Modifier
@@ -109,6 +110,15 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
             }
         }
 
+        Section(stringResource(R.string.settings_connection_header)) {
+            ListItem(
+                headlineContent = { Text(stringResource(R.string.settings_connection_emails)) },
+                supportingContent = { Text(stringResource(R.string.settings_connection_emails_summary)) },
+                leadingContent = { Icon(Icons.Outlined.AlternateEmail, null) },
+                modifier = Modifier.clickable(onClick = navigateToEmails)
+            )
+        }
+
         Section(stringResource(R.string.settings_about_header)) {
             LinkListItem(
                 title = stringResource(R.string.settings_about_website),
@@ -152,7 +162,8 @@ fun SettingsScreenPreview() {
                 FakeResourceResolver(mapOf(R.integer.bio_max_length to 100)),
                 FakeStoreResolver(),
                 FakeApiResolver()
-            )
+            ),
+            navigateToEmails = {}
         )
     }
 }

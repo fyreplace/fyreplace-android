@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.api
 
 import android.content.Context
+import app.fyreplace.api.EmailsEndpointApi
 import app.fyreplace.api.TokensEndpointApi
 import app.fyreplace.api.UsersEndpointApi
 import app.fyreplace.fyreplace.R
@@ -32,6 +33,8 @@ interface ApiResolver {
     suspend fun tokens(): TokensEndpointApi
 
     suspend fun users(): UsersEndpointApi
+
+    suspend fun emails(): EmailsEndpointApi
 }
 
 class RemoteApiResolver @Inject constructor(
@@ -42,6 +45,8 @@ class RemoteApiResolver @Inject constructor(
     override suspend fun tokens() = get(TokensEndpointApi::class.java)
 
     override suspend fun users() = get(UsersEndpointApi::class.java)
+
+    override suspend fun emails() = get(EmailsEndpointApi::class.java)
 
     private suspend fun <T> get(clazz: Class<T>) = resolver.connectionStore
         .data
