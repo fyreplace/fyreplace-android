@@ -17,9 +17,6 @@ import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -44,19 +41,10 @@ class SettingsViewModel @Inject constructor(
         }
         .asState(false)
 
-    init {
-        viewModelScope.launch {
-            storeResolver.secretsStore.data
-                .map { it.token }
-                .distinctUntilChanged()
-                .filter { !it.isEmpty }
-                .collect {
-                    call(apiResolver::users) {
-                        state[::currentUser.name] = getCurrentUser().require()
-                        state[::bio.name] = currentUser.value?.bio.orEmpty()
-                    }
-                }
-        }
+
+    fun loadCurrentUser() = call(apiResolver::users) {
+        state[::currentUser.name] = getCurrentUser().require()
+        state[::bio.name] = currentUser.value?.bio.orEmpty()
     }
 
     fun updateAvatar(file: File) = call(apiResolver::users) {

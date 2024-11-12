@@ -21,6 +21,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -30,14 +31,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.codePointCount
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
-import app.fyreplace.fyreplace.fakes.placeholder
 import app.fyreplace.fyreplace.ui.theme.AppTheme
 import app.fyreplace.fyreplace.ui.views.settings.AvatarListItem
 import app.fyreplace.fyreplace.ui.views.settings.LinkListItem
@@ -135,6 +134,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
                 icon = Icons.Outlined.Code
             )
         }
+
+        LaunchedEffect(viewModel) {
+            viewModel.loadCurrentUser()
+        }
     }
 }
 
@@ -144,10 +147,7 @@ fun SettingsScreenPreview() {
     AppTheme {
         SettingsScreen(
             viewModel = SettingsViewModel(
-                SavedStateHandle().apply {
-                    this[SettingsViewModel::currentUser.name] = User.placeholder
-                    this[SettingsViewModel::bio.name] = User.placeholder.bio
-                },
+                SavedStateHandle(),
                 FakeEventBus(),
                 FakeResourceResolver(mapOf(R.integer.bio_max_length to 100)),
                 FakeStoreResolver(),

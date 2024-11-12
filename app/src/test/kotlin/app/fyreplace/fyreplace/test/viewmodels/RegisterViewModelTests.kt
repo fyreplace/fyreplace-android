@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test.screens
+package app.fyreplace.fyreplace.test.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
@@ -16,7 +16,6 @@ import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -28,7 +27,7 @@ import org.junit.Test
 class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Username must have correct length`() = runTest {
-        val (minLength, maxLength, viewModel) = makeViewModel(FakeEventBus())
+        val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
@@ -53,7 +52,7 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Email must have correct length`() = runTest {
-        val (minLength, maxLength, viewModel) = makeViewModel(FakeEventBus())
+        val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
@@ -78,7 +77,7 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Email must have @`() = runTest {
-        val (_, _, viewModel) = makeViewModel(FakeEventBus())
+        val (_, _, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
         backgroundScope.launch { viewModel.canSubmit.collect() }
@@ -94,7 +93,7 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Terms must be accepted`() = runTest {
-        val (_, _, viewModel) = makeViewModel(FakeEventBus())
+        val (_, _, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         backgroundScope.launch { viewModel.canSubmit.collect() }
@@ -170,13 +169,13 @@ class RegisterViewModelTests : TestsBase() {
         runCurrent()
         viewModel.submit()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertTrue(viewModel.isWaitingForRandomCode.value)
     }
 
     @Test
     fun `Random code must have correct length`() = runTest {
-        val (minLength, _, viewModel) = makeViewModel(FakeEventBus())
+        val (minLength, _, viewModel) = makeViewModel()
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
@@ -231,10 +230,10 @@ class RegisterViewModelTests : TestsBase() {
         runCurrent()
         viewModel.submit()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
     }
 
-    private fun TestScope.makeViewModel(eventBus: EventBus): Triple<Int, Int, RegisterViewModel> {
+    private fun makeViewModel(eventBus: EventBus = FakeEventBus()): Triple<Int, Int, RegisterViewModel> {
         val minLength = 5
         val maxLength = 100
         val resources = FakeResourceResolver(
@@ -254,7 +253,6 @@ class RegisterViewModelTests : TestsBase() {
             secretsHandler = FakeSecretsHandler(),
             apiResolver = FakeApiResolver()
         )
-        runCurrent()
         return Triple(minLength, maxLength, viewModel)
     }
 }

@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test.screens
+package app.fyreplace.fyreplace.test.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.events.Event

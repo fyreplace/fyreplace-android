@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test.screens
+package app.fyreplace.fyreplace.test.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
@@ -28,12 +28,14 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTests : TestsBase() {
     @Test
-    fun `ViewModel retrieves current user`() = runTest {
+    fun `Loading current user produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
         backgroundScope.launch { viewModel.currentUser.collect() }
 
+        viewModel.loadCurrentUser()
         runCurrent()
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertNotNull(viewModel.currentUser.value)
     }
 
@@ -41,6 +43,7 @@ class SettingsViewModelTests : TestsBase() {
     fun `Updating avatar with a too large image produces a failure`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
@@ -54,6 +57,7 @@ class SettingsViewModelTests : TestsBase() {
     fun `Updating avatar with an invalid produces a failure`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
@@ -67,12 +71,13 @@ class SettingsViewModelTests : TestsBase() {
     fun `Updating avatar with a valid image produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
         viewModel.updateAvatar(FakeUsersEndpointApi.NORMAL_IMAGE_FILE)
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertEquals(
             FakeUsersEndpointApi.NORMAL_IMAGE_FILE.path,
             viewModel.currentUser.value?.avatar
@@ -83,20 +88,22 @@ class SettingsViewModelTests : TestsBase() {
     fun `Removing avatar produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
-        runCurrent()
+        viewModel.loadCurrentUser()
         viewModel.updateAvatar(FakeUsersEndpointApi.NORMAL_IMAGE_FILE)
+        runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
         viewModel.removeAvatar()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertEquals("", viewModel.currentUser.value?.avatar)
     }
 
     @Test
     fun `Bio must have correct length`() = runTest {
         val maxLength = 30
-        val viewModel = makeViewModel(FakeEventBus(), maxLength)
+        val viewModel = makeViewModel(bioMaxLength = maxLength)
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.canUpdateBio.collect() }
 
@@ -113,7 +120,8 @@ class SettingsViewModelTests : TestsBase() {
 
     @Test
     fun `Bio must be different`() = runTest {
-        val viewModel = makeViewModel(FakeEventBus())
+        val viewModel = makeViewModel()
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.canUpdateBio.collect() }
 
@@ -129,17 +137,18 @@ class SettingsViewModelTests : TestsBase() {
     fun `Updating bio produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
+        viewModel.loadCurrentUser()
         runCurrent()
         backgroundScope.launch { viewModel.currentUser.collect() }
 
         viewModel.updatePendingBio("Hello")
         viewModel.updateBio()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertEquals("Hello", viewModel.currentUser.value?.bio)
     }
 
-    private suspend fun makeViewModel(eventBus: EventBus, bioMaxLength: Int = 100) =
+    private suspend fun makeViewModel(eventBus: EventBus = FakeEventBus(), bioMaxLength: Int = 100) =
         SettingsViewModel(
             SavedStateHandle(),
             eventBus,

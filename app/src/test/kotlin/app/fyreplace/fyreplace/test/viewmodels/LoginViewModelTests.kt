@@ -1,4 +1,4 @@
-package app.fyreplace.fyreplace.test.screens
+package app.fyreplace.fyreplace.test.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.R
@@ -16,7 +16,6 @@ import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -30,7 +29,11 @@ class LoginViewModelTests : TestsBase() {
     fun `Identifier must have correct length`() = runTest {
         val minLength = 5
         val maxLength = 100
-        val viewModel = makeViewModel(FakeEventBus(), minLength, maxLength, 8)
+        val viewModel = makeViewModel(
+            identifierMinLength = minLength,
+            identifierMaxLength = maxLength,
+            randomCodeMinLength = 8
+        )
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
@@ -79,7 +82,7 @@ class LoginViewModelTests : TestsBase() {
         runCurrent()
         viewModel.submit()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertTrue(viewModel.isWaitingForRandomCode.value)
     }
 
@@ -102,7 +105,11 @@ class LoginViewModelTests : TestsBase() {
     @Test
     fun `Random code must have correct length`() = runTest {
         val minLength = 10
-        val viewModel = makeViewModel(FakeEventBus(), 3, 50, minLength)
+        val viewModel = makeViewModel(
+            identifierMinLength = 3,
+            identifierMaxLength = 50,
+            randomCodeMinLength = minLength
+        )
         backgroundScope.launch { viewModel.canSubmit.collect() }
 
         viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
@@ -154,11 +161,11 @@ class LoginViewModelTests : TestsBase() {
         runCurrent()
         viewModel.submit()
         runCurrent()
-        assertEquals(0, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
+        assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
     }
 
-    private fun TestScope.makeViewModel(
-        eventBus: EventBus,
+    private fun makeViewModel(
+        eventBus: EventBus = FakeEventBus(),
         identifierMinLength: Int,
         identifierMaxLength: Int,
         randomCodeMinLength: Int
@@ -175,5 +182,5 @@ class LoginViewModelTests : TestsBase() {
         storeResolver = FakeStoreResolver(),
         secretsHandler = FakeSecretsHandler(),
         apiResolver = FakeApiResolver()
-    ).also { runCurrent() }
+    )
 }
