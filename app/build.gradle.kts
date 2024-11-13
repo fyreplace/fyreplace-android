@@ -22,10 +22,6 @@ if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use(localProperties::load)
 }
 
-fun getValue(name: String): String? =
-    System.getenv(name.replace('.', '_').uppercase())
-        ?: localProperties.getProperty(name)
-
 enum class VersionSuffix(val value: Int) {
     DEV(0),
     RELEASE(1),
@@ -33,15 +29,24 @@ enum class VersionSuffix(val value: Int) {
     MAIN(3)
 }
 
+interface Git {
+    @get:Inject val operations: ExecOperations
 
-fun git(vararg args: String): String {
-    val outputStream = ByteArrayOutputStream()
-    exec {
-        commandLine("git", *args)
-        standardOutput = outputStream
+    fun exec(vararg args: String): String {
+        val outputStream = ByteArrayOutputStream()
+        operations.exec {
+            commandLine("git", *args)
+            standardOutput = outputStream
+        }
+        return outputStream.toString().trim()
     }
-    return outputStream.toString().trim()
 }
+
+fun getValue(name: String): String? =
+    System.getenv(name.replace('.', '_').uppercase())
+        ?: localProperties.getProperty(name)
+
+fun git(vararg args: String) = project.objects.newInstance<Git>().exec(*args)
 
 fun getVersionNumberSuffix(): VersionSuffix {
     val ref = git("describe", "--tags", "--always")
