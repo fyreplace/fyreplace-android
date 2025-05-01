@@ -1,25 +1,403 @@
 ---
-openapi: 3.0.3
-info:
-  title: Fyreplace API
-  version: v0.9.0
+openapi: 3.1.0
+components:
+  schemas:
+    BlockUpdate:
+      type: object
+      required:
+        - blocked
+      properties:
+        blocked:
+          type: boolean
+    Chapter:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        text:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+        width:
+          type: integer
+          format: int32
+          minimum: 0
+        height:
+          type: integer
+          format: int32
+          minimum: 0
+    ChapterPositionUpdate:
+      type: object
+      properties:
+        position:
+          type: integer
+          format: int32
+          minimum: 0
+    Color:
+      type: object
+      required:
+        - r
+        - g
+        - b
+      properties:
+        r:
+          type: integer
+          format: uint8
+          maximum: 255
+          minimum: 0
+        g:
+          type: integer
+          format: uint8
+          maximum: 255
+          minimum: 0
+        b:
+          type: integer
+          format: uint8
+          maximum: 255
+          minimum: 0
+    Comment:
+      type: object
+      required:
+        - id
+        - dateCreated
+        - anonymous
+        - text
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dateCreated:
+          $ref: "#/components/schemas/Instant"
+          type: string
+          format: date-time
+          examples:
+            - 2022-03-10T16:15:50Z
+        anonymous:
+          type: boolean
+        author:
+          $ref: "#/components/schemas/Profile"
+        text:
+          type: string
+          maxLength: 1500
+    CommentCreation:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1500
+          pattern: \S
+        anonymous:
+          type: boolean
+    Email:
+      type: object
+      required:
+        - id
+        - email
+        - verified
+        - main
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        email:
+          type: string
+          minLength: 3
+          maxLength: 254
+        verified:
+          type: boolean
+        main:
+          type: boolean
+    EmailCreation:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          minLength: 3
+          maxLength: 254
+          pattern: \S
+    EmailVerification:
+      type: object
+      required:
+        - email
+        - code
+      properties:
+        email:
+          type: string
+          minLength: 3
+          maxLength: 254
+          pattern: \S
+        code:
+          type: string
+          pattern: \S
+    ExplainedFailure:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        reason:
+          type: string
+    Instant:
+      type: string
+      format: date-time
+      examples:
+        - 2022-03-10T16:15:50Z
+    NewTokenCreation:
+      type: object
+      required:
+        - identifier
+      properties:
+        identifier:
+          type: string
+          maxLength: 254
+          pattern: \S
+    Post:
+      type: object
+      required:
+        - id
+        - dateCreated
+        - anonymous
+        - published
+        - commentCount
+        - voteCount
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dateCreated:
+          $ref: "#/components/schemas/Instant"
+          type: string
+          format: date-time
+          examples:
+            - 2022-03-10T16:15:50Z
+        anonymous:
+          type: boolean
+        author:
+          $ref: "#/components/schemas/Profile"
+        published:
+          type: boolean
+        commentCount:
+          type: integer
+          format: int64
+          minimum: 0
+        voteCount:
+          type: integer
+          format: int64
+          minimum: 0
+        chapters:
+          type: array
+          items:
+            $ref: "#/components/schemas/Chapter"
+    PostListingType:
+      type: string
+      enum:
+        - SUBSCRIBED_TO
+        - PUBLISHED
+        - DRAFTS
+    PostPublication:
+      type: object
+      required:
+        - anonymous
+      properties:
+        anonymous:
+          type: boolean
+    Profile:
+      type: object
+      required:
+        - id
+        - username
+        - avatar
+        - tint
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        username:
+          type: string
+        avatar:
+          type: string
+        tint:
+          $ref: "#/components/schemas/Color"
+    Rank:
+      type: string
+      enum:
+        - CITIZEN
+        - MODERATOR
+        - ADMINISTRATOR
+    Report:
+      type: object
+      required:
+        - id
+        - dateCreated
+        - targetId
+        - source
+        - targetModel
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dateCreated:
+          $ref: "#/components/schemas/Instant"
+          type: string
+          format: date-time
+          examples:
+            - 2022-03-10T16:15:50Z
+        targetId:
+          $ref: "#/components/schemas/UUID"
+        source:
+          $ref: "#/components/schemas/Profile"
+        targetModel:
+          type: string
+    ReportUpdate:
+      type: object
+      required:
+        - reported
+      properties:
+        reported:
+          type: boolean
+    Subscription:
+      type: object
+      required:
+        - id
+        - post
+        - unreadCommentCount
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        post:
+          $ref: "#/components/schemas/Post"
+        unreadCommentCount:
+          type: integer
+          format: int64
+          minimum: 0
+    SubscriptionUpdate:
+      type: object
+      required:
+        - subscribed
+      properties:
+        subscribed:
+          type: boolean
+    TokenCreation:
+      type: object
+      required:
+        - identifier
+        - secret
+      properties:
+        identifier:
+          type: string
+          maxLength: 254
+          pattern: \S
+        secret:
+          type: string
+          format: password
+          pattern: \S
+    UUID:
+      type: string
+      format: uuid
+      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
+    User:
+      type: object
+      required:
+        - id
+        - dateCreated
+        - username
+        - rank
+        - avatar
+        - bio
+        - banned
+        - blocked
+        - tint
+      properties:
+        id:
+          $ref: "#/components/schemas/UUID"
+        dateCreated:
+          $ref: "#/components/schemas/Instant"
+          type: string
+          format: date-time
+          examples:
+            - 2022-03-10T16:15:50Z
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: "^[\\w.@+-]+$"
+        rank:
+          $ref: "#/components/schemas/Rank"
+        avatar:
+          type: string
+        bio:
+          type: string
+        banned:
+          type: boolean
+        blocked:
+          type: boolean
+        tint:
+          $ref: "#/components/schemas/Color"
+    UserCreation:
+      type: object
+      required:
+        - email
+        - username
+      properties:
+        email:
+          type: string
+          minLength: 3
+          maxLength: 254
+          pattern: \S
+        username:
+          type: string
+          minLength: 3
+          maxLength: 50
+          pattern: "^[\\w.@+-]+$"
+    Violation:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+    ViolationReport:
+      type: object
+      properties:
+        title:
+          type: string
+        status:
+          type: integer
+          format: int32
+        violations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Violation"
+    VoteCreation:
+      type: object
+      required:
+        - spread
+      properties:
+        spread:
+          type: boolean
+  securitySchemes:
+    SecurityScheme:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Authentication
 paths:
   /emails:
     get:
-      tags:
-        - Emails Endpoint
-      description: List Emails
       operationId: listEmails
       parameters:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -38,12 +416,14 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Emails
+      tags:
+        - Emails Endpoint
       security:
         - SecurityScheme: [ ]
     post:
-      tags:
-        - Emails Endpoint
-      description: Create Email
       operationId: createEmail
       parameters:
         - name: customDeepLinks
@@ -57,8 +437,6 @@ paths:
               $ref: "#/components/schemas/EmailCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
@@ -81,23 +459,45 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      security:
-        - SecurityScheme: [ ]
-  /emails/activate:
-    post:
+        default:
+          description: Unexpected error
+      summary: Create Email
       tags:
         - Emails Endpoint
-      description: Activate Email
-      operationId: activateEmail
+      security:
+        - SecurityScheme: [ ]
+  /emails/count:
+    get:
+      operationId: countEmails
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+        "401":
+          description: Not Authorized
+        "403":
+          description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Count Emails
+      tags:
+        - Emails Endpoint
+      security:
+        - SecurityScheme: [ ]
+  /emails/verify:
+    post:
+      operationId: verifyEmail
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EmailActivation"
+              $ref: "#/components/schemas/EmailVerification"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -112,35 +512,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      security:
-        - SecurityScheme: [ ]
-  /emails/count:
-    get:
-      tags:
-        - Emails Endpoint
-      description: Count Emails
-      operationId: countEmails
-      responses:
         default:
           description: Unexpected error
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                format: int64
-                type: integer
-        "401":
-          description: Not Authorized
-        "403":
-          description: Not Allowed
+      summary: Verify Email
+      tags:
+        - Emails Endpoint
       security:
         - SecurityScheme: [ ]
   /emails/{id}:
     delete:
-      tags:
-        - Emails Endpoint
-      description: Delete Email
       operationId: deleteEmail
       parameters:
         - name: id
@@ -149,8 +529,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "403":
@@ -163,13 +541,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Delete Email
+      tags:
+        - Emails Endpoint
       security:
         - SecurityScheme: [ ]
   /emails/{id}/main:
     put:
-      tags:
-        - Emails Endpoint
-      description: Set Main Email
       operationId: setMainEmail
       parameters:
         - name: id
@@ -178,8 +558,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "403":
@@ -192,13 +570,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Set Main Email
+      tags:
+        - Emails Endpoint
       security:
         - SecurityScheme: [ ]
   /posts:
     get:
-      tags:
-        - Posts Endpoint
-      description: List Posts
       operationId: listPosts
       parameters:
         - name: ascending
@@ -208,17 +588,15 @@ paths:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
         - name: type
           in: query
-          required: true
           schema:
             $ref: "#/components/schemas/PostListingType"
+          required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -237,16 +615,16 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Posts
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
     post:
-      tags:
-        - Posts Endpoint
-      description: Create Post
       operationId: createPost
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
@@ -257,30 +635,30 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Create Post
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/count:
     get:
-      tags:
-        - Posts Endpoint
-      description: Count Posts
       operationId: countPosts
       parameters:
         - name: type
           in: query
-          required: true
           schema:
             $ref: "#/components/schemas/PostListingType"
+          required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
             application/json:
               schema:
-                format: int64
                 type: integer
+                format: int64
         "400":
           description: Bad Request
           content:
@@ -291,17 +669,17 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Count Posts
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/feed:
     get:
-      tags:
-        - Posts Endpoint
-      description: List Posts Feed
       operationId: listPostsFeed
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -310,11 +688,13 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Post"
-  /posts/{id}:
-    get:
+        default:
+          description: Unexpected error
+      summary: List Posts Feed
       tags:
         - Posts Endpoint
-      description: Get Post
+  /posts/{id}:
+    get:
       operationId: getPost
       parameters:
         - name: id
@@ -323,8 +703,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -333,10 +711,12 @@ paths:
                 $ref: "#/components/schemas/Post"
         "404":
           description: Not Found
-    delete:
+        default:
+          description: Unexpected error
+      summary: Get Post
       tags:
         - Posts Endpoint
-      description: Delete Post
+    delete:
       operationId: deletePost
       parameters:
         - name: id
@@ -345,8 +725,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "404":
@@ -355,13 +733,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Delete Post
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters:
     post:
-      tags:
-        - Chapters Endpoint
-      description: Create Chapter
       operationId: createChapter
       parameters:
         - name: id
@@ -370,8 +750,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
@@ -388,13 +766,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Create Chapter
+      tags:
+        - Chapters Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}:
     delete:
-      tags:
-        - Chapters Endpoint
-      description: Delete Chapter
       operationId: deleteChapter
       parameters:
         - name: id
@@ -406,12 +786,10 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "400":
@@ -426,13 +804,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Delete Chapter
+      tags:
+        - Chapters Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/image:
     put:
-      tags:
-        - Chapters Endpoint
-      description: Set Chapter Image
       operationId: setChapterImage
       parameters:
         - name: id
@@ -444,19 +824,17 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       requestBody:
         content:
           application/octet-stream:
             schema:
-              format: binary
               type: string
+              format: binary
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -479,13 +857,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Chapter Image
+      tags:
+        - Chapters Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/position:
     put:
-      tags:
-        - Chapters Endpoint
-      description: Set Chapter Position
       operationId: setChapterPosition
       parameters:
         - name: id
@@ -497,9 +877,9 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       requestBody:
         content:
           application/json:
@@ -507,8 +887,6 @@ paths:
               $ref: "#/components/schemas/ChapterPositionUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -523,13 +901,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Chapter Position
+      tags:
+        - Chapters Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/chapters/{position}/text:
     put:
-      tags:
-        - Chapters Endpoint
-      description: Set Chapter Text
       operationId: setChapterText
       parameters:
         - name: id
@@ -541,19 +921,17 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       requestBody:
         content:
           text/plain:
             schema:
-              maxLength: 500
               type: string
+              maxLength: 500
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -572,13 +950,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Chapter Text
+      tags:
+        - Chapters Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments:
     get:
-      tags:
-        - Comments Endpoint
-      description: List Comments
       operationId: listComments
       parameters:
         - name: id
@@ -589,12 +969,10 @@ paths:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -615,12 +993,14 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Comments
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
     post:
-      tags:
-        - Comments Endpoint
-      description: Create Comment
       operationId: createComment
       parameters:
         - name: id
@@ -635,8 +1015,6 @@ paths:
               $ref: "#/components/schemas/CommentCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
@@ -659,13 +1037,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Create Comment
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/count:
     get:
-      tags:
-        - Comments Endpoint
-      description: Count Comments
       operationId: countComments
       parameters:
         - name: id
@@ -678,28 +1058,28 @@ paths:
           schema:
             type: boolean
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
             application/json:
               schema:
-                format: int64
                 type: integer
+                format: int64
         "404":
           description: Not Found
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Count Comments
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/{position}:
     delete:
-      tags:
-        - Comments Endpoint
-      description: Delete Comment
       operationId: deleteComment
       parameters:
         - name: id
@@ -711,12 +1091,10 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "400":
@@ -735,13 +1113,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Delete Comment
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/{position}/acknowledge:
     post:
-      tags:
-        - Comments Endpoint
-      description: Acknowledge Comment
       operationId: acknowledgeComment
       parameters:
         - name: id
@@ -753,12 +1133,10 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -773,13 +1151,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Acknowledge Comment
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/comments/{position}/reported:
     put:
-      tags:
-        - Comments Endpoint
-      description: Set Comment Reported
       operationId: setCommentReported
       parameters:
         - name: id
@@ -791,9 +1171,9 @@ paths:
           in: path
           required: true
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       requestBody:
         content:
           application/json:
@@ -801,8 +1181,6 @@ paths:
               $ref: "#/components/schemas/ReportUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -821,13 +1199,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Set Comment Reported
+      tags:
+        - Comments Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/publish:
     post:
-      tags:
-        - Posts Endpoint
-      description: Publish Post
       operationId: publishPost
       parameters:
         - name: id
@@ -842,8 +1222,6 @@ paths:
               $ref: "#/components/schemas/PostPublication"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -862,13 +1240,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Publish Post
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/reported:
     put:
-      tags:
-        - Posts Endpoint
-      description: Set Post Reported
       operationId: setPostReported
       parameters:
         - name: id
@@ -883,8 +1263,6 @@ paths:
               $ref: "#/components/schemas/ReportUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -899,13 +1277,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Post Reported
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/subscribed:
     put:
-      tags:
-        - Posts Endpoint
-      description: Set Post Subscribed
       operationId: setPostSubscribed
       parameters:
         - name: id
@@ -920,8 +1300,6 @@ paths:
               $ref: "#/components/schemas/SubscriptionUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -936,13 +1314,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Post Subscribed
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /posts/{id}/vote:
     post:
-      tags:
-        - Posts Endpoint
-      description: Vote Post
       operationId: votePost
       parameters:
         - name: id
@@ -957,8 +1337,6 @@ paths:
               $ref: "#/components/schemas/VoteCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -977,24 +1355,24 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Vote Post
+      tags:
+        - Posts Endpoint
       security:
         - SecurityScheme: [ ]
   /reports:
     get:
-      tags:
-        - Reports Endpoint
-      description: List Reports
       operationId: listReports
       parameters:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1013,24 +1391,25 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Reports
+      tags:
+        - Reports Endpoint
       security:
-        - SecurityScheme: [ ]
+        - SecurityScheme:
+            - MODERATOR
   /subscriptions/unread:
     get:
-      tags:
-        - Subscriptions Endpoint
-      description: List Unread Subscriptions
       operationId: listUnreadSubscriptions
       parameters:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1049,29 +1428,31 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Unread Subscriptions
+      tags:
+        - Subscriptions Endpoint
       security:
         - SecurityScheme: [ ]
     delete:
-      tags:
-        - Subscriptions Endpoint
-      description: Clear Unread Subscriptions
       operationId: clearUnreadSubscriptions
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Clear Unread Subscriptions
+      tags:
+        - Subscriptions Endpoint
       security:
         - SecurityScheme: [ ]
   /subscriptions/{id}:
     delete:
-      tags:
-        - Subscriptions Endpoint
-      description: Delete Subscription
       operationId: deleteSubscription
       parameters:
         - name: id
@@ -1080,8 +1461,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "404":
@@ -1090,13 +1469,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Delete Subscription
+      tags:
+        - Subscriptions Endpoint
       security:
         - SecurityScheme: [ ]
   /tokens:
     post:
-      tags:
-        - Tokens Endpoint
-      description: Create Token
       operationId: createToken
       requestBody:
         content:
@@ -1105,15 +1486,13 @@ paths:
               $ref: "#/components/schemas/TokenCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
             text/plain:
               schema:
-                format: password
                 type: string
+                format: password
         "400":
           description: Bad Request
           content:
@@ -1122,32 +1501,34 @@ paths:
                 $ref: "#/components/schemas/ViolationReport"
         "404":
           description: Not Found
-  /tokens/new:
-    get:
-      tags:
-        - Tokens Endpoint
-      description: Get New Token
-      operationId: getNewToken
-      responses:
         default:
           description: Unexpected error
+      summary: Create Token
+      tags:
+        - Tokens Endpoint
+  /tokens/new:
+    get:
+      operationId: getNewToken
+      responses:
         "200":
           description: OK
           content:
             text/plain:
               schema:
-                format: password
                 type: string
+                format: password
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Get New Token
+      tags:
+        - Tokens Endpoint
       security:
         - SecurityScheme: [ ]
     post:
-      tags:
-        - Tokens Endpoint
-      description: Create New Token
       operationId: createNewToken
       parameters:
         - name: customDeepLinks
@@ -1161,8 +1542,6 @@ paths:
               $ref: "#/components/schemas/NewTokenCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -1179,11 +1558,13 @@ paths:
                 $ref: "#/components/schemas/ExplainedFailure"
         "404":
           description: Not Found
+        default:
+          description: Unexpected error
+      summary: Create New Token
+      tags:
+        - Tokens Endpoint
   /users:
     post:
-      tags:
-        - Users Endpoint
-      description: Create User
       operationId: createUser
       parameters:
         - name: customDeepLinks
@@ -1197,8 +1578,6 @@ paths:
               $ref: "#/components/schemas/UserCreation"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "201":
           description: Created
           content:
@@ -1223,22 +1602,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExplainedFailure"
-  /users/blocked:
-    get:
+        default:
+          description: Unexpected error
+      summary: Create User
       tags:
         - Users Endpoint
-      description: List Blocked Users
+  /users/blocked:
+    get:
       operationId: listBlockedUsers
       parameters:
         - name: page
           in: query
           schema:
+            type: integer
             format: int32
             minimum: 0
-            type: integer
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1257,39 +1636,39 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: List Blocked Users
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/blocked/count:
     get:
-      tags:
-        - Users Endpoint
-      description: Count Blocked Users
       operationId: countBlockedUsers
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
             application/json:
               schema:
-                format: int64
                 type: integer
+                format: int64
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Count Blocked Users
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/current:
     get:
-      tags:
-        - Users Endpoint
-      description: Get Current User
       operationId: getCurrentUser
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1300,40 +1679,40 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Get Current User
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
     delete:
-      tags:
-        - Users Endpoint
-      description: Delete Current User
       operationId: deleteCurrentUser
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Delete Current User
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/current/avatar:
     put:
-      tags:
-        - Users Endpoint
-      description: Set Current User Avatar
       operationId: setCurrentUserAvatar
       requestBody:
         content:
           application/octet-stream:
             schema:
-              format: binary
               type: string
+              format: binary
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1348,40 +1727,40 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Current User Avatar
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
     delete:
-      tags:
-        - Users Endpoint
-      description: Delete Current User Avatar
       operationId: deleteCurrentUserAvatar
       responses:
-        default:
-          description: Unexpected error
         "204":
           description: No Content
         "401":
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Delete Current User Avatar
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/current/bio:
     put:
-      tags:
-        - Users Endpoint
-      description: Set Current User Bio
       operationId: setCurrentUserBio
       requestBody:
         content:
           text/plain:
             schema:
-              maxLength: 3000
               type: string
+              maxLength: 3000
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1398,13 +1777,15 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
+        default:
+          description: Unexpected error
+      summary: Set Current User Bio
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/{id}:
     get:
-      tags:
-        - Users Endpoint
-      description: Get User
       operationId: getUser
       parameters:
         - name: id
@@ -1413,8 +1794,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
           content:
@@ -1423,11 +1802,13 @@ paths:
                 $ref: "#/components/schemas/User"
         "404":
           description: Not Found
-  /users/{id}/banned:
-    put:
+        default:
+          description: Unexpected error
+      summary: Get User
       tags:
         - Users Endpoint
-      description: Set User Banned
+  /users/{id}/banned:
+    put:
       operationId: setUserBanned
       parameters:
         - name: id
@@ -1436,8 +1817,6 @@ paths:
           schema:
             $ref: "#/components/schemas/UUID"
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "404":
@@ -1446,13 +1825,16 @@ paths:
           description: Not Authorized
         "403":
           description: Not Allowed
-      security:
-        - SecurityScheme: [ ]
-  /users/{id}/blocked:
-    put:
+        default:
+          description: Unexpected error
+      summary: Set User Banned
       tags:
         - Users Endpoint
-      description: Set User Blocked
+      security:
+        - SecurityScheme:
+            - MODERATOR
+  /users/{id}/blocked:
+    put:
       operationId: setUserBlocked
       parameters:
         - name: id
@@ -1467,8 +1849,6 @@ paths:
               $ref: "#/components/schemas/BlockUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -1487,13 +1867,15 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Set User Blocked
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
   /users/{id}/reported:
     put:
-      tags:
-        - Users Endpoint
-      description: Set User Reported
       operationId: setUserReported
       parameters:
         - name: id
@@ -1508,8 +1890,6 @@ paths:
               $ref: "#/components/schemas/ReportUpdate"
         required: true
       responses:
-        default:
-          description: Unexpected error
         "200":
           description: OK
         "400":
@@ -1528,374 +1908,13 @@ paths:
           description: Not Found
         "401":
           description: Not Authorized
+        default:
+          description: Unexpected error
+      summary: Set User Reported
+      tags:
+        - Users Endpoint
       security:
         - SecurityScheme: [ ]
-components:
-  schemas:
-    BlockUpdate:
-      required:
-        - blocked
-      type: object
-      properties:
-        blocked:
-          type: boolean
-    Chapter:
-      required:
-        - id
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        text:
-          maxLength: 500
-          type: string
-        image:
-          type: string
-        width:
-          format: int32
-          minimum: 0
-          type: integer
-        height:
-          format: int32
-          minimum: 0
-          type: integer
-    ChapterPositionUpdate:
-      type: object
-      properties:
-        position:
-          format: int32
-          minimum: 0
-          type: integer
-    Color:
-      required:
-        - r
-        - g
-        - b
-      type: object
-      properties:
-        r:
-          format: uint8
-          maximum: 255
-          minimum: 0
-          type: integer
-        g:
-          format: uint8
-          maximum: 255
-          minimum: 0
-          type: integer
-        b:
-          format: uint8
-          maximum: 255
-          minimum: 0
-          type: integer
-    Comment:
-      required:
-        - id
-        - dateCreated
-        - anonymous
-        - text
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        dateCreated:
-          $ref: "#/components/schemas/Instant"
-        anonymous:
-          type: boolean
-        author:
-          $ref: "#/components/schemas/Profile"
-        text:
-          maxLength: 1500
-          type: string
-    CommentCreation:
-      required:
-        - text
-      type: object
-      properties:
-        text:
-          maxLength: 1500
-          minLength: 1
-          pattern: \S
-          type: string
-        anonymous:
-          type: boolean
-    Email:
-      required:
-        - id
-        - email
-        - verified
-        - main
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        email:
-          maxLength: 254
-          minLength: 3
-          type: string
-        verified:
-          type: boolean
-        main:
-          type: boolean
-    EmailActivation:
-      required:
-        - email
-        - code
-      type: object
-      properties:
-        email:
-          maxLength: 254
-          minLength: 3
-          pattern: \S
-          type: string
-        code:
-          pattern: \S
-          type: string
-    EmailCreation:
-      required:
-        - email
-      type: object
-      properties:
-        email:
-          maxLength: 254
-          minLength: 3
-          pattern: \S
-          type: string
-    ExplainedFailure:
-      type: object
-      properties:
-        title:
-          type: string
-        status:
-          format: int32
-          type: integer
-        reason:
-          type: string
-    Instant:
-      format: date-time
-      type: string
-      example: 2022-03-10T16:15:50Z
-    NewTokenCreation:
-      required:
-        - identifier
-      type: object
-      properties:
-        identifier:
-          maxLength: 254
-          pattern: \S
-          type: string
-    Post:
-      required:
-        - id
-        - dateCreated
-        - anonymous
-        - published
-        - commentCount
-        - voteCount
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        dateCreated:
-          $ref: "#/components/schemas/Instant"
-        anonymous:
-          type: boolean
-        author:
-          $ref: "#/components/schemas/Profile"
-        published:
-          type: boolean
-        commentCount:
-          format: int64
-          minimum: 0
-          type: integer
-        voteCount:
-          format: int64
-          minimum: 0
-          type: integer
-        chapters:
-          type: array
-          items:
-            $ref: "#/components/schemas/Chapter"
-    PostListingType:
-      enum:
-        - SUBSCRIBED_TO
-        - PUBLISHED
-        - DRAFTS
-      type: string
-    PostPublication:
-      required:
-        - anonymous
-      type: object
-      properties:
-        anonymous:
-          type: boolean
-    Profile:
-      required:
-        - id
-        - username
-        - avatar
-        - tint
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        username:
-          type: string
-        avatar:
-          type: string
-        tint:
-          $ref: "#/components/schemas/Color"
-    Rank:
-      enum:
-        - CITIZEN
-        - MODERATOR
-        - ADMINISTRATOR
-      type: string
-    Report:
-      required:
-        - id
-        - dateCreated
-        - targetId
-        - source
-        - targetModel
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        dateCreated:
-          $ref: "#/components/schemas/Instant"
-        targetId:
-          $ref: "#/components/schemas/UUID"
-        source:
-          $ref: "#/components/schemas/Profile"
-        targetModel:
-          type: string
-    ReportUpdate:
-      required:
-        - reported
-      type: object
-      properties:
-        reported:
-          type: boolean
-    Subscription:
-      required:
-        - id
-        - post
-        - unreadCommentCount
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        post:
-          $ref: "#/components/schemas/Post"
-        unreadCommentCount:
-          format: int64
-          minimum: 0
-          type: integer
-    SubscriptionUpdate:
-      required:
-        - subscribed
-      type: object
-      properties:
-        subscribed:
-          type: boolean
-    TokenCreation:
-      required:
-        - identifier
-        - secret
-      type: object
-      properties:
-        identifier:
-          maxLength: 254
-          pattern: \S
-          type: string
-        secret:
-          format: password
-          pattern: \S
-          type: string
-    UUID:
-      format: uuid
-      pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"
-      type: string
-    User:
-      required:
-        - id
-        - dateCreated
-        - username
-        - rank
-        - avatar
-        - bio
-        - banned
-        - blocked
-        - tint
-      type: object
-      properties:
-        id:
-          $ref: "#/components/schemas/UUID"
-        dateCreated:
-          $ref: "#/components/schemas/Instant"
-        username:
-          maxLength: 50
-          minLength: 3
-          pattern: "^[\\w.@+-]+$"
-          type: string
-        rank:
-          $ref: "#/components/schemas/Rank"
-        avatar:
-          type: string
-        bio:
-          type: string
-        banned:
-          type: boolean
-        blocked:
-          type: boolean
-        tint:
-          $ref: "#/components/schemas/Color"
-    UserCreation:
-      required:
-        - email
-        - username
-      type: object
-      properties:
-        email:
-          maxLength: 254
-          minLength: 3
-          pattern: \S
-          type: string
-        username:
-          maxLength: 50
-          minLength: 3
-          pattern: "^[\\w.@+-]+$"
-          type: string
-    Violation:
-      type: object
-      properties:
-        field:
-          type: string
-        message:
-          type: string
-    ViolationReport:
-      type: object
-      properties:
-        title:
-          type: string
-        status:
-          format: int32
-          type: integer
-        violations:
-          type: array
-          items:
-            $ref: "#/components/schemas/Violation"
-    VoteCreation:
-      required:
-        - spread
-      type: object
-      properties:
-        spread:
-          type: boolean
-  securitySchemes:
-    SecurityScheme:
-      type: http
-      description: Authentication
-      scheme: bearer
-      bearerFormat: JWT
+info:
+  title: Fyreplace API
+  version: v0.10.0
