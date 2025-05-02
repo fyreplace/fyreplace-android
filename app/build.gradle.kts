@@ -217,6 +217,7 @@ openApiGenerate {
     library = "jvm-retrofit2"
     configOptions = mapOf(
         "useCoroutines" to "true",
+        "moshiCodeGen" to "true",
         "serializableModel" to "true",
         "additionalModelTypeAnnotations" to "@androidx.compose.runtime.Immutable"
     )
