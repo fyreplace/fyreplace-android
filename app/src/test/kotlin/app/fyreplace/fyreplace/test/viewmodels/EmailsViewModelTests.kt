@@ -8,6 +8,7 @@ import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.test.TestsBase
 import app.fyreplace.fyreplace.viewmodels.screens.EmailsViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -20,13 +21,13 @@ class EmailsViewModelTests : TestsBase() {
     fun `Loading emails produces no failures`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
-
-        viewModel.loadEmails()
-        runCurrent()
         assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
         assertEquals(3, viewModel.emails.size)
     }
 
-    private fun makeViewModel(eventBus: EventBus = FakeEventBus()) =
-        EmailsViewModel(eventBus, FakeStoreResolver(), FakeApiResolver())
+    private fun TestScope.makeViewModel(eventBus: EventBus = FakeEventBus()) = EmailsViewModel(
+        eventBus = eventBus,
+        storeResolver = FakeStoreResolver(),
+        apiResolver = FakeApiResolver()
+    ).also { runCurrent() }
 }

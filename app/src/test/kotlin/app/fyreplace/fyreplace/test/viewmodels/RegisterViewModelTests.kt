@@ -30,24 +30,23 @@ class RegisterViewModelTests : TestsBase() {
         val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         viewModel.updateHasAcceptedTerms(true)
-        backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
             viewModel.updateUsername("a".repeat(i))
             runCurrent()
-            assertFalse(viewModel.canSubmit.value)
+            assertFalse(viewModel.canSubmit)
         }
 
         for (i in minLength..maxLength) {
             viewModel.updateUsername("a".repeat(i))
             runCurrent()
-            assertTrue(viewModel.canSubmit.value)
+            assertTrue(viewModel.canSubmit)
         }
 
         viewModel.updateUsername("a".repeat(maxLength + 1))
         runCurrent()
-        assertEquals(maxLength, viewModel.username.value.length)
-        assertTrue(viewModel.canSubmit.value)
+        assertEquals(maxLength, viewModel.username.length)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -55,24 +54,23 @@ class RegisterViewModelTests : TestsBase() {
         val (minLength, maxLength, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
-        backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
             viewModel.updateEmail("@".repeat(i))
             runCurrent()
-            assertFalse(viewModel.canSubmit.value)
+            assertFalse(viewModel.canSubmit)
         }
 
         for (i in minLength..maxLength) {
             viewModel.updateEmail("@".repeat(i))
             runCurrent()
-            assertTrue(viewModel.canSubmit.value)
+            assertTrue(viewModel.canSubmit)
         }
 
         viewModel.updateEmail("@".repeat(maxLength + 1))
         runCurrent()
-        assertEquals(maxLength, viewModel.email.value.length)
-        assertTrue(viewModel.canSubmit.value)
+        assertEquals(maxLength, viewModel.email.length)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -80,15 +78,12 @@ class RegisterViewModelTests : TestsBase() {
         val (_, _, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateEmail("email")
         runCurrent()
-        assertFalse(viewModel.canSubmit.value)
-
+        assertFalse(viewModel.canSubmit)
         viewModel.updateEmail("email@example")
         runCurrent()
-        assertTrue(viewModel.canSubmit.value)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -96,15 +91,12 @@ class RegisterViewModelTests : TestsBase() {
         val (_, _, viewModel) = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateHasAcceptedTerms(false)
         runCurrent()
-        assertFalse(viewModel.canSubmit.value)
-
+        assertFalse(viewModel.canSubmit)
         viewModel.updateHasAcceptedTerms(true)
         runCurrent()
-        assertTrue(viewModel.canSubmit.value)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -117,9 +109,6 @@ class RegisterViewModelTests : TestsBase() {
             FakeUsersEndpointApi.USED_USERNAME
         )
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
 
         for (i in invalidValues.indices) {
@@ -128,7 +117,7 @@ class RegisterViewModelTests : TestsBase() {
             viewModel.submit()
             runCurrent()
             assertEquals(i + 1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
-            assertFalse(viewModel.isWaitingForRandomCode.value)
+            assertFalse(viewModel.isWaitingForRandomCode)
         }
     }
 
@@ -141,9 +130,6 @@ class RegisterViewModelTests : TestsBase() {
             FakeUsersEndpointApi.USED_EMAIL
         )
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
 
         for (i in invalidValues.indices) {
@@ -152,7 +138,7 @@ class RegisterViewModelTests : TestsBase() {
             viewModel.submit()
             runCurrent()
             assertEquals(i + 1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
-            assertFalse(viewModel.isWaitingForRandomCode.value)
+            assertFalse(viewModel.isWaitingForRandomCode)
         }
     }
 
@@ -161,23 +147,18 @@ class RegisterViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val (_, _, viewModel) = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
-        assertTrue(viewModel.isWaitingForRandomCode.value)
+        assertTrue(viewModel.isWaitingForRandomCode)
     }
 
     @Test
     fun `Random code must have correct length`() = runTest {
         val (minLength, _, viewModel) = makeViewModel()
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         runCurrent()
@@ -187,12 +168,12 @@ class RegisterViewModelTests : TestsBase() {
         for (i in 0..<minLength) {
             viewModel.updateRandomCode("a".repeat(i))
             runCurrent()
-            assertFalse(viewModel.canSubmit.value)
+            assertFalse(viewModel.canSubmit)
         }
 
         viewModel.updateRandomCode("a".repeat(minLength))
         runCurrent()
-        assertTrue(viewModel.canSubmit.value)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -200,8 +181,6 @@ class RegisterViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val (_, _, viewModel) = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         runCurrent()
@@ -219,8 +198,6 @@ class RegisterViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val (_, _, viewModel) = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         runCurrent()

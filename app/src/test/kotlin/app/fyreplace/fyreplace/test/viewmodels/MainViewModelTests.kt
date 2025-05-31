@@ -1,6 +1,5 @@
 package app.fyreplace.fyreplace.test.viewmodels
 
-import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.HotEventBus
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
@@ -21,26 +20,21 @@ class MainViewModelTests : TestsBase() {
     fun `Failures can be dismissed`() = runTest {
         val eventBus = HotEventBus()
         val viewModel = MainViewModel(
-            state = SavedStateHandle(),
             eventBus = eventBus,
             storeResolver = FakeStoreResolver()
         )
-        backgroundScope.launch { viewModel.currentFailure.collect() }
-
+        backgroundScope.launch { viewModel.events.collect() }
         runCurrent()
-        assertNull(viewModel.currentFailure.value)
-
+        assertNull(viewModel.currentFailure)
         eventBus.publish(Event.Failure())
         eventBus.publish(Event.Failure())
         runCurrent()
-        assertNotNull(viewModel.currentFailure.value)
-
+        assertNotNull(viewModel.currentFailure)
         viewModel.dismissError()
         runCurrent()
-        assertNotNull(viewModel.currentFailure.value)
-
+        assertNotNull(viewModel.currentFailure)
         viewModel.dismissError()
         runCurrent()
-        assertNull(viewModel.currentFailure.value)
+        assertNull(viewModel.currentFailure)
     }
 }

@@ -1,7 +1,10 @@
 package app.fyreplace.fyreplace.viewmodels.screens
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import app.fyreplace.api.data.TokenCreation
 import app.fyreplace.api.data.UserCreation
 import app.fyreplace.fyreplace.R
@@ -13,15 +16,11 @@ import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.min
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     state: SavedStateHandle,
@@ -31,55 +30,49 @@ class RegisterViewModel @Inject constructor(
     secretsHandler: SecretsHandler,
     private val apiResolver: ApiResolver
 ) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver, secretsHandler) {
-    val username: StateFlow<String> =
-        state.getStateFlow(::username.name, "")
-            .onStart { updateUsername(storeResolver.accountStore.data.first().username) }
-            .asState("")
-    val email: StateFlow<String> =
-        state.getStateFlow(::email.name, "")
-            .onStart { updateEmail(storeResolver.accountStore.data.first().email) }
-            .asState("")
-    val hasAcceptedTerms: StateFlow<Boolean> =
-        state.getStateFlow(::hasAcceptedTerms.name, false)
-            .combine(isWaitingForRandomCode) { hasAcceptedTerms, isWaitingForRandomCode ->
-                hasAcceptedTerms || isWaitingForRandomCode
-            }
-            .asState(false)
+    var username by state.saveable { mutableStateOf("") }
+        private set
+    var email by state.saveable { mutableStateOf("") }
+        private set
+    var hasAcceptedTerms by state.saveable { mutableStateOf(false) }
+        private set
 
-    override val isFirstStepValid = username
-        .combine(email) { username, email ->
-            val usernameMinLength = resourceResolver.getInteger(R.integer.username_min_length)
-            val emailMinLength = resourceResolver.getInteger(R.integer.email_min_length)
-            return@combine (username.isNotBlank()
-                    && username.length >= usernameMinLength
-                    && email.isNotBlank()
-                    && email.length >= emailMinLength
-                    && email.contains('@'))
+    override val isFirstStepValid
+        get() = hasAcceptedTerms
+                && username.isNotBlank()
+                && username.length >= resourceResolver.getInteger(R.integer.username_min_length)
+                && email.contains('@')
+                && email.length >= resourceResolver.getInteger(R.integer.email_min_length)
+
+    init {
+        viewModelScope.launch {
+            storeResolver.accountStore.data.collect {
+                username = it.username
+                email = it.email
+            }
         }
-        .combine(hasAcceptedTerms) { isDataValid, hasAcceptedTerms -> isDataValid && hasAcceptedTerms }
-        .distinctUntilChanged()
-        .asState(false)
+    }
 
     fun updateUsername(value: String) {
         val maxLength = resourceResolver.getInteger(R.integer.username_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
-        state[::username.name] = newValue
+        username = newValue
         viewModelScope.launch { storeResolver.accountStore.update { setUsername(newValue) } }
     }
 
     fun updateEmail(value: String) {
         val maxLength = resourceResolver.getInteger(R.integer.email_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
-        state[::email.name] = newValue
+        email = newValue
         viewModelScope.launch { storeResolver.accountStore.update { setEmail(newValue) } }
     }
 
     fun updateHasAcceptedTerms(value: Boolean) {
-        state[::hasAcceptedTerms.name] = value
+        hasAcceptedTerms = value
     }
 
     override fun sendEmail() = callWhileLoading(apiResolver::users) {
-        val input = UserCreation(email = email.value, username = username.value)
+        val input = UserCreation(email = email, username = username)
         createUser(input).failWith {
             when (it.code) {
                 400 -> when (it.violationReport?.violations?.firstOrNull()?.field) {
@@ -126,7 +119,7 @@ class RegisterViewModel @Inject constructor(
     }
 
     override fun createToken() = callWhileLoading(apiResolver::tokens) {
-        val input = TokenCreation(identifier = email.value, secret = randomCode.value)
+        val input = TokenCreation(identifier = email, secret = randomCode)
         val token = createToken(input).failWith {
             when (it.code) {
                 400 -> Event.Failure(

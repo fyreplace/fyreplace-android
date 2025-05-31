@@ -17,7 +17,11 @@ class EmailsViewModel @Inject constructor(
 ) : ApiViewModelBase(eventBus, storeResolver) {
     val emails = mutableStateListOf<Email>()
 
-    fun loadEmails() = call(apiResolver::emails) {
+    init {
+        loadEmails()
+    }
+
+    private fun loadEmails() = call(apiResolver::emails) {
         emails.clear()
         var page = 0
 

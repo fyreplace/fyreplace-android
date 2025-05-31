@@ -28,8 +28,9 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -40,6 +41,8 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.Event
+import app.fyreplace.fyreplace.fakes.FakeEventBus
+import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.input.DestinationKeyboardShortcut
 import app.fyreplace.fyreplace.input.getShortcut
 import app.fyreplace.fyreplace.ui.screens.ArchiveScreen
@@ -62,14 +65,8 @@ import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainContent() {
+fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<MainViewModel>()
-    val isAuthenticated by viewModel.isAuthenticated.collectAsStateWithLifecycle()
-    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
-    val isRegistering by viewModel.isRegistering.collectAsStateWithLifecycle()
-    val failure by viewModel.currentFailure.collectAsStateWithLifecycle()
-
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val compactWidth = sizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
     val compactHeight = sizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
@@ -81,7 +78,10 @@ fun MainContent() {
     val currentDestination = entry?.toDestination()
     val singletonDestinationGroups by remember {
         derivedStateOf {
-            topLevelDestinationGroups(expanded = !compact, userAuthenticated = isAuthenticated)
+            topLevelDestinationGroups(
+                expanded = !compact,
+                userAuthenticated = viewModel.isAuthenticated
+            )
         }
     }
     val currentSingletonDestinationGroup = singletonDestinationGroups
@@ -99,7 +99,7 @@ fun MainContent() {
 
     fun onClickDestination(destination: Destination.Singleton) {
         val actualDestination = when {
-            !isAuthenticated && isRegistering && destination == Destination.Settings -> Destination.Register()
+            !viewModel.isAuthenticated && viewModel.isRegistering && destination == Destination.Settings -> Destination.Register()
             else -> singletonDestinationGroups.find { it.root == destination }
                 ?.choices
                 ?.firstOrNull()
@@ -112,7 +112,7 @@ fun MainContent() {
         when (event.type) {
             KeyEventType.KeyUp -> when (val shortcut = getShortcut(event)) {
                 is DestinationKeyboardShortcut -> {
-                    if (!shortcut.destination.requiresAuthentication || isAuthenticated) {
+                    if (!shortcut.destination.requiresAuthentication || viewModel.isAuthenticated) {
                         onClickDestination(shortcut.destination)
                     }
 
@@ -172,7 +172,7 @@ fun MainContent() {
         TopBar(
             destinations = currentSingletonDestinationGroup?.choices ?: emptyList(),
             selectedDestination = currentDestination,
-            enabled = !isWaitingForRandomCode,
+            enabled = !viewModel.isWaitingForRandomCode,
             onClickDestination = {
                 navigate(it)
 
@@ -200,7 +200,7 @@ fun MainContent() {
                 BottomNavigation(
                     destinations = destinations,
                     selectedDestination = selectedSingletonDestination,
-                    isAuthenticated = isAuthenticated,
+                    isAuthenticated = viewModel.isAuthenticated,
                     onClickDestination = ::onClickDestination
                 )
             }
@@ -216,7 +216,7 @@ fun MainContent() {
             SideNavigation(
                 destinations = singletonDestinationGroups.map(Destination.Singleton.Group::root),
                 selectedDestination = selectedSingletonDestination,
-                isAuthenticated = isAuthenticated,
+                isAuthenticated = viewModel.isAuthenticated,
                 windowPadding = it,
                 onClickDestination = ::onClickDestination,
                 modifier = keyboardHandler
@@ -229,14 +229,16 @@ fun MainContent() {
         }
     }
 
-    failure?.let { FailureDialog(failure = it, dismiss = viewModel::dismissError) }
+    viewModel.currentFailure?.let {
+        FailureDialog(failure = it, dismiss = viewModel::dismissError)
+    }
 
-    LaunchedEffect(isAuthenticated) {
+    LaunchedEffect(viewModel.isAuthenticated) {
         val accountEntryDestinations = setOf(Destination.Login(), Destination.Register())
         navigate(
             when {
-                isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
-                isAuthenticated -> return@LaunchedEffect
+                viewModel.isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
+                viewModel.isAuthenticated -> return@LaunchedEffect
                 currentDestination == Destination.Settings -> Destination.Login()
                 currentDestination is Destination.Singleton && currentDestination.requiresAuthentication == true -> Destination.Feed
                 else -> return@LaunchedEffect
@@ -267,10 +269,22 @@ fun MainContent() {
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun MainContentPreview() {
+fun MainContentPreview(
+    @PreviewParameter(MainPreviewProvider::class)
+    viewModel: MainViewModel
+) {
     AppTheme {
-        MainContent()
+        MainContent(viewModel = viewModel)
     }
+}
+
+class MainPreviewProvider : PreviewParameterProvider<MainViewModel> {
+    override val values = sequenceOf(
+        MainViewModel(
+            eventBus = FakeEventBus(),
+            storeResolver = FakeStoreResolver()
+        )
+    )
 }
 
 private fun topLevelDestinationGroups(expanded: Boolean, userAuthenticated: Boolean) =

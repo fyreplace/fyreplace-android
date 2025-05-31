@@ -5,10 +5,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
@@ -18,10 +18,8 @@ import app.fyreplace.fyreplace.viewmodels.screens.EmailsViewModel
 
 @Composable
 fun EmailsScreen(viewModel: EmailsViewModel = hiltViewModel()) {
-    val emails = remember { viewModel.emails }
-
     LazyColumn {
-        items(emails) { email ->
+        items(viewModel.emails) { email ->
             ListItem(
                 headlineContent = { Text(email.email) },
                 supportingContent = {
@@ -32,17 +30,20 @@ fun EmailsScreen(viewModel: EmailsViewModel = hiltViewModel()) {
             )
         }
     }
-
-    LaunchedEffect(viewModel) {
-        viewModel.loadEmails()
-    }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun EmailsScreenPreview() {
-    EmailsScreen(
-        viewModel = EmailsViewModel(
+fun EmailsScreenPreview(
+    @PreviewParameter(EmailsPreviewProvider::class)
+    viewModel: EmailsViewModel
+) {
+    EmailsScreen(viewModel = viewModel)
+}
+
+private class EmailsPreviewProvider : PreviewParameterProvider<EmailsViewModel> {
+    override val values = sequenceOf(
+        EmailsViewModel(
             eventBus = FakeEventBus(),
             storeResolver = FakeStoreResolver(),
             apiResolver = FakeApiResolver()

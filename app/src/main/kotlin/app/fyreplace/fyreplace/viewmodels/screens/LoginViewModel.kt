@@ -1,7 +1,10 @@
 package app.fyreplace.fyreplace.viewmodels.screens
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import app.fyreplace.api.data.NewTokenCreation
 import app.fyreplace.api.data.TokenCreation
 import app.fyreplace.fyreplace.R
@@ -13,15 +16,12 @@ import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.min
 
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     state: SavedStateHandle,
@@ -31,23 +31,30 @@ class LoginViewModel @Inject constructor(
     secretsHandler: SecretsHandler,
     private val apiResolver: ApiResolver
 ) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver, secretsHandler) {
-    val identifier: StateFlow<String> =
-        state.getStateFlow(::identifier.name, "")
-            .onStart { updateIdentifier(storeResolver.accountStore.data.first().identifier) }
-            .asState("")
+    var identifier by state.saveable { mutableStateOf("") }
+        private set
 
-    override val isFirstStepValid = identifier
-        .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.username_min_length) }
+    override val isFirstStepValid
+        get() = identifier.isNotBlank()
+                && identifier.length >= resourceResolver.getInteger(R.integer.username_min_length)
+
+    init {
+        viewModelScope.launch {
+            storeResolver.accountStore.data.collect {
+                identifier = it.identifier.orEmpty()
+            }
+        }
+    }
 
     fun updateIdentifier(value: String) {
         val maxLength = resourceResolver.getInteger(R.integer.email_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
-        state[::identifier.name] = newValue
+        identifier = newValue
         viewModelScope.launch { storeResolver.accountStore.update { setIdentifier(newValue) } }
     }
 
     override fun sendEmail() = callWhileLoading(apiResolver::tokens) {
-        val input = NewTokenCreation(identifier = identifier.value)
+        val input = NewTokenCreation(identifier = identifier)
         createNewToken(input).failWith {
             when (it.code) {
                 400 -> Event.Failure(
@@ -75,7 +82,7 @@ class LoginViewModel @Inject constructor(
     }
 
     override fun createToken() = callWhileLoading(apiResolver::tokens) {
-        val input = TokenCreation(identifier = identifier.value, secret = randomCode.value)
+        val input = TokenCreation(identifier = identifier, secret = randomCode)
         val token = createToken(input).failWith {
             when (it.code) {
                 400 -> Event.Failure(

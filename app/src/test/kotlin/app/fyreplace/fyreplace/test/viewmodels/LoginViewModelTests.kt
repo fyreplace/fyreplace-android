@@ -34,24 +34,23 @@ class LoginViewModelTests : TestsBase() {
             identifierMaxLength = maxLength,
             randomCodeMinLength = 8
         )
-        backgroundScope.launch { viewModel.canSubmit.collect() }
 
         for (i in 0..<minLength) {
             viewModel.updateIdentifier("a".repeat(i))
             runCurrent()
-            assertFalse(viewModel.canSubmit.value)
+            assertFalse(viewModel.canSubmit)
         }
 
         for (i in minLength..maxLength) {
             viewModel.updateIdentifier("a".repeat(i))
             runCurrent()
-            assertTrue(viewModel.canSubmit.value)
+            assertTrue(viewModel.canSubmit)
         }
 
         viewModel.updateIdentifier("a".repeat(maxLength + 1))
         runCurrent()
-        assertEquals(maxLength, viewModel.identifier.value.length)
-        assertTrue(viewModel.canSubmit.value)
+        assertEquals(maxLength, viewModel.identifier.length)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -59,15 +58,12 @@ class LoginViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateIdentifier(FakeUsersEndpointApi.BAD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
-        assertFalse(viewModel.isWaitingForRandomCode.value)
+        assertFalse(viewModel.isWaitingForRandomCode)
     }
 
     @Test
@@ -75,15 +71,12 @@ class LoginViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
-        assertTrue(viewModel.isWaitingForRandomCode.value)
+        assertTrue(viewModel.isWaitingForRandomCode)
     }
 
     @Test
@@ -91,15 +84,12 @@ class LoginViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-        backgroundScope.launch { viewModel.isWaitingForRandomCode.collect() }
-
         viewModel.updateIdentifier(FakeTokensEndpointApi.PASSWORD_IDENTIFIER)
         runCurrent()
         viewModel.submit()
         runCurrent()
         assertEquals(1, eventBus.storedEvents.filterIsInstance<Event.Failure>().count())
-        assertTrue(viewModel.isWaitingForRandomCode.value)
+        assertTrue(viewModel.isWaitingForRandomCode)
     }
 
     @Test
@@ -110,7 +100,6 @@ class LoginViewModelTests : TestsBase() {
             identifierMaxLength = 50,
             randomCodeMinLength = minLength
         )
-        backgroundScope.launch { viewModel.canSubmit.collect() }
 
         viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
@@ -120,12 +109,12 @@ class LoginViewModelTests : TestsBase() {
         for (i in 0..<minLength) {
             viewModel.updateRandomCode("a".repeat(i))
             runCurrent()
-            assertFalse(viewModel.canSubmit.value)
+            assertFalse(viewModel.canSubmit)
         }
 
         viewModel.updateRandomCode("a".repeat(minLength))
         runCurrent()
-        assertTrue(viewModel.canSubmit.value)
+        assertTrue(viewModel.canSubmit)
     }
 
     @Test
@@ -133,8 +122,6 @@ class LoginViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()
@@ -151,8 +138,6 @@ class LoginViewModelTests : TestsBase() {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus, 3, 50, 8)
         backgroundScope.launch { eventBus.events.collect() }
-        backgroundScope.launch { viewModel.canSubmit.collect() }
-
         viewModel.updateIdentifier(FakeUsersEndpointApi.GOOD_USERNAME)
         runCurrent()
         viewModel.submit()

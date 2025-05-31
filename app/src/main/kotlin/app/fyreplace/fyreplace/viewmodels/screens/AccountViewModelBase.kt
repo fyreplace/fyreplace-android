@@ -1,8 +1,12 @@
 package app.fyreplace.fyreplace.viewmodels.screens
 
 import android.content.Intent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.SecretsHandler
@@ -12,57 +16,44 @@ import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.update
 import app.fyreplace.fyreplace.protos.Account
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(SavedStateHandleSaveableApi::class)
 abstract class AccountViewModelBase(
-    protected val state: SavedStateHandle,
+    state: SavedStateHandle,
     eventBus: EventBus,
     storeResolver: StoreResolver,
     protected val resourceResolver: ResourceResolver,
     private val secretsHandler: SecretsHandler
 ) : ApiViewModelBase(eventBus, storeResolver) {
-    private val mIsLoading = MutableStateFlow(false)
+    abstract val isFirstStepValid: Boolean
 
-    abstract val isFirstStepValid: Flow<Boolean>
-
-    val isWaitingForRandomCode = storeResolver.accountStore.data
+    val isWaitingForRandomCode by storeResolver.accountStore.data
         .map { it.isWaitingForRandomCode }
         .asState(false)
-    val isLoading = mIsLoading.asStateFlow()
-    val randomCode: StateFlow<String> =
-        state.getStateFlow(::randomCode.name, "")
-    val canSubmit = isWaitingForRandomCode
-        .flatMapLatest { if (it) isRandomCodeValid else isFirstStepValid }
-        .combine(isLoading) { canSubmit, isLoading -> canSubmit && !isLoading }
-        .distinctUntilChanged()
-        .asState(false)
+    var isLoading by state.saveable { mutableStateOf(false) }
+        private set
+    var randomCode by state.saveable { mutableStateOf("") }
+        private set
+    val canSubmit
+        get() = !isLoading && if (isWaitingForRandomCode) isRandomCodeValid else isFirstStepValid
 
-    private val lastDeepLinkRandomCode: StateFlow<String?> =
-        state.getStateFlow(::lastDeepLinkRandomCode.name, null)
-    private val isRandomCodeValid = randomCode
-        .map { it.isNotBlank() && it.length >= resourceResolver.getInteger(R.integer.random_code_min_length) }
+    private var lastDeepLinkRandomCode by state.saveable { mutableStateOf<String?>(null) }
+    private val isRandomCodeValid
+        get() = randomCode.isNotBlank()
+                && randomCode.length >= resourceResolver.getInteger(R.integer.random_code_min_length)
 
     fun updateRandomCode(randomCode: String) {
-        state[::randomCode.name] = randomCode
+        this.randomCode = randomCode
     }
 
     fun trySubmitDeepLinkRandomCode(randomCode: String) {
-        if (randomCode == lastDeepLinkRandomCode.value || !isWaitingForRandomCode.value) {
+        if (randomCode == lastDeepLinkRandomCode || !isWaitingForRandomCode) {
             return
         }
 
-        state[::lastDeepLinkRandomCode.name] = randomCode
+        lastDeepLinkRandomCode = randomCode
 
         if (randomCode.isNotEmpty()) {
             updateRandomCode(randomCode)
@@ -71,7 +62,7 @@ abstract class AccountViewModelBase(
     }
 
     fun submit() = when {
-        isWaitingForRandomCode.value -> createToken()
+        isWaitingForRandomCode -> createToken()
         else -> sendEmail()
     }
 
@@ -91,10 +82,10 @@ abstract class AccountViewModelBase(
     protected fun <T> callWhileLoading(api: suspend () -> T, block: suspend T.() -> Unit) =
         call(api) {
             try {
-                mIsLoading.update { true }
+                isLoading = true
                 block()
             } finally {
-                mIsLoading.update { false }
+                isLoading = false
             }
         }
 

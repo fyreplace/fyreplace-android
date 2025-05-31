@@ -20,27 +20,26 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.data.ContextResourceResolver
 import app.fyreplace.fyreplace.extensions.activity
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
+import app.fyreplace.fyreplace.fakes.FakeResourceResolver
 import app.fyreplace.fyreplace.fakes.FakeSecretsHandler
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.ui.theme.AppTheme
@@ -61,12 +60,6 @@ fun SharedTransitionScope.LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     environmentViewModel: EnvironmentViewModel = hiltViewModel(requireNotNull(activity))
 ) {
-    val environment by environmentViewModel.environment.collectAsStateWithLifecycle()
-    val identifier by viewModel.identifier.collectAsStateWithLifecycle()
-    val randomCode by viewModel.randomCode.collectAsStateWithLifecycle()
-    val isWaitingForRandomCode by viewModel.isWaitingForRandomCode.collectAsStateWithLifecycle()
-    val canSubmit by viewModel.canSubmit.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val keyboard = LocalSoftwareKeyboardController.current
     val identifierFocus = remember(::FocusRequester)
 
@@ -95,9 +88,9 @@ fun SharedTransitionScope.LoginScreen(
                 )
         ) {
             EnvironmentSelector(
-                environment = environment,
+                environment = environmentViewModel.environment,
                 onEnvironmentChange = environmentViewModel::updateEnvironment,
-                enabled = !isWaitingForRandomCode
+                enabled = !viewModel.isWaitingForRandomCode
             )
         }
 
@@ -110,10 +103,10 @@ fun SharedTransitionScope.LoginScreen(
             .padding(bottom = dimensionResource(R.dimen.spacing_huge))
 
         OutlinedTextField(
-            value = identifier,
+            value = viewModel.identifier,
             label = { Text(stringResource(R.string.login_identifier)) },
             placeholder = { Text(stringResource(R.string.login_identifier_placeholder)) },
-            enabled = !isWaitingForRandomCode,
+            enabled = !viewModel.isWaitingForRandomCode,
             singleLine = true,
             keyboardOptions = KeyboardOptions(
                 autoCorrectEnabled = false,
@@ -123,7 +116,7 @@ fun SharedTransitionScope.LoginScreen(
             keyboardActions = KeyboardActions(onDone = {
                 keyboard?.hide()
 
-                if (canSubmit) {
+                if (viewModel.canSubmit) {
                     viewModel.submit()
                 }
             }),
@@ -136,9 +129,9 @@ fun SharedTransitionScope.LoginScreen(
                 )
         )
 
-        AnimatedVisibility(isWaitingForRandomCode) {
+        AnimatedVisibility(viewModel.isWaitingForRandomCode) {
             RandomCodeInput(
-                randomCode = randomCode,
+                randomCode = viewModel.randomCode,
                 onValueChange = viewModel::updateRandomCode,
                 modifier = fieldModifier
             )
@@ -146,9 +139,9 @@ fun SharedTransitionScope.LoginScreen(
 
         SubmitOrCancel(
             submitLabel = stringResource(R.string.login_submit),
-            canSubmit = canSubmit,
-            canCancel = isWaitingForRandomCode,
-            isLoading = isLoading,
+            canSubmit = viewModel.canSubmit,
+            canCancel = viewModel.isWaitingForRandomCode,
+            isLoading = viewModel.isLoading,
             onSubmit = viewModel::submit,
             onCancel = viewModel::cancel,
             modifier = Modifier
@@ -168,7 +161,7 @@ fun SharedTransitionScope.LoginScreen(
         LaunchedEffect(Unit) {
             delay(100.milliseconds)
 
-            if (identifier.isBlank()) {
+            if (viewModel.identifier.isBlank()) {
                 identifierFocus.requestFocus()
             }
         }
@@ -178,26 +171,38 @@ fun SharedTransitionScope.LoginScreen(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun LoginScreenPreview() {
+fun LoginScreenPreview(
+    @PreviewParameter(LoginPreviewProvider::class)
+    viewModels: Pair<LoginViewModel, EnvironmentViewModel>
+) {
     AppTheme {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
-                val storeResolver = FakeStoreResolver()
                 LoginScreen(
                     visibilityScope = this,
-                    viewModel = LoginViewModel(
-                        state = SavedStateHandle(),
-                        eventBus = FakeEventBus(),
-                        resourceResolver = ContextResourceResolver(LocalContext.current),
-                        storeResolver = storeResolver,
-                        secretsHandler = FakeSecretsHandler(),
-                        apiResolver = FakeApiResolver()
-                    ),
-                    environmentViewModel = EnvironmentViewModel(
-                        storeResolver = storeResolver
-                    )
+                    viewModel = viewModels.first,
+                    environmentViewModel = viewModels.second
                 )
             }
         }
     }
+}
+
+private class LoginPreviewProvider :
+    PreviewParameterProvider<Pair<LoginViewModel, EnvironmentViewModel>> {
+    private val storeResolver = FakeStoreResolver()
+
+    override val values = sequenceOf(
+        Pair(
+            LoginViewModel(
+                state = SavedStateHandle(),
+                eventBus = FakeEventBus(),
+                resourceResolver = FakeResourceResolver(emptyMap()),
+                storeResolver = storeResolver,
+                secretsHandler = FakeSecretsHandler(),
+                apiResolver = FakeApiResolver()
+            ),
+            EnvironmentViewModel(storeResolver = storeResolver)
+        )
+    )
 }

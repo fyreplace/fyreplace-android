@@ -1,14 +1,12 @@
 package app.fyreplace.fyreplace.viewmodels
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.WhileSubscribed
-import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.launch
 
 abstract class ViewModelBase : ViewModel() {
-    fun <T> Flow<T>.asState(initialValue: T) =
-        stateIn(viewModelScope, SharingStarted.WhileSubscribed(5.seconds), initialValue)
+    protected fun <T> Flow<T>.asState(initialValue: T) =
+        mutableStateOf(initialValue).apply { viewModelScope.launch { collect { value = it } } }
 }

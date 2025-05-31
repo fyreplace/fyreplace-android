@@ -22,16 +22,15 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.codePointCount
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
@@ -53,15 +52,10 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEma
             .verticalScroll(rememberScrollState())
             .imePadding()
     ) {
-        val currentUser by viewModel.currentUser.collectAsStateWithLifecycle()
-        val bio by viewModel.bio.collectAsStateWithLifecycle()
-        val canUpdateBio by viewModel.canUpdateBio.collectAsStateWithLifecycle()
-        val isLoadingAvatar by viewModel.isLoadingAvatar.collectAsStateWithLifecycle()
-
         Section(stringResource(R.string.settings_profile_header)) {
             AvatarListItem(
-                user = currentUser,
-                isLoading = isLoadingAvatar,
+                user = viewModel.currentUser,
+                isLoading = viewModel.isLoadingAvatar,
                 onUpdateAvatar = viewModel::updateAvatar,
                 onRemoveAvatar = viewModel::removeAvatar
             )
@@ -77,14 +71,14 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEma
 
         Section(stringResource(R.string.settings_bio_header)) {
             TextField(
-                value = bio,
+                value = viewModel.bio,
                 maxLines = 10,
                 placeholder = { Text(stringResource(R.string.settings_bio_placeholder)) },
                 supportingText = {
                     Text(
                         stringResource(
                             R.string.settings_bio_length,
-                            bio.codePointCount,
+                            viewModel.bio.codePointCount,
                             integerResource(R.integer.bio_max_length)
                         )
                     )
@@ -102,7 +96,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEma
                     .padding(top = dimensionResource(R.dimen.spacing_small))
             ) {
                 Button(
-                    enabled = canUpdateBio,
+                    enabled = viewModel.canUpdateBio,
                     onClick = viewModel::updateBio
                 ) {
                     Text(stringResource(R.string.settings_bio_save))
@@ -144,26 +138,31 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEma
                 icon = Icons.Outlined.Code
             )
         }
-
-        LaunchedEffect(viewModel) {
-            viewModel.loadCurrentUser()
-        }
     }
 }
 
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun SettingsScreenPreview() {
+fun SettingsScreenPreview(
+    @PreviewParameter(SettingsPreviewProvider::class)
+    viewModel: SettingsViewModel
+) {
     AppTheme {
         SettingsScreen(
-            viewModel = SettingsViewModel(
-                SavedStateHandle(),
-                FakeEventBus(),
-                FakeResourceResolver(mapOf(R.integer.bio_max_length to 100)),
-                FakeStoreResolver(),
-                FakeApiResolver()
-            ),
+            viewModel = viewModel,
             navigateToEmails = {}
         )
     }
+}
+
+private class SettingsPreviewProvider : PreviewParameterProvider<SettingsViewModel> {
+    override val values = sequenceOf(
+        SettingsViewModel(
+            SavedStateHandle(),
+            FakeEventBus(),
+            FakeResourceResolver(mapOf(R.integer.bio_max_length to 100)),
+            FakeStoreResolver(),
+            FakeApiResolver()
+        )
+    )
 }
