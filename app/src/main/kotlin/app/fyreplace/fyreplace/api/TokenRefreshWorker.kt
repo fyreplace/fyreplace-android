@@ -24,7 +24,7 @@ class TokenRefreshWorker @AssistedInject constructor(
             val newToken = response.body() ?: throw Exception("No token received")
             storeResolver.secretsStore.update { setToken(secretsHandler.encrypt(newToken)) }
             return Result.success()
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return Result.failure()
         }
     }

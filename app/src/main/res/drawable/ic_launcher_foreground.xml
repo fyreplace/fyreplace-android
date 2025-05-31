@@ -10,27 +10,27 @@
         android:translateX="125"
         android:translateY="125">
         <path
-            android:pathData="M300,600l400,0l-15,-185l-150,-150l-50,150l-150,-150z"
-            android:fillColor="#1F000000" />
+            android:fillColor="#1F000000"
+            android:pathData="M300,600l400,0l-15,-185l-150,-150l-50,150l-150,-150z" />
         <path android:pathData="M275,725l525,525l450,-470l-515,-515l-85,385z">
             <aapt:attr name="android:fillColor">
                 <gradient
-                    android:startX="9"
-                    android:startY="383.8"
                     android:endX="698.4"
                     android:endY="1080.3"
+                    android:startX="9"
+                    android:startY="383.8"
                     android:type="linear">
                     <item
-                        android:offset="0"
-                        android:color="#2F000000" />
+                        android:color="#2F000000"
+                        android:offset="0" />
                     <item
-                        android:offset="1"
-                        android:color="#00000000" />
+                        android:color="#00000000"
+                        android:offset="1" />
                 </gradient>
             </aapt:attr>
         </path>
         <path
-            android:pathData="M350,750Q250,750 250,650L250,300A50,50 0,0 1,350 300L350,450A50,50 0,0 0,450 450L450,300A50,50 0,0 1,550 300L550,450A50,50 0,0 0,650 450L650,300A50,50 0,0 1,750 300L750,650Q750,750 650,750Z"
-            android:fillColor="#ffffff" />
+            android:fillColor="#ffffff"
+            android:pathData="M350,750Q250,750 250,650L250,300A50,50 0,0 1,350 300L350,450A50,50 0,0 0,450 450L450,300A50,50 0,0 1,550 300L550,450A50,50 0,0 0,650 450L650,300A50,50 0,0 1,750 300L750,650Q750,750 650,750Z" />
     </group>
 </vector>

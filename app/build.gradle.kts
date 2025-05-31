@@ -30,7 +30,8 @@ enum class VersionSuffix(val value: Int) {
 }
 
 interface Git {
-    @get:Inject val operations: ExecOperations
+    @get:Inject
+    val operations: ExecOperations
 
     fun exec(vararg args: String): String {
         val outputStream = ByteArrayOutputStream()

@@ -132,11 +132,12 @@ abstract class AccountViewModelBase(
                                     .addCategory(Intent.CATEGORY_APP_EMAIL)
                                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             )
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             eventBus.publish(Event.Snackbar(R.string.account_tip_email_sent_action_failed))
                         }
                     }
                 )
-            ))
+            )
+        )
     }
 }
