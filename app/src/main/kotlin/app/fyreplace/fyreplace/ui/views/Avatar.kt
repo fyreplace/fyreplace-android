@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.composeColor
-import app.fyreplace.fyreplace.fakes.placeholder
+import app.fyreplace.fyreplace.extensions.placeholder
 import coil.compose.AsyncImage
 
 @Composable

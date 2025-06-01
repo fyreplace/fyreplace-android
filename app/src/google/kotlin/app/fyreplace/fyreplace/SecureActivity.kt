@@ -34,8 +34,8 @@ abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderI
     private fun warnUser() {
         hasShownWarning = true
         AlertDialog.Builder(this)
-            .setTitle(R.string.secure_warning_title)
-            .setMessage(R.string.secure_warning_description)
+            .setTitle(R.string.secure_warning_dialog_title)
+            .setMessage(R.string.secure_warning_dialog_description)
             .setPositiveButton(R.string.ok, null)
             .show()
     }

@@ -20,6 +20,6 @@ fun LinkListItem(
         headlineContent = { Text(title) },
         supportingContent = { Text(uri) },
         leadingContent = { Icon(icon, null) },
-        modifier = Modifier.clickable(onClick = { uriHandler.openUri(uri) })
+        modifier = Modifier.clickable { uriHandler.openUri(uri) }
     )
 }

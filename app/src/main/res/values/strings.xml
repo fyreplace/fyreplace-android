@@ -16,6 +16,10 @@
     <string name="main_destination_emails">Emails</string>
     <string name="main_destination_login">Login</string>
     <string name="main_destination_register">Sign up</string>
+    <string name="main_email_verification_dialog_title">Email verified</string>
+    <string name="main_email_verification_dialog_message">You can now use %1$s to connect to your account.</string>
+    <string name="main_error_email_verification_404_title">Email not verified</string>
+    <string name="main_error_email_verification_404_message">This code is not valid. Check the code you received via email.</string>
 
     <string name="settings_profile_header">Profile</string>
     <string name="settings_profile_date_joined">Joined: %1$s</string>
@@ -29,7 +33,7 @@
     <string name="settings_bio_save">Save</string>
     <string name="settings_connection_header">Connection</string>
     <string name="settings_connection_emails">Emails</string>
-    <string name="settings_connection_emails_summary">Add or remove email addresses</string>
+    <string name="settings_connection_emails_summary">Manage email addresses</string>
     <string name="settings_about_header">About</string>
     <string name="settings_about_website">Website</string>
     <string name="settings_about_terms_of_service">Terms of service</string>
@@ -41,6 +45,17 @@
     <string name="settings_error_415_message">The type of file you have selected is not supported.</string>
 
     <string name="emails_main">Main address</string>
+    <string name="emails_verify">Verify</string>
+    <plurals name="emails_help_random_code">
+        <item quantity="one">A one-time use code has been sent to your unverified address.</item>
+        <item quantity="other">A one-time use code has been sent to your %1$d unverified addresses.</item>
+    </plurals>
+    <string name="emails_add_dialog_title">Add email address</string>
+    <string name="emails_add_dialog_placeholder" translatable="false">email@example.org</string>
+    <string name="emails_error_email_400_title">Invalid email</string>
+    <string name="emails_error_email_400_message">This email does not seem to be a valid address.</string>
+    <string name="emails_error_email_409_title">Used email</string>
+    <string name="emails_error_email_409_message">This email address is already in use.</string>
 
     <string name="account_environment_main">Production server</string>
     <string name="account_environment_dev">Testing server</string>
@@ -67,7 +82,7 @@
     <string name="register_username">Username</string>
     <string name="register_username_placeholder">Only letters, numbers and dashes</string>
     <string name="register_email">Email</string>
-    <string name="register_email_placeholder" translatable="false">email@example.org</string>
+    <string name="register_email_placeholder" translatable="false">@string/emails_add_dialog_placeholder</string>
     <string name="register_terms_acceptance">I accept the terms of service and the privacy policy</string>
     <string name="register_terms_of_service">Terms of service</string>
     <string name="register_privacy_policy">Privacy policy</string>

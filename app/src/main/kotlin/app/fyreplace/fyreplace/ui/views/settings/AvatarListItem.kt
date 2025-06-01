@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import app.fyreplace.api.data.User
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.extensions.activity
-import app.fyreplace.fyreplace.fakes.placeholder
+import app.fyreplace.fyreplace.extensions.placeholder
 import app.fyreplace.fyreplace.ui.views.Avatar
 import java.io.File
 import java.time.format.DateTimeFormatter

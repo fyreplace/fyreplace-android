@@ -3,11 +3,11 @@ package app.fyreplace.fyreplace.fakes.api
 import app.fyreplace.api.TokensEndpointApi
 import app.fyreplace.api.data.NewTokenCreation
 import app.fyreplace.api.data.TokenCreation
-import app.fyreplace.fyreplace.fakes.badRequest
-import app.fyreplace.fyreplace.fakes.created
-import app.fyreplace.fyreplace.fakes.forbidden
-import app.fyreplace.fyreplace.fakes.notFound
-import app.fyreplace.fyreplace.fakes.ok
+import app.fyreplace.fyreplace.extensions.badRequest
+import app.fyreplace.fyreplace.extensions.created
+import app.fyreplace.fyreplace.extensions.forbidden
+import app.fyreplace.fyreplace.extensions.notFound
+import app.fyreplace.fyreplace.extensions.ok
 
 class FakeTokensEndpointApi : TokensEndpointApi {
     override suspend fun createNewToken(

@@ -29,8 +29,8 @@ class SettingsViewModel @Inject constructor(
     eventBus: EventBus,
     private val resourceResolver: ResourceResolver,
     storeResolver: StoreResolver,
-    private val apiResolver: ApiResolver,
-) : ApiViewModelBase(eventBus, storeResolver) {
+    apiResolver: ApiResolver,
+) : ApiViewModelBase(eventBus, storeResolver, apiResolver) {
     var currentUser by state.saveable { mutableStateOf<User?>(null) }
         private set
     var bio by state.saveable { mutableStateOf("") }

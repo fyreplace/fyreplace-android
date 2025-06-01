@@ -11,5 +11,6 @@
     <string name="deep_link_host_dev" translatable="false">dev.fyreplace.app</string>
     <string name="deep_link_path_login" translatable="false">/login</string>
     <string name="deep_link_path_register" translatable="false">/register</string>
+    <string name="deep_link_path_emails" translatable="false">/settings/emails</string>
     <string name="deep_link_custom_scheme" translatable="false">fyreplace</string>
 </resources>

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import app.fyreplace.api.data.ExplainedFailure
 import app.fyreplace.api.data.ViolationReport
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
@@ -21,7 +22,8 @@ import java.net.UnknownHostException
 
 abstract class ApiViewModelBase(
     protected val eventBus: EventBus,
-    protected val storeResolver: StoreResolver
+    protected val storeResolver: StoreResolver,
+    protected val apiResolver: ApiResolver
 ) : ViewModelBase() {
     fun <T> call(api: suspend () -> T, block: suspend T.() -> Unit) {
         viewModelScope.launch {

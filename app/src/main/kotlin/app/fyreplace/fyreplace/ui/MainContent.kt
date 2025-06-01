@@ -2,17 +2,27 @@ package app.fyreplace.fyreplace.ui
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,10 +37,12 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -41,6 +53,7 @@ import androidx.window.core.layout.WindowHeightSizeClass
 import androidx.window.core.layout.WindowWidthSizeClass
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.Event
+import app.fyreplace.fyreplace.fakes.FakeApiResolver
 import app.fyreplace.fyreplace.fakes.FakeEventBus
 import app.fyreplace.fyreplace.fakes.FakeStoreResolver
 import app.fyreplace.fyreplace.input.DestinationKeyboardShortcut
@@ -67,6 +80,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val compactWidth = sizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
     val compactHeight = sizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
@@ -124,6 +138,8 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
         return@onKeyEvent false
     }
 
+    val mainActionClicker = remember { Clicker() }
+
     @OptIn(ExperimentalSharedTransitionApi::class)
     @Composable
     fun Host(innerPadding: PaddingValues, modifier: Modifier = Modifier) = SharedTransitionLayout {
@@ -143,7 +159,10 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
             composable<Destination.Settings> {
                 SettingsScreen { navigate(Destination.Emails) }
             }
-            composable<Destination.Emails> { EmailsScreen() }
+
+            composable<Destination.Emails> {
+                EmailsScreen(mainActionClicker = mainActionClicker)
+            }
 
             composable<Destination.Login>(
                 deepLinks = context.makeDeepLinks(context.getString(R.string.deep_link_path_login))
@@ -151,7 +170,7 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
                 LoginScreen(
                     visibilityScope = this,
                     deepLinkRandomCode = it.arguments?.getString("fragment")
-                        ?: it.toRoute<Destination.Login>().deepLinkFragment
+                        ?: it.toRoute<Destination.Login>().randomCode
                 )
             }
 
@@ -161,7 +180,7 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
                 RegisterScreen(
                     visibilityScope = this,
                     deepLinkRandomCode = it.arguments?.getString("fragment")
-                        ?: it.toRoute<Destination.Register>().deepLinkFragment
+                        ?: it.toRoute<Destination.Register>().randomCode
                 )
             }
         }
@@ -187,14 +206,27 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
         )
     }
 
+    @Composable
+    fun Snackbar() {
+        SnackbarHost(hostState = snackbarHostState)
+    }
+
+    @Composable
+    fun MainActionButton() {
+        AnimatedVisibility(
+            visible = currentDestination?.hasMainAction == true,
+            enter = scaleIn(),
+            exit = scaleOut()
+        ) {
+            FloatingActionButton(onClick = mainActionClicker::onClick) {
+                Icon(Icons.Default.Add, null)
+            }
+        }
+    }
+
     if (compact) {
         Scaffold(
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            },
-            topBar = {
-                Top()
-            },
+            topBar = { Top() },
             bottomBar = {
                 val destinations = singletonDestinationGroups.map(Destination.Singleton.Group::root)
                 BottomNavigation(
@@ -203,15 +235,16 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
                     isAuthenticated = viewModel.isAuthenticated,
                     onClickDestination = ::onClickDestination
                 )
-            }
+            },
+            snackbarHost = { Snackbar() },
+            floatingActionButton = { MainActionButton() }
         ) {
             Host(it, modifier = keyboardHandler)
         }
     } else {
         Scaffold(
-            snackbarHost = {
-                SnackbarHost(hostState = snackbarHostState)
-            }
+            snackbarHost = { Snackbar() },
+            floatingActionButton = { MainActionButton() }
         ) {
             SideNavigation(
                 destinations = singletonDestinationGroups.map(Destination.Singleton.Group::root),
@@ -229,8 +262,17 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
         }
     }
 
-    viewModel.currentFailure?.let {
-        FailureDialog(failure = it, dismiss = viewModel::dismissError)
+    val smartCastFailure = viewModel.currentFailure
+
+    if (smartCastFailure != null) {
+        FailureDialog(failure = smartCastFailure, dismiss = viewModel::dismissError)
+    }
+
+    if (viewModel.verifiedEmail.isNotBlank()) {
+        EmailVerifiedDialog(
+            email = viewModel.verifiedEmail,
+            onClose = viewModel::dismissVerifiedEmail
+        )
     }
 
     LaunchedEffect(viewModel.isAuthenticated) {
@@ -240,7 +282,7 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
                 viewModel.isAuthenticated && currentDestination in accountEntryDestinations -> Destination.Settings
                 viewModel.isAuthenticated -> return@LaunchedEffect
                 currentDestination == Destination.Settings -> Destination.Login()
-                currentDestination is Destination.Singleton && currentDestination.requiresAuthentication == true -> Destination.Feed
+                currentDestination is Destination.Singleton && currentDestination.requiresAuthentication -> Destination.Feed
                 else -> return@LaunchedEffect
             }
         )
@@ -251,18 +293,9 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
             currentSingletonDestinationGroup?.root ?: return@LaunchedEffect
     }
 
-    val scope = rememberCoroutineScope()
-
     LaunchedEffect(scope) {
         scope.launch {
-            viewModel.events.collect {
-                handleEvent(
-                    event = it,
-                    context = context,
-                    snackbarHostState = snackbarHostState,
-                    navigate = ::onClickDestination
-                )
-            }
+            viewModel.events.collect { handleEvent(it, context, snackbarHostState, ::navigate) }
         }
     }
 }
@@ -281,9 +314,29 @@ fun MainContentPreview(
 class MainPreviewProvider : PreviewParameterProvider<MainViewModel> {
     override val values = sequenceOf(
         MainViewModel(
+            state = SavedStateHandle(),
             eventBus = FakeEventBus(),
-            storeResolver = FakeStoreResolver()
+            storeResolver = FakeStoreResolver(),
+            apiResolver = FakeApiResolver()
         )
+    )
+}
+
+@Composable
+private fun EmailVerifiedDialog(email: String, onClose: () -> Unit) {
+    AlertDialog(
+        title = {
+            Text(stringResource(R.string.main_email_verification_dialog_title))
+        },
+        text = {
+            Text(stringResource(R.string.main_email_verification_dialog_message, email))
+        },
+        onDismissRequest = onClose,
+        confirmButton = {
+            TextButton(onClick = onClose) {
+                Text(stringResource(R.string.ok))
+            }
+        }
     )
 }
 
@@ -326,19 +379,10 @@ private suspend fun handleEvent(
             }
         }
 
-        is Event.DeepLink -> {
-            val destination = when (event.uri.path) {
-                context.getString(R.string.deep_link_path_login) ->
-                    Destination.Login(deepLinkFragment = event.uri.fragment)
-
-                context.getString(R.string.deep_link_path_register) ->
-                    Destination.Register(deepLinkFragment = event.uri.fragment)
-
-                else -> return
-            }
-
-            navigate(destination)
-        }
+        is Event.Connection -> navigate(
+            if (event.isRegistering) Destination.Register(randomCode = event.randomCode)
+            else Destination.Login(randomCode = event.randomCode)
+        )
 
         else -> Unit
     }

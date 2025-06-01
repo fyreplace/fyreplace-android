@@ -29,8 +29,15 @@ class LoginViewModel @Inject constructor(
     resourceResolver: ResourceResolver,
     storeResolver: StoreResolver,
     secretsHandler: SecretsHandler,
-    private val apiResolver: ApiResolver
-) : AccountViewModelBase(state, eventBus, storeResolver, resourceResolver, secretsHandler) {
+    apiResolver: ApiResolver
+) : AccountViewModelBase(
+    state,
+    eventBus,
+    storeResolver,
+    apiResolver,
+    resourceResolver,
+    secretsHandler
+) {
     var identifier by state.saveable { mutableStateOf("") }
         private set
 

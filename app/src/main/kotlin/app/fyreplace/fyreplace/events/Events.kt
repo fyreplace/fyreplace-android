@@ -1,7 +1,6 @@
 package app.fyreplace.fyreplace.events
 
 import android.content.Context
-import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
@@ -28,5 +27,11 @@ sealed interface Event {
     }
 
     @Immutable
-    data class DeepLink(val uri: Uri) : Event
+    data class Connection(val randomCode: String, val isRegistering: Boolean) : Event
+
+    @Immutable
+    data class EmailVerification(val email: String, val randomCode: String) : Event
+
+    @Immutable
+    data class EmailVerified(val email: String) : Event
 }

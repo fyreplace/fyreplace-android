@@ -36,6 +36,7 @@ import kotlinx.serialization.Serializable
 sealed interface Destination {
     @get:StringRes
     val labelRes: Int
+    val hasMainAction get() = false
 
     companion object {
         val all = listOf(
@@ -131,7 +132,7 @@ sealed interface Destination {
     }
 
     @Serializable
-    data class Login(val deepLinkFragment: String? = null) : Singleton {
+    data class Login(val randomCode: String? = null) : Singleton {
         override val labelRes = R.string.main_destination_login
         override val parent get() = Settings
         override val keepsChildren = false
@@ -141,7 +142,7 @@ sealed interface Destination {
     }
 
     @Serializable
-    data class Register(val deepLinkFragment: String? = null) : Singleton {
+    data class Register(val randomCode: String? = null) : Singleton {
         override val labelRes = R.string.main_destination_register
         override val parent get() = Settings
         override val keepsChildren = false
@@ -153,6 +154,7 @@ sealed interface Destination {
     @Serializable
     data object Emails : Destination {
         override val labelRes = R.string.main_destination_emails
+        override val hasMainAction get() = true
     }
 }
 

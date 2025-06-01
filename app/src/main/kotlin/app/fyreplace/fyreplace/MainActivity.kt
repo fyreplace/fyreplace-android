@@ -95,7 +95,30 @@ class MainActivity : ImageSelectorActivity() {
         lastUriHandled = uri
 
         if (uri != null) lifecycleScope.launch {
-            eventBus.publish(Event.DeepLink(uri))
+            val fragment = uri.fragment.orEmpty()
+            eventBus.publish(
+                when (uri.path) {
+                    getString(R.string.deep_link_path_login) -> Event.Connection(
+                        randomCode = fragment,
+                        isRegistering = false
+                    )
+
+                    getString(R.string.deep_link_path_register) -> Event.Connection(
+                        randomCode = fragment,
+                        isRegistering = true
+                    )
+
+                    getString(R.string.deep_link_path_emails) -> {
+                        val parts = fragment.split(':')
+                        Event.EmailVerification(
+                            email = parts.firstOrNull().orEmpty(),
+                            randomCode = parts.lastOrNull().orEmpty()
+                        )
+                    }
+
+                    else -> return@launch
+                }
+            )
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
 import androidx.lifecycle.viewmodel.compose.saveable
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.ResourceResolver
 import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
@@ -24,9 +25,10 @@ abstract class AccountViewModelBase(
     state: SavedStateHandle,
     eventBus: EventBus,
     storeResolver: StoreResolver,
+    apiResolver: ApiResolver,
     protected val resourceResolver: ResourceResolver,
     private val secretsHandler: SecretsHandler
-) : ApiViewModelBase(eventBus, storeResolver) {
+) : ApiViewModelBase(eventBus, storeResolver, apiResolver) {
     abstract val isFirstStepValid: Boolean
 
     val isWaitingForRandomCode by storeResolver.accountStore.data
