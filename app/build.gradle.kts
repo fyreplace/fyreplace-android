@@ -123,6 +123,7 @@ android {
         val environmentType = "app.fyreplace.fyreplace.protos.Environment"
 
         debug {
+            applicationIdSuffix = ".debug"
             buildConfigField(
                 environmentType,
                 "ENVIRONMENT_DEFAULT",
