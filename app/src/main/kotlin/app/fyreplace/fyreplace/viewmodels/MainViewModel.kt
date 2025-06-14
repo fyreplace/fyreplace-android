@@ -13,7 +13,13 @@ import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.extensions.update
+import app.fyreplace.fyreplace.protos.Secrets
+import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.sentry.Sentry
+import io.sentry.protocol.User
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -61,6 +67,15 @@ class MainViewModel @Inject constructor(
                 verifiedEmail = it.email
             }
         }
+
+        viewModelScope.launch {
+            storeResolver.secretsStore.data
+                .map(Secrets::getToken)
+                .distinctUntilChanged()
+                .map(ByteString::isEmpty)
+                .map(Boolean::not)
+                .collect(::storeCurrentUser)
+        }
     }
 
     fun dismissError() {
@@ -89,5 +104,21 @@ class MainViewModel @Inject constructor(
         } ?: return@call
 
         eventBus.publish(Event.EmailVerified(email = email))
+    }
+
+    private fun storeCurrentUser(hasToken: Boolean) = call(apiResolver::users) {
+        storeResolver.currentUserStore.update {
+            if (hasToken) {
+                val currentUser = getCurrentUser().require()
+                id = currentUser?.id.toString()
+                Sentry.setUser(User().also {
+                    it.id = id
+                    it.username = currentUser?.username
+                })
+            } else {
+                clearId()
+                Sentry.setUser(null)
+            }
+        }
     }
 }

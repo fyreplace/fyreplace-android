@@ -11,10 +11,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object SecretSerializer : Serializer<Secrets> {
-    override val defaultValue: Secrets
-        get() = Secrets.getDefaultInstance()
-            .toBuilder()
-            .build()
+    override val defaultValue: Secrets = Secrets.getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): Secrets {
         try {

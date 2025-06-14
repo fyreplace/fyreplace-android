@@ -12,11 +12,10 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object ConnectionSerializer : Serializer<Connection> {
-    override val defaultValue: Connection
-        get() = Connection.getDefaultInstance()
-            .toBuilder()
-            .setEnvironment(BuildConfig.ENVIRONMENT_DEFAULT)
-            .build()
+    override val defaultValue: Connection = Connection.getDefaultInstance()
+        .toBuilder()
+        .setEnvironment(BuildConfig.ENVIRONMENT_DEFAULT)
+        .build()
 
     override suspend fun readFrom(input: InputStream): Connection {
         try {

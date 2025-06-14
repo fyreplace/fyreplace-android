@@ -11,10 +11,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AccountSerializer : Serializer<Account> {
-    override val defaultValue: Account
-        get() = Account.getDefaultInstance()
-            .toBuilder()
-            .build()
+    override val defaultValue: Account = Account.getDefaultInstance()
 
     override suspend fun readFrom(input: InputStream): Account {
         try {

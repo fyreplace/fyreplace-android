@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.protos.Account
 import app.fyreplace.fyreplace.protos.Connection
+import app.fyreplace.fyreplace.protos.CurrentUser
 import app.fyreplace.fyreplace.protos.Environment
 import app.fyreplace.fyreplace.protos.Secrets
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,11 +13,14 @@ import kotlinx.coroutines.flow.asStateFlow
 class FakeStoreResolver(
     connection: Connection = Connection.newBuilder().setEnvironment(Environment.LOCAL).build(),
     account: Account = Account.getDefaultInstance(),
+    currentUser: CurrentUser = CurrentUser.getDefaultInstance(),
     secrets: Secrets = Secrets.getDefaultInstance()
 ) : StoreResolver {
     override val connectionStore = FakeSomethingStore(connection)
 
     override val accountStore = FakeSomethingStore(account)
+
+    override val currentUserStore = FakeSomethingStore(currentUser)
 
     override val secretsStore = FakeSomethingStore(secrets)
 }
