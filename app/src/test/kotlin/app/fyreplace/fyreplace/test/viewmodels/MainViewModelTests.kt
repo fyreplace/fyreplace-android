@@ -40,10 +40,10 @@ class MainViewModelTests : TestsBase() {
         eventBus.publish(Event.Failure())
         runCurrent()
         assertNotNull(viewModel.currentFailure)
-        viewModel.dismissError()
+        viewModel.dismiss(viewModel.currentFailure!!)
         runCurrent()
         assertNotNull(viewModel.currentFailure)
-        viewModel.dismissError()
+        viewModel.dismiss(viewModel.currentFailure!!)
         runCurrent()
         assertNull(viewModel.currentFailure)
     }

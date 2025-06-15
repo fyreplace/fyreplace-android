@@ -78,8 +78,8 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun dismissError() {
-        failures.removeAt(0)
+    fun dismiss(failure: Event.Failure) {
+        failures.remove(failure)
     }
 
     fun dismissVerifiedEmail() {

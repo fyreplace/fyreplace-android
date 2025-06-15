@@ -265,7 +265,9 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
     val smartCastFailure = viewModel.currentFailure
 
     if (smartCastFailure != null) {
-        FailureDialog(failure = smartCastFailure, dismiss = viewModel::dismissError)
+        FailureDialog(failure = smartCastFailure) {
+            viewModel.dismiss(smartCastFailure)
+        }
     }
 
     if (viewModel.verifiedEmail.isNotBlank()) {
@@ -342,7 +344,10 @@ private fun EmailVerifiedDialog(email: String, onClose: () -> Unit) {
 
 private fun topLevelDestinationGroups(expanded: Boolean, userAuthenticated: Boolean) =
     Destination.Singleton.all
-        .filter { it.parent == null || (expanded && !it.parent!!.keepsChildren) }
+        .filter {
+            val parent = it.parent
+            parent == null || (expanded && !parent.keepsChildren)
+        }
         .map { destination ->
             Destination.Singleton.Group(
                 root = destination,
