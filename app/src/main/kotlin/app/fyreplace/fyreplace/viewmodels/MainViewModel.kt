@@ -13,7 +13,6 @@ import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.extensions.update
 import app.fyreplace.fyreplace.protos.Secrets
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -107,18 +106,22 @@ class MainViewModel @Inject constructor(
     }
 
     private fun storeCurrentUser(hasToken: Boolean) = call(apiResolver::users) {
-        storeResolver.currentUserStore.update {
+        storeResolver.currentUserStore.updateData {
+            val builder = it.toBuilder()
+
             if (hasToken) {
                 val currentUser = getCurrentUser().require()
-                id = currentUser?.id.toString()
-                Sentry.setUser(User().also {
-                    it.id = id
-                    it.username = currentUser?.username
+                builder.id = currentUser?.id.toString()
+                Sentry.setUser(User().also { user ->
+                    user.id = builder.id
+                    user.username = currentUser?.username
                 })
             } else {
-                clearId()
+                builder.clearId()
                 Sentry.setUser(null)
             }
+
+            return@updateData builder.build()
         }
     }
 }

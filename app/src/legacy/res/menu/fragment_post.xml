@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_baseline_share"
+        android:title="@string/post_menu_action_share" />
+    <item
+        android:id="@+id/subscribe"
+        android:icon="@drawable/ic_baseline_notifications"
+        android:title="@string/post_menu_action_subscribe" />
+    <item
+        android:id="@+id/unsubscribe"
+        android:icon="@drawable/ic_baseline_notifications_off"
+        android:title="@string/post_menu_action_unsubscribe" />
+    <item
+        android:id="@+id/report"
+        android:icon="@drawable/ic_baseline_report"
+        android:title="@string/post_menu_action_report" />
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_baseline_delete"
+        android:title="@string/post_menu_action_delete" />
+</menu>

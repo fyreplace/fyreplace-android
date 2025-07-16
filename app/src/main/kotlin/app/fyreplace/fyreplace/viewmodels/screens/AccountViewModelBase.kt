@@ -14,8 +14,6 @@ import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.extensions.update
-import app.fyreplace.fyreplace.protos.Account
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -70,9 +68,11 @@ abstract class AccountViewModelBase(
 
     fun cancel() {
         viewModelScope.launch {
-            storeResolver.accountStore.update {
-                setIsWaitingForRandomCode(false)
-                setIsRegistering(false)
+            storeResolver.accountStore.updateData {
+                it.toBuilder()
+                    .setIsWaitingForRandomCode(false)
+                    .setIsRegistering(false)
+                    .build()
             }
         }
     }
@@ -93,9 +93,11 @@ abstract class AccountViewModelBase(
 
     protected fun onEmailSent(isRegistering: Boolean, showEmailTip: Boolean = true) {
         viewModelScope.launch {
-            storeResolver.accountStore.update {
-                setIsWaitingForRandomCode(true)
-                setIsRegistering(isRegistering)
+            storeResolver.accountStore.updateData {
+                it.toBuilder()
+                    .setIsWaitingForRandomCode(true)
+                    .setIsRegistering(isRegistering)
+                    .build()
             }
 
             if (showEmailTip) {
@@ -106,8 +108,10 @@ abstract class AccountViewModelBase(
 
     protected fun onTokenCreated(token: String) {
         viewModelScope.launch {
-            storeResolver.secretsStore.update { setToken(secretsHandler.encrypt(token)) }
-            storeResolver.accountStore.update(Account.Builder::clear)
+            storeResolver.secretsStore.updateData {
+                it.toBuilder().setToken(secretsHandler.encrypt(token)).build()
+            }
+            storeResolver.accountStore.updateData { it.defaultInstanceForType }
             updateRandomCode("")
         }
     }

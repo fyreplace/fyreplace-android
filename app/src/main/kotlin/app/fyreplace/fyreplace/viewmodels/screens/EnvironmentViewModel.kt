@@ -4,7 +4,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.extensions.orDefault
-import app.fyreplace.fyreplace.extensions.update
 import app.fyreplace.fyreplace.protos.Environment
 import app.fyreplace.fyreplace.viewmodels.ViewModelBase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +21,9 @@ class EnvironmentViewModel @Inject constructor(
 
     fun updateEnvironment(environment: Environment) {
         viewModelScope.launch {
-            storeResolver.connectionStore.update { setEnvironment(environment) }
+            storeResolver.connectionStore.updateData {
+                it.toBuilder().setEnvironment(environment).build()
+            }
         }
     }
 }

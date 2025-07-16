@@ -14,7 +14,6 @@ import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.extensions.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -57,7 +56,11 @@ class LoginViewModel @Inject constructor(
         val maxLength = resourceResolver.getInteger(R.integer.email_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
         identifier = newValue
-        viewModelScope.launch { storeResolver.accountStore.update { setIdentifier(newValue) } }
+        viewModelScope.launch {
+            storeResolver.accountStore.updateData {
+                it.toBuilder().setIdentifier(newValue).build()
+            }
+        }
     }
 
     override fun sendEmail() = callWhileLoading(apiResolver::tokens) {

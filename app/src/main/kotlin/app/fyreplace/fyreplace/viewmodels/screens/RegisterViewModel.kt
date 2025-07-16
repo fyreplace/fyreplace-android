@@ -14,7 +14,6 @@ import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.extensions.update
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -64,14 +63,22 @@ class RegisterViewModel @Inject constructor(
         val maxLength = resourceResolver.getInteger(R.integer.username_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
         username = newValue
-        viewModelScope.launch { storeResolver.accountStore.update { setUsername(newValue) } }
+        viewModelScope.launch {
+            storeResolver.accountStore.updateData {
+                it.toBuilder().setUsername(newValue).build()
+            }
+        }
     }
 
     fun updateEmail(value: String) {
         val maxLength = resourceResolver.getInteger(R.integer.email_max_length)
         val newValue = value.substring(0, min(maxLength, value.length))
         email = newValue
-        viewModelScope.launch { storeResolver.accountStore.update { setEmail(newValue) } }
+        viewModelScope.launch {
+            storeResolver.accountStore.updateData {
+                it.toBuilder().setEmail(newValue).build()
+            }
+        }
     }
 
     fun updateHasAcceptedTerms(value: Boolean) {

@@ -9,8 +9,6 @@ import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.extensions.update
-import app.fyreplace.fyreplace.protos.Secrets
 import com.squareup.moshi.JsonClass
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
@@ -49,7 +47,7 @@ abstract class ApiViewModelBase(
         }
 
         if (code() == 401) {
-            storeResolver.secretsStore.update(Secrets.Builder::clearToken)
+            storeResolver.secretsStore.updateData { it.toBuilder().clearToken().build() }
             eventBus.publish(Event.Failure(R.string.error_401_title, R.string.error_401_message))
             return null
         }

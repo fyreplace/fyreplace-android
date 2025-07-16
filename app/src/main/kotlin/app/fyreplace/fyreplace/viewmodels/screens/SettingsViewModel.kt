@@ -13,9 +13,6 @@ import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.extensions.codePointCount
-import app.fyreplace.fyreplace.extensions.update
-import app.fyreplace.fyreplace.protos.Connection
-import app.fyreplace.fyreplace.protos.Secrets
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -88,8 +85,8 @@ class SettingsViewModel @Inject constructor(
 
     fun logout() {
         viewModelScope.launch {
-            storeResolver.connectionStore.update(Connection.Builder::clear)
-            storeResolver.secretsStore.update(Secrets.Builder::clear)
+            storeResolver.connectionStore.updateData { it.defaultInstanceForType }
+            storeResolver.secretsStore.updateData { it.defaultInstanceForType }
         }
     }
 

@@ -48,34 +48,39 @@ jobs:
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ vars.SENTRY_PROJECT }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: ./gradlew assembleRelease bundleRelease
+        run: |
+          ./gradlew \
+            assembleLegacyGoogleRelease \
+            assembleLegacyLibreRelease \
+            bundleLegacyGoogleRelease \
+            bundleLegacyLibreRelease
 
       - name: Upload Google APK
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.google.apk
-          path: app/build/outputs/apk/google/release/app-google-release.apk
+          path: app/build/outputs/apk/legacyGoogle/release/app-legacy-google-release.apk
           if-no-files-found: error
 
       - name: Upload Libre APK
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.apk
-          path: app/build/outputs/apk/libre/release/app-libre-release.apk
+          path: app/build/outputs/apk/legacyLibre/release/app-legacy-libre-release.apk
           if-no-files-found: error
 
       - name: Upload Google AAB
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.google.aab
-          path: app/build/outputs/bundle/googleRelease/app-google-release.aab
+          path: app/build/outputs/bundle/legacyGoogleRelease/app-legacy-google-release.aab
           if-no-files-found: error
 
       - name: Upload Libre AAB
         uses: actions/upload-artifact@v4
         with:
           name: Fyreplace.libre.aab
-          path: app/build/outputs/bundle/libreRelease/app-libre-release.aab
+          path: app/build/outputs/bundle/legacyLibreRelease/app-legacy-libre-release.aab
           if-no-files-found: error
   test:
     name: Test
@@ -95,7 +100,7 @@ jobs:
           cache: 'gradle'
 
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew assembleNextGoogleDebug test
 
   publish:
     name: Publish
