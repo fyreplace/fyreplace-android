@@ -5,6 +5,7 @@ sentryPlugin = "5.8.0"
 openapiPlugin = "7.14.0"
 protobufPlugin = "0.9.5"
 kspPlugin = "2.2.0-2.0.2"
+googlePlugin = "4.4.3"
 androidxComposeBom = "2025.06.01"
 androidxActivity = "1.10.1"
 androidxComposeAnimation = "1.8.3"
@@ -125,3 +126,4 @@ openapi = { id = "org.openapi.generator", version.ref = "openapiPlugin" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 navigation-safeargs = { id = "androidx.navigation.safeargs.kotlin", version.ref = "androidxNavigation" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspPlugin" }
+google = { id = "com.google.gms.google-services", version.ref = "googlePlugin" }

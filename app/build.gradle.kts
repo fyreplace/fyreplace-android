@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.protobuf)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google)
 }
 
 val localProperties = Properties()
