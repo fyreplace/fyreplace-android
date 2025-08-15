@@ -12,11 +12,11 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: true
@@ -82,13 +82,14 @@ jobs:
           name: Fyreplace.libre.aab
           path: app/build/outputs/bundle/legacyLibreRelease/app-legacy-libre-release.aab
           if-no-files-found: error
+
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: true
@@ -113,11 +114,11 @@ jobs:
     needs:
       - build
       - test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: true
@@ -126,7 +127,7 @@ jobs:
         run: mkdir -p build
 
       - name: Download Google AAB
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: Fyreplace.google.aab
           path: build
