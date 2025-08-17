@@ -6,8 +6,8 @@ import org.conscrypt.Conscrypt
 import java.security.Security
 
 abstract class SecureActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
         Security.insertProviderAt(Conscrypt.newProvider(), 1)
     }
 }

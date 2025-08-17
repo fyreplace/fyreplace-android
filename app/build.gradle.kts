@@ -296,6 +296,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
+    implementation(libs.conscrypt)
     implementation(libs.hilt)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.moshi)
@@ -329,8 +330,6 @@ dependencies {
     "googleImplementation"(platform(libs.firebase.bom))
     "googleImplementation"(libs.play.services.base)
     "googleImplementation"(libs.firebase.messaging)
-
-    "libreImplementation"(libs.conscrypt)
 
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
