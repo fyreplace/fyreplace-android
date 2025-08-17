@@ -92,16 +92,15 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
     override fun getTitle() =
         if (args.isRegistering) R.string.settings_register else R.string.settings_login
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onRegisterOrLoginClicked(view: View) {
+    fun onRegisterOrLoginClicked(@Suppress("unused") view: View) {
         registerOrLogin()
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onPrivacyPolicyClicked(view: View) = browse(R.string.legal_privacy_policy_url)
+    fun onPrivacyPolicyClicked(@Suppress("unused") view: View) =
+        browse(R.string.legal_privacy_policy_url)
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onTermsOfServiceClicked(view: View) = browse(R.string.legal_terms_of_service_url)
+    fun onTermsOfServiceClicked(@Suppress("unused") view: View) =
+        browse(R.string.legal_terms_of_service_url)
 
     private fun registerOrLogin() = launch {
         view?.hideSoftInput()

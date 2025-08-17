@@ -59,13 +59,12 @@ class UserViewModel @AssistedInject constructor(
     }
 
     companion object {
-        fun provideFactory(
-            assistedFactory: UserViewModelFactory,
-            profile: Profile
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                assistedFactory.create(profile) as T
-        }
+        fun provideFactory(assistedFactory: UserViewModelFactory, profile: Profile) =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    assistedFactory.create(profile) as T
+            }
     }
 }
 

@@ -19,7 +19,6 @@ import io.grpc.ManagedChannelBuilder
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 object GrpcModule {
     @Provides
     fun provideManagedChannel(

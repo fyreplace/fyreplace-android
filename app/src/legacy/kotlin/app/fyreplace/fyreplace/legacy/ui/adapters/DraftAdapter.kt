@@ -103,11 +103,11 @@ class DraftAdapter(
             setOnLongClickListener(null)
         }
 
-        @Suppress("UNUSED_PARAMETER")
-        fun onTextClicked(view: View) = chapterListener.onInsertChapter(items.size, TYPE_TEXT)
+        fun onTextClicked(@Suppress("unused") view: View) =
+            chapterListener.onInsertChapter(items.size, TYPE_TEXT)
 
-        @Suppress("UNUSED_PARAMETER")
-        fun onImageClicked(view: View) = chapterListener.onInsertChapter(items.size, TYPE_IMAGE)
+        fun onImageClicked(@Suppress("unused") view: View) =
+            chapterListener.onInsertChapter(items.size, TYPE_IMAGE)
     }
 
     interface ChapterListener {

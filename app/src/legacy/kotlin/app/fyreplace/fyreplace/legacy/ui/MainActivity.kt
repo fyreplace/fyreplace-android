@@ -24,7 +24,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
-import androidx.lifecycle.whenStarted
+import androidx.lifecycle.withStarted
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -201,11 +201,13 @@ class MainActivity :
         refreshCustomTitle()
         refreshPrimaryAction()
         launch {
-            navHost.childFragmentManager.fragments.last().whenStarted {
-                delay(100)
-                bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
-                val destination = navHost.navController.currentDestination
-                setBottomNavigationVisible(destination?.isTopLevel == true)
+            navHost.childFragmentManager.fragments.last().withStarted {
+                launch {
+                    delay(100)
+                    bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
+                    val destination = navHost.navController.currentDestination
+                    setBottomNavigationVisible(destination?.isTopLevel == true)
+                }
             }
         }
     }
@@ -229,8 +231,7 @@ class MainActivity :
         }
     }
 
-    @Suppress("UNUSED_PARAMETER")
-    fun onPrimaryActionClicked(view: View) {
+    fun onPrimaryActionClicked(@Suppress("unused") view: View) {
         getPrimaryActionProvider()?.onPrimaryAction()
     }
 

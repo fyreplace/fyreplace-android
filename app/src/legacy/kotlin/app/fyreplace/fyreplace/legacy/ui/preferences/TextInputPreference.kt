@@ -14,20 +14,16 @@ abstract class TextInputPreference :
     protected abstract val dialogTitle: Int
     protected abstract val textInputConfig: TextInputConfig
 
-    @Suppress("unused")
     constructor(context: Context) : super(context)
 
-    @Suppress("unused")
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    @Suppress("unused")
     constructor(
         context: Context,
         attrs: AttributeSet,
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr)
 
-    @Suppress("unused")
     constructor(
         context: Context,
         attrs: AttributeSet,

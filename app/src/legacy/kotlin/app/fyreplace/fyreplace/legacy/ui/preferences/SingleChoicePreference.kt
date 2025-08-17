@@ -20,20 +20,16 @@ abstract class SingleChoicePreference :
     private val currentIndex
         get() = choiceValuesList.indexOf(value)
 
-    @Suppress("unused")
     constructor(context: Context) : super(context)
 
-    @Suppress("unused")
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
-    @Suppress("unused")
     constructor(
         context: Context,
         attrs: AttributeSet,
         defStyleAttr: Int
     ) : super(context, attrs, defStyleAttr)
 
-    @Suppress("unused")
     constructor(
         context: Context,
         attrs: AttributeSet,

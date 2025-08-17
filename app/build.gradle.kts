@@ -199,6 +199,12 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs = listOf("-Xannotation-default-target=param-property")
+    }
+}
+
 composeCompiler {
     val outputDirectory = layout.buildDirectory.dir("compose_compiler")
     reportsDestination = outputDirectory

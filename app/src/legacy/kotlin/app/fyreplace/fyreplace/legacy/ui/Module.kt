@@ -4,7 +4,6 @@ import androidx.fragment.app.Fragment
 import dagger.assisted.AssistedFactory
 
 @AssistedFactory
-@Suppress("unused")
 interface ImageSelectorFactory {
     fun create(
         fragment: Fragment,

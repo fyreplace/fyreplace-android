@@ -148,12 +148,11 @@ class PostViewModel @AssistedInject constructor(
     }
 
     companion object {
-        fun provideFactory(
-            assistedFactory: PostViewModelFactory,
-            post: Post
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                assistedFactory.create(post) as T
-        }
+        fun provideFactory(assistedFactory: PostViewModelFactory, post: Post) =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    assistedFactory.create(post) as T
+            }
     }
 }

@@ -39,7 +39,13 @@ abstract class TextInputFragment : BaseFragment(R.layout.fragment_text_input), M
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.text.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            mainActivity.setToolbarInfo(getString(R.string.text_input_length, it.length, maxLength))
+            mainActivity.setToolbarInfo(
+                resources.getQuantityString(
+                    R.plurals.text_input_length,
+                    it.length,
+                    maxLength
+                )
+            )
         }
     }
 

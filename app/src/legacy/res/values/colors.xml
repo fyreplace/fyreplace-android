@@ -32,7 +32,7 @@
     <color name="md_theme_scrim">#000000</color>
     <color name="seed">#FF8243</color>
     <color name="error">#BA1B1B</color>
-    <color name="status">@android:color/black</color>
+    <color name="status">@android:color/transparent</color>
     <color name="navigation">@android:color/black</color>
     <color name="splash">@color/seed</color>
     <color name="disabled">#7F7F7F7F</color>

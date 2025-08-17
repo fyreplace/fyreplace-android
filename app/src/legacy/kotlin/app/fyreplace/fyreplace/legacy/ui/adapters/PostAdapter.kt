@@ -203,7 +203,6 @@ class PostAdapter(
             bd.isAuthenticated = isAuthenticated
         }
 
-        @Suppress("UNUSED_PARAMETER")
-        fun onButtonClicked(view: View) = commentListener.onNewCommentClicked()
+        fun onButtonClicked(@Suppress("unused") view: View) = commentListener.onNewCommentClicked()
     }
 }

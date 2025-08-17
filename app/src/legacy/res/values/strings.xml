@@ -60,7 +60,10 @@
     <string name="image_error_file_size_message">This picture is too large.</string>
 
     <string name="text_input_menu_action_done">Done</string>
-    <string name="text_input_length">%1$d/%2$d characters</string>
+    <plurals name="text_input_length">
+        <item quantity="one">%1$d/%2$d character</item>
+        <item quantity="other">%1$d/%2$d characters</item>
+    </plurals>
 
     <string name="main_account_activated_title">Account activated</string>
     <string name="main_account_activated_message">Your account has been successfully activated. Welcome to Fyreplace!</string>

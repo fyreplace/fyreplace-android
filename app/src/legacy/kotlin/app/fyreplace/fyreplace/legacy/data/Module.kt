@@ -11,7 +11,6 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
 object DataModule {
     @Provides
     fun provideSharedPreferences(@ApplicationContext context: Context) = context.mainPreferences

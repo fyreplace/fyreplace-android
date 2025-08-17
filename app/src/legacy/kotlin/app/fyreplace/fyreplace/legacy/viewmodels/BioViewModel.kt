@@ -17,12 +17,11 @@ class BioViewModel @AssistedInject constructor(
     }
 
     companion object {
-        fun provideFactory(
-            assistedFactory: BioViewModelFactory,
-            bio: String
-        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                assistedFactory.create(bio) as T
-        }
+        fun provideFactory(assistedFactory: BioViewModelFactory, bio: String) =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    assistedFactory.create(bio) as T
+            }
     }
 }
