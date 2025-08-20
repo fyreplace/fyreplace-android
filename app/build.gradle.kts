@@ -52,7 +52,7 @@ fun git(vararg args: String) = project.objects.newInstance<Git>().exec(*args)
 
 fun getVersionNumberSuffix(): VersionSuffix {
     val ref = git("describe", "--tags", "--always")
-    val branch = git("branch")
+    val branch = git("rev-parse", "--abbrev-ref", "HEAD")
     return when {
         ref.matches(Regex("v?\\d+\\.\\d+\\.\\d+")) -> VersionSuffix.MAIN
         branch.startsWith("hotfix") -> VersionSuffix.HOTFIX
