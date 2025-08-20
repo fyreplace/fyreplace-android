@@ -6,11 +6,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+@Suppress("unused")
 @Module
 @InstallIn(SingletonComponent::class)
-@Suppress("unused")
-abstract class EventsModule {
-    @Singleton
+interface Module {
     @Binds
-    abstract fun provideEventsManager(eventsManagerImpl: EventsManagerImpl): EventsManager
+    @Singleton
+    fun bindEventBus(bus: HotEventBus): EventBus
 }

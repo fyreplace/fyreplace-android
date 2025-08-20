@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="item_list_text_max_lines">4</integer>
+    <integer name="bio_max_size">3000</integer>
+    <integer name="email_min_size">3</integer>
+    <integer name="email_max_size">100</integer>
+    <integer name="username_min_size">3</integer>
+    <integer name="username_max_size">50</integer>
+    <integer name="password_max_size">100</integer>
+    <integer name="comment_max_size">1500</integer>
+    <integer name="chapter_text_max_size">500</integer>
+    <integer name="chapter_text_max_lines">8</integer>
+</resources>

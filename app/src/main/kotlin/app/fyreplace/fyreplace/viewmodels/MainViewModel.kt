@@ -1,38 +1,127 @@
 package app.fyreplace.fyreplace.viewmodels
 
-import android.annotation.SuppressLint
-import android.content.SharedPreferences
-import app.fyreplace.fyreplace.extensions.storeAuthToken
-import app.fyreplace.fyreplace.grpc.defaultClient
-import app.fyreplace.protos.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.SavedStateHandleSaveableApi
+import androidx.lifecycle.viewmodel.compose.saveable
+import app.fyreplace.api.data.EmailVerification
+import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.api.ApiResolver
+import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.events.Event
+import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.protos.Secrets
 import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.sentry.Sentry
+import io.sentry.protocol.User
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
-@SuppressLint("CheckResult")
 class MainViewModel @Inject constructor(
-    private val preferences: SharedPreferences,
-    private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
-    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub,
-    private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub
-) : BaseViewModel() {
-    suspend fun confirmActivation(tokenValue: String) =
-        preferences.storeAuthToken(accountStub.confirmActivation(makeConnectionToken(tokenValue)))
+    state: SavedStateHandle,
+    eventBus: EventBus,
+    storeResolver: StoreResolver,
+    apiResolver: ApiResolver
+) : ApiViewModelBase(eventBus, storeResolver, apiResolver) {
+    private val failures = mutableStateListOf<Event.Failure>()
 
-    suspend fun confirmConnection(tokenValue: String) =
-        preferences.storeAuthToken(accountStub.confirmConnection(makeConnectionToken(tokenValue)))
+    val events = eventBus.events
 
-    suspend fun confirmEmailUpdate(tokenValue: String) {
-        userStub.confirmEmailUpdate(token { token = tokenValue })
+    val isAuthenticated by storeResolver.secretsStore.data
+        .map { !it.token.isEmpty }
+        .asState(true)
+    val isWaitingForRandomCode by storeResolver.accountStore.data
+        .map { it.isWaitingForRandomCode }
+        .asState(false)
+    val isRegistering by storeResolver.accountStore.data
+        .map { it.isRegistering }
+        .asState(false)
+    val currentFailure
+        get() = failures.firstOrNull()
+    var verifiedEmail by state.saveable { mutableStateOf("") }
+        private set
+
+    init {
+        viewModelScope.launch {
+            eventBus.events.filterIsInstance<Event.Failure>().collect(failures::add)
+        }
+
+        viewModelScope.launch {
+            eventBus.events.filterIsInstance<Event.EmailVerification>().collect {
+                verifyEmail(it.email, it.randomCode)
+            }
+        }
+
+        viewModelScope.launch {
+            eventBus.events.filterIsInstance<Event.EmailVerified>().collect {
+                verifiedEmail = it.email
+            }
+        }
+
+        viewModelScope.launch {
+            storeResolver.secretsStore.data
+                .map(Secrets::getToken)
+                .distinctUntilChanged()
+                .map(ByteString::isEmpty)
+                .map(Boolean::not)
+                .collect(::storeCurrentUser)
+        }
     }
 
-    suspend fun acknowledgeComment(id: ByteString) {
-        commentStub.acknowledge(id { this.id = id })
+    fun dismiss(failure: Event.Failure) {
+        failures.remove(failure)
     }
 
-    private fun makeConnectionToken(tokenValue: String) = connectionToken {
-        token = tokenValue
-        client = defaultClient
+    fun dismissVerifiedEmail() {
+        verifiedEmail = ""
+    }
+
+    fun verifyEmail(email: String, randomCode: String) = call(apiResolver::emails) {
+        verifyEmail(EmailVerification(email = email, code = randomCode)).failWith {
+            when (it.code) {
+                400 -> Event.Failure(
+                    R.string.error_400_title,
+                    R.string.error_400_message
+                )
+
+                404 -> Event.Failure(
+                    R.string.main_error_email_verification_404_title,
+                    R.string.main_error_email_verification_404_message
+                )
+
+                else -> Event.Failure()
+            }
+        } ?: return@call
+
+        eventBus.publish(Event.EmailVerified(email = email))
+    }
+
+    private fun storeCurrentUser(hasToken: Boolean) = call(apiResolver::users) {
+        storeResolver.currentUserStore.updateData {
+            val builder = it.toBuilder()
+
+            if (hasToken) {
+                val currentUser = getCurrentUser().require()
+                builder.id = currentUser?.id.toString()
+                Sentry.setUser(User().also { user ->
+                    user.id = builder.id
+                    user.username = currentUser?.username
+                })
+            } else {
+                builder.clearId()
+                Sentry.setUser(null)
+            }
+
+            return@updateData builder.build()
+        }
     }
 }

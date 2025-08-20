@@ -1,0 +1,49 @@
+package app.fyreplace.fyreplace
+
+import android.app.AlertDialog
+import android.content.Intent
+import androidx.activity.ComponentActivity
+import com.google.android.gms.common.GoogleApiAvailability
+import com.google.android.gms.security.ProviderInstaller
+import org.conscrypt.Conscrypt
+import java.security.Security
+
+abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderInstallListener {
+    private var hasShownWarning = false
+
+    override fun onPostResume() {
+        super.onPostResume()
+
+        if (!hasShownWarning) {
+            ProviderInstaller.installIfNeededAsync(this, this)
+        }
+    }
+
+    override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) {
+        with(GoogleApiAvailability.getInstance()) {
+            if (isUserResolvableError(errorCode)) {
+                showErrorDialogFragment(this@SecureActivity, errorCode, ERROR_DIALOG_REQUEST_CODE) {
+                    warnUser()
+                }
+            } else {
+                warnUser()
+            }
+        }
+    }
+
+    override fun onProviderInstalled() = Unit
+
+    private fun warnUser() {
+        Security.insertProviderAt(Conscrypt.newProvider(), 1)
+        hasShownWarning = true
+        AlertDialog.Builder(this)
+            .setTitle(R.string.secure_warning_dialog_title)
+            .setMessage(R.string.secure_warning_dialog_description)
+            .setPositiveButton(R.string.ok, null)
+            .show()
+    }
+
+    companion object {
+        const val ERROR_DIALOG_REQUEST_CODE = 1
+    }
+}

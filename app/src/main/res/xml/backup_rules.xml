@@ -2,5 +2,10 @@
 <full-backup-content>
     <include
         domain="sharedpref"
-        path="." />
+        path="."
+        requireFlags="clientSideEncryption" />
+    <include
+        domain="sharedpref"
+        path="."
+        requireFlags="deviceToDeviceTransfer" />
 </full-backup-content>

@@ -1,9 +1,10 @@
-.DS_Store
 *.iml
 .gradle
-local.properties
-build
-captures
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
 .externalNativeBuild
 .cxx
-key.properties
+local.properties
