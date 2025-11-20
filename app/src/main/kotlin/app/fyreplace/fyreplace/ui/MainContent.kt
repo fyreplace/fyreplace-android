@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -49,8 +49,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
-import androidx.window.core.layout.WindowHeightSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
@@ -82,8 +80,8 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
-    val compactWidth = sizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
-    val compactHeight = sizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT
+    val compactWidth = !sizeClass.isWidthAtLeastBreakpoint(600)
+    val compactHeight = !sizeClass.isHeightAtLeastBreakpoint(480)
     val compact = compactWidth || compactHeight
 
     val snackbarHostState = remember { SnackbarHostState() }
