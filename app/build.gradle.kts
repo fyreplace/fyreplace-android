@@ -216,7 +216,7 @@ sentry {
     projectName = getValue("sentry.project")
     authToken = getValue("sentry.auth.token")
     includeSourceContext = true
-    ignoredFlavors = setOf("libre")
+    ignoredFlavors = setOf("legacy", "libre")
 }
 
 openApiGenerate {
