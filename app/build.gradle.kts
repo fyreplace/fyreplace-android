@@ -302,7 +302,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
-    implementation(libs.conscrypt)
     implementation(libs.hilt)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.moshi)
@@ -332,6 +331,8 @@ dependencies {
     "legacyImplementation"(libs.grpc.stub)
     "legacyImplementation"(libs.grpc.stub.kotlin)
     "legacyImplementation"(libs.kotlinx.coroutines)
+
+    "libreImplementation"(libs.conscrypt)
 
     "googleImplementation"(platform(libs.firebase.bom))
     "googleImplementation"(libs.play.services.base)
