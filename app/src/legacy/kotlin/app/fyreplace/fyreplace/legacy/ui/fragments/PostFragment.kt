@@ -315,6 +315,11 @@ class PostFragment :
                 if (subscribed) PostWasSubscribedToEvent(preview)
                 else PostWasUnsubscribedFromEvent(preview)
             )
+            showBasicSnackbar(
+                if (subscribed) R.string.post_snackbar_subscribed
+                else R.string.post_snackbar_unsubscribed,
+                Snackbar.LENGTH_SHORT
+            )
         }
     }
 
