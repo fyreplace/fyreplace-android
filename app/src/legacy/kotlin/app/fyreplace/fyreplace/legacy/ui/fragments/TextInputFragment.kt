@@ -43,6 +43,7 @@ abstract class TextInputFragment : BaseFragment(R.layout.fragment_text_input), M
                 resources.getQuantityString(
                     R.plurals.text_input_length,
                     it.length,
+                    it.length,
                     maxLength
                 )
             )
