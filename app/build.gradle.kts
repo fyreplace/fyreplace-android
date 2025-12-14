@@ -88,6 +88,7 @@ fun getVersionString(variant: String? = null): String {
 android {
     namespace = "app.fyreplace.fyreplace"
     compileSdk = 36
+    compileSdkMinor = 1
 
     defaultConfig {
         applicationId = "app.fyreplace.fyreplace"
