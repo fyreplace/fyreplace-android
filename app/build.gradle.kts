@@ -88,6 +88,7 @@ fun getVersionString(variant: String? = null): String {
 android {
     namespace = "app.fyreplace.fyreplace"
     compileSdk = 36
+    compileSdkMinor = 1
 
     defaultConfig {
         applicationId = "app.fyreplace.fyreplace"
@@ -216,7 +217,7 @@ sentry {
     projectName = getValue("sentry.project")
     authToken = getValue("sentry.auth.token")
     includeSourceContext = true
-    ignoredFlavors = setOf("libre")
+    ignoredFlavors = setOf("legacy", "libre")
 }
 
 openApiGenerate {
@@ -302,9 +303,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.coil.compose)
-    implementation(libs.conscrypt)
     implementation(libs.hilt)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.material)
     implementation(libs.moshi)
     implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)
@@ -324,7 +325,6 @@ dependencies {
     "legacyImplementation"(libs.androidx.recyclerview)
     "legacyImplementation"(libs.androidx.recyclerview.selection)
     "legacyImplementation"(libs.androidx.swiperefreshlayout)
-    "legacyImplementation"(libs.material)
     "legacyImplementation"(libs.glide)
     "legacyImplementation"(libs.glide.okhttp)
     "legacyImplementation"(libs.grpc.okhttp)
@@ -332,6 +332,8 @@ dependencies {
     "legacyImplementation"(libs.grpc.stub)
     "legacyImplementation"(libs.grpc.stub.kotlin)
     "legacyImplementation"(libs.kotlinx.coroutines)
+
+    "libreImplementation"(libs.conscrypt)
 
     "googleImplementation"(platform(libs.firebase.bom))
     "googleImplementation"(libs.play.services.base)

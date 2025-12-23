@@ -5,8 +5,6 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.security.ProviderInstaller
-import org.conscrypt.Conscrypt
-import java.security.Security
 
 abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderInstallListener {
     private var hasShownWarning = false
@@ -34,7 +32,6 @@ abstract class SecureActivity : ComponentActivity(), ProviderInstaller.ProviderI
     override fun onProviderInstalled() = Unit
 
     private fun warnUser() {
-        Security.insertProviderAt(Conscrypt.newProvider(), 1)
         hasShownWarning = true
         AlertDialog.Builder(this)
             .setTitle(R.string.secure_warning_dialog_title)

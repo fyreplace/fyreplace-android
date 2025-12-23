@@ -6,7 +6,6 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.window.core.layout.WindowWidthSizeClass
 import app.fyreplace.fyreplace.extensions.modify
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationDrawer
 import app.fyreplace.fyreplace.ui.views.navigation.side.SideNavigationRail
@@ -23,7 +22,7 @@ fun SideNavigation(
 ) {
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
 
-    if (sizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) {
+    if (sizeClass.isWidthAtLeastBreakpoint(840)) {
         SideNavigationDrawer(
             destinations = destinations,
             selectedDestination = selectedDestination,

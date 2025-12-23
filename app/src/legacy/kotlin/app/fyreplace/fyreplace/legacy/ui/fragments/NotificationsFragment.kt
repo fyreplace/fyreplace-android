@@ -84,7 +84,7 @@ class NotificationsFragment :
         when (menuItem.itemId) {
             R.id.clear -> showChoiceAlert(R.string.notifications_clear_title, null) {
                 launch {
-                    vm.clear()
+                    vm.clearAll()
                     refreshListing()
                 }
             }

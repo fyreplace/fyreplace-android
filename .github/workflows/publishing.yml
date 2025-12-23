@@ -22,7 +22,7 @@ jobs:
           submodules: true
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -56,28 +56,28 @@ jobs:
             bundleLegacyLibreRelease
 
       - name: Upload Google APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Fyreplace.google.apk
           path: app/build/outputs/apk/legacyGoogle/release/app-legacy-google-release.apk
           if-no-files-found: error
 
       - name: Upload Libre APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Fyreplace.libre.apk
           path: app/build/outputs/apk/legacyLibre/release/app-legacy-libre-release.apk
           if-no-files-found: error
 
       - name: Upload Google AAB
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Fyreplace.google.aab
           path: app/build/outputs/bundle/legacyGoogleRelease/app-legacy-google-release.aab
           if-no-files-found: error
 
       - name: Upload Libre AAB
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Fyreplace.libre.aab
           path: app/build/outputs/bundle/legacyLibreRelease/app-legacy-libre-release.aab
@@ -95,7 +95,7 @@ jobs:
           submodules: true
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '21'
@@ -127,7 +127,7 @@ jobs:
         run: mkdir -p build
 
       - name: Download Google AAB
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: Fyreplace.google.aab
           path: build

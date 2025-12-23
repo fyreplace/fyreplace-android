@@ -53,10 +53,19 @@ class FeedViewModel @Inject constructor(
     fun startListing() = postStub.listFeed(votes)
         .onEach { post ->
             val index = posts.value.indexOfFirst { it.id == post.id }
+            var newFeed: List<Post>
 
-            mPosts.value =
-                (if (index >= 0) posts.value.mapIndexed { i, p -> if (i == index) post else p }
-                else posts.value + post)
+            if (index >= 0) {
+                newFeed = posts.value.mapIndexed { i, p -> if (i == index) post else p }
+            } else {
+                newFeed = posts.value + post
+
+                if (posts.value.size > 3) {
+                    newFeed = newFeed.subList(posts.value.size - 3, posts.value.size)
+                }
+            }
+
+            mPosts.value = newFeed
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)

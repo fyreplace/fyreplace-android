@@ -1,18 +1,16 @@
 package app.fyreplace.fyreplace.legacy
 
+import android.content.Intent
 import app.fyreplace.fyreplace.BaseApp
 import com.google.android.gms.security.ProviderInstaller
-import org.conscrypt.Conscrypt
-import java.security.Security
 
-abstract class SecureApp : BaseApp() {
+abstract class SecureApp : BaseApp(), ProviderInstaller.ProviderInstallListener {
     override fun onCreate() {
         super.onCreate()
-
-        try {
-            ProviderInstaller.installIfNeeded(this)
-        } catch (_: Exception) {
-            Security.insertProviderAt(Conscrypt.newProvider(), 1)
-        }
+        ProviderInstaller.installIfNeededAsync(this, this)
     }
+
+    override fun onProviderInstalled() = Unit
+
+    override fun onProviderInstallFailed(errorCode: Int, recoveryIntent: Intent?) = Unit
 }

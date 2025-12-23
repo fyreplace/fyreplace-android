@@ -105,7 +105,7 @@ class NotificationsViewModel @Inject constructor(
 
     override fun getItemList(items: Notifications): List<Notification> = items.notificationsList
 
-    suspend fun clear() {
+    suspend fun clearAll() {
         notificationStub.clear(Empty.getDefaultInstance())
     }
 
