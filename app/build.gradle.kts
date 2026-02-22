@@ -3,7 +3,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.compose)
@@ -17,9 +16,9 @@ plugins {
 }
 
 val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
+val localPropertiesFile: File? = rootProject.file("local.properties")
 
-if (localPropertiesFile.exists()) {
+if (localPropertiesFile?.exists() == true) {
     localPropertiesFile.inputStream().use(localProperties::load)
 }
 
@@ -183,12 +182,13 @@ android {
 
     sourceSets {
         named("main") {
-            java.srcDir("build/openapi/src/main")
+            kotlin.directories += "build/openapi/src/main"
         }
     }
 
     buildFeatures {
         buildConfig = true
+        resValues = true
         compose = true
         dataBinding = true
     }
@@ -270,13 +270,13 @@ protobuf {
     generateProtoTasks {
         all().configureEach {
             builtins {
-                create("java")
-                create("kotlin")
+                create("java") { option("lite") }
+                create("kotlin") { option("lite") }
             }
 
             plugins {
-                create("grpc")
-                create("grpckt")
+                create("grpc") { option("lite") }
+                create("grpckt") { option("lite") }
             }
         }
     }
@@ -309,7 +309,6 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.protobuf.java)
     implementation(libs.protobuf.kotlin)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)

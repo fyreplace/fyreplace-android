@@ -1,14 +1,14 @@
 [versions]
-androidPlugin = "8.13.2"
-kotlinPlugin = "2.2.21"
-sentryPlugin = "5.12.2"
-openapiPlugin = "7.17.0"
-protobufPlugin = "0.9.5"
-kspPlugin = "2.3.3"
+androidPlugin = "9.0.1"
+kotlinPlugin = "2.3.10"
+sentryPlugin = "6.1.0"
+openapiPlugin = "7.20.0"
+protobufPlugin = "0.9.6"
+kspPlugin = "2.3.6"
 googlePlugin = "4.4.4"
-androidxComposeBom = "2025.12.00"
-androidxActivity = "1.12.1"
-androidxComposeAnimation = "1.10.0"
+androidxComposeBom = "2026.02.00"
+androidxActivity = "1.12.4"
+androidxComposeAnimation = "1.10.3"
 androidxComposeMaterialAdaptive = "1.2.0"
 androidxCoordinatorLayout = "1.3.0"
 androidxCore = "1.17.0"
@@ -19,31 +19,31 @@ androidxFragment = "1.8.9"
 androidxHilt = "1.3.0"
 androidxJunit = "1.3.0"
 androidxLifecycle = "2.10.0"
-androidxNavigation = "2.9.6"
-androidxPaging = "3.3.6"
+androidxNavigation = "2.9.7"
+androidxPaging = "3.4.1"
 androidxPreference = "1.2.1"
 androidxRecyclerView = "1.4.0"
 androidxRecyclerViewSelection = "1.2.0"
 androidxSwipeRefreshLayout = "1.2.0"
-androidxWork = "2.11.0"
+androidxWork = "2.11.1"
 coilCompose = "2.7.0"
 conscrypt = "2.5.3"
 desugar = "2.1.5"
-firebaseBom = "34.7.0"
+firebaseBom = "34.9.0"
 firebaseMessaging = "24.1.2"
 glide = "5.0.5"
-grpc = "1.77.0"
+grpc = "1.79.0"
 grpcKotlinStub = "1.5.0"
 grpcProtocKotlin = "1.5.0:jdk8@jar"
-hilt = "2.57.2"
+hilt = "2.59.1"
 junit = "4.13.2"
 kotlinxCouroutines = "1.10.2"
-kotlinxSerialization = "1.9.0"
+kotlinxSerialization = "1.10.0"
 material = "1.13.0"
 moshi = "1.15.2"
 okhttp = "5.3.2"
-playServicesBase = "18.9.0"
-protobuf = "4.33.2"
+playServicesBase = "18.10.0"
+protobuf = "4.33.5"
 retrofit = "3.0.0"
 
 [libraries]
@@ -89,7 +89,7 @@ glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "gl
 glide-okhttp = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide" }
 grpc-okhttp = { group = "io.grpc", name = "grpc-okhttp", version.ref = "grpc" }
-grpc-protobuf = { group = "io.grpc", name = "grpc-protobuf", version.ref = "grpc" }
+grpc-protobuf = { group = "io.grpc", name = "grpc-protobuf-lite", version.ref = "grpc" }
 grpc-protoc-java = { group = "io.grpc", name = "protoc-gen-grpc-java", version.ref = "grpc" }
 grpc-protoc-kotlin = { group = "io.grpc", name = "protoc-gen-grpc-kotlin", version.ref = "grpcProtocKotlin" }
 grpc-stub = { group = "io.grpc", name = "grpc-stub", version.ref = "grpc" }
@@ -107,8 +107,7 @@ moshi-adapters = { group = "com.squareup.moshi", name = "moshi-adapters", versio
 moshi-compiler = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
 play-services-base = { group = "com.google.android.gms", name = "play-services-base", version.ref = "playServicesBase" }
-protobuf-java = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobuf" }
-protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin", version.ref = "protobuf" }
+protobuf-kotlin = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
@@ -116,7 +115,6 @@ retrofit-converter-scalars = { group = "com.squareup.retrofit2", name = "convert
 
 [plugins]
 android = { id = "com.android.application", version.ref = "androidPlugin" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinPlugin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlinPlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
