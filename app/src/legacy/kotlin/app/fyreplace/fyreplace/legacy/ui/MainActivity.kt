@@ -24,7 +24,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
-import androidx.lifecycle.withStarted
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -197,18 +196,17 @@ class MainActivity :
             false
         }
 
-    override fun onBackStackChanged() {
-        refreshCustomTitle()
-        refreshPrimaryAction()
+    override fun onBackStackChanged() = Unit
+
+    override fun onBackStackChangeCommitted(fragment: Fragment, pop: Boolean) {
+        super.onBackStackChangeCommitted(fragment, pop)
         launch {
-            navHost.childFragmentManager.fragments.last().withStarted {
-                launch {
-                    delay(100)
-                    bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
-                    val destination = navHost.navController.currentDestination
-                    setBottomNavigationVisible(destination?.isTopLevel == true)
-                }
-            }
+            delay(100)
+            refreshCustomTitle()
+            refreshPrimaryAction()
+            bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
+            val destination = navHost.navController.currentDestination
+            setBottomNavigationVisible(destination?.isTopLevel == true)
         }
     }
 
