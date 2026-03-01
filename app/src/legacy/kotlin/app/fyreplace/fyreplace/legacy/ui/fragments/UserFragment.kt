@@ -22,6 +22,7 @@ import app.fyreplace.fyreplace.legacy.extensions.getUsername
 import app.fyreplace.fyreplace.legacy.extensions.setAvatar
 import app.fyreplace.fyreplace.legacy.extensions.setLinkifiedText
 import app.fyreplace.fyreplace.legacy.extensions.setupTransitions
+import app.fyreplace.fyreplace.legacy.ui.BasePresenter
 import app.fyreplace.fyreplace.legacy.ui.FailureHandler
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.Sentence
@@ -165,7 +166,10 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun report() = showChoiceAlert(R.string.user_report_title, null) {
         launch {
             vm.report()
-            showBasicSnackbar(R.string.user_report_success_message)
+            showBasicSnackbar(
+                R.string.user_report_success_message,
+                haptics = BasePresenter.HapticType.SIMPLE
+            )
         }
     }
 
@@ -194,7 +198,10 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun finishBan() {
-        showBasicSnackbar(R.string.user_ban_success_message)
+        showBasicSnackbar(
+            R.string.user_ban_success_message,
+            haptics = BasePresenter.HapticType.SIMPLE
+        )
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
         em.post(UserWasBannedEvent(args.profile.v.toBuilder().setIsBanned(true).build()))
     }

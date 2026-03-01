@@ -105,6 +105,7 @@ class FeedFragment :
         launch {
             vm.vote(position, spread)
             adapter.remove(position)
+            view.provideHapticFeedback(positive = spread)
         }
     }
 

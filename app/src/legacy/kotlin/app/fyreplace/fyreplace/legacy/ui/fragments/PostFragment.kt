@@ -26,6 +26,7 @@ import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
 import app.fyreplace.fyreplace.legacy.grpc.p
+import app.fyreplace.fyreplace.legacy.ui.BasePresenter
 import app.fyreplace.fyreplace.legacy.ui.PrimaryActionStyle
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
@@ -315,17 +316,16 @@ class PostFragment :
                 if (subscribed) PostWasSubscribedToEvent(preview)
                 else PostWasUnsubscribedFromEvent(preview)
             )
-            showBasicSnackbar(
-                if (subscribed) R.string.post_snackbar_subscribed
-                else R.string.post_snackbar_unsubscribed,
-                Snackbar.LENGTH_SHORT
-            )
+            bd.root.provideHapticFeedback(positive = subscribed)
         }
     }
 
     private suspend fun report() {
         vm.report()
-        showBasicSnackbar(R.string.post_report_success_message)
+        showBasicSnackbar(
+            R.string.post_report_success_message,
+            haptics = BasePresenter.HapticType.SIMPLE
+        )
     }
 
     private suspend fun delete() {
@@ -336,7 +336,10 @@ class PostFragment :
 
     private suspend fun reportComment(comment: Comment) {
         vm.reportComment(comment.id)
-        showBasicSnackbar(R.string.post_comment_report_success_message)
+        showBasicSnackbar(
+            R.string.post_comment_report_success_message,
+            haptics = BasePresenter.HapticType.SIMPLE
+        )
     }
 
     private suspend fun deleteComment(position: Int, comment: Comment) {
