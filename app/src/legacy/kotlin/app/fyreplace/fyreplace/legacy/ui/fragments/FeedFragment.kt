@@ -87,7 +87,6 @@ class FeedFragment :
 
     override fun onStart() {
         super.onStart()
-        retryCount = 0
         startListing()
     }
 
@@ -128,9 +127,9 @@ class FeedFragment :
     private fun startListing() {
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
+            retryCount = 0
             adapter.addOrUpdate(it)
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
-        retryCount++
     }
 
     private fun stopListing() = vm.stopListing()
@@ -143,6 +142,7 @@ class FeedFragment :
 
     private fun retryListing() {
         stopListing()
+        retryCount++
         startListing()
     }
 

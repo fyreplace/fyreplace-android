@@ -14,6 +14,7 @@ import io.grpc.StatusRuntimeException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
@@ -57,20 +58,24 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
         }
     }
 
-    private fun onGrpcFailure(
+    private suspend fun onGrpcFailure(
         e: StatusRuntimeException,
         retry: (() -> Unit)?,
         autoDisconnect: Boolean
-    ) = when {
-        e.status.code == Status.Code.UNAVAILABLE ->
-            if (retry != null) retry()
-            else showBasicAlert(
-                R.string.error_unavailable_title,
-                R.string.error_unavailable_message,
-                error = true
-            )
+    ) = when (e.status.code) {
+        Status.Code.UNAVAILABLE ->
+            if (retry != null) {
+                delay(500)
+                retry()
+            } else {
+                showBasicAlert(
+                    R.string.error_unavailable_title,
+                    R.string.error_unavailable_message,
+                    error = true
+                )
+            }
 
-        e.status.code == Status.Code.UNAUTHENTICATED && autoDisconnect -> {
+        Status.Code.UNAUTHENTICATED if autoDisconnect -> {
             if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
                 showBasicAlert(
                     R.string.error_autodisconnect_title,
