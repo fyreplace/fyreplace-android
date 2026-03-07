@@ -309,6 +309,7 @@ class PostFragment :
     }
 
     private fun updateSubscription(subscribed: Boolean) {
+        bd.root.provideHapticFeedback(positive = subscribed)
         launch {
             vm.updateSubscription(subscribed)
             val preview = vm.post.value.makePreview()
@@ -316,7 +317,6 @@ class PostFragment :
                 if (subscribed) PostWasSubscribedToEvent(preview)
                 else PostWasUnsubscribedFromEvent(preview)
             )
-            bd.root.provideHapticFeedback(positive = subscribed)
         }
     }
 
