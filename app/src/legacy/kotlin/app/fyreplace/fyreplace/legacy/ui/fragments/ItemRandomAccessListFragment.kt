@@ -74,7 +74,6 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
-        retryCount = 0
         launch { startFetchingData() }
     }
 
@@ -112,10 +111,9 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     open suspend fun startFetchingData() {
         vm.startListing()
             .launchCollect(retry = if (retryCount < 3) ::retryListing else null) { (position, items) ->
+                retryCount = 0
                 onFetchedItems(position, items)
             }
-
-        retryCount++
 
         if (adapter.totalSize == 0) {
             vm.fetchAround(0)
@@ -124,6 +122,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     private fun retryListing() {
         vm.stopListing()
+        retryCount++
         launch { startFetchingData() }
     }
 }

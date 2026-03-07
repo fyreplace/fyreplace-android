@@ -52,7 +52,7 @@ class FeedFragment :
             when {
                 !canAutoRefresh -> return@launchCollect
                 lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) -> refreshListing()
-                else -> reset()
+                else -> resetListing()
             }
         }
     }
@@ -101,10 +101,10 @@ class FeedFragment :
     }
 
     override fun onPostVoted(view: View, position: Int, spread: Boolean) {
+        view.provideHapticFeedback(positive = spread)
         launch {
             vm.vote(position, spread)
             adapter.remove(position)
-            view.provideHapticFeedback(positive = spread)
         }
     }
 
@@ -134,9 +134,14 @@ class FeedFragment :
 
     private fun stopListing() = vm.stopListing()
 
+    private fun resetListing() {
+        adapter.removeAll()
+        vm.reset()
+    }
+
     private fun refreshListing() {
         stopListing()
-        reset()
+        resetListing()
         startListing()
     }
 
@@ -144,10 +149,5 @@ class FeedFragment :
         stopListing()
         retryCount++
         startListing()
-    }
-
-    private fun reset() {
-        adapter.removeAll()
-        vm.reset()
     }
 }

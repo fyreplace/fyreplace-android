@@ -83,7 +83,6 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
-        retryCount = 0
         startListing()
     }
 
@@ -141,6 +140,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     private fun retryListing() {
         stopListing()
+        retryCount++
         startListing()
     }
 
@@ -148,10 +148,10 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         launch {
             vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
                 bd.swipe.isRefreshing = false
+                retryCount = 0
                 adapter.addAll(it)
             }
 
-            retryCount++
             val manualCount = max(vm.manuallyAddedCount, 0)
 
             if (adapter.itemCount - manualCount <= 0) {
