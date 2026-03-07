@@ -13,6 +13,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.BackEventCompat
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -198,8 +199,12 @@ class MainActivity :
 
     override fun onBackStackChanged() = Unit
 
+    override fun onBackStackChangeProgressed(backEventCompat: BackEventCompat) {
+        bd.toolbar.alpha = 1f - backEventCompat.progress
+    }
+
     override fun onBackStackChangeCommitted(fragment: Fragment, pop: Boolean) {
-        super.onBackStackChangeCommitted(fragment, pop)
+        bd.toolbar.alpha = 1f
         launch {
             delay(100)
             refreshCustomTitle()
@@ -208,6 +213,10 @@ class MainActivity :
             val destination = navHost.navController.currentDestination
             setBottomNavigationVisible(destination?.isTopLevel == true)
         }
+    }
+
+    override fun onBackStackChangeCancelled() {
+        bd.toolbar.alpha = 1f
     }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
