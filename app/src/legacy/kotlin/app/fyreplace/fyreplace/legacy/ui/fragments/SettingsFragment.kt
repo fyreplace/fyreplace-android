@@ -16,13 +16,16 @@ import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.legacy.extensions.applySettings
+import app.fyreplace.fyreplace.legacy.extensions.setAppIcon
+import app.fyreplace.fyreplace.legacy.extensions.applyTheme
 import app.fyreplace.fyreplace.legacy.extensions.date
+import app.fyreplace.fyreplace.legacy.extensions.getAppIcon
 import app.fyreplace.fyreplace.legacy.extensions.setupTransitions
 import app.fyreplace.fyreplace.legacy.ui.FailureHandler
 import app.fyreplace.fyreplace.legacy.ui.ImageSelector
 import app.fyreplace.fyreplace.legacy.ui.ImageSelectorFactory
-import app.fyreplace.fyreplace.legacy.ui.preferences.ImagePreference
+import app.fyreplace.fyreplace.legacy.ui.preferences.AppIconPreference
+import app.fyreplace.fyreplace.legacy.ui.preferences.AvatarPreference
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.SettingsViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.SettingsViewModelFactory
@@ -49,6 +52,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         SettingsViewModel.provideFactory(vmFactory, cvm.currentUser.value?.blockedUsers ?: 0)
     }
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1024 * 1024) }
+
+    @Suppress("SimplifyBooleanWithConstants")
     private val canChangeEnvironment: Boolean
         get() {
             val environment = preferences?.getString(
@@ -81,7 +86,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         cvm.currentUser.launchCollect(viewLifecycleOwner.lifecycleScope) { user ->
-            findPreference<ImagePreference>("avatar")?.run {
+            findPreference<AvatarPreference>("avatar")?.run {
                 imageUrl = user?.profile?.avatar?.url
                 title = user?.profile?.username ?: getString(R.string.settings_username)
                 summary = user?.run {
@@ -94,11 +99,10 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 }
             }
 
-            findPreference<Preference>("email")?.run { summary = user?.email }
+            findPreference<Preference>("email")?.summary = user?.email
 
-            findPreference<Preference>("bio")?.run {
-                summary = user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
-            }
+            findPreference<Preference>("bio")?.summary =
+                user?.bio?.ifEmpty { getString(R.string.settings_bio_desc) }
 
             for ((preference, needsUser) in mapOf(
                 "category_about" to true,
@@ -108,6 +112,8 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 "email" to true,
                 "bio" to true,
                 "blocked_users" to true,
+                "app_icon_normal" to true,
+                "app_icon_alt" to true,
                 "logout" to true,
                 "delete" to true
             )) {
@@ -135,19 +141,38 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             }
         }
 
-        findPreference<Preference>("bio")?.run {
-            setOnPreferenceClickListener {
-                val directions = SettingsFragmentDirections.toBio()
-                findNavController().navigate(directions)
-                return@setOnPreferenceClickListener true
-            }
+        findPreference<Preference>("bio")?.setOnPreferenceClickListener {
+            val directions = SettingsFragmentDirections.toBio()
+            findNavController().navigate(directions)
+            return@setOnPreferenceClickListener true
         }
 
-        findPreference<Preference>("blocked_users")?.run {
-            setOnPreferenceClickListener {
-                val directions = SettingsFragmentDirections.toBlockedUsers()
-                findNavController().navigate(directions)
-                return@setOnPreferenceClickListener true
+        findPreference<Preference>("blocked_users")?.setOnPreferenceClickListener {
+            val directions = SettingsFragmentDirections.toBlockedUsers()
+            findNavController().navigate(directions)
+            return@setOnPreferenceClickListener true
+        }
+
+        val appIconNameToMipmap = mapOf(
+            "app_icon_normal" to R.mipmap.ic_launcher,
+            "app_icon_alt" to R.mipmap.ic_launcher_alt
+        )
+
+        for ((iconName, mipmap) in appIconNameToMipmap.entries) {
+            findPreference<AppIconPreference>(iconName)?.run {
+                if (requireContext().getAppIcon() == mipmap) {
+                    setIcon(R.drawable.ic_baseline_check)
+                }
+
+                setOnPreferenceClickListener {
+                    for (otherIconName in appIconNameToMipmap.keys.filter { n -> n != iconName }) {
+                        findPreference<AppIconPreference>(otherIconName)?.icon = null
+                    }
+
+                    it.setIcon(R.drawable.ic_baseline_check)
+                    requireContext().setAppIcon(mipmap)
+                    return@setOnPreferenceClickListener true
+                }
             }
         }
 
@@ -252,7 +277,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
                 "theme" -> {
                     preferences?.edit { putString("settings.theme", value) }
-                    preferences?.applySettings(requireContext())
+                    preferences?.applyTheme(requireContext())
                 }
 
                 "environment" -> {

@@ -143,6 +143,9 @@
         <item>@string/settings_theme_light_value</item>
         <item>@string/settings_theme_dark_value</item>
     </string-array>
+    <string name="settings_app_icon">App icon</string>
+    <string name="settings_app_icon_normal">Classic icon</string>
+    <string name="settings_app_icon_alt">Alternative icon</string>
     <string name="settings_about">About</string>
     <string name="settings_privacy_policy_desc">See how your data is handled</string>
     <string name="settings_terms_of_service_desc">Check the rules of the app</string>

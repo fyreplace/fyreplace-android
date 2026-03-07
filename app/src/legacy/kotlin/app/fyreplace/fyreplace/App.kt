@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.legacy.broadcasts.NetworkBroadcastReceiver
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStartedEvent
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
-import app.fyreplace.fyreplace.legacy.extensions.applySettings
+import app.fyreplace.fyreplace.legacy.extensions.applyTheme
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.filterIsInstance
@@ -30,7 +30,7 @@ class App : SecureApp() {
 
     override fun onCreate() {
         super.onCreate()
-        preferences.applySettings(this)
+        preferences.applyTheme(this)
         ContextCompat.registerReceiver(
             this,
             NetworkBroadcastReceiver(),

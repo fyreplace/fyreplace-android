@@ -9,26 +9,22 @@
         android:translateX="175"
         android:translateY="175">
         <path
-            android:fillColor="#ffffff"
+            android:fillColor="@android:color/white"
             android:pathData="M350,750Q250,750 250,650L750,650Q750,750 650,750Z" />
         <path
-            android:fillColor="#ffffff"
+            android:fillColor="@android:color/white"
             android:pathData="M250,550L250,300A50,50 0,0 1,350 300L350,450A50,50 0,0 0,450 450L450,300A50,50 0,0 1,550 300L550,450A50,50 0,0 0,650 450L650,300A50,50 0,0 1,750 300L750,550Z" />
         <path
-            android:fillColor="#ffffff"
-            android:pathData="M250,600l0,-50l50,0"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/white"
+            android:pathData="M250,600l0,-50l50,0" />
         <path
-            android:fillColor="#ffffff"
-            android:pathData="M300,650l100,-100l100,0l-100,100"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/white"
+            android:pathData="M300,650l100,-100l100,0l-100,100" />
         <path
-            android:fillColor="#ffffff"
-            android:pathData="M500,650l100,-100l100,0l-100,100"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/white"
+            android:pathData="M500,650l100,-100l100,0l-100,100" />
         <path
-            android:fillColor="#ffffff"
-            android:pathData="M700,650l50,-50l0,50"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/white"
+            android:pathData="M700,650l50,-50l0,50" />
     </group>
 </vector>

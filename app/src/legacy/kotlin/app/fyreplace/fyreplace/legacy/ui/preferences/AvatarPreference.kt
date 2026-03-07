@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.extensions.loadAvatar
 import com.bumptech.glide.Glide
 
-class ImagePreference : Preference {
+class AvatarPreference : Preference {
     var imageUrl: String? = null
         set(value) {
             field = value
@@ -40,7 +40,7 @@ class ImagePreference : Preference {
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
     init {
-        widgetLayoutResource = R.layout.preference_image
+        widgetLayoutResource = R.layout.preference_avatar
     }
 
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
