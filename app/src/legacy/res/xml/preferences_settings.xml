@@ -35,10 +35,12 @@
         <app.fyreplace.fyreplace.legacy.ui.preferences.AppIconPreference
             app:iconName="@mipmap/ic_launcher_round"
             app:key="app_icon_normal"
+            app:summary="@string/settings_app_icon_normal_desc"
             app:title="@string/settings_app_icon_normal" />
         <app.fyreplace.fyreplace.legacy.ui.preferences.AppIconPreference
             app:iconName="@mipmap/ic_launcher_alt_round"
             app:key="app_icon_alt"
+            app:summary="@string/settings_app_icon_alt_desc"
             app:title="@string/settings_app_icon_alt" />
     </PreferenceCategory>
     <PreferenceCategory
