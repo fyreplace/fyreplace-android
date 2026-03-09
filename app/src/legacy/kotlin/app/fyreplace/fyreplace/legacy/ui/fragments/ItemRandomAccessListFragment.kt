@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +27,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     abstract override val vm: ItemRandomAccessListViewModel<Item, Items>
+    override val recyclerView get() = bd.recyclerView
     protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
     private var retryCount = 0
@@ -47,7 +51,13 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         }
         bd.lifecycleOwner = viewLifecycleOwner
 
-        with(bd.recyclerView) {
+        ViewCompat.setOnApplyWindowInsetsListener(bd.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = systemBars.bottom)
+            return@setOnApplyWindowInsetsListener insets
+        }
+
+        with(recyclerView) {
             setHasFixedSize(true)
             addOnChildAttachStateChangeListener(this@ItemRandomAccessListFragment)
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
@@ -60,7 +70,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items, vm.totalSize)
-        bd.recyclerView.adapter = adapter
+        recyclerView.adapter = adapter
 
         vm.em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
             .debounce(1000)
@@ -68,7 +78,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     }
 
     override fun onDestroyView() {
-        bd.recyclerView.removeOnChildAttachStateChangeListener(this)
+        recyclerView.removeOnChildAttachStateChangeListener(this)
         super.onDestroyView()
     }
 
@@ -91,7 +101,7 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
     override fun removeItem(event: PositionalEvent<Item>) = Unit
 
     override fun onChildViewAttachedToWindow(view: View) {
-        val itemPosition = bd.recyclerView.getChildAdapterPosition(view) - 1
+        val itemPosition = recyclerView.getChildAdapterPosition(view) - 1
 
         if (vm.items[itemPosition] == null) launch {
             vm.fetchAround(itemPosition)

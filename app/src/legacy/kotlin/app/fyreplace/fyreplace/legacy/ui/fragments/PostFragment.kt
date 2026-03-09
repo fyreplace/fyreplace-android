@@ -58,7 +58,6 @@ class PostFragment :
     }
     override val primaryActionText = R.string.post_primary_action_comment
     override val primaryActionIcon = R.drawable.ic_baseline_comment
-    override val recyclerView get() = bd.recyclerView
     val args by navArgs<PostFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private var errored = false
