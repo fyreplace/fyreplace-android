@@ -8,7 +8,6 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.LifecycleOwner
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ItemCommentBinding
-import app.fyreplace.fyreplace.databinding.ItemNewCommentBinding
 import app.fyreplace.fyreplace.legacy.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.legacy.extensions.setComment
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
@@ -28,11 +27,10 @@ class PostAdapter(
     ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var selectedComment: Int? = null
 
-    override fun getItemCount() = super.getItemCount() + offset
+    override fun getItemCount() = super.getItemCount()
 
     override fun getItemViewType(position: Int) = when {
         position == 0 -> TYPE_CHAPTERS
-        position > totalSize -> TYPE_NEW_COMMENT
         items.containsKey(position - offset) -> TYPE_COMMENT
         else -> TYPE_COMMENT_LOADER
     }
@@ -50,10 +48,6 @@ class PostAdapter(
 
             TYPE_COMMENT_LOADER -> CommentLoaderHolder(
                 inflater.inflate(R.layout.item_comment_loader, parent, false)
-            )
-
-            TYPE_NEW_COMMENT -> NewCommentHolder(
-                inflater.inflate(R.layout.item_new_comment, parent, false)
             )
 
             else -> throw RuntimeException()
@@ -92,7 +86,6 @@ class PostAdapter(
         const val TYPE_CHAPTERS = 1
         const val TYPE_COMMENT = 2
         const val TYPE_COMMENT_LOADER = 3
-        const val TYPE_NEW_COMMENT = 4
     }
 
     interface CommentListener {
@@ -192,17 +185,5 @@ class PostAdapter(
                 null,
                 false
             )
-    }
-
-    inner class NewCommentHolder(itemView: View) : ItemHolder(itemView) {
-        private val bd = ItemNewCommentBinding.bind(itemView)
-
-        init {
-            bd.lifecycleOwner = lifecycleOwner
-            bd.holder = this
-            bd.isAuthenticated = isAuthenticated
-        }
-
-        fun onButtonClicked(@Suppress("unused") view: View) = commentListener.onNewCommentClicked()
     }
 }

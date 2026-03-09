@@ -1,17 +1,11 @@
 package app.fyreplace.fyreplace.legacy.ui
 
 interface PrimaryActionProvider {
-    fun getPrimaryActionText(): Int? = null
+    val primaryActionText: Int? get() = null
 
-    fun getPrimaryActionIcon(): Int? = null
+    val primaryActionIcon: Int? get() = null
 
-    fun getPrimaryActionStyle(): PrimaryActionStyle = PrimaryActionStyle.EXTENDED
+    val primaryActionExtended: Boolean get() = true
 
     fun onPrimaryAction()
-}
-
-enum class PrimaryActionStyle {
-    EXTENDED,
-    SHRUNK,
-    NONE
 }

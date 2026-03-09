@@ -27,7 +27,6 @@ import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
 import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.BasePresenter
-import app.fyreplace.fyreplace.legacy.ui.PrimaryActionStyle
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -57,8 +56,9 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
+    override val primaryActionText = R.string.post_primary_action_comment
+    override val primaryActionIcon = R.drawable.ic_baseline_comment
     override val recyclerView get() = bd.recyclerView
-    override val hasPrimaryActionDuplicate = true
     val args by navArgs<PostFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private var errored = false
@@ -207,14 +207,6 @@ class PostFragment :
         )
         findNavController().navigate(directions)
     }
-
-    override fun getPrimaryActionText() = R.string.post_primary_action_comment
-
-    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
-
-    override fun getPrimaryActionStyle() =
-        if (cvm.isAuthenticated.value) super.getPrimaryActionStyle()
-        else PrimaryActionStyle.NONE
 
     override fun onPrimaryAction() = onNewCommentClicked()
 

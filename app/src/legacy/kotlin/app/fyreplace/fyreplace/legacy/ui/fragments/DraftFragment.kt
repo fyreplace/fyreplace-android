@@ -57,6 +57,11 @@ class DraftFragment :
     override val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post.v)
     }
+    override val primaryActionText
+        get() = if (vm.canPublish.value) R.string.draft_primary_action_publish else null
+
+    override val primaryActionIcon
+        get() = if (vm.canPublish.value) R.drawable.ic_baseline_check else null
     private val args by navArgs<DraftFragmentArgs>()
     private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
@@ -192,12 +197,6 @@ class DraftFragment :
 
         return true
     }
-
-    override fun getPrimaryActionText() =
-        if (vm.canPublish.value) R.string.draft_primary_action_publish else null
-
-    override fun getPrimaryActionIcon() =
-        if (vm.canPublish.value) R.drawable.ic_baseline_check else null
 
     override fun onPrimaryAction() = showSelectionAlert(
         R.string.draft_publish_title,

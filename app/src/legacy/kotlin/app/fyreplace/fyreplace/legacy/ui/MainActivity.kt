@@ -288,13 +288,9 @@ class MainActivity :
 
     fun refreshPrimaryAction() {
         val fragment = getPrimaryActionProvider() ?: return removePrimaryAction()
-        val style = fragment.getPrimaryActionStyle()
-        val text =
-            if (style == PrimaryActionStyle.EXTENDED) fragment.getPrimaryActionText()
-            else null
-        val icon =
-            if (style != PrimaryActionStyle.NONE) fragment.getPrimaryActionIcon()
-            else null
+        val extended = fragment.primaryActionExtended
+        val text = if (extended) fragment.primaryActionText else null
+        val icon = fragment.primaryActionIcon
 
         if (text == null && icon == null) {
             removePrimaryAction()
