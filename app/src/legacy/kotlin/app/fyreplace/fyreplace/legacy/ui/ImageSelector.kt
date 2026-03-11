@@ -28,13 +28,13 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import kotlin.coroutines.coroutineContext
 import kotlin.math.sqrt
 
 class ImageSelector @AssistedInject constructor(
@@ -133,7 +133,7 @@ class ImageSelector @AssistedInject constructor(
 
     private suspend fun onImageLoadingBegin() {
         val view = fragment.view ?: return
-        val context = coroutineContext
+        val context = currentCoroutineContext()
         snackbar = Snackbar.make(
             view, R.string.image_selector_snackbar_upload,
             Snackbar.LENGTH_INDEFINITE
@@ -200,7 +200,6 @@ class ImageSelector @AssistedInject constructor(
 
             compress()
 
-            @Suppress("AssignedValueIsNeverRead")
             if (os.size() > maxImageByteSize && compressFormat != CompressFormat.JPEG) {
                 compressFormat = CompressFormat.JPEG
                 compress()

@@ -13,7 +13,7 @@ import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.google.android.material.progressindicator.CircularProgressIndicator
+import com.google.android.material.loadingindicator.LoadingIndicator
 
 @Suppress("unused")
 class ChaptersView : LinearLayout {
@@ -42,7 +42,7 @@ class ChaptersView : LinearLayout {
         removeAllViews()
 
         if (post.isPreview) {
-            val loader = CircularProgressIndicator(context).apply { isIndeterminate = true }
+            val loader = LoadingIndicator(context)
             val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL
             loader.layoutParams = layoutParams

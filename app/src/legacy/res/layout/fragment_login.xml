@@ -111,11 +111,10 @@
                 android:text="@{vm.isRegistering ? @string/settings_register : @string/settings_login}"
                 android:visibility="@{vm.isLoading ? View.GONE : View.VISIBLE}" />
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
+            <com.google.android.material.loadingindicator.LoadingIndicator
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/gap"
-                android:indeterminate="true"
                 android:visibility="@{vm.isLoading ? View.VISIBLE : View.GONE}" />
         </LinearLayout>
     </ScrollView>

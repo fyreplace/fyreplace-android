@@ -4,10 +4,8 @@
     android:layout_height="wrap_content"
     android:minHeight="@dimen/comment_height">
 
-    <com.google.android.material.progressindicator.CircularProgressIndicator
-        style="@style/Widget.Material3.CircularProgressIndicator.Small"
+    <com.google.android.material.loadingindicator.LoadingIndicator
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true" />
+        android:layout_gravity="center" />
 </FrameLayout>
