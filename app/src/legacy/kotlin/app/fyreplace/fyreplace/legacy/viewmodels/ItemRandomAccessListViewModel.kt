@@ -77,7 +77,7 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
                     else -> ItemListViewModel.ItemsState.COMPLETE
                 }
             }
-            .map { getItemList(it) }
+            .map(::getItemList)
             .map {
                 val position = positions.removeAt(0)
                 it.forEachIndexed { i, item ->

@@ -83,7 +83,7 @@ class ImageSelector @AssistedInject constructor(
 
         failureHandler.showSelectionAlert(
             title,
-            items.map { fragment.resources.getString(it) }.toTypedArray()
+            items.map(fragment.resources::getString).toTypedArray()
         ) {
             failureHandler.launch {
                 when (items[it]) {
