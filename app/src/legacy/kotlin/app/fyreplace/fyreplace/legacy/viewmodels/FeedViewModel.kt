@@ -34,7 +34,7 @@ class FeedViewModel @Inject constructor(
     private val votes get() = maybeVotes.takeWhile { it != null }.filterNotNull()
     private val mPosts = MutableStateFlow(emptyList<Post>())
     val posts = mPosts.asStateFlow()
-    val isEmpty = posts.map { it.isEmpty() }.asState(true)
+    val isEmpty = posts.map(List<Post>::isEmpty).asState(true)
     val emptyText = MutableStateFlow(R.string.feed_empty).asStateFlow()
 
     init {

@@ -84,7 +84,7 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
                 nextCursor = getNextCursor(it)
                 state = if (hasNextCursor(it)) ItemsState.INCOMPLETE else ItemsState.COMPLETE
             }
-            .map { getItemList(it) }
+            .map(::getItemList)
             .onEach {
                 mItems += it
                 mIsEmpty.value = items.isEmpty()

@@ -16,7 +16,7 @@ jobs:
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: true
@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
           cache: 'gradle'
 
       - name: Set up keystore
@@ -56,28 +56,28 @@ jobs:
             bundleLegacyLibreRelease
 
       - name: Upload Google APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Fyreplace.google.apk
           path: app/build/outputs/apk/legacyGoogle/release/app-legacy-google-release.apk
           if-no-files-found: error
 
       - name: Upload Libre APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Fyreplace.libre.apk
           path: app/build/outputs/apk/legacyLibre/release/app-legacy-libre-release.apk
           if-no-files-found: error
 
       - name: Upload Google AAB
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Fyreplace.google.aab
           path: app/build/outputs/bundle/legacyGoogleRelease/app-legacy-google-release.aab
           if-no-files-found: error
 
       - name: Upload Libre AAB
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: Fyreplace.libre.aab
           path: app/build/outputs/bundle/legacyLibreRelease/app-legacy-libre-release.aab
@@ -89,7 +89,7 @@ jobs:
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: true
@@ -98,7 +98,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
           cache: 'gradle'
 
       - name: Set up Google services
@@ -118,7 +118,7 @@ jobs:
     environment: google-play-store
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: true
@@ -127,7 +127,7 @@ jobs:
         run: mkdir -p build
 
       - name: Download Google AAB
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: Fyreplace.google.aab
           path: build

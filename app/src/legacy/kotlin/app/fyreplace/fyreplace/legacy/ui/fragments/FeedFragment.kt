@@ -52,7 +52,7 @@ class FeedFragment :
             when {
                 !canAutoRefresh -> return@launchCollect
                 lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) -> refreshListing()
-                else -> reset()
+                else -> resetListing()
             }
         }
     }
@@ -87,7 +87,6 @@ class FeedFragment :
 
     override fun onStart() {
         super.onStart()
-        retryCount = 0
         startListing()
     }
 
@@ -102,6 +101,7 @@ class FeedFragment :
     }
 
     override fun onPostVoted(view: View, position: Int, spread: Boolean) {
+        view.provideHapticFeedback(positive = spread)
         launch {
             vm.vote(position, spread)
             adapter.remove(position)
@@ -127,26 +127,27 @@ class FeedFragment :
     private fun startListing() {
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
+            retryCount = 0
             adapter.addOrUpdate(it)
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
-        retryCount++
     }
 
     private fun stopListing() = vm.stopListing()
 
+    private fun resetListing() {
+        adapter.removeAll()
+        vm.reset()
+    }
+
     private fun refreshListing() {
         stopListing()
-        reset()
+        resetListing()
         startListing()
     }
 
     private fun retryListing() {
         stopListing()
+        retryCount++
         startListing()
-    }
-
-    private fun reset() {
-        adapter.removeAll()
-        vm.reset()
     }
 }

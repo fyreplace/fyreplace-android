@@ -4,13 +4,16 @@ import android.Manifest
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ClipDescription
+import android.content.ComponentName
 import android.content.Context
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -20,6 +23,12 @@ import app.fyreplace.fyreplace.R
 import com.google.android.material.color.DynamicColors
 import com.google.protobuf.ByteString
 import java.util.Date
+
+private val activityToAppIcon
+    get() = mapOf(
+        "MainActivity.Normal" to R.mipmap.ic_launcher,
+        "MainActivity.Alternative" to R.mipmap.ic_launcher_alt
+    )
 
 val Context.mainPreferences: SharedPreferences
     get() = getSharedPreferences(getString(R.string.app_name), Context.MODE_PRIVATE)
@@ -88,3 +97,25 @@ fun Context.deleteNotifications(tag: Regex, beforeDate: Date) {
 }
 
 fun Context.deleteNotifications() = NotificationManagerCompat.from(this).cancelAll()
+
+fun Context.setAppIcon(@DrawableRes newAppIcon: Int) {
+    for ((activity, appIcon) in activityToAppIcon.entries) {
+        packageManager.setComponentEnabledSetting(
+            ComponentName(this, activity),
+            if (appIcon == newAppIcon) PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+            else PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+            PackageManager.DONT_KILL_APP
+        )
+    }
+}
+
+@DrawableRes
+fun Context.getAppIcon(): Int {
+    for ((activity, appIcon) in activityToAppIcon.entries) {
+        if (packageManager.getComponentEnabledSetting(ComponentName(this, activity)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+            return appIcon
+        }
+    }
+
+    return R.mipmap.ic_launcher
+}

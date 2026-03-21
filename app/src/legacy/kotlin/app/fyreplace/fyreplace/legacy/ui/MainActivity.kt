@@ -13,6 +13,7 @@ import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.BackEventCompat
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -24,7 +25,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentOnAttachListener
-import androidx.lifecycle.withStarted
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
@@ -197,19 +197,26 @@ class MainActivity :
             false
         }
 
-    override fun onBackStackChanged() {
-        refreshCustomTitle()
-        refreshPrimaryAction()
+    override fun onBackStackChanged() = Unit
+
+    override fun onBackStackChangeProgressed(backEventCompat: BackEventCompat) {
+        bd.toolbar.alpha = 1f - backEventCompat.progress
+    }
+
+    override fun onBackStackChangeCommitted(fragment: Fragment, pop: Boolean) {
+        bd.toolbar.alpha = 1f
         launch {
-            navHost.childFragmentManager.fragments.last().withStarted {
-                launch {
-                    delay(100)
-                    bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
-                    val destination = navHost.navController.currentDestination
-                    setBottomNavigationVisible(destination?.isTopLevel == true)
-                }
-            }
+            delay(100)
+            refreshCustomTitle()
+            refreshPrimaryAction()
+            bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
+            val destination = navHost.navController.currentDestination
+            setBottomNavigationVisible(destination?.isTopLevel == true)
         }
+    }
+
+    override fun onBackStackChangeCancelled() {
+        bd.toolbar.alpha = 1f
     }
 
     override fun onAttachFragment(fragmentManager: FragmentManager, fragment: Fragment) {
@@ -281,13 +288,9 @@ class MainActivity :
 
     fun refreshPrimaryAction() {
         val fragment = getPrimaryActionProvider() ?: return removePrimaryAction()
-        val style = fragment.getPrimaryActionStyle()
-        val text =
-            if (style == PrimaryActionStyle.EXTENDED) fragment.getPrimaryActionText()
-            else null
-        val icon =
-            if (style != PrimaryActionStyle.NONE) fragment.getPrimaryActionIcon()
-            else null
+        val extended = fragment.primaryActionExtended
+        val text = if (extended) fragment.primaryActionText else null
+        val icon = fragment.primaryActionIcon
 
         if (text == null && icon == null) {
             removePrimaryAction()

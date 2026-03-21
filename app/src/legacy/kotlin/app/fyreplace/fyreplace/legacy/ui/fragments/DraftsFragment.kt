@@ -22,6 +22,7 @@ class DraftsFragment :
     ItemListAdapter.ItemClickListener<Post>,
     PrimaryActionProvider {
     override val vm by activityViewModels<DraftsViewModel>()
+    override val primaryActionIcon = R.drawable.ic_baseline_add
 
     override fun makeAdapter() = DraftsAdapter(this)
 
@@ -37,8 +38,6 @@ class DraftsFragment :
                 1 -> launch { deletePost(item) }
             }
         }
-
-    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_add
 
     override fun onPrimaryAction() {
         launch {

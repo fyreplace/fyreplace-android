@@ -26,7 +26,7 @@ import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
 import app.fyreplace.fyreplace.legacy.grpc.p
-import app.fyreplace.fyreplace.legacy.ui.PrimaryActionStyle
+import app.fyreplace.fyreplace.legacy.ui.BasePresenter
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -56,8 +56,8 @@ class PostFragment :
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post.v)
     }
-    override val recyclerView get() = bd.recyclerView
-    override val hasPrimaryActionDuplicate = true
+    override val primaryActionText = R.string.post_primary_action_comment
+    override val primaryActionIcon = R.drawable.ic_baseline_comment
     val args by navArgs<PostFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private var errored = false
@@ -207,14 +207,6 @@ class PostFragment :
         findNavController().navigate(directions)
     }
 
-    override fun getPrimaryActionText() = R.string.post_primary_action_comment
-
-    override fun getPrimaryActionIcon() = R.drawable.ic_baseline_comment
-
-    override fun getPrimaryActionStyle() =
-        if (cvm.isAuthenticated.value) super.getPrimaryActionStyle()
-        else PrimaryActionStyle.NONE
-
     override fun onPrimaryAction() = onNewCommentClicked()
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -308,6 +300,7 @@ class PostFragment :
     }
 
     private fun updateSubscription(subscribed: Boolean) {
+        bd.root.provideHapticFeedback(positive = subscribed)
         launch {
             vm.updateSubscription(subscribed)
             val preview = vm.post.value.makePreview()
@@ -315,17 +308,15 @@ class PostFragment :
                 if (subscribed) PostWasSubscribedToEvent(preview)
                 else PostWasUnsubscribedFromEvent(preview)
             )
-            showBasicSnackbar(
-                if (subscribed) R.string.post_snackbar_subscribed
-                else R.string.post_snackbar_unsubscribed,
-                Snackbar.LENGTH_SHORT
-            )
         }
     }
 
     private suspend fun report() {
         vm.report()
-        showBasicSnackbar(R.string.post_report_success_message)
+        showBasicSnackbar(
+            R.string.post_report_success_message,
+            haptics = BasePresenter.HapticType.SIMPLE
+        )
     }
 
     private suspend fun delete() {
@@ -336,7 +327,10 @@ class PostFragment :
 
     private suspend fun reportComment(comment: Comment) {
         vm.reportComment(comment.id)
-        showBasicSnackbar(R.string.post_comment_report_success_message)
+        showBasicSnackbar(
+            R.string.post_comment_report_success_message,
+            haptics = BasePresenter.HapticType.SIMPLE
+        )
     }
 
     private suspend fun deleteComment(position: Int, comment: Comment) {

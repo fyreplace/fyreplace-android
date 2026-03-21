@@ -1,5 +1,4 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="1000"
@@ -10,46 +9,22 @@
         android:translateX="125"
         android:translateY="125">
         <path
-            android:fillColor="#1F000000"
-            android:pathData="M300,600l400,0l-15,-185l-150,-150l-50,150l-150,-150z" />
-        <path android:pathData="M275,725l525,525l450,-470l-515,-515l-85,385z">
-            <aapt:attr name="android:fillColor">
-                <gradient
-                    android:endX="698.4"
-                    android:endY="1080.3"
-                    android:startX="9"
-                    android:startY="383.8"
-                    android:type="linear">
-                    <item
-                        android:color="#2F000000"
-                        android:offset="0" />
-                    <item
-                        android:color="#00000000"
-                        android:offset="1" />
-                </gradient>
-            </aapt:attr>
-        </path>
-        <path
-            android:fillColor="#ffffff"
+            android:fillColor="@android:color/white"
             android:pathData="M350,750Q250,750 250,650L250,300A50,50 0,0 1,350 300L350,450A50,50 0,0 0,450 450L450,300A50,50 0,0 1,550 300L550,450A50,50 0,0 0,650 450L650,300A50,50 0,0 1,750 300L750,650Q750,750 650,750Z" />
         <path
             android:fillColor="#DFBF3F"
             android:pathData="M250,550h500v100h-500z" />
         <path
-            android:fillColor="#000000"
-            android:pathData="M250,600l0,-50l50,0"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/black"
+            android:pathData="M250,600l0,-50l50,0" />
         <path
-            android:fillColor="#000000"
-            android:pathData="M300,650l100,-100l100,0l-100,100"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/black"
+            android:pathData="M300,650l100,-100l100,0l-100,100" />
         <path
-            android:fillColor="#000000"
-            android:pathData="M500,650l100,-100l100,0l-100,100"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/black"
+            android:pathData="M500,650l100,-100l100,0l-100,100" />
         <path
-            android:fillColor="#000000"
-            android:pathData="M700,650l50,-50l0,50"
-            android:strokeColor="#00000000" />
+            android:fillColor="@android:color/black"
+            android:pathData="M700,650l50,-50l0,50" />
     </group>
 </vector>

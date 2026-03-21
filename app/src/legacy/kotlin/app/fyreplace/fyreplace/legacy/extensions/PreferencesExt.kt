@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import app.fyreplace.fyreplace.R
 
-fun SharedPreferences.applySettings(context: Context) {
+fun SharedPreferences.applyTheme(context: Context) {
     val themeValue = getString(
         "settings.theme",
         context.getString(R.string.settings_theme_auto_value)
