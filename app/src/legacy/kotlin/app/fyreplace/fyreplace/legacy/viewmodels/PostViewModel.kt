@@ -40,13 +40,11 @@ class PostViewModel @AssistedInject constructor(
     override val updatedItems = em.events.filterIsInstance<CommentWasDeletedEvent>()
         .filter { it.postId == post.value.id }
     private val mPost = MutableStateFlow(initialPost)
-    private val mSubscribed = MutableStateFlow(initialPost.is_subscribed)
     private var mSelectedComment = MutableStateFlow<Int?>(null)
     private var mShouldScrollToComment = true
     private var mSavedComment = ""
     private var acknowledgedPosition = -1
     val post = mPost.asStateFlow()
-    val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
     val scrollTargetPosition
@@ -61,10 +59,9 @@ class PostViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             em.events.filterIsInstance<CommentWasCreatedEvent>()
-                .filter { it.postId == post.value.id }
+                .filter { it.postId == post.value.id && it.byCurrentUser }
                 .collect {
-                    mPost.value = post.value.copy(comments_read = post.value.comments_read + 1)
-                    mSubscribed.value = true
+                    mPost.value = post.value.copy(is_subscribed = true)
                     mShouldScrollToComment = true
                     mSavedComment = ""
                 }
@@ -93,26 +90,25 @@ class PostViewModel @AssistedInject constructor(
     suspend fun retrieve(postId: ByteString) {
         val newPost = postService.Retrieve().executeFully(Id(id = postId))
         mPost.value = newPost
-        mSubscribed.value = newPost.is_subscribed
         acknowledgedPosition = newPost.comments_read - 1
     }
 
     suspend fun updateSubscription(subscribed: Boolean) {
         postService.UpdateSubscription().executeFully(
             Subscription(
-                id = mPost.value.id,
+                id = post.value.id,
                 subscribed = subscribed
             )
         )
-        mSubscribed.value = subscribed
+        mPost.value = post.value.copy(is_subscribed = subscribed)
     }
 
     suspend fun report() {
-        postService.Report().executeFully(Id(id = mPost.value.id))
+        postService.Report().executeFully(Id(id = post.value.id))
     }
 
     suspend fun delete() {
-        postService.Delete().executeFully(Id(id = mPost.value.id))
+        postService.Delete().executeFully(Id(id = post.value.id))
     }
 
     suspend fun reportComment(commentId: ByteString) {

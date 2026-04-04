@@ -218,11 +218,8 @@ class PostFragment :
             )
             val shareIntent = context?.makeShareIntent("p", post.id)
             menu.findItem(R.id.share)?.run { intent = Intent.createChooser(shareIntent, title) }
-        }
-
-        vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
-            menu.findItem(R.id.subscribe)?.isVisible = !subscribed
-            menu.findItem(R.id.unsubscribe)?.isVisible = subscribed
+            menu.findItem(R.id.subscribe)?.isVisible = !post.is_subscribed
+            menu.findItem(R.id.unsubscribe)?.isVisible = post.is_subscribed
         }
 
         cvm.currentUser.combine(vm.post) { u, p ->
