@@ -67,7 +67,7 @@ abstract class ItemListViewModel<Item, Items : Any>(em: EventsManager) :
         pagesChannel.send(
             Page(
                 header_ = Header(
-                    forward = true,
+                    forward = forward,
                     size = PAGE_SIZE
                 )
             )
