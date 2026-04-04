@@ -34,14 +34,14 @@ object GrpcModule {
         preferences: SharedPreferences
     ): OkHttpClient {
         val localEnvironment = context.getString(R.string.settings_environment_local_value)
-        val protocol = if (preferences.getEnvironment(context) == localEnvironment) {
-            Protocol.H2_PRIOR_KNOWLEDGE
+        val protocols = if (preferences.getEnvironment(context) == localEnvironment) {
+            listOf(Protocol.H2_PRIOR_KNOWLEDGE)
         } else {
-            Protocol.HTTP_2
+            listOf(Protocol.HTTP_1_1, Protocol.HTTP_2)
         }
 
         return OkHttpClient.Builder()
-            .protocols(listOf(protocol))
+            .protocols(protocols)
             .build()
     }
 
@@ -51,16 +51,19 @@ object GrpcModule {
         preferences: SharedPreferences,
         httpClient: OkHttpClient
     ): GrpcClient {
-        val host = when (preferences.getEnvironment(context)) {
+        val environment = preferences.getEnvironment(context)
+        val localEnvironment = context.getString(R.string.settings_environment_local_value)
+        val isLocal = environment == localEnvironment
+        val hostRes = when (environment) {
             context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main
             context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev
-            context.getString(R.string.settings_environment_local_value) -> R.string.api_host_local
+            localEnvironment -> R.string.api_host_local
             else -> R.string.api_host_default
         }
 
         val serverUrl = HttpUrl.Builder()
-            .scheme("http")
-            .host(context.resources.getString(host))
+            .scheme(if (isLocal) "http" else "https")
+            .host(context.resources.getString(hostRes))
             .port(context.resources.getInteger(R.integer.api_port))
             .build()
 
