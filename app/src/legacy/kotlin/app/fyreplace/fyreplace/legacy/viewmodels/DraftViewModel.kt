@@ -9,7 +9,7 @@ import app.fyreplace.fyreplace.legacy.events.ChapterWasUpdatedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.extensions.imageChunks
 import app.fyreplace.fyreplace.legacy.extensions.mutateAsList
-import app.fyreplace.fyreplace.legacy.extensions.sendAll
+import app.fyreplace.fyreplace.legacy.extensions.sendAllAndClose
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.ChapterImageUpdate
 import app.fyreplace.protos.ChapterLocation
@@ -108,7 +108,7 @@ class DraftViewModel @AssistedInject constructor(
         )
 
         sender.send(firstUpdate)
-        sender.sendAll(image.imageChunks.map { ChapterImageUpdate(chunk = it) })
+        sender.sendAllAndClose(image.imageChunks.map { ChapterImageUpdate(chunk = it) })
         val image = receiver.receive()
         mPost.value = post.value.copy(
             chapters = post.value.chapters.mutateAsList { this[position] = Chapter(image = image) }

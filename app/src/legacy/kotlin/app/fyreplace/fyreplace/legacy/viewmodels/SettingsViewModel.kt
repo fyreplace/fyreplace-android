@@ -10,7 +10,7 @@ import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.UserWasBlockedEvent
 import app.fyreplace.fyreplace.legacy.events.UserWasUnblockedEvent
 import app.fyreplace.fyreplace.legacy.extensions.imageChunks
-import app.fyreplace.fyreplace.legacy.extensions.sendAll
+import app.fyreplace.fyreplace.legacy.extensions.sendAllAndClose
 import app.fyreplace.protos.AccountServiceClient
 import app.fyreplace.protos.Email
 import app.fyreplace.protos.Id
@@ -45,7 +45,7 @@ class SettingsViewModel @AssistedInject constructor(
 
     suspend fun updateAvatar(image: ByteArray?): Image {
         val (sender, receiver) = userService.UpdateAvatar().executeFully()
-        sender.sendAll(image.imageChunks)
+        sender.sendAllAndClose(image.imageChunks)
         return receiver.receive()
     }
 
