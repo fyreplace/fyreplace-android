@@ -59,6 +59,10 @@ class FeedAdapter(
 
         if (position == -1) {
             add(itemCount, item)
+
+            while (itemCount > 3) {
+                remove(0)
+            }
         } else if (items[position] != item) {
             update(position, item)
         }
