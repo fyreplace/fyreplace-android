@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.ItemEvent
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
-import com.google.protobuf.ByteString
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import okio.ByteString
 import kotlin.math.max
 
 abstract class DynamicListViewModel<Item>(val em: EventsManager) : BaseViewModel() {

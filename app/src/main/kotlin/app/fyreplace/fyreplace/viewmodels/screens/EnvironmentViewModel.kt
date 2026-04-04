@@ -22,7 +22,7 @@ class EnvironmentViewModel @Inject constructor(
     fun updateEnvironment(environment: Environment) {
         viewModelScope.launch {
             storeResolver.connectionStore.updateData {
-                it.toBuilder().setEnvironment(environment).build()
+                it.copy(environment = environment)
             }
         }
     }

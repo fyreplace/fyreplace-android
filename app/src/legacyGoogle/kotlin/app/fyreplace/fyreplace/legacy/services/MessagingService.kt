@@ -2,21 +2,24 @@ package app.fyreplace.fyreplace.legacy.services
 
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
+import app.fyreplace.fyreplace.legacy.extensions.authenticate
 import app.fyreplace.fyreplace.legacy.extensions.base64ShortString
 import app.fyreplace.fyreplace.legacy.extensions.byteString
-import app.fyreplace.fyreplace.legacy.extensions.date
+import app.fyreplace.fyreplace.legacy.extensions.dedupe
 import app.fyreplace.fyreplace.legacy.extensions.deleteNotification
 import app.fyreplace.fyreplace.legacy.extensions.deleteNotifications
+import app.fyreplace.fyreplace.legacy.extensions.mainPreferences
 import app.fyreplace.fyreplace.legacy.extensions.notificationTag
-import app.fyreplace.protos.Comment
+import app.fyreplace.fyreplace.legacy.extensions.parseComment
 import app.fyreplace.protos.MessagingService
-import app.fyreplace.protos.NotificationServiceGrpcKt
-import app.fyreplace.protos.messagingToken
+import app.fyreplace.protos.MessagingToken
+import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.squareup.moshi.Moshi
+import com.squareup.wire.GrpcException
+import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.StatusException
-import io.grpc.StatusRuntimeException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,7 +33,10 @@ class MessagingService : FirebaseMessagingService() {
     lateinit var em: EventsManager
 
     @Inject
-    lateinit var notificationStub: NotificationServiceGrpcKt.NotificationServiceCoroutineStub
+    lateinit var moshi: Moshi
+
+    @Inject
+    lateinit var notificationService: NotificationServiceClient
 
     private lateinit var lifecycleScope: CoroutineScope
 
@@ -48,12 +54,13 @@ class MessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
         lifecycleScope.launch {
             try {
-                notificationStub.registerToken(messagingToken {
-                    service = MessagingService.MESSAGING_SERVICE_FCM
-                    this.token = token
-                })
-            } catch (_: StatusException) {
-            } catch (_: StatusRuntimeException) {
+                notificationService.RegisterToken().authenticate(mainPreferences).dedupe().execute(
+                    MessagingToken(
+                        service = MessagingService.MESSAGING_SERVICE_FCM,
+                        token = token
+                    )
+                )
+            } catch (_: GrpcException) {
             }
         }
     }
@@ -67,14 +74,14 @@ class MessagingService : FirebaseMessagingService() {
         }
 
         val channel = message.data["_fcm.channel"]
-        val comment = Comment.parseFrom(byteString(message.data["comment"] ?: return))
+        val comment = message.parseComment(moshi) ?: return
         val postId = byteString(message.data["postId"] ?: return)
 
         when (command) {
             "comment:deletion" -> deleteNotification(comment.notificationTag(postId))
             "comment:acknowledgement" -> deleteNotifications(
                 Regex("${postId.base64ShortString}:.*"),
-                comment.dateCreated.date
+                comment.date_created ?: Instant.now()
             )
         }
 

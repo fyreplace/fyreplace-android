@@ -1,32 +1,33 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.fyreplace.fyreplace.legacy.events.ChapterWasUpdatedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
-import app.fyreplace.protos.ChapterServiceGrpcKt
-import app.fyreplace.protos.chapterLocation
-import app.fyreplace.protos.chapterTextUpdate
-import com.google.protobuf.ByteString
+import app.fyreplace.protos.ChapterLocation
+import app.fyreplace.protos.ChapterServiceClient
+import app.fyreplace.protos.ChapterTextUpdate
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import okio.ByteString
 
 class TextChapterViewModel @AssistedInject constructor(
+    override val preferences: SharedPreferences,
     private val em: EventsManager,
+    private val chapterService: ChapterServiceClient,
     @Assisted private val postId: ByteString,
     @Assisted private val position: Int,
-    @Assisted initialText: String,
-    private val chapterStub: ChapterServiceGrpcKt.ChapterServiceCoroutineStub
+    @Assisted initialText: String
 ) :
     TextInputViewModel(initialText) {
-    suspend fun updateTextChapter(): Unit = whileLoading {
-        chapterStub.updateText(chapterTextUpdate {
-            location = chapterLocation {
-                postId = this@TextChapterViewModel.postId
-                position = this@TextChapterViewModel.position
-            }
-            text = this@TextChapterViewModel.text.value
-        })
+    suspend fun updateTextChapter() = whileLoading {
+        chapterService.UpdateText().executeFully(
+            ChapterTextUpdate(
+                location = ChapterLocation(post_id = postId, position = position),
+                text = text.value
+            )
+        )
         em.post(ChapterWasUpdatedEvent(postId, position, text.value))
     }
 

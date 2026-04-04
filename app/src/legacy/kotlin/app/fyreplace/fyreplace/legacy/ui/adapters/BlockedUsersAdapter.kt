@@ -7,7 +7,6 @@ import android.widget.Button
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.protos.Profile
-import com.google.protobuf.ByteString
 
 class BlockedUsersAdapter(
     private val unblockListener: UnblockListener,
@@ -28,7 +27,7 @@ class BlockedUsersAdapter(
         }
     }
 
-    override fun getItemId(item: Profile): ByteString = item.id
+    override fun getItemId(item: Profile) = item.id
 
     class Holder(itemView: View) : ItemHolder(itemView) {
         val unblock: Button = itemView.findViewById(R.id.unblock)

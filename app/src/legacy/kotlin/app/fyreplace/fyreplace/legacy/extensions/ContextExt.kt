@@ -21,8 +21,8 @@ import androidx.core.content.res.use
 import androidx.core.net.toUri
 import app.fyreplace.fyreplace.R
 import com.google.android.material.color.DynamicColors
-import com.google.protobuf.ByteString
-import java.util.Date
+import com.squareup.wire.Instant
+import okio.ByteString
 
 private val activityToAppIcon
     get() = mapOf(
@@ -58,7 +58,7 @@ fun Context.createNotification(
     channel: String?,
     title: String,
     body: String,
-    date: Date
+    instant: Instant
 ) {
     val contentIntent = PendingIntent.getActivity(
         this,
@@ -75,7 +75,7 @@ fun Context.createNotification(
             .setColor(getColor(R.color.seed))
             .setContentTitle(title)
             .setContentText(body)
-            .setWhen(date.time)
+            .setWhen(instant.epochSecond)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
@@ -85,12 +85,12 @@ fun Context.createNotification(
 
 fun Context.deleteNotification(tag: String) = NotificationManagerCompat.from(this).cancel(tag, 0)
 
-fun Context.deleteNotifications(tag: Regex, beforeDate: Date) {
+fun Context.deleteNotifications(tag: Regex, beforeDate: Instant) {
     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     val notificationManagerCompat = NotificationManagerCompat.from(this)
 
     for (statusNotification in notificationManager.activeNotifications) {
-        if (tag.matches(statusNotification.tag) && statusNotification.notification.`when` <= beforeDate.time) {
+        if (tag.matches(statusNotification.tag) && statusNotification.notification.`when` <= beforeDate.toEpochMilli()) {
             notificationManagerCompat.cancel(statusNotification.tag, statusNotification.id)
         }
     }
@@ -112,7 +112,13 @@ fun Context.setAppIcon(@DrawableRes newAppIcon: Int) {
 @DrawableRes
 fun Context.getAppIcon(): Int {
     for ((activity, appIcon) in activityToAppIcon.entries) {
-        if (packageManager.getComponentEnabledSetting(ComponentName(this, activity)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+        if (packageManager.getComponentEnabledSetting(
+                ComponentName(
+                    this,
+                    activity
+                )
+            ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        ) {
             return appIcon
         }
     }

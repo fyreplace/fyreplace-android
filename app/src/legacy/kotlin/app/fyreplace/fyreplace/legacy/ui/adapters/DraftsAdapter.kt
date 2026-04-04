@@ -9,15 +9,14 @@ import app.fyreplace.fyreplace.legacy.extensions.firstChapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
-import com.google.protobuf.ByteString
 
 class DraftsAdapter(itemListener: ItemClickListener<Post>) :
     ItemListAdapter<Post, PreviewHolder>(itemListener) {
     override fun getItemViewType(position: Int): Int {
         val post = items[position]
-        return when (post.chaptersCount) {
+        return when (post.chapter_count) {
             0 -> TYPE_EMPTY
-            else -> if (post.firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
+            else -> if (post.firstChapter.image != null) TYPE_IMAGE else TYPE_TEXT
         }
     }
 
@@ -45,7 +44,7 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
         (holder as DraftHolder).setup(items[position])
     }
 
-    override fun getItemId(item: Post): ByteString = item.id
+    override fun getItemId(item: Post) = item.id
 
     companion object {
         const val TYPE_EMPTY = 1
@@ -56,17 +55,17 @@ class DraftsAdapter(itemListener: ItemClickListener<Post>) :
     open class DraftHolder(itemView: View) : PreviewHolder(itemView) {
         private val parts: TextView? = itemView.findViewById(R.id.parts)
 
-        override fun setup(post: Post) {
+        override fun setup(post: Post?) {
             super.setup(post)
             parts?.text = parts.resources?.getQuantityString(
                 R.plurals.drafts_item_parts,
-                post.chapterCount,
-                post.chapterCount
+                post?.chapter_count ?: 0,
+                post?.chapter_count
             )
         }
     }
 
     class EmptyHolder(itemView: View) : DraftHolder(itemView) {
-        override fun setup(chapter: Chapter) = Unit
+        override fun setup(chapter: Chapter?) = Unit
     }
 }

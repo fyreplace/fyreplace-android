@@ -3,7 +3,7 @@ package app.fyreplace.fyreplace.legacy.ui
 import androidx.appcompat.app.AppCompatActivity
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.protos.Comment
-import com.google.protobuf.ByteString
+import okio.ByteString
 import javax.inject.Inject
 
 abstract class RemoteNotificationsActivity(contentLayoutId: Int) :

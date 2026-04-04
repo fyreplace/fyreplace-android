@@ -6,6 +6,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.protos.Secrets
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -22,7 +23,7 @@ class TokenRefreshWorker @AssistedInject constructor(
             val response = apiResolver.tokens().getNewToken()
             val newToken = response.body() ?: throw Exception("No token received")
             storeResolver.secretsStore.updateData {
-                it.toBuilder().setToken(secretsHandler.encrypt(newToken)).build()
+                Secrets(token = secretsHandler.encrypt(newToken))
             }
             return Result.success()
         } catch (_: Exception) {

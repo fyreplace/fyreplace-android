@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlin.math.max
 
-abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
+abstract class ItemListFragment<Item, Items : Any, VH : ItemHolder> :
     DynamicListFragment<Item>(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null

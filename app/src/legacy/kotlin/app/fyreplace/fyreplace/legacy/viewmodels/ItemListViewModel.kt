@@ -3,32 +3,25 @@ package app.fyreplace.fyreplace.legacy.viewmodels
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
 import app.fyreplace.protos.Cursor
+import app.fyreplace.protos.Header
 import app.fyreplace.protos.Page
-import app.fyreplace.protos.cursor
-import app.fyreplace.protos.header
-import app.fyreplace.protos.page
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.squareup.wire.GrpcStreamingCall
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.flow
 
-abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListViewModel<Item>(em) {
-    private val maybePages = MutableSharedFlow<Page?>(replay = 10)
-    private var nextCursor = cursor { isNext = true }
+abstract class ItemListViewModel<Item, Items : Any>(em: EventsManager) :
+    DynamicListViewModel<Item>(em) {
+    private lateinit var pagesChannel: SendChannel<Page>
+    private var nextCursor: Cursor? = Cursor(is_next = true)
     private var state = ItemsState.PAUSED
     private val mItems = mutableListOf<Item>()
     private val mIsEmpty = MutableStateFlow(true)
     private var mManuallyAddedCount = 0
-    protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     protected open val forward = false
     val items: List<Item> = mItems
     val isEmpty = mIsEmpty.asStateFlow()
@@ -58,52 +51,45 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
         mManuallyAddedCount--
     }
 
-    protected abstract fun listItems(): Flow<Items>
+    protected abstract fun listItems(): GrpcStreamingCall<Page, Items>
 
-    protected abstract fun hasNextCursor(items: Items): Boolean
-
-    protected abstract fun getNextCursor(items: Items): Cursor
+    protected abstract fun getNextCursor(items: Items): Cursor?
 
     protected abstract fun getItemList(items: Items): List<Item>
 
     suspend fun startListing(): Flow<List<Item>> {
-        maybePages.emit(page {
-            header = header {
-                forward = this@ItemListViewModel.forward
-                size = PAGE_SIZE
-            }
-        })
-
         if (state == ItemsState.PAUSED) {
             state = ItemsState.INCOMPLETE
         }
 
-        return listItems()
-            .filter { state == ItemsState.FETCHING }
-            .onEach {
-                nextCursor = getNextCursor(it)
-                state = if (hasNextCursor(it)) ItemsState.INCOMPLETE else ItemsState.COMPLETE
+        val (sender, receiver) = listItems().executeFully()
+        pagesChannel = sender
+        pagesChannel.send(
+            Page(
+                header_ = Header(
+                    forward = true,
+                    size = PAGE_SIZE
+                )
+            )
+        )
+
+        return flow {
+            for (newItems in receiver) {
+                emitItems(newItems)
             }
-            .map(::getItemList)
-            .onEach {
-                mItems += it
-                mIsEmpty.value = items.isEmpty()
-            }
-            .flowOn(Dispatchers.Main.immediate)
+        }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun stopListing() {
         if (state != ItemsState.COMPLETE) {
             state = ItemsState.PAUSED
         }
 
-        maybePages.tryEmit(null)
-        maybePages.resetReplayCache()
+        pagesChannel.close()
     }
 
     fun reset() {
-        nextCursor = cursor { isNext = true }
+        nextCursor = Cursor(is_next = true)
         state = ItemsState.INCOMPLETE
         mItems.clear()
         mIsEmpty.value = true
@@ -113,8 +99,21 @@ abstract class ItemListViewModel<Item, Items>(em: EventsManager) : DynamicListVi
     suspend fun fetchMore() {
         if (state == ItemsState.INCOMPLETE) {
             state = ItemsState.FETCHING
-            maybePages.emit(page { cursor = nextCursor })
+            pagesChannel.send(Page(cursor = nextCursor))
         }
+    }
+
+    private suspend fun FlowCollector<List<Item>>.emitItems(newItems: Items) {
+        if (state != ItemsState.FETCHING) {
+            return
+        }
+
+        nextCursor = getNextCursor(newItems)
+        state = if (nextCursor != null) ItemsState.INCOMPLETE else ItemsState.COMPLETE
+        val newItemsList = getItemList(newItems)
+        mItems += newItemsList
+        mIsEmpty.value = items.isEmpty()
+        emit(newItemsList)
     }
 
     companion object {

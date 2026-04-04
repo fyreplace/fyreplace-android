@@ -5,8 +5,9 @@ import androidx.navigation.fragment.navArgs
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.viewmodels.TextChapterViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.TextChapterViewModelFactory
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -26,8 +27,8 @@ class TextChapterFragment : TextInputFragment() {
     override val allowEmpty = true
     private val args by navArgs<TextChapterFragmentArgs>()
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.INVALID_ARGUMENT -> R.string.draft_error_chapter_too_long_title to R.string.draft_error_chapter_too_long_message
         else -> super.getFailureTexts(error)
     }
 

@@ -65,7 +65,7 @@ class RegisterViewModel @Inject constructor(
         username = newValue
         viewModelScope.launch {
             storeResolver.accountStore.updateData {
-                it.toBuilder().setUsername(newValue).build()
+                it.copy(username = newValue)
             }
         }
     }
@@ -76,7 +76,7 @@ class RegisterViewModel @Inject constructor(
         email = newValue
         viewModelScope.launch {
             storeResolver.accountStore.updateData {
-                it.toBuilder().setEmail(newValue).build()
+                it.copy(email = newValue)
             }
         }
     }

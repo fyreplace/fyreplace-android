@@ -15,7 +15,7 @@ import app.fyreplace.fyreplace.legacy.ui.views.ChaptersView
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
-import com.google.protobuf.Timestamp
+import com.squareup.wire.Instant
 import kotlinx.coroutines.flow.StateFlow
 
 class PostAdapter(
@@ -140,22 +140,22 @@ class PostAdapter(
             bd.isAuthenticated = isAuthenticated
         }
 
-        override fun setup(profile: Profile, timestamp: Timestamp?) {
+        override fun setup(profile: Profile?, timestamp: Instant?) {
             super.setup(profile, timestamp)
-            bd.username.setTextColor(if (profile.id == post.author.id) primaryColor else textColor)
+            bd.username.setTextColor(if (profile?.id == post.author?.id) primaryColor else textColor)
         }
 
         fun setup(comment: Comment) {
-            setup(comment.author, comment.dateCreated)
+            setup(comment.author, comment.date_created)
             this.comment = comment
             itemView.setBackgroundColor(
                 if (commentPosition == selectedComment) selectedContainerColor
                 else Color.TRANSPARENT
             )
-            val highlighted = post.isSubscribed && commentPosition >= post.commentsRead
+            val highlighted = post.is_subscribed && commentPosition >= post.comments_read
             bd.content.setComment(comment, highlighted)
             bd.highlight.isVisible = highlighted
-            bd.more.visibility = if (comment.isDeleted) View.INVISIBLE else View.VISIBLE
+            bd.more.visibility = if (comment.is_deleted) View.INVISIBLE else View.VISIBLE
             commentListener.onCommentDisplayed(itemView, commentPosition, comment, highlighted)
         }
 
@@ -165,13 +165,15 @@ class PostAdapter(
         }
 
         fun onProfileClicked(view: View) {
-            if (!comment.author.isDeleted) {
-                commentListener.onCommentProfileClicked(view, commentPosition, comment.author)
+            val author = comment.author ?: return
+
+            if (!author.is_deleted) {
+                commentListener.onCommentProfileClicked(view, commentPosition, author)
             }
         }
 
         fun onMoreClicked(view: View) {
-            if (!comment.author.isDeleted) {
+            if (comment.author?.is_deleted == false) {
                 commentListener.onCommentOptionsClicked(view, commentPosition, comment)
             }
         }

@@ -7,6 +7,7 @@ import app.fyreplace.api.UsersEndpointApi
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
+import app.fyreplace.fyreplace.extensions.isEmpty
 import app.fyreplace.fyreplace.extensions.orDefault
 import app.fyreplace.fyreplace.protos.Environment
 import dagger.hilt.android.qualifiers.ApplicationContext

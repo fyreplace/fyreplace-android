@@ -26,21 +26,22 @@ open class PreviewHolder(itemView: View) : ItemHolder(itemView) {
     private val textPreview: TextView? = itemView.findViewById(R.id.text_preview)
     private val imagePreview: ImageView? = itemView.findViewById(R.id.image_preview)
 
-    open fun setup(post: Post) {
-        setup(post.author, post.dateCreated)
-        setup(post.firstChapter)
+    open fun setup(post: Post?) {
+        setup(post?.author, post?.date_created)
+        setup(post?.firstChapter)
     }
 
-    open fun setup(chapter: Chapter) {
+    open fun setup(chapter: Chapter?) {
         if (textPreview != null) {
-            textPreview.text = chapter.text
-            textPreview.setLines(if (chapter.isTitle) 1 else textMaxLines)
-            textPreview.setTextAppearance(if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal)
+            val isTitle = chapter?.is_title == true
+            textPreview.text = chapter?.text
+            textPreview.setLines(if (isTitle) 1 else textMaxLines)
+            textPreview.setTextAppearance(if (isTitle) textAppearanceTitle else textAppearanceNormal)
         }
 
         if (imagePreview != null) {
             Glide.with(itemView.context)
-                .load(chapter.image.url)
+                .load(chapter?.image?.url)
                 .transform(CenterCrop(), RoundedCorners(cornerSize))
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(imagePreview)

@@ -15,8 +15,9 @@ import app.fyreplace.fyreplace.legacy.extensions.hideSoftInput
 import app.fyreplace.fyreplace.legacy.ui.TitleProvider
 import app.fyreplace.fyreplace.legacy.viewmodels.LoginViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 
 @AndroidEntryPoint
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
@@ -42,14 +43,14 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
         vm.setIsRegistering(args.isRegistering)
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.NOT_FOUND -> R.string.login_error_email_not_found_title to R.string.login_error_email_not_found_message
-        Status.Code.ALREADY_EXISTS -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.NOT_FOUND -> R.string.login_error_email_not_found_title to R.string.login_error_email_not_found_message
+        GrpcStatus.ALREADY_EXISTS -> when (error.grpcMessage) {
             "email_taken" -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
             else -> R.string.login_error_existing_username_title to R.string.login_error_existing_username_message
         }
 
-        Status.Code.PERMISSION_DENIED -> when (error.description) {
+        GrpcStatus.PERMISSION_DENIED -> when (error.grpcMessage) {
             "caller_pending" -> R.string.login_error_caller_pending_title to R.string.login_error_caller_pending_message
             "caller_deleted" -> R.string.login_error_caller_deleted_title to R.string.login_error_caller_deleted_message
             "caller_banned" -> R.string.login_error_caller_banned_title to R.string.login_error_caller_banned_message
@@ -58,7 +59,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
             else -> R.string.error_permission_title to R.string.error_permission_message
         }
 
-        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+        GrpcStatus.INVALID_ARGUMENT -> when (error.grpcMessage) {
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             "invalid_username" -> R.string.login_error_invalid_username_title to R.string.login_error_invalid_username_message
             "invalid_password" -> R.string.login_error_invalid_password_title to R.string.login_error_invalid_password_message
@@ -68,10 +69,8 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
         else -> super.getFailureTexts(error)
     }
 
-    override fun onFailure(failure: Throwable) {
-        val error = Status.fromThrowable(failure)
-
-        if (error.code == Status.Code.CANCELLED) {
+    override fun onFailure(error: GrpcException) {
+        if (error.grpcStatus == GrpcStatus.CANCELLED) {
             val passwordLayout = layoutInflater.inflate(R.layout.block_password_input, null, false)
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.login_password)
@@ -85,7 +84,7 @@ class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
                 .setNegativeButton(R.string.cancel, null)
                 .show()
         } else {
-            super.onFailure(failure)
+            super.onFailure(error)
         }
     }
 

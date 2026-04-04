@@ -5,7 +5,6 @@ import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.events.DraftWasCreatedEvent
 import app.fyreplace.fyreplace.legacy.events.DraftWasDeletedEvent
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.DraftsAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
@@ -13,7 +12,6 @@ import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.DraftsViewModel
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
-import app.fyreplace.protos.post
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,7 +25,7 @@ class DraftsFragment :
     override fun makeAdapter() = DraftsAdapter(this)
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = DraftsFragmentDirections.toDraft(post = item.p)
+        val directions = DraftsFragmentDirections.toDraft(post = item)
         findNavController().navigate(directions)
     }
 
@@ -41,15 +39,13 @@ class DraftsFragment :
 
     override fun onPrimaryAction() {
         launch {
-            val directions = DraftsFragmentDirections.toDraft(post = createPost().p)
+            val directions = DraftsFragmentDirections.toDraft(post = createPost())
             findNavController().navigate(directions)
         }
     }
 
-    private suspend fun createPost(): Post {
-        val post = post { id = vm.create().id }
-        vm.em.post(DraftWasCreatedEvent(post))
-        return post
+    private suspend fun createPost() = Post(id = vm.create().id).also {
+        vm.em.post(DraftWasCreatedEvent(it))
     }
 
     private suspend fun deletePost(post: Post) {

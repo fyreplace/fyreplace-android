@@ -1,24 +1,24 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.legacy.events.ChapterWasUpdatedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
-import app.fyreplace.fyreplace.legacy.extensions.imageChunkFlow
+import app.fyreplace.fyreplace.legacy.extensions.imageChunks
+import app.fyreplace.fyreplace.legacy.extensions.mutateAsList
+import app.fyreplace.fyreplace.legacy.extensions.sendAll
 import app.fyreplace.protos.Chapter
-import app.fyreplace.protos.ChapterServiceGrpcKt
+import app.fyreplace.protos.ChapterImageUpdate
+import app.fyreplace.protos.ChapterLocation
+import app.fyreplace.protos.ChapterRelocation
+import app.fyreplace.protos.ChapterServiceClient
+import app.fyreplace.protos.Id
 import app.fyreplace.protos.Post
-import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.chapter
-import app.fyreplace.protos.chapterImageUpdate
-import app.fyreplace.protos.chapterLocation
-import app.fyreplace.protos.chapterRelocation
-import app.fyreplace.protos.copy
-import app.fyreplace.protos.id
-import app.fyreplace.protos.publication
-import com.google.protobuf.ByteString
+import app.fyreplace.protos.PostServiceClient
+import app.fyreplace.protos.Publication
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,94 +27,107 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import okio.ByteString
 
 @SuppressLint("CheckResult")
 class DraftViewModel @AssistedInject constructor(
+    override val preferences: SharedPreferences,
     em: EventsManager,
-    @Assisted initialPost: Post,
-    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
-    private val chapterStub: ChapterServiceGrpcKt.ChapterServiceCoroutineStub
+    private val postService: PostServiceClient,
+    private val chapterService: ChapterServiceClient,
+    @Assisted initialPost: Post
 ) : LoadingViewModel() {
     private val mPost = MutableStateFlow(initialPost)
     val post = mPost.asStateFlow()
     val canAddChapter = post
-        .combine(isLoading) { post, isLoading -> post.chapterCount < 10 && !isLoading }
+        .combine(isLoading) { post, isLoading -> post.chapter_count < 10 && !isLoading }
         .asState(false)
-    val canPublish = post.map { it.chapterCount > 0 }.asState(false)
+    val canPublish = post.map { it.chapter_count > 0 }.asState(false)
 
     init {
         viewModelScope.launch {
             em.events.filterIsInstance<ChapterWasUpdatedEvent>()
                 .filter { it.postId == post.value.id }
                 .collect {
-                    mPost.value =
-                        post.value.copy { chapters[it.position] = chapter { text = it.text } }
+                    mPost.value = post.value.copy(
+                        chapters = post.value.chapters.mutateAsList {
+                            this[it.position] = Chapter(text = it.text)
+                        }
+                    )
                 }
         }
     }
 
     suspend fun retrieve(postId: ByteString) {
-        mPost.value = postStub.retrieve(id { id = postId })
+        mPost.value = postService.Retrieve().executeFully(Id(id = postId))
     }
 
-    suspend fun delete() {
-        postStub.delete(id { id = post.value.id })
-    }
+    suspend fun delete() = postService.Delete().executeFully(Id(id = post.value.id))
 
-    suspend fun publish(anonymously: Boolean) {
-        postStub.publish(publication {
-            id = post.value.id
+    suspend fun publish(anonymously: Boolean) = postService.Publish().executeFully(
+        Publication(
+            id = post.value.id,
             anonymous = anonymously
-        })
+        )
+    )
+
+    suspend fun createChapter() = whileLoading {
+        chapterService.Create().executeFully(
+            ChapterLocation(
+                post_id = post.value.id,
+                position = post.value.chapter_count
+            )
+        )
+        mPost.value = post.value.copy(
+            chapters = post.value.chapters + Chapter(),
+            chapter_count = post.value.chapter_count + 1
+        )
     }
 
-    suspend fun createChapter(): Unit = whileLoading {
-        chapterStub.create(chapterLocation {
-            postId = post.value.id
-            position = post.value.chaptersCount
-        })
-        mPost.value = Post.newBuilder(post.value)
-            .addChapters(Chapter.getDefaultInstance())
-            .setChapterCount(post.value.chaptersCount + 1)
-            .build()
-    }
-
-    suspend fun deleteChapter(position: Int): Unit = whileLoading {
-        chapterStub.delete(chapterLocation {
-            postId = post.value.id
-            this.position = position
-        })
-        mPost.value = Post.newBuilder(post.value)
-            .removeChapters(position)
-            .setChapterCount(post.value.chaptersCount - 1)
-            .build()
+    suspend fun deleteChapter(position: Int) = whileLoading {
+        chapterService.Delete().executeFully(
+            ChapterLocation(
+                post_id = post.value.id,
+                position = position
+            )
+        )
+        mPost.value = post.value.copy(
+            chapters = post.value.chapters.mutateAsList { removeAt(position) },
+            chapter_count = post.value.chapter_count - 1
+        )
     }
 
     suspend fun updateChapterImage(position: Int, image: ByteArray) = whileLoading {
-        val firstUpdate = chapterImageUpdate {
-            location = chapterLocation {
-                postId = post.value.id
-                this.position = position
-            }
-        }
-        val chunksFlow = image.imageChunkFlow.map { chapterImageUpdate { chunk = it } }
-        val response = chapterStub.updateImage(chunksFlow.onStart { emit(firstUpdate) })
-        mPost.value = post.value.copy { chapters[position] = chapter { this.image = response } }
-        return@whileLoading response
+        val (sender, receiver) = chapterService.UpdateImage().executeFully()
+        val firstUpdate = ChapterImageUpdate(
+            location = ChapterLocation(
+                post_id = post.value.id,
+                position = position
+            )
+        )
+
+        sender.send(firstUpdate)
+        sender.sendAll(image.imageChunks.map { ChapterImageUpdate(chunk = it) })
+        val image = receiver.receive()
+        mPost.value = post.value.copy(
+            chapters = post.value.chapters.mutateAsList { this[position] = Chapter(image = image) }
+        )
+        return@whileLoading image
     }
 
     suspend fun moveChapter(fromPosition: Int, toPosition: Int) = whileLoading {
-        chapterStub.move(chapterRelocation {
-            postId = post.value.id
-            this.fromPosition = fromPosition
-            this.toPosition = toPosition
+        chapterService.Move().executeFully(
+            ChapterRelocation(
+                post_id = post.value.id,
+                from_position = fromPosition,
+                to_position = toPosition
+            )
+        )
+
+        mPost.value = post.value.copy(chapters = post.value.chapters.mutateAsList {
+            add(toPosition, removeAt(fromPosition))
         })
-        mPost.value = Post.newBuilder(post.value)
-            .removeChapters(fromPosition)
-            .addChapters(toPosition, post.value.chaptersList[fromPosition])
-            .build()
     }
 
     companion object {

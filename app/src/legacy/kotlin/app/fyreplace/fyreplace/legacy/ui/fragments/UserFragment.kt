@@ -48,7 +48,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by viewModels<UserViewModel> {
-        UserViewModel.provideFactory(vmFactory, args.profile.v)
+        UserViewModel.provideFactory(vmFactory, args.profile)
     }
     private val args by navArgs<UserFragmentArgs>()
     private lateinit var bd: FragmentUserBinding
@@ -89,7 +89,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupToolbar() {
-        bd.toolbar.title = args.profile.v.getUsername(requireContext())
+        bd.toolbar.title = args.profile.getUsername(requireContext())
         bd.toolbar.subtitle = when (args.profile.rank) {
             Rank.RANK_SUPERUSER -> getString(R.string.user_rank_superuser)
             Rank.RANK_STAFF -> getString(R.string.user_rank_staff)
@@ -137,11 +137,12 @@ class UserFragment : DialogFragment(), FailureHandler {
     }
 
     private fun setupContent() {
-        bd.avatar.setAvatar(args.profile.v)
+        bd.avatar.setAvatar(args.profile)
 
         vm.user.filterNotNull().launchCollect(viewLifecycleScope) { user ->
             bd.dateJoined.isVisible = true
-            bd.dateJoined.text = getString(R.string.user_date_joined, user.dateJoined.formatDate())
+            bd.dateJoined.text =
+                getString(R.string.user_date_joined, user.date_joined?.formatDate())
             bd.bio.isVisible = user.bio.isNotBlank()
             bd.bio.setLinkifiedText(user.bio)
         }
@@ -152,14 +153,14 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun block() = showChoiceAlert(R.string.user_block_title, null) {
         launch {
             vm.updateBlock(blocked = true)
-            em.post(UserWasBlockedEvent(args.profile.v))
+            em.post(UserWasBlockedEvent(args.profile))
         }
     }
 
     private fun unblock() = showChoiceAlert(R.string.user_unblock_title, null) {
         launch {
             vm.updateBlock(blocked = false)
-            em.post(UserWasUnblockedEvent(args.profile.v))
+            em.post(UserWasUnblockedEvent(args.profile))
         }
     }
 
@@ -203,6 +204,6 @@ class UserFragment : DialogFragment(), FailureHandler {
             haptics = BasePresenter.HapticType.SIMPLE
         )
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
-        em.post(UserWasBannedEvent(args.profile.v.toBuilder().setIsBanned(true).build()))
+        em.post(UserWasBannedEvent(args.profile.copy(is_banned = true)))
     }
 }

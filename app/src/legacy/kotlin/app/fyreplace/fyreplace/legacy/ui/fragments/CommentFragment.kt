@@ -12,10 +12,11 @@ import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.CommentViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.CommentViewModelFactory
-import app.fyreplace.protos.comment
-import com.google.protobuf.timestamp
+import app.fyreplace.protos.Comment
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
+import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -43,13 +44,13 @@ class CommentFragment : TextInputFragment() {
         super.onStop()
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.PERMISSION_DENIED -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.PERMISSION_DENIED -> when (error.grpcMessage) {
             "caller_blocked" -> R.string.comment_error_blocked_title to R.string.comment_error_blocked_message
             else -> R.string.comment_error_too_long_title to R.string.comment_error_too_long_message
         }
 
-        Status.Code.INVALID_ARGUMENT ->
+        GrpcStatus.INVALID_ARGUMENT ->
             if (vm.text.value.length > maxLength) R.string.comment_error_too_long_title to R.string.comment_error_too_long_message
             else R.string.error_validation_title to R.string.error_validation_message
 
@@ -65,12 +66,16 @@ class CommentFragment : TextInputFragment() {
 
     override suspend fun onDone() {
         val commentId = vm.create()
-        em.post(CommentWasCreatedEvent(comment {
-            id = commentId.id
-            text = vm.text.value
-            author = cvm.currentUser.value!!.profile
-            dateCreated = timestamp { seconds = System.currentTimeMillis() / 1000 }
-        }, args.postId, true))
+        em.post(
+            CommentWasCreatedEvent(
+                Comment(
+                    id = commentId.id,
+                    text = vm.text.value,
+                    author = cvm.currentUser.value!!.profile,
+                    date_created = Instant.now()
+                ), args.postId, true
+            )
+        )
         isDone = true
         super.onDone()
     }

@@ -4,9 +4,7 @@ import android.content.SharedPreferences
 import app.fyreplace.fyreplace.legacy.extensions.isNotNullOrBlank
 import app.fyreplace.protos.Image
 import app.fyreplace.protos.User
-import app.fyreplace.protos.UserServiceGrpcKt
-import app.fyreplace.protos.copy
-import com.google.protobuf.Empty
+import app.fyreplace.protos.UserServiceClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,8 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CentralViewModel @Inject constructor(
-    private val preferences: SharedPreferences,
-    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
+    override val preferences: SharedPreferences,
+    private val userService: UserServiceClient
 ) : BaseViewModel(), SharedPreferences.OnSharedPreferenceChangeListener {
     private val mIsAuthenticated = MutableStateFlow(false)
     private val mCurrentUser = MutableStateFlow<User?>(null)
@@ -39,11 +37,13 @@ class CentralViewModel @Inject constructor(
     }
 
     suspend fun retrieveMe() {
-        mCurrentUser.value =
-            if (isAuthenticated.value) userStub.retrieveMe(Empty.getDefaultInstance()) else null
+        mCurrentUser.value = if (isAuthenticated.value) userService.RetrieveMe().executeFully(Unit)
+        else null
     }
 
     fun setAvatar(image: Image) {
-        mCurrentUser.value = mCurrentUser.value?.copy { profile = profile.copy { avatar = image } }
+        mCurrentUser.value = mCurrentUser.value?.copy(
+            profile = currentUser.value?.profile?.copy(avatar = image)
+        )
     }
 }

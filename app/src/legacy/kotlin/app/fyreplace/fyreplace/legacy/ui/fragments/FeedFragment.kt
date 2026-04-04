@@ -17,7 +17,6 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.NetworkConnectionWasChangedEvent
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.adapters.FeedAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -96,7 +95,7 @@ class FeedFragment :
     }
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = FeedFragmentDirections.toPost(item.p)
+        val directions = FeedFragmentDirections.toPost(item)
         findNavController().navigate(directions)
     }
 

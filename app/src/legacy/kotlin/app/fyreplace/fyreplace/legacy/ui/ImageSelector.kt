@@ -220,8 +220,6 @@ class ImageSelector @AssistedInject constructor(
         suspend fun onImage(image: ByteArray)
 
         suspend fun onImageRemoved() = Unit
-
-        suspend fun onImageSelectionCancelled() = Unit
     }
 }
 

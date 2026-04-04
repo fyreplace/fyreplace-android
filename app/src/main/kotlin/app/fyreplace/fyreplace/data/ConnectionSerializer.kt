@@ -12,20 +12,18 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object ConnectionSerializer : Serializer<Connection> {
-    override val defaultValue: Connection = Connection.getDefaultInstance()
-        .toBuilder()
-        .setEnvironment(BuildConfig.ENVIRONMENT_DEFAULT)
-        .build()
+    override val defaultValue = Connection(environment = BuildConfig.ENVIRONMENT_DEFAULT)
 
     override suspend fun readFrom(input: InputStream): Connection {
         try {
-            return Connection.parseFrom(input)
+            return Connection.ADAPTER.decode(input)
         } catch (exception: IOException) {
             throw CorruptionException("Cannot read proto.", exception)
         }
     }
 
-    override suspend fun writeTo(t: Connection, output: OutputStream) = t.writeTo(output)
+    override suspend fun writeTo(t: Connection, output: OutputStream) =
+        Connection.ADAPTER.encode(output, t)
 }
 
 val Context.connectionStore by dataStore(

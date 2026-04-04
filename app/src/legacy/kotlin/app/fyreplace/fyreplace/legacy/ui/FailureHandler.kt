@@ -8,9 +8,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.extensions.mainPreferences
-import io.grpc.Status
-import io.grpc.StatusException
-import io.grpc.StatusRuntimeException
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,15 +22,16 @@ import kotlin.coroutines.CoroutineContext
 interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     val preferences get() = getContext()?.mainPreferences
 
-    fun getFailureTexts(error: Status): Pair<Int, Int>? = null
+    fun getFailureTexts(error: GrpcException): Pair<Int, Int>? = null
 
-    fun onFailure(failure: Throwable) {
-        val error = Status.fromThrowable(failure)
+    fun onFailure(error: GrpcException) {
+        val errorMessage =
+            error.grpcMessage ?: error.localizedMessage ?: error.toString()
         val (title, message) = getFailureTexts(error) ?: return getContext()?.run {
-            Log.e(getString(R.string.app_name), failure.message.orEmpty())
+            Log.e(getString(R.string.app_name), errorMessage)
             Toast.makeText(
                 this,
-                getString(R.string.error_title, failure.localizedMessage ?: failure.message),
+                getString(R.string.error_title, errorMessage),
                 Toast.LENGTH_LONG
             ).show()
         } ?: Unit
@@ -49,21 +49,24 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
             block()
         } catch (_: CancellationException) {
             // Cancellation is a normal occurrence
-        } catch (e: StatusException) {
-            onGrpcFailure(StatusRuntimeException(e.status), retry, autoDisconnect)
-        } catch (e: StatusRuntimeException) {
+        } catch (e: GrpcException) {
             onGrpcFailure(e, retry, autoDisconnect)
         } catch (e: Exception) {
-            onFailure(e)
+            onFailure(
+                GrpcException(
+                    grpcStatus = GrpcStatus.UNKNOWN,
+                    grpcMessage = e.localizedMessage
+                )
+            )
         }
     }
 
     private suspend fun onGrpcFailure(
-        e: StatusRuntimeException,
+        error: GrpcException,
         retry: (() -> Unit)?,
         autoDisconnect: Boolean
-    ) = when (e.status.code) {
-        Status.Code.UNAVAILABLE ->
+    ) = when (error.grpcStatus) {
+        GrpcStatus.UNAVAILABLE ->
             if (retry != null) {
                 delay(500)
                 retry()
@@ -75,7 +78,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
                 )
             }
 
-        Status.Code.UNAUTHENTICATED if autoDisconnect -> {
+        GrpcStatus.UNAUTHENTICATED if autoDisconnect -> {
             if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
                 showBasicAlert(
                     R.string.error_autodisconnect_title,
@@ -87,7 +90,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
             preferences?.edit { putString("auth.token", "") }
         }
 
-        else -> onFailure(e)
+        else -> onFailure(error)
     }
 
     fun <T> Flow<T>.launchCollect(

@@ -3,38 +3,34 @@ package app.fyreplace.fyreplace.legacy.viewmodels
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.ItemEvent
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
+import app.fyreplace.protos.Header
 import app.fyreplace.protos.Page
-import app.fyreplace.protos.header
-import app.fyreplace.protos.page
-import com.google.protobuf.ByteString
+import com.squareup.wire.GrpcStreamingCall
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.takeWhile
+import okio.ByteString
 
-abstract class ItemRandomAccessListViewModel<Item, Items>(
+abstract class ItemRandomAccessListViewModel<Item, Items : Any>(
     em: EventsManager,
     private val contextId: ByteString
 ) :
     DynamicListViewModel<Item>(em) {
     override val removedItems = emptyFlow<ItemEvent<Item>>()
-    private val maybePages = MutableSharedFlow<Page?>(replay = 10)
+    private lateinit var pagesChannel: SendChannel<Page>
     private var state = ItemListViewModel.ItemsState.PAUSED
     private val mItems = mutableMapOf<Int, Item>()
     private val itemPositions = mutableMapOf<ByteString, Int>()
     private val positions = mutableListOf<Int>()
     private var mTotalSize = 0
-    protected val pages get() = maybePages.takeWhile { it != null }.filterNotNull()
     val items: Map<Int, Item> = mItems
     val totalSize get() = mTotalSize
 
-    protected abstract fun listItems(): Flow<Items>
+    protected abstract fun listItems(): GrpcStreamingCall<Page, Items>
 
     protected abstract fun getItemList(items: Items): List<Item>
 
@@ -56,52 +52,36 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
     override fun removeItem(event: PositionalEvent<Item>) = Unit
 
     suspend fun startListing(): Flow<Pair<Int, List<Item>>> {
-        maybePages.emit(page {
-            header = header {
-                forward = true
-                size = PAGE_SIZE
-                contextId = this@ItemRandomAccessListViewModel.contextId
-            }
-        })
-
         if (state == ItemListViewModel.ItemsState.PAUSED) {
             state = ItemListViewModel.ItemsState.INCOMPLETE
         }
 
-        return listItems()
-            .onEach {
-                mTotalSize = getTotalSize(it)
-                state = when {
-                    positions.size > 1 -> ItemListViewModel.ItemsState.FETCHING
-                    items.size < totalSize -> ItemListViewModel.ItemsState.INCOMPLETE
-                    else -> ItemListViewModel.ItemsState.COMPLETE
-                }
-            }
-            .map(::getItemList)
-            .map {
-                val position = positions.removeAt(0)
-                it.forEachIndexed { i, item ->
-                    mItems[position + i] = item
-                    itemPositions[getItemId(item)] = position + i
-                }
+        val (sender, receiver) = listItems().executeFully()
+        pagesChannel = sender
+        pagesChannel.send(
+            Page(
+                header_ = Header(
+                    forward = true,
+                    size = PAGE_SIZE,
+                    context_id = contextId
+                )
+            )
+        )
 
-                if (positions.isNotEmpty()) {
-                    maybePages.emit(page { offset = positions.first() })
-                }
-
-                return@map position to it
+        return flow {
+            for (newItems in receiver) {
+                emitItems(newItems)
             }
+        }
             .flowOn(Dispatchers.Main.immediate)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     fun stopListing() {
         if (state != ItemListViewModel.ItemsState.COMPLETE) {
             state = ItemListViewModel.ItemsState.PAUSED
         }
 
-        maybePages.tryEmit(null)
-        maybePages.resetReplayCache()
+        pagesChannel.close()
     }
 
     open fun reset() {
@@ -125,8 +105,30 @@ abstract class ItemRandomAccessListViewModel<Item, Items>(
 
         if (state == ItemListViewModel.ItemsState.INCOMPLETE) {
             state = ItemListViewModel.ItemsState.FETCHING
-            maybePages.emit(page { offset = startPosition })
+            pagesChannel.send(Page(offset = startPosition))
         }
+    }
+
+    private suspend fun FlowCollector<Pair<Int, List<Item>>>.emitItems(newItems: Items) {
+        mTotalSize = getTotalSize(newItems)
+        state = when {
+            positions.size > 1 -> ItemListViewModel.ItemsState.FETCHING
+            items.size < totalSize -> ItemListViewModel.ItemsState.INCOMPLETE
+            else -> ItemListViewModel.ItemsState.COMPLETE
+        }
+
+        val position = positions.removeAt(0)
+        val newItemsList = getItemList(newItems)
+        newItemsList.forEachIndexed { i, item ->
+            mItems[position + i] = item
+            itemPositions[getItemId(item)] = position + i
+        }
+
+        if (positions.isNotEmpty()) {
+            pagesChannel.send(Page(offset = positions.first()))
+        }
+
+        emit(position to newItemsList)
     }
 
     companion object {

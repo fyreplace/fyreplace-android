@@ -41,19 +41,19 @@ class ChaptersView : LinearLayout {
     fun setPost(post: Post) {
         removeAllViews()
 
-        if (post.isPreview) {
+        if (post.is_preview) {
             val loader = LoadingIndicator(context)
             val layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             layoutParams.gravity = Gravity.CENTER_HORIZONTAL
             loader.layoutParams = layoutParams
             addView(loader)
-        } else for (chapter in post.chaptersList) {
+        } else for (chapter in post.chapters) {
             addChapter(chapter)
         }
     }
 
     private fun addChapter(chapter: Chapter) {
-        val view = if (chapter.hasImage()) makeImageView(chapter)
+        val view = if (chapter.image != null) makeImageView(chapter)
         else makeTextView(chapter)
 
         view.updateLayoutParams<MarginLayoutParams> {
@@ -67,7 +67,7 @@ class ChaptersView : LinearLayout {
     private fun makeTextView(chapter: Chapter): View {
         val text = AppCompatTextView(context)
         val style =
-            if (chapter.isTitle) com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium
+            if (chapter.is_title) com.google.android.material.R.style.TextAppearance_Material3_HeadlineMedium
             else com.google.android.material.R.style.TextAppearance_Material3_BodyLarge
 
         text.setTextAppearance(style)
@@ -85,9 +85,9 @@ class ChaptersView : LinearLayout {
     private fun makeImageView(chapter: Chapter): View {
         val image = ChapterImageView(context)
         image.adjustViewBounds = true
-        image.setChapterImage(chapter.image)
+        chapter.image?.let(image::setChapterImage)
         Glide.with(context)
-            .load(chapter.image.url)
+            .load(chapter.image?.url)
             .transition(DrawableTransitionOptions.withCrossFade())
             .into(image)
 

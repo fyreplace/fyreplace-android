@@ -5,7 +5,6 @@ import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.databinding.ArchivePagesBinding
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.CustomTitleProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.ArchiveAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
@@ -26,7 +25,7 @@ class ArchiveFragment :
     override fun makeAdapter() = ArchiveAdapter(this)
 
     override fun onItemClick(item: Post, position: Int) {
-        val directions = ArchiveFragmentDirections.toPost(post = item.p)
+        val directions = ArchiveFragmentDirections.toPost(post = item)
         findNavController().navigate(directions)
     }
 

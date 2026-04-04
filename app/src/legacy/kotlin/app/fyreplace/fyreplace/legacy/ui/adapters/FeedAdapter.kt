@@ -14,7 +14,6 @@ import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.legacy.extensions.firstChapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
-import com.google.protobuf.ByteString
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +30,7 @@ class FeedAdapter(
 ) :
     ItemListAdapter<Post, PreviewHolder>(itemListener) {
     override fun getItemViewType(position: Int) =
-        if (items[position].firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
+        if (items[position].firstChapter.image != null) TYPE_IMAGE else TYPE_TEXT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -53,7 +52,7 @@ class FeedAdapter(
         holder.setup(items[position])
     }
 
-    override fun getItemId(item: Post): ByteString = item.id
+    override fun getItemId(item: Post) = item.id
 
     fun addOrUpdate(item: Post) {
         val position = items.indexOfFirst { it.id == item.id }
@@ -82,13 +81,13 @@ class FeedAdapter(
         private val isVoting get() = down.isActivated || up.isActivated
         private val scope = MainScope()
 
-        override fun setup(post: Post) {
+        override fun setup(post: Post?) {
             super.setup(post)
-            votes.text = post.voteCount.toString()
-            comments.text = post.commentCount.toString()
+            votes.text = post?.vote_count.toString()
+            comments.text = post?.comment_count.toString()
             scope.launch {
                 em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
-                    .filter { it.command == "comment:creation" && it.postId == post.id }
+                    .filter { it.command == "comment:creation" && it.postId == post?.id }
                     .collect {
                         val newCount = comments.text.toString().toInt() + 1
                         comments.text = newCount.toString()

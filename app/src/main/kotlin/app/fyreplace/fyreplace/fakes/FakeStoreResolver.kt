@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FakeStoreResolver(
-    connection: Connection = Connection.newBuilder().setEnvironment(Environment.LOCAL).build(),
-    account: Account = Account.getDefaultInstance(),
-    currentUser: CurrentUser = CurrentUser.getDefaultInstance(),
-    secrets: Secrets = Secrets.getDefaultInstance()
+    connection: Connection = Connection(environment = Environment.LOCAL),
+    account: Account = Account(),
+    currentUser: CurrentUser = CurrentUser(),
+    secrets: Secrets = Secrets()
 ) : StoreResolver {
     override val connectionStore = FakeSomethingStore(connection)
 

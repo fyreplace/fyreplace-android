@@ -133,8 +133,7 @@ private fun name(env: Environment) = stringResource(
         Environment.MAIN -> R.string.account_environment_main
         Environment.DEV -> R.string.account_environment_dev
         Environment.LOCAL -> R.string.account_environment_local
-        Environment.UNSPECIFIED,
-        Environment.UNRECOGNIZED -> R.string.loading
+        Environment.UNSPECIFIED -> R.string.loading
     }
 )
 
@@ -145,7 +144,6 @@ private fun url(env: Environment) = stringResource(
         Environment.MAIN -> R.string.api_url_main
         Environment.DEV -> R.string.api_url_dev
         Environment.LOCAL -> R.string.api_url_local
-        Environment.UNSPECIFIED,
-        Environment.UNRECOGNIZED -> R.string.empty
+        Environment.UNSPECIFIED -> R.string.empty
     }
 )

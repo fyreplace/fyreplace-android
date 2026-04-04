@@ -11,17 +11,18 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object SecretSerializer : Serializer<Secrets> {
-    override val defaultValue: Secrets = Secrets.getDefaultInstance()
+    override val defaultValue = Secrets()
 
     override suspend fun readFrom(input: InputStream): Secrets {
         try {
-            return Secrets.parseFrom(input)
+            return Secrets.ADAPTER.decode(input)
         } catch (exception: IOException) {
             throw CorruptionException("Cannot read proto.", exception)
         }
     }
 
-    override suspend fun writeTo(t: Secrets, output: OutputStream) = t.writeTo(output)
+    override suspend fun writeTo(t: Secrets, output: OutputStream) =
+        Secrets.ADAPTER.encode(output, t)
 }
 
 val Context.secretsStore by dataStore(

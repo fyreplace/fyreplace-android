@@ -13,8 +13,8 @@ import app.fyreplace.fyreplace.api.ApiResolver
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
-import app.fyreplace.fyreplace.protos.Secrets
-import com.google.protobuf.ByteString
+import app.fyreplace.fyreplace.extensions.isEmpty
+import app.fyreplace.fyreplace.protos.CurrentUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.sentry.Sentry
 import io.sentry.protocol.User
@@ -69,10 +69,9 @@ class MainViewModel @Inject constructor(
 
         viewModelScope.launch {
             storeResolver.secretsStore.data
-                .map(Secrets::getToken)
+                .map { it.token }
                 .distinctUntilChanged()
-                .map(ByteString::isEmpty)
-                .map(Boolean::not)
+                .map { !it.isEmpty }
                 .collect(::storeCurrentUser)
         }
     }
@@ -107,21 +106,21 @@ class MainViewModel @Inject constructor(
 
     private fun storeCurrentUser(hasToken: Boolean) = call(apiResolver::users) {
         storeResolver.currentUserStore.updateData {
-            val builder = it.toBuilder()
+            val storedCurrentUser: CurrentUser
 
             if (hasToken) {
                 val currentUser = getCurrentUser().require()
-                builder.id = currentUser?.id.toString()
+                storedCurrentUser = it.copy(id = currentUser?.id.toString())
                 Sentry.setUser(User().also { user ->
-                    user.id = builder.id
+                    user.id = storedCurrentUser.id
                     user.username = currentUser?.username
                 })
             } else {
-                builder.clearId()
+                storedCurrentUser = it.copy(id = "")
                 Sentry.setUser(null)
             }
 
-            return@updateData builder.build()
+            return@updateData storedCurrentUser
         }
     }
 }

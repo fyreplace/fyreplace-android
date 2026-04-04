@@ -15,7 +15,6 @@ import app.fyreplace.fyreplace.legacy.events.NotificationWasCreatedEvent
 import app.fyreplace.fyreplace.legacy.events.NotificationWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasSeenEvent
 import app.fyreplace.fyreplace.legacy.extensions.isAdmin
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.NotificationsAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
@@ -23,7 +22,7 @@ import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.NotificationsViewModel
 import app.fyreplace.protos.Notification
 import app.fyreplace.protos.Notifications
-import app.fyreplace.protos.post
+import app.fyreplace.protos.Post
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.filterIsInstance
 
@@ -46,16 +45,16 @@ class NotificationsFragment :
     override fun makeAdapter() = NotificationsAdapter(this)
 
     override fun onItemClick(item: Notification, position: Int) {
-        val directions = when (item.targetCase) {
-            Notification.TargetCase.USER ->
-                NotificationsFragmentDirections.toUser(profile = item.user.p)
+        val directions = when {
+            item.user != null ->
+                NotificationsFragmentDirections.toUser(profile = item.user)
 
-            Notification.TargetCase.POST ->
-                NotificationsFragmentDirections.toPost(post = item.post.p)
+            item.post != null ->
+                NotificationsFragmentDirections.toPost(post = item.post)
                     .also { vm.em.post(PostWasSeenEvent(item.post)) }
 
-            Notification.TargetCase.COMMENT ->
-                NotificationsFragmentDirections.toPost(post = post { id = item.comment.id }.p)
+            item.comment != null ->
+                NotificationsFragmentDirections.toPost(post = Post(id = item.comment.id))
 
             else -> return
         }
@@ -63,7 +62,7 @@ class NotificationsFragment :
     }
 
     override fun onItemLongClick(item: Notification, position: Int) {
-        if (item.isFlag && cvm.currentUser.value?.profile?.isAdmin == true) {
+        if (item.is_flag && cvm.currentUser.value?.profile?.isAdmin == true) {
             showSelectionAlert(null, R.array.notifications_item_choices) {
                 launch {
                     vm.absolve(item)

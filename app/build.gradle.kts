@@ -9,16 +9,16 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.sentry)
     alias(libs.plugins.openapi)
-    alias(libs.plugins.protobuf)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google)
+    alias(libs.plugins.wire)
 }
 
 val localProperties = Properties()
-val localPropertiesFile: File? = rootProject.file("local.properties")
+val localPropertiesFile: File = rootProject.file("local.properties")
 
-if (localPropertiesFile?.exists() == true) {
+if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use(localProperties::load)
 }
 
@@ -249,36 +249,14 @@ tasks.named {
     dependsOn(tasks.named("openApiGenerate"))
 }
 
-protobuf {
-    fun artifactName(dependency: MinimalExternalModuleDependency) =
-        with(dependency) { "${group}:${name}:${version}" }
-
-    protoc {
-        artifact = artifactName(libs.protobuf.protoc.get())
+wire {
+    sourcePath {
+        srcDir("src/main/proto/")
+        srcDir("src/legacy/proto/")
     }
 
-    plugins {
-        create("grpc") {
-            artifact = artifactName(libs.grpc.protoc.java.get())
-        }
-
-        create("grpckt") {
-            artifact = artifactName(libs.grpc.protoc.kotlin.get())
-        }
-    }
-
-    generateProtoTasks {
-        all().configureEach {
-            builtins {
-                create("java") { option("lite") }
-                create("kotlin") { option("lite") }
-            }
-
-            plugins {
-                create("grpc") { option("lite") }
-                create("grpckt") { option("lite") }
-            }
-        }
+    kotlin {
+        android = true
     }
 }
 
@@ -309,10 +287,13 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.protobuf.kotlin)
+    implementation(libs.okio)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.retrofit.converter.scalars)
+    implementation(libs.wire.grpc.client)
+    implementation(libs.wire.moshi.adapter)
+    implementation(libs.wire.runtime)
 
     "legacyImplementation"(libs.androidx.coordinatorlayout)
     "legacyImplementation"(libs.androidx.exifinterface)
@@ -326,10 +307,6 @@ dependencies {
     "legacyImplementation"(libs.androidx.swiperefreshlayout)
     "legacyImplementation"(libs.glide)
     "legacyImplementation"(libs.glide.okhttp)
-    "legacyImplementation"(libs.grpc.okhttp)
-    "legacyImplementation"(libs.grpc.protobuf)
-    "legacyImplementation"(libs.grpc.stub)
-    "legacyImplementation"(libs.grpc.stub.kotlin)
     "legacyImplementation"(libs.kotlinx.coroutines)
 
     "libreImplementation"(libs.conscrypt)

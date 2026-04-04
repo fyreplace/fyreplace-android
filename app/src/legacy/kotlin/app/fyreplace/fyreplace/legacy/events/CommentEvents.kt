@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.legacy.events
 
 import app.fyreplace.protos.Comment
-import com.google.protobuf.ByteString
+import okio.ByteString
 
 abstract class CommentEvent(item: Comment, val postId: ByteString) : ItemEvent<Comment>(item)
 

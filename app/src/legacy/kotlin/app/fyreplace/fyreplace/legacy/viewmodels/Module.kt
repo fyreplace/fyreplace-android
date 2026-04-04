@@ -2,8 +2,8 @@ package app.fyreplace.fyreplace.legacy.viewmodels
 
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
-import com.google.protobuf.ByteString
 import dagger.assisted.AssistedFactory
+import okio.ByteString
 
 @AssistedFactory
 interface SettingsViewModelFactory {

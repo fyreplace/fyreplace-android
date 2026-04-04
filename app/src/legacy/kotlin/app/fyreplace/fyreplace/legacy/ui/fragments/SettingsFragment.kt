@@ -16,10 +16,10 @@ import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
-import app.fyreplace.fyreplace.legacy.extensions.setAppIcon
 import app.fyreplace.fyreplace.legacy.extensions.applyTheme
-import app.fyreplace.fyreplace.legacy.extensions.date
+import app.fyreplace.fyreplace.legacy.extensions.formatDate
 import app.fyreplace.fyreplace.legacy.extensions.getAppIcon
+import app.fyreplace.fyreplace.legacy.extensions.setAppIcon
 import app.fyreplace.fyreplace.legacy.extensions.setupTransitions
 import app.fyreplace.fyreplace.legacy.ui.FailureHandler
 import app.fyreplace.fyreplace.legacy.ui.ImageSelector
@@ -30,12 +30,11 @@ import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.SettingsViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.SettingsViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -49,7 +48,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     override lateinit var rootView: View
     private val cvm by activityViewModels<CentralViewModel>()
     private val vm by activityViewModels<SettingsViewModel> {
-        SettingsViewModel.provideFactory(vmFactory, cvm.currentUser.value?.blockedUsers ?: 0)
+        SettingsViewModel.provideFactory(vmFactory, cvm.currentUser.value?.blocked_users ?: 0)
     }
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 1024 * 1024) }
 
@@ -90,7 +89,12 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 imageUrl = user?.profile?.avatar?.url
                 title = user?.profile?.username ?: getString(R.string.settings_username)
                 summary = user?.run {
-                    getString(R.string.settings_date_joined, dateFormatter.format(dateJoined.date))
+                    getString(
+                        R.string.settings_date_joined, date_joined?.formatDate(
+                            singleLine = false,
+                            short = false
+                        )
+                    )
                 } ?: getString(R.string.settings_has_not_joined)
                 isEnabled = user != null
                 setOnPreferenceClickListener {
@@ -202,9 +206,9 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
         cvm.retrieveMe()
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.ALREADY_EXISTS -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
-        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.ALREADY_EXISTS -> R.string.login_error_email_already_exists_title to R.string.login_error_email_already_exists_message
+        GrpcStatus.INVALID_ARGUMENT -> when (error.grpcMessage) {
             "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "invalid_email" -> R.string.login_error_invalid_email_title to R.string.login_error_invalid_email_message
             else -> R.string.error_validation_title to R.string.error_validation_message
@@ -244,10 +248,6 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
             R.string.settings_account_deletion_success_title,
             R.string.settings_account_deletion_success_message
         )
-    }
-
-    private companion object {
-        val dateFormatter: DateFormat = SimpleDateFormat.getDateInstance()
     }
 
     private inner class SettingsDataStore : PreferenceDataStore() {

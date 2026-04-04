@@ -12,6 +12,7 @@ import app.fyreplace.fyreplace.events.EventBus
 import com.squareup.moshi.JsonClass
 import io.sentry.Sentry
 import kotlinx.coroutines.launch
+import okio.ByteString
 import org.openapitools.client.infrastructure.getErrorResponse
 import retrofit2.HttpException
 import retrofit2.Response
@@ -47,7 +48,7 @@ abstract class ApiViewModelBase(
         }
 
         if (code() == 401) {
-            storeResolver.secretsStore.updateData { it.toBuilder().clearToken().build() }
+            storeResolver.secretsStore.updateData { it.copy(token = ByteString.EMPTY) }
             eventBus.publish(Event.Failure(R.string.error_401_title, R.string.error_401_message))
             return null
         }

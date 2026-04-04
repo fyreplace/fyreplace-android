@@ -10,7 +10,7 @@ import app.fyreplace.fyreplace.legacy.extensions.resolveStyleAttribute
 import app.fyreplace.fyreplace.legacy.extensions.setAvatar
 import app.fyreplace.fyreplace.legacy.extensions.setUsername
 import app.fyreplace.protos.Profile
-import com.google.protobuf.Timestamp
+import com.squareup.wire.Instant
 
 open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val textColorNormal =
@@ -23,7 +23,7 @@ open class ItemHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     protected val date: TextView? = itemView.findViewById(R.id.date)
     protected open val shortDate = false
 
-    open fun setup(profile: Profile, timestamp: Timestamp?) {
+    open fun setup(profile: Profile?, timestamp: Instant?) {
         avatar?.setAvatar(profile)
         username?.setUsername(profile)
         date?.text = timestamp?.formatDate(singleLine = shortDate, short = shortDate)

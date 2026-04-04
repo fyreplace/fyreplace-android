@@ -34,6 +34,7 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.extensions.isEmpty
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStartedEvent
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasSeenEvent
@@ -43,27 +44,27 @@ import app.fyreplace.fyreplace.legacy.extensions.getDynamicColor
 import app.fyreplace.fyreplace.legacy.extensions.getUsername
 import app.fyreplace.fyreplace.legacy.extensions.isAvailable
 import app.fyreplace.fyreplace.legacy.extensions.loadAvatar
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.MainViewModel
 import app.fyreplace.protos.Comment
+import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
-import app.fyreplace.protos.post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.protobuf.ByteString
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.withContext
+import okio.ByteString
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -174,14 +175,14 @@ class MainActivity :
 
     override fun getContext() = this
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.UNAUTHENTICATED -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.UNAUTHENTICATED -> when (error.grpcMessage) {
             "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
             "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
             else -> R.string.error_authentication_title to R.string.error_authentication_message
         }
 
-        Status.Code.PERMISSION_DENIED -> when (error.description) {
+        GrpcStatus.PERMISSION_DENIED -> when (error.grpcMessage) {
             "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
             "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
@@ -266,7 +267,7 @@ class MainActivity :
 
             for (view in textViews) {
                 view.setOnClickListener {
-                    navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
+                    navHost.navController.navigate(MainDirections.toUser(profile = profile))
                 }
             }
         } else {
@@ -454,7 +455,7 @@ class MainActivity :
     }
 
     private fun showPost(postIdShortString: String, commentPosition: Int? = null) {
-        val post = post { id = byteString(postIdShortString) }
+        val post = Post(id = byteString(postIdShortString))
         val postFragment = getPostFragment()
 
         when {
@@ -478,7 +479,7 @@ class MainActivity :
             postFragment != null && postFragment.args.post.id == post.id -> postFragment.showUnreadComments()
             else -> navHost.navController.navigate(
                 MainDirections.toPost(
-                    post = post.p,
+                    post = post,
                     commentPosition = commentPosition ?: -1
                 )
             )
@@ -538,7 +539,7 @@ class MainActivity :
                     }
 
                     setOnClickListener {
-                        navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
+                        navHost.navController.navigate(MainDirections.toUser(profile = profile))
                     }
                 }
         }

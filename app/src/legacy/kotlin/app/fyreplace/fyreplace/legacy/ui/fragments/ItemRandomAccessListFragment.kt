@@ -22,7 +22,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
 
-abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
+abstract class ItemRandomAccessListFragment<Item, Items : Any, VH : ItemHolder> :
     ScrollingListFragment<Item>(R.layout.fragment_item_random_access_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null

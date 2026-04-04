@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             storeResolver.accountStore.data.collect {
-                identifier = it.identifier.orEmpty()
+                identifier = it.identifier
             }
         }
     }
@@ -58,7 +58,7 @@ class LoginViewModel @Inject constructor(
         identifier = newValue
         viewModelScope.launch {
             storeResolver.accountStore.updateData {
-                it.toBuilder().setIdentifier(newValue).build()
+                it.copy(identifier = newValue)
             }
         }
     }

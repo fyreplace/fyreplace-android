@@ -3,17 +3,11 @@ package app.fyreplace.fyreplace.legacy.extensions
 import app.fyreplace.protos.Chapter
 import app.fyreplace.protos.Post
 
-val Post.firstChapter: Chapter
-    get() = if (chaptersCount > 0) getChapters(0) else Chapter.getDefaultInstance()
+val Post.firstChapter
+    get() = chapters.firstOrNull() ?: Chapter()
 
-fun Post.makePreview(anonymous: Boolean = false): Post = Post.newBuilder(this)
-    .clearChapters()
-    .apply {
-        this@makePreview.chaptersList.getOrNull(0)?.let(::addChapters)
-
-        if (anonymous) {
-            clearAuthor()
-        }
-    }
-    .setIsPreview(true)
-    .build()
+fun Post.makePreview(anonymous: Boolean = false) = copy(
+    author = if (anonymous) null else author,
+    is_preview = true,
+    chapters = listOfNotNull(chapters.firstOrNull())
+)
