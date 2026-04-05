@@ -31,7 +31,7 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity-alias
-            android:name=".MainActivity.Normal"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity.Normal"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
@@ -72,7 +72,7 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".MainActivity.Alternative"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity.Alternative"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_alt"
