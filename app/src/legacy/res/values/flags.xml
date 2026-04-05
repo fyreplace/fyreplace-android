@@ -2,6 +2,4 @@
 <resources>
     <bool name="sentry_enabled">false</bool>
     <bool name="light_status">true</bool>
-    <bool name="light_navigation">true</bool>
-    <bool name="light_navigation_splash">false</bool>
 </resources>

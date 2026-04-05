@@ -11,16 +11,12 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.res.use
 import androidx.core.net.toUri
 import app.fyreplace.fyreplace.R
-import com.google.android.material.color.DynamicColors
 import com.squareup.wire.Instant
 import okio.ByteString
 
@@ -45,11 +41,6 @@ fun Context.makeShareIntent(type: String, id: ByteString, position: Int? = null)
         this.type = ClipDescription.MIMETYPE_TEXT_PLAIN
         putExtra(Intent.EXTRA_TEXT, makeShareUri(type, id, position).toString())
     }
-
-fun Context.getDynamicColor(@AttrRes attr: Int, @ColorInt default: Int) = DynamicColors
-    .wrapContextIfAvailable(this)
-    .obtainStyledAttributes(intArrayOf(attr))
-    .use { it.getColor(0, default) }
 
 @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
 fun Context.createNotification(

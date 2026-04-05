@@ -1,9 +1,7 @@
 package app.fyreplace.fyreplace.legacy.ui
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -44,7 +42,6 @@ import app.fyreplace.fyreplace.legacy.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.legacy.extensions.byteString
 import app.fyreplace.fyreplace.legacy.extensions.current
-import app.fyreplace.fyreplace.legacy.extensions.getDynamicColor
 import app.fyreplace.fyreplace.legacy.extensions.getUsername
 import app.fyreplace.fyreplace.legacy.extensions.isAvailable
 import app.fyreplace.fyreplace.legacy.extensions.loadAvatar
@@ -58,7 +55,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.shape.MaterialShapeDrawable
 import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
@@ -83,14 +79,14 @@ class MainActivity :
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
     private var systemInsets = Insets.NONE
-    private var defaultNavigationBarDividerColor = Color.TRANSPARENT
     private var bottomBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
-        enableEdgeToEdge()
         DynamicColors.applyToActivityIfAvailable(this)
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
         bd = ActivityMainBinding.bind(findViewById(R.id.root)).apply {
             lifecycleOwner = this@MainActivity
             ui = this@MainActivity
@@ -101,11 +97,6 @@ class MainActivity :
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            defaultNavigationBarDividerColor = window.navigationBarDividerColor
-        }
-
-        setNavigationBarColor(true)
         setSupportActionBar(bd.toolbar)
 
         val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
@@ -376,49 +367,8 @@ class MainActivity :
             }
         }
         animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                if (visible) {
-                    setNavigationBarColor(true)
-                }
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                if (!visible) {
-                    setNavigationBarColor(false)
-                }
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) = Unit
-        })
         bd.bottomNavigation.clearAnimation()
         bd.bottomNavigation.startAnimation(animation)
-    }
-
-    private fun setNavigationBarColor(colored: Boolean) {
-        val background = bd.bottomNavigation.background
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1 || background !is MaterialShapeDrawable) {
-            return
-        }
-
-        window.navigationBarColor = if (colored)
-            background.resolvedTintColor
-        else
-            getDynamicColor(
-                com.google.android.material.R.attr.colorSurface,
-                getColor(R.color.navigation)
-            )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.navigationBarDividerColor = if (colored)
-                getDynamicColor(
-                    com.google.android.material.R.attr.colorSurfaceVariant,
-                    window.navigationBarDividerColor
-                )
-            else
-                defaultNavigationBarDividerColor
-        }
     }
 
     private fun handleIntent(intent: Intent?) {

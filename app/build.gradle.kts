@@ -276,6 +276,7 @@ dependencies {
     implementation(libs.androidx.material3.adaptive)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.splash)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

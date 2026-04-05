@@ -23,6 +23,7 @@ androidxPaging = "3.4.2"
 androidxPreference = "1.2.1"
 androidxRecyclerView = "1.4.0"
 androidxRecyclerViewSelection = "1.2.0"
+androidxSplash = "1.2.0"
 androidxSwipeRefreshLayout = "1.2.0"
 androidxWork = "2.11.1"
 coilCompose = "2.7.0"
@@ -69,6 +70,7 @@ androidx-paging = { group = "androidx.paging", name = "paging-runtime-ktx", vers
 androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidxPreference" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidxRecyclerView" }
 androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "androidxRecyclerViewSelection" }
+androidx-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxSplash" }
 androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "androidxSwipeRefreshLayout" }
 androidx-work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidxWork" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
