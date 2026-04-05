@@ -14,10 +14,14 @@ import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.BackEventCompat
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
@@ -78,11 +82,13 @@ class MainActivity :
     private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
+    private var systemInsets = Insets.NONE
     private var defaultNavigationBarDividerColor = Color.TRANSPARENT
     private var bottomBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
+        enableEdgeToEdge()
         DynamicColors.applyToActivityIfAvailable(this)
         super.onCreate(savedInstanceState)
         bd = ActivityMainBinding.bind(findViewById(R.id.root)).apply {
@@ -138,6 +144,11 @@ class MainActivity :
         bd.root.doOnLayout {
             refreshCustomTitle()
             refreshPrimaryAction()
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(bd.root) { _, insets ->
+            systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            return@setOnApplyWindowInsetsListener insets
         }
 
         handleIntent(intent)
@@ -345,8 +356,10 @@ class MainActivity :
         navHost.childFragmentManager.fragments.last { it !is DialogFragment }
 
     private fun setBottomNavigationVisible(visible: Boolean) = bd.bottomNavigation.doOnLayout {
-        val params = bd.bottomNavigation.layoutParams as MarginLayoutParams
-        val isBottomNavigationVisible = params.bottomMargin == 0
+        val bottomNavParams = bd.bottomNavigation.layoutParams as MarginLayoutParams
+        val primaryActionParams = bd.primaryAction.layoutParams as MarginLayoutParams
+        val isBottomNavigationVisible = bottomNavParams.bottomMargin == 0
+        val defaultPrimaryActionBottomMargin = resources.getDimension(R.dimen.gap)
 
         if (visible == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {
             return@doOnLayout
@@ -354,9 +367,12 @@ class MainActivity :
 
         val animation = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                val factor = if (visible) interpolatedTime - 1 else -interpolatedTime
-                params.bottomMargin = (bottomBarHeight * factor).roundToInt()
-                bd.bottomNavigation.layoutParams = params
+                val factor = if (visible) 1 - interpolatedTime else interpolatedTime
+                bottomNavParams.bottomMargin = (bottomBarHeight * -factor).roundToInt()
+                primaryActionParams.bottomMargin =
+                    (defaultPrimaryActionBottomMargin + systemInsets.bottom * factor).roundToInt()
+                bd.bottomNavigation.layoutParams = bottomNavParams
+                bd.primaryAction.layoutParams = primaryActionParams
             }
         }
         animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
