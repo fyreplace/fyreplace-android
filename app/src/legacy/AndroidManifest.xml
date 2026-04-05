@@ -22,7 +22,7 @@
         tools:targetApi="35">
 
         <activity
-            android:name=".legacy.ui.MainActivity"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:launchMode="singleTask"
@@ -31,11 +31,11 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity-alias
-            android:name="MainActivity.Normal"
+            android:name=".MainActivity.Normal"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:targetActivity=".legacy.ui.MainActivity">
+            android:targetActivity="app.fyreplace.fyreplace.legacy.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -72,12 +72,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name="MainActivity.Alternative"
+            android:name=".MainActivity.Alternative"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_alt"
             android:roundIcon="@mipmap/ic_launcher_alt_round"
-            android:targetActivity=".legacy.ui.MainActivity">
+            android:targetActivity="app.fyreplace.fyreplace.legacy.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -114,7 +114,7 @@
         </activity-alias>
 
         <activity
-            android:name=".MainActivity"
+            android:name="app.fyreplace.fyreplace.MainActivity"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
             android:theme="@style/Theme.Fyreplace"

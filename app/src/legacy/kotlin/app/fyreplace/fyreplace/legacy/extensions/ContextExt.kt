@@ -26,8 +26,8 @@ import okio.ByteString
 
 private val activityToAppIcon
     get() = mapOf(
-        "MainActivity.Normal" to R.mipmap.ic_launcher,
-        "MainActivity.Alternative" to R.mipmap.ic_launcher_alt
+        ".MainActivity.Normal" to R.mipmap.ic_launcher,
+        ".MainActivity.Alternative" to R.mipmap.ic_launcher_alt
     )
 
 val Context.mainPreferences: SharedPreferences
