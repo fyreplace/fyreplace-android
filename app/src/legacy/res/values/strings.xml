@@ -5,7 +5,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
-    <string name="app_name">Fyreplace</string>
     <string name="app_code_url" translatable="false">https://github.com/fyreplace</string>
     <string name="app_bug_report_url" translatable="false">mailto:bugs@fyreplace.app</string>
 
