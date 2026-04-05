@@ -7,7 +7,7 @@ import app.fyreplace.fyreplace.legacy.events.PositionalEvent
 import app.fyreplace.fyreplace.legacy.viewmodels.DynamicListViewModel
 import kotlinx.coroutines.Job
 
-abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(contentLayoutId) {
+abstract class DynamicListFragment<Item>(contentLayoutId: Int) : ListFragment(contentLayoutId) {
     abstract override val vm: DynamicListViewModel<Item>
     private val eventJobs = mutableListOf<Job>()
 

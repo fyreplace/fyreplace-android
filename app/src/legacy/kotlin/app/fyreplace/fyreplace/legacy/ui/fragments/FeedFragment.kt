@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
 import app.fyreplace.fyreplace.legacy.events.EventsManager
-import app.fyreplace.fyreplace.legacy.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.legacy.ui.adapters.FeedAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -24,32 +23,28 @@ import app.fyreplace.fyreplace.legacy.viewmodels.FeedViewModel
 import app.fyreplace.protos.Post
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.drop
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class FeedFragment :
-    BaseFragment(R.layout.fragment_item_list),
+    ListFragment(R.layout.fragment_item_list),
     ItemListAdapter.ItemClickListener<Post>,
     FeedAdapter.VoteListener,
     MenuProvider {
     @Inject
-    lateinit var em: EventsManager
+    override lateinit var em: EventsManager
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     override val vm by activityViewModels<FeedViewModel>()
     private val cvm by activityViewModels<CentralViewModel>()
     private lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: FeedAdapter
-    private var canAutoRefresh = false
-    private var retryCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cvm.isAuthenticated.launchCollect {
+        cvm.isAuthenticated.drop(1).launchCollect {
             when {
-                !canAutoRefresh -> return@launchCollect
                 lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED) -> refreshListing()
                 else -> resetListing()
             }
@@ -74,14 +69,8 @@ class FeedFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
-        adapter.addAll(vm.posts.value)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { refreshListing() }
-        canAutoRefresh = true
-
-        em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
-            .debounce(1000)
-            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
     }
 
     override fun onStart() {
@@ -123,7 +112,7 @@ class FeedFragment :
         return true
     }
 
-    private fun startListing() {
+    override fun startListing() {
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
             retryCount = 0
@@ -131,22 +120,13 @@ class FeedFragment :
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
     }
 
-    private fun stopListing() = vm.stopListing()
+    override fun stopListing() {
+        vm.stopListing()
+        resetListing()
+    }
 
     private fun resetListing() {
         adapter.removeAll()
         vm.reset()
-    }
-
-    private fun refreshListing() {
-        stopListing()
-        resetListing()
-        startListing()
-    }
-
-    private fun retryListing() {
-        stopListing()
-        retryCount++
-        startListing()
     }
 }

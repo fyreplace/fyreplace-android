@@ -86,10 +86,6 @@ class FeedViewModel @Inject constructor(
             newFeed = posts.value.mutateAsList { this[index] = newPost }
         } else {
             newFeed = posts.value + newPost
-
-            if (posts.value.size > 3) {
-                newFeed = newFeed.subList(posts.value.size - 3, posts.value.size)
-            }
         }
 
         mPosts.value = newFeed
