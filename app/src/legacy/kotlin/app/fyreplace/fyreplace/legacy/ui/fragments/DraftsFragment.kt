@@ -19,8 +19,11 @@ class DraftsFragment :
     ItemListFragment<Post, Posts, PreviewHolder>(),
     ItemListAdapter.ItemClickListener<Post>,
     PrimaryActionProvider {
+    override val destinationId = R.id.fragment_drafts
     override val vm by activityViewModels<DraftsViewModel>()
+    override val recyclerView get() = bd.recyclerView
     override val primaryActionIcon = R.drawable.ic_baseline_add
+    override var primaryActionExtended = false
 
     override fun makeAdapter() = DraftsAdapter(this)
 

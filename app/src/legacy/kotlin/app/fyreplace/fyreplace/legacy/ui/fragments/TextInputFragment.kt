@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.combine
 
 abstract class TextInputFragment : BaseFragment(R.layout.fragment_text_input), MenuProvider {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override lateinit var bd: FragmentTextInputBinding
     abstract override val vm: TextInputViewModel
     abstract val maxLength: Int
     abstract val allowEmpty: Boolean
-    protected lateinit var bd: FragmentTextInputBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,

@@ -10,21 +10,19 @@ import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
-import app.fyreplace.fyreplace.legacy.extensions.insets
-import app.fyreplace.fyreplace.legacy.extensions.updateBottomPaddingWithSystemInset
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.ItemRandomAccessListViewModel
 import kotlinx.coroutines.FlowPreview
 
 abstract class ItemRandomAccessListFragment<Item, Items : Any, VH : ItemHolder> :
-    ScrollingListFragment<Item>(R.layout.fragment_item_random_access_list),
+    DynamicListFragment<Item>(R.layout.fragment_item_random_access_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     override val em by lazy { vm.em }
+    override lateinit var bd: FragmentItemRandomAccessListBinding
     abstract override val vm: ItemRandomAccessListViewModel<Item, Items>
     override val recyclerView get() = bd.recyclerView
-    protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
 
     abstract fun makeAdapter(): ItemRandomAccessListAdapter<Item, VH>
@@ -58,8 +56,6 @@ abstract class ItemRandomAccessListFragment<Item, Items : Any, VH : ItemHolder> 
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bd.executePendingBindings()
-        bd.recyclerView.updateBottomPaddingWithSystemInset(bd.recyclerView.insets)
         adapter.resetTo(vm.items, vm.totalSize)
         recyclerView.adapter = adapter
     }

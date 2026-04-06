@@ -38,7 +38,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DraftFragment :
-    BaseFragment(R.layout.fragment_draft),
+    ScrollingListFragment(R.layout.fragment_draft),
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener,
@@ -54,16 +54,19 @@ class DraftFragment :
     lateinit var imageSelectorFactory: ImageSelectorFactory
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val destinationId = R.id.fragment_draft
+    override lateinit var bd: FragmentDraftBinding
     override val vm by viewModels<DraftViewModel> {
         DraftViewModel.provideFactory(vmFactory, args.post)
     }
+    override val recyclerView get() = bd.recyclerView
     override val primaryActionText
         get() = if (vm.canPublish.value) R.string.draft_primary_action_publish else null
 
     override val primaryActionIcon
         get() = if (vm.canPublish.value) R.drawable.ic_baseline_check else null
+    override var primaryActionExtended = true
     private val args by navArgs<DraftFragmentArgs>()
-    private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 512 * 1024) }
     private var currentChapterPosition = -1

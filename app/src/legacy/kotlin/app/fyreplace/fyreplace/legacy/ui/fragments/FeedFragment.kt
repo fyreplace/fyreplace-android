@@ -36,9 +36,11 @@ class FeedFragment :
     override lateinit var em: EventsManager
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val destinationId = R.id.fragment_feed
+    override lateinit var bd: FragmentItemListBinding
     override val vm by activityViewModels<FeedViewModel>()
+    override val recyclerView get() = bd.recyclerView
     private val cvm by activityViewModels<CentralViewModel>()
-    private lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: FeedAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {

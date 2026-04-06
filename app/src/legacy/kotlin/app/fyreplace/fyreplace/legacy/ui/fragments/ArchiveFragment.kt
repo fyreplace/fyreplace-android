@@ -4,6 +4,7 @@ import android.view.View
 import androidx.core.view.doOnLayout
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ArchivePagesBinding
 import app.fyreplace.fyreplace.legacy.ui.CustomTitleProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.ArchiveAdapter
@@ -20,7 +21,9 @@ class ArchiveFragment :
     ItemListFragment<Post, Posts, PreviewHolder>(),
     ItemListAdapter.ItemClickListener<Post>,
     CustomTitleProvider {
+    override val destinationId = R.id.fragment_archive
     override val vm by activityViewModels<ArchiveViewModel>()
+    override val recyclerView get() = bd.recyclerView
 
     override fun makeAdapter() = ArchiveAdapter(this)
 

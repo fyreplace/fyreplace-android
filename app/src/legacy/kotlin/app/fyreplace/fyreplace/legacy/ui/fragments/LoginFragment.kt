@@ -22,9 +22,10 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginFragment : BaseFragment(R.layout.fragment_login), TitleProvider {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val destinationId = R.id.fragment_login
+    override lateinit var bd: FragmentLoginBinding
     override val vm by viewModels<LoginViewModel>()
     private val args by navArgs<LoginFragmentArgs>()
-    private lateinit var bd: FragmentLoginBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,

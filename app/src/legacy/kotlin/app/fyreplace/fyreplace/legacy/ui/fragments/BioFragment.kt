@@ -16,6 +16,7 @@ class BioFragment : TextInputFragment() {
     @Inject
     lateinit var vmFactory: BioViewModelFactory
 
+    override val destinationId = R.id.fragment_bio
     override val vm by viewModels<BioViewModel> {
         BioViewModel.provideFactory(vmFactory, cvm.currentUser.value?.bio ?: "")
     }

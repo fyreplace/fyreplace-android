@@ -26,6 +26,7 @@ import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
 import app.fyreplace.fyreplace.legacy.ui.BasePresenter
+import app.fyreplace.fyreplace.legacy.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -49,15 +50,18 @@ import kotlin.math.min
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
     PostAdapter.CommentListener,
-    MenuProvider {
+    MenuProvider,
+    PrimaryActionProvider {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
 
+    override val destinationId = R.id.fragment_post
     override val vm by viewModels<PostViewModel> {
         PostViewModel.provideFactory(vmFactory, args.post)
     }
     override val primaryActionText = R.string.post_primary_action_comment
     override val primaryActionIcon = R.drawable.ic_baseline_comment
+    override var primaryActionExtended = true
     val args by navArgs<PostFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private var errored = false

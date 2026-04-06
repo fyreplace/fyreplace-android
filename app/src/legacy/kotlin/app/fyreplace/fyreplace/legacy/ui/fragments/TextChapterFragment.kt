@@ -15,6 +15,7 @@ class TextChapterFragment : TextInputFragment() {
     @Inject
     lateinit var vmFactory: TextChapterViewModelFactory
 
+    override val destinationId = R.id.fragment_text_chapter
     override val vm by viewModels<TextChapterViewModel> {
         TextChapterViewModel.provideFactory(
             vmFactory,

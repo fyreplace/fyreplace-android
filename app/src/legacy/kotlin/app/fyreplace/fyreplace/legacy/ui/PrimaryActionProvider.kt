@@ -5,7 +5,7 @@ interface PrimaryActionProvider {
 
     val primaryActionIcon: Int? get() = null
 
-    val primaryActionExtended: Boolean get() = true
+    var primaryActionExtended: Boolean
 
     fun onPrimaryAction()
 }

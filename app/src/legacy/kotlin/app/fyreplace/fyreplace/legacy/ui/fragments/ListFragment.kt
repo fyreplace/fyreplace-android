@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlin.time.Duration.Companion.seconds
 
-abstract class ListFragment(contentLayoutId: Int) : BaseFragment(contentLayoutId) {
+abstract class ListFragment(contentLayoutId: Int) : ScrollingListFragment(contentLayoutId) {
     abstract val em: EventsManager
 
     protected var retryCount = 0

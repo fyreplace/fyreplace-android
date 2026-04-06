@@ -22,8 +22,8 @@ abstract class ItemListFragment<Item, Items : Any, VH : ItemHolder> :
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
     override val em by lazy { vm.em }
+    override lateinit var bd: FragmentItemListBinding
     abstract override val vm: ItemListViewModel<Item, Items>
-    protected lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>

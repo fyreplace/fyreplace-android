@@ -31,7 +31,9 @@ class NotificationsFragment :
     ItemListFragment<Notification, Notifications, ItemHolder>(),
     ItemListAdapter.ItemClickListener<Notification>,
     MenuProvider {
+    override val destinationId = R.id.fragment_notifications
     override val vm by activityViewModels<NotificationsViewModel>()
+    override val recyclerView get() = bd.recyclerView
     private val cvm by activityViewModels<CentralViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

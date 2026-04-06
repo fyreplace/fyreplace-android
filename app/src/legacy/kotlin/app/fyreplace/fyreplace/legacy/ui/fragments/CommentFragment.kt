@@ -27,6 +27,7 @@ class CommentFragment : TextInputFragment() {
     @Inject
     lateinit var vmFactory: CommentViewModelFactory
 
+    override val destinationId = R.id.fragment_comment
     override val vm by viewModels<CommentViewModel> {
         CommentViewModel.provideFactory(vmFactory, args.postId, args.text)
     }

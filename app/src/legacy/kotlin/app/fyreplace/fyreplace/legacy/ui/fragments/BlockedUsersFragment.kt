@@ -16,7 +16,9 @@ class BlockedUsersFragment :
     ItemListFragment<Profile, Profiles, BlockedUsersAdapter.Holder>(),
     ItemListAdapter.ItemClickListener<Profile>,
     BlockedUsersAdapter.UnblockListener {
+    override val destinationId = R.id.fragment_blocked_users
     override val vm by viewModels<BlockedUsersViewModel>()
+    override val recyclerView get() = bd.recyclerView
 
     override fun makeAdapter() = BlockedUsersAdapter(this, this)
 

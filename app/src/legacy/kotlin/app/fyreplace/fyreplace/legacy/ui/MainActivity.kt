@@ -457,7 +457,7 @@ class MainActivity :
         withContext(Dispatchers.IO) { Glide.get(this@MainActivity).clearDiskCache() }
     }
 
-    private companion object {
+    companion object {
         val TOP_LEVEL_DESTINATIONS = setOf(
             R.id.fragment_feed,
             R.id.fragment_notifications,
