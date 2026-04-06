@@ -25,7 +25,6 @@ import app.fyreplace.fyreplace.legacy.extensions.isAdmin
 import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
-import app.fyreplace.fyreplace.legacy.extensions.updateBottomPaddingWithSystemInset
 import app.fyreplace.fyreplace.legacy.ui.BasePresenter
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
@@ -74,8 +73,6 @@ class PostFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        bd.root.updateBottomPaddingWithSystemInset()
-
         val postAdapter = adapter as PostAdapter
         vm.post.launchCollect(
             viewLifecycleOwner.lifecycleScope,

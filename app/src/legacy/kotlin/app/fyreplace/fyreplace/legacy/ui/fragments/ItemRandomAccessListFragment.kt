@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
+import app.fyreplace.fyreplace.legacy.extensions.insets
+import app.fyreplace.fyreplace.legacy.extensions.updateBottomPaddingWithSystemInset
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.ItemRandomAccessListViewModel
@@ -56,6 +58,8 @@ abstract class ItemRandomAccessListFragment<Item, Items : Any, VH : ItemHolder> 
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bd.executePendingBindings()
+        bd.recyclerView.updateBottomPaddingWithSystemInset(bd.recyclerView.insets)
         adapter.resetTo(vm.items, vm.totalSize)
         recyclerView.adapter = adapter
     }
