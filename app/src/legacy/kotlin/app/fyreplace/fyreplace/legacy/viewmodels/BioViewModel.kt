@@ -12,8 +12,7 @@ class BioViewModel @AssistedInject constructor(
     override val preferences: SharedPreferences,
     private val userService: UserServiceClient,
     @Assisted initialBio: String
-) :
-    TextInputViewModel(initialBio) {
+) : TextInputViewModel(initialBio) {
     suspend fun update(text: String) = whileLoading {
         userService.UpdateBio().executeFully(Bio(bio = text))
     }

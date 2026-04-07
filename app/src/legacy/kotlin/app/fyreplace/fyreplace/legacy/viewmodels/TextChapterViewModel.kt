@@ -19,8 +19,7 @@ class TextChapterViewModel @AssistedInject constructor(
     @Assisted private val postId: ByteString,
     @Assisted private val position: Int,
     @Assisted initialText: String
-) :
-    TextInputViewModel(initialText) {
+) : TextInputViewModel(initialText) {
     suspend fun updateTextChapter() = whileLoading {
         chapterService.UpdateText().executeFully(
             ChapterTextUpdate(

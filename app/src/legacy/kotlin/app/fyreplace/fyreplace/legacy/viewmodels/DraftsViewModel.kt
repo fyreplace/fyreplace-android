@@ -26,8 +26,7 @@ class DraftsViewModel @Inject constructor(
     override val preferences: SharedPreferences,
     em: EventsManager,
     private val postService: PostServiceClient
-) :
-    ItemListViewModel<Post, Posts>(em) {
+) : ItemListViewModel<Post, Posts>(em) {
     override val addedItems = em.events.filterIsInstance<DraftWasCreatedEvent>()
     override val updatedItems = em.events.filterIsInstance<DraftWasUpdatedEvent>()
     override val removedItems = merge(

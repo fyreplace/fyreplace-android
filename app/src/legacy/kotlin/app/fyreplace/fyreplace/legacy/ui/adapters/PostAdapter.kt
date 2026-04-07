@@ -23,8 +23,7 @@ class PostAdapter(
     private val isAuthenticated: StateFlow<Boolean>,
     private var post: Post,
     private val commentListener: CommentListener
-) :
-    ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
+) : ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var selectedComment: Int? = null
 
     override fun getItemCount() = super.getItemCount()

@@ -11,8 +11,7 @@ import app.fyreplace.protos.Profile
 class BlockedUsersAdapter(
     private val unblockListener: UnblockListener,
     itemListener: ItemClickListener<Profile>
-) :
-    ItemListAdapter<Profile, BlockedUsersAdapter.Holder>(itemListener) {
+) : ItemListAdapter<Profile, BlockedUsersAdapter.Holder>(itemListener) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.item_blocked_user, parent, false)

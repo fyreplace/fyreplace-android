@@ -14,8 +14,7 @@ class CommentViewModel @AssistedInject constructor(
     private val commentService: CommentServiceClient,
     @Assisted private val postId: ByteString,
     @Assisted initialText: String
-) :
-    TextInputViewModel(initialText) {
+) : TextInputViewModel(initialText) {
     suspend fun create() = commentService.Create().executeFully(
         CommentCreation(
             post_id = postId,

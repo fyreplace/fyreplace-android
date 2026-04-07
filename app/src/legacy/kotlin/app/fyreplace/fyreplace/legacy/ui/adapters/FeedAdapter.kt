@@ -27,8 +27,7 @@ class FeedAdapter(
     private val canVote: StateFlow<Boolean>,
     private val voteListener: VoteListener,
     itemListener: ItemClickListener<Post>
-) :
-    ItemListAdapter<Post, PreviewHolder>(itemListener) {
+) : ItemListAdapter<Post, PreviewHolder>(itemListener) {
     override fun getItemViewType(position: Int) =
         if (items[position].firstChapter.image != null) TYPE_IMAGE else TYPE_TEXT
 
@@ -54,13 +53,22 @@ class FeedAdapter(
 
     override fun getItemId(item: Post) = item.id
 
-    fun addOrUpdate(item: Post) {
-        val position = items.indexOfFirst { it.id == item.id }
+    fun replaceAll(items: List<Post>) {
+        val staleIds = this.items.map(Post::id).toMutableSet()
 
-        if (position == -1) {
-            add(itemCount, item)
-        } else if (items[position] != item) {
-            update(position, item)
+        for (item in items) {
+            val position = this.items.indexOfFirst { it.id == item.id }
+
+            if (position != -1) {
+                update(position, item)
+                staleIds.remove(item.id)
+            } else {
+                add(itemCount, item)
+            }
+        }
+
+        for (id in staleIds) {
+            remove(this.items.indexOfFirst { it.id == id })
         }
     }
 

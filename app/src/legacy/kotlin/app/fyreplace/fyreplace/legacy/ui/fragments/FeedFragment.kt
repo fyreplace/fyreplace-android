@@ -73,6 +73,8 @@ class FeedFragment :
         adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { refreshListing() }
+
+        vm.posts.launchCollect(viewLifecycleOwner.lifecycleScope, action = adapter::replaceAll)
     }
 
     override fun onStart() {
@@ -94,7 +96,6 @@ class FeedFragment :
         view.provideHapticFeedback(positive = spread)
         launch {
             vm.vote(position, spread)
-            adapter.remove(position)
         }
     }
 
@@ -118,17 +119,10 @@ class FeedFragment :
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
             retryCount = 0
-            adapter.addOrUpdate(it)
         }.invokeOnCompletion { bd.swipe.isRefreshing = false }
     }
 
-    override fun stopListing() {
-        vm.stopListing()
-        resetListing()
-    }
+    override fun stopListing() = vm.stopListing()
 
-    private fun resetListing() {
-        adapter.removeAll()
-        vm.reset()
-    }
+    private fun resetListing() = vm.reset()
 }

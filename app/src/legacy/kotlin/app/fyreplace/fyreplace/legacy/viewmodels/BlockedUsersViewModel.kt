@@ -24,8 +24,7 @@ class BlockedUsersViewModel @Inject constructor(
     override val preferences: SharedPreferences,
     em: EventsManager,
     private val userService: UserServiceClient
-) :
-    ItemListViewModel<Profile, Profiles>(em) {
+) : ItemListViewModel<Profile, Profiles>(em) {
     override val addedItems = em.events.filterIsInstance<UserWasBlockedEvent>()
     override val updatedItems = em.events.filterIsInstance<UserWasBannedEvent>()
     override val removedItems = em.events.filterIsInstance<UserWasUnblockedEvent>()

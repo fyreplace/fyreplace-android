@@ -21,8 +21,7 @@ class DraftAdapter(
     private val canAddChapter: StateFlow<Boolean>,
     private val chapterListener: ChapterListener,
     itemListener: ItemClickListener<Chapter>
-) :
-    ItemListAdapter<Chapter, PreviewHolder>(itemListener) {
+) : ItemListAdapter<Chapter, PreviewHolder>(itemListener) {
     init {
         setHasStableIds(false)
     }

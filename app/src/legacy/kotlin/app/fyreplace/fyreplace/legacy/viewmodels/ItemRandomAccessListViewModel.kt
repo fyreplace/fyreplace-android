@@ -18,8 +18,7 @@ import okio.ByteString
 abstract class ItemRandomAccessListViewModel<Item, Items : Any>(
     em: EventsManager,
     private val contextId: ByteString
-) :
-    DynamicListViewModel<Item>(em) {
+) : DynamicListViewModel<Item>(em) {
     override val removedItems = emptyFlow<ItemEvent<Item>>()
     private lateinit var pagesChannel: SendChannel<Page>
     private var state = ItemListViewModel.ItemsState.PAUSED

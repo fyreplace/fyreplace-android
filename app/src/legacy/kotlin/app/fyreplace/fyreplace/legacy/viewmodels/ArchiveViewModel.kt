@@ -33,8 +33,7 @@ class ArchiveViewModel @Inject constructor(
     override val preferences: SharedPreferences,
     em: EventsManager,
     private val postService: PostServiceClient
-) :
-    ItemListViewModel<Post, Posts>(em) {
+) : ItemListViewModel<Post, Posts>(em) {
     private val mSelectedPage = MutableStateFlow(R.id.all_posts)
     val selectedPage = mSelectedPage.asStateFlow()
     override val addedItems = merge(

@@ -39,8 +39,7 @@ class NotificationsViewModel @Inject constructor(
     private val userService: UserServiceClient,
     private val postService: PostServiceClient,
     private val commentService: CommentServiceClient,
-) :
-    ItemListViewModel<Notification, Notifications>(em) {
+) : ItemListViewModel<Notification, Notifications>(em) {
     override val addedItems = emptyFlow<ItemEvent<Notification>>()
     override val updatedItems = em.events.filterIsInstance<NotificationWasUpdatedEvent>()
     override val removedItems = em.events.filterIsInstance<NotificationWasDeletedEvent>()

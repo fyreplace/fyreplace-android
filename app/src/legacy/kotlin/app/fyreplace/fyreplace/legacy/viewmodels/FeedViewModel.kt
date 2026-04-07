@@ -35,6 +35,7 @@ class FeedViewModel @Inject constructor(
     val posts = mPosts.asStateFlow()
     val isEmpty = posts.map(List<Post>::isEmpty).asState(true)
     val emptyText = MutableStateFlow(R.string.feed_empty).asStateFlow()
+    private val stalePostIds = mutableSetOf<ByteString>()
 
     init {
         viewModelScope.launch {
@@ -50,12 +51,15 @@ class FeedViewModel @Inject constructor(
     }
 
     fun startListing(): Flow<Post> {
+        stalePostIds.addAll(posts.value.map(Post::id))
         val (sender, receiver) = postService.ListFeed().executeFully()
         votesChannel = sender
         return flow {
             for (newPost in receiver) {
                 emitPost(newPost)
             }
+
+            pruneStalePosts()
         }
     }
 
@@ -65,6 +69,7 @@ class FeedViewModel @Inject constructor(
 
     fun reset() {
         mPosts.value = emptyList()
+        stalePostIds.clear()
     }
 
     suspend fun vote(position: Int, spread: Boolean) {
@@ -75,21 +80,38 @@ class FeedViewModel @Inject constructor(
                 spread = spread
             )
         )
-        mPosts.value = mPosts.value.filter { it.id != postId }
+        mPosts.value = posts.value.filter { it.id != postId }
     }
 
     private suspend fun FlowCollector<Post>.emitPost(newPost: Post) {
         val index = posts.value.indexOfFirst { it.id == newPost.id }
         var newFeed: List<Post>
 
-        if (index >= 0) {
+        if (index != -1) {
             newFeed = posts.value.mutateAsList { this[index] = newPost }
+            stalePostIds.remove(newPost.id)
+
+            for (id in stalePostIds) {
+                if (posts.value.indexOfFirst { it.id == id } < index) {
+                    newFeed = newFeed.filter { it.id != id }
+                    stalePostIds.remove(id)
+                }
+            }
         } else {
             newFeed = posts.value + newPost
+            pruneStalePosts()
         }
 
         mPosts.value = newFeed
         emit(newPost)
+    }
+
+    private fun pruneStalePosts() {
+        for (id in stalePostIds) {
+            mPosts.value = posts.value.filter { it.id != id }
+        }
+
+        stalePostIds.clear()
     }
 
     private fun incrementCommentCount(postId: ByteString) {
