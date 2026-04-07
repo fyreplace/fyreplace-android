@@ -66,9 +66,25 @@ fun getVersionNumber(): Int {
 
 fun getVersionString(variant: String? = null): String {
     val parts = git("describe", "--tags", "--always").split('-')
+    val latestVersion = parts.first().removePrefix("v")
     val build = if (parts.size > 1) getVersionNumber().toString() else ""
     val result = StringBuilder()
-    result.append(parts.first(), '+')
+
+    when (getVersionNumberSuffix()) {
+        VersionSuffix.DEV -> {
+            val (major, minor, patch) = latestVersion.split('.').map(String::toInt)
+            result.append(major, '.', minor + 1, '.', patch)
+        }
+
+        VersionSuffix.RELEASE, VersionSuffix.HOTFIX -> {
+            val branch = git("rev-parse", "--abbrev-ref", "HEAD")
+            result.append(branch.split('/').last())
+        }
+
+        VersionSuffix.MAIN -> result.append(latestVersion)
+    }
+
+    result.append('+')
 
     if (build.isNotEmpty()) {
         result.append(build, '.')
@@ -79,7 +95,6 @@ fun getVersionString(variant: String? = null): String {
     }
 
     return result.toString()
-        .removePrefix("v")
         .removeSuffix("+")
         .removeSuffix(".")
 }
