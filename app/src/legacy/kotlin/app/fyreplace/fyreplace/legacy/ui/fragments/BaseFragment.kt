@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import app.fyreplace.fyreplace.legacy.extensions.insets
 import app.fyreplace.fyreplace.legacy.extensions.setupTransitions
-import app.fyreplace.fyreplace.legacy.extensions.updateBottomPaddingWithSystemInset
+import app.fyreplace.fyreplace.legacy.extensions.updatePaddingWithSystemInsets
 import app.fyreplace.fyreplace.legacy.ui.FailureHandler
 import app.fyreplace.fyreplace.legacy.ui.MainActivity
 import app.fyreplace.fyreplace.legacy.viewmodels.BaseViewModel
@@ -34,7 +34,7 @@ abstract class BaseFragment(contentLayoutId: Int) :
 
         if (destinationId !in MainActivity.TOP_LEVEL_DESTINATIONS) {
             bd.executePendingBindings()
-            bd.root.updateBottomPaddingWithSystemInset(bd.root.insets)
+            bd.root.updatePaddingWithSystemInsets(bd.root.insets)
         }
 
         if (this is MenuProvider) {

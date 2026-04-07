@@ -13,8 +13,10 @@ import androidx.navigation.fragment.findNavController
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentTextInputBinding
 import app.fyreplace.fyreplace.legacy.extensions.hideSoftInput
+import app.fyreplace.fyreplace.legacy.extensions.insets
 import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.showSoftInput
+import app.fyreplace.fyreplace.legacy.extensions.updatePaddingWithImeInsets
 import app.fyreplace.fyreplace.legacy.viewmodels.TextInputViewModel
 import kotlinx.coroutines.flow.combine
 
@@ -38,6 +40,7 @@ abstract class TextInputFragment : BaseFragment(R.layout.fragment_text_input), M
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        bd.root.updatePaddingWithImeInsets(bd.root.insets)
         vm.text.launchCollect(viewLifecycleOwner.lifecycleScope) {
             mainActivity.setToolbarInfo(
                 resources.getQuantityString(

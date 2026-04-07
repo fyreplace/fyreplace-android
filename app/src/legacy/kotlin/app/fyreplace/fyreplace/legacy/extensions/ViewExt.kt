@@ -11,17 +11,20 @@ import androidx.core.view.updatePadding
 val View.insets
     get() = Insets.of(paddingLeft, paddingTop, paddingRight, paddingBottom)
 
-fun View.updateBottomPaddingWithSystemInset(basePadding: Insets) =
+fun View.updatePaddingWithSystemInsets(basePadding: Insets) =
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        view.updatePadding(
-            top = basePadding.top + systemBars.top,
-            left = basePadding.left + systemBars.left,
-            right = basePadding.right + systemBars.right,
-            bottom = basePadding.bottom + systemBars.bottom
-        )
+        view.updatePadding(basePadding + insets.getInsets(WindowInsetsCompat.Type.systemBars()))
         return@setOnApplyWindowInsetsListener insets
     }
+
+fun View.updatePaddingWithImeInsets(basePadding: Insets) =
+    ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
+        view.updatePadding(basePadding + insets.getInsets(WindowInsetsCompat.Type.ime()))
+        return@setOnApplyWindowInsetsListener insets
+    }
+
+fun View.updatePadding(insets: Insets) =
+    updatePadding(insets.left, insets.top, insets.right, insets.bottom)
 
 fun View.showSoftInput() {
     if (requestFocus()) {
