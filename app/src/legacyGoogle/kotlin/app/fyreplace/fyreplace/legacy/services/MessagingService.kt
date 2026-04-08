@@ -16,7 +16,6 @@ import app.fyreplace.protos.MessagingToken
 import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.squareup.moshi.Moshi
 import com.squareup.wire.GrpcException
 import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,9 +30,6 @@ import javax.inject.Inject
 class MessagingService : FirebaseMessagingService() {
     @Inject
     lateinit var em: EventsManager
-
-    @Inject
-    lateinit var moshi: Moshi
 
     @Inject
     lateinit var notificationService: NotificationServiceClient
@@ -74,7 +70,7 @@ class MessagingService : FirebaseMessagingService() {
         }
 
         val channel = message.data["_fcm.channel"]
-        val comment = message.parseComment(moshi) ?: return
+        val comment = message.parseComment() ?: return
         val postId = byteString(message.data["postId"] ?: return)
 
         when (command) {

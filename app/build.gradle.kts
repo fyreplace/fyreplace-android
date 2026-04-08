@@ -293,7 +293,6 @@ dependencies {
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.retrofit.converter.scalars)
     implementation(libs.wire.grpc.client)
-    implementation(libs.wire.moshi.adapter)
     implementation(libs.wire.runtime)
 
     "legacyImplementation"(libs.androidx.coordinatorlayout)

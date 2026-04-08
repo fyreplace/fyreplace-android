@@ -26,7 +26,6 @@ import app.fyreplace.protos.MessagingService
 import app.fyreplace.protos.MessagingToken
 import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessaging
-import com.squareup.moshi.Moshi
 import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.filter
@@ -40,9 +39,6 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
     FailureHandler {
     @Inject
     lateinit var em: EventsManager
-
-    @Inject
-    lateinit var moshi: Moshi
 
     @Inject
     lateinit var notificationStub: NotificationServiceClient
@@ -59,7 +55,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:creation" }
             .launchCollect {
-                val comment = it.message.parseComment(moshi) ?: return@launchCollect
+                val comment = it.message.parseComment() ?: return@launchCollect
                 em.post(CommentWasCreatedEvent(comment, it.postId, false))
 
                 if (!tryHandleCommentCreation(comment, it.postId)) {
@@ -76,7 +72,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:deletion" }
             .launchCollect {
-                val comment = (it.message.parseComment(moshi) ?: return@launchCollect)
+                val comment = (it.message.parseComment() ?: return@launchCollect)
                     .copy(is_deleted = true)
                 em.post(CommentWasDeletedEvent(comment, it.postId))
             }

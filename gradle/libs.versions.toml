@@ -105,7 +105,6 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 retrofit-converter-scalars = { group = "com.squareup.retrofit2", name = "converter-scalars", version.ref = "retrofit" }
 wire-grpc-client = { group = "com.squareup.wire", name = "wire-grpc-client", version.ref = "wire" }
-wire-moshi-adapter = { group = "com.squareup.wire", name = "wire-moshi-adapter", version.ref = "wire" }
 wire-runtime = { group = "com.squareup.wire", name = "wire-runtime", version.ref = "wire" }
 
 [plugins]
