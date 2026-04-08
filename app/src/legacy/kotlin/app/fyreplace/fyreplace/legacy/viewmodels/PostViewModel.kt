@@ -61,7 +61,11 @@ class PostViewModel @AssistedInject constructor(
             em.events.filterIsInstance<CommentWasCreatedEvent>()
                 .filter { it.postId == post.value.id && it.byCurrentUser }
                 .collect {
-                    mPost.value = post.value.copy(is_subscribed = true)
+                    mPost.value = post.value.copy(
+                        is_subscribed = true,
+                        comments_read = post.value.comment_count,
+                        comment_count = post.value.comment_count + 1
+                    )
                     mShouldScrollToComment = true
                     mSavedComment = ""
                 }
@@ -100,7 +104,10 @@ class PostViewModel @AssistedInject constructor(
                 subscribed = subscribed
             )
         )
-        mPost.value = post.value.copy(is_subscribed = subscribed)
+        mPost.value = post.value.copy(
+            is_subscribed = subscribed,
+            comments_read = if (subscribed) post.value.comment_count else 0
+        )
     }
 
     suspend fun report() {

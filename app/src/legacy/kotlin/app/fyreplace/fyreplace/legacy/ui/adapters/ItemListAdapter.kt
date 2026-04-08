@@ -11,8 +11,6 @@ abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val i
         setHasStableIds(true)
     }
 
-    final override fun setHasStableIds(hasStableIds: Boolean) = super.setHasStableIds(hasStableIds)
-
     override fun getItemId(position: Int) = getItemId(items[position]).asByteBuffer().getLong()
 
     override fun getItemCount() = items.size
