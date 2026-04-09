@@ -68,7 +68,11 @@ class FeedAdapter(
         }
 
         for (id in staleIds) {
-            remove(this.items.indexOfFirst { it.id == id })
+            val position = this.items.indexOfFirst { it.id == id }
+
+            if (position != -1) {
+                remove(position)
+            }
         }
     }
 
