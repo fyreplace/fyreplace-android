@@ -60,7 +60,10 @@ class FeedAdapter(
             val position = this.items.indexOfFirst { it.id == item.id }
 
             if (position != -1) {
-                update(position, item)
+                if (item != this.items[position]) {
+                    update(position, item)
+                }
+
                 staleIds.remove(item.id)
             } else {
                 add(itemCount, item)

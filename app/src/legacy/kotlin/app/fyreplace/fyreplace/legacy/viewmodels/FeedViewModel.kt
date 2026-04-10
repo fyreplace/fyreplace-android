@@ -31,8 +31,7 @@ class FeedViewModel @Inject constructor(
     private val postService: PostServiceClient
 ) : BaseViewModel() {
     private lateinit var votesChannel: SendChannel<Vote>
-    private val mPosts = MutableStateFlow(emptyList<Post>())
-    val posts = mPosts.asStateFlow()
+    private val posts = MutableStateFlow(emptyList<Post>())
     val isEmpty = posts.map(List<Post>::isEmpty).asState(true)
     val emptyText = MutableStateFlow(R.string.feed_empty).asStateFlow()
     private val stalePostIds = mutableSetOf<ByteString>()
@@ -50,13 +49,13 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun startListing(): Flow<Post> {
+    fun startListing(): Flow<List<Post>> {
         stalePostIds.addAll(posts.value.map(Post::id))
         val (sender, receiver) = postService.ListFeed().executeFully()
         votesChannel = sender
         return flow {
             for (newPost in receiver) {
-                emitPost(newPost)
+                emitFeed(newPost)
             }
 
             pruneStalePosts()
@@ -68,7 +67,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun reset() {
-        mPosts.value = emptyList()
+        posts.value = emptyList()
         stalePostIds.clear()
     }
 
@@ -80,10 +79,10 @@ class FeedViewModel @Inject constructor(
                 spread = spread
             )
         )
-        mPosts.value = posts.value.filter { it.id != postId }
+        posts.value = posts.value.filter { it.id != postId }
     }
 
-    private suspend fun FlowCollector<Post>.emitPost(newPost: Post) {
+    private suspend fun FlowCollector<List<Post>>.emitFeed(newPost: Post) {
         val index = posts.value.indexOfFirst { it.id == newPost.id }
         var newFeed: List<Post>
 
@@ -102,20 +101,20 @@ class FeedViewModel @Inject constructor(
             pruneStalePosts()
         }
 
-        mPosts.value = newFeed
-        emit(newPost)
+        posts.value = newFeed
+        emit(newFeed)
     }
 
     private fun pruneStalePosts() {
         for (id in stalePostIds) {
-            mPosts.value = posts.value.filter { it.id != id }
+            posts.value = posts.value.filter { it.id != id }
         }
 
         stalePostIds.clear()
     }
 
     private fun incrementCommentCount(postId: ByteString) {
-        mPosts.value = posts.value.map {
+        posts.value = posts.value.map {
             when (it.id) {
                 postId -> it.copy(comment_count = it.comment_count + 1)
                 else -> it
