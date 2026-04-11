@@ -54,17 +54,17 @@ object GrpcModule {
         val environment = preferences.getEnvironment(context)
         val localEnvironment = context.getString(R.string.settings_environment_local_value)
         val isLocal = environment == localEnvironment
-        val hostRes = when (environment) {
-            context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main
-            context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev
-            localEnvironment -> R.string.api_host_local
-            else -> R.string.api_host_default
+        val (hostRes, portRes) = when (environment) {
+            context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main to R.integer.api_port_main
+            context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev to R.integer.api_port_dev
+            localEnvironment -> R.string.api_host_local to R.integer.api_port_local
+            else -> throw RuntimeException("Invalid environment")
         }
 
         val serverUrl = HttpUrl.Builder()
             .scheme(if (isLocal) "http" else "https")
             .host(context.resources.getString(hostRes))
-            .port(context.resources.getInteger(R.integer.api_port))
+            .port(context.resources.getInteger(portRes))
             .build()
 
         return GrpcClient.Builder()
