@@ -91,10 +91,7 @@ class FeedFragment :
     }
 
     override fun onPostVoted(view: View, position: Int, spread: Boolean) {
-        view.provideHapticFeedback(positive = spread)
-        launch {
-            vm.vote(position, spread)
-        }
+        launch { vm.vote(position, spread) }
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

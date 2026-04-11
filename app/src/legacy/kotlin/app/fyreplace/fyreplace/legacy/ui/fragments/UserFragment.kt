@@ -17,12 +17,12 @@ import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.UserWasBannedEvent
 import app.fyreplace.fyreplace.legacy.events.UserWasBlockedEvent
 import app.fyreplace.fyreplace.legacy.events.UserWasUnblockedEvent
+import app.fyreplace.fyreplace.legacy.extensions.HapticType
 import app.fyreplace.fyreplace.legacy.extensions.formatDate
 import app.fyreplace.fyreplace.legacy.extensions.getUsername
 import app.fyreplace.fyreplace.legacy.extensions.setAvatar
 import app.fyreplace.fyreplace.legacy.extensions.setLinkifiedText
 import app.fyreplace.fyreplace.legacy.extensions.setupTransitions
-import app.fyreplace.fyreplace.legacy.ui.BasePresenter
 import app.fyreplace.fyreplace.legacy.ui.FailureHandler
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.Sentence
@@ -169,7 +169,7 @@ class UserFragment : DialogFragment(), FailureHandler {
             vm.report()
             showBasicSnackbar(
                 R.string.user_report_success_message,
-                haptics = BasePresenter.HapticType.SIMPLE
+                haptics = HapticType.SIMPLE
             )
         }
     }
@@ -201,7 +201,7 @@ class UserFragment : DialogFragment(), FailureHandler {
     private fun finishBan() {
         showBasicSnackbar(
             R.string.user_ban_success_message,
-            haptics = BasePresenter.HapticType.SIMPLE
+            haptics = HapticType.SIMPLE
         )
         bd.toolbar.menu.findItem(R.id.ban).isVisible = false
         em.post(UserWasBannedEvent(args.profile.copy(is_banned = true)))

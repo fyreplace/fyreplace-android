@@ -12,6 +12,7 @@ import app.fyreplace.fyreplace.databinding.ItemFeedPostTextBinding
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.legacy.extensions.firstChapter
+import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
 import kotlinx.coroutines.MainScope
@@ -115,6 +116,8 @@ class FeedAdapter(
         fun onUpClicked(view: View) = vote(view)
 
         private fun vote(button: View) {
+            button.provideHapticFeedback(positive = button == up)
+
             if (!isVoting) scope.launch {
                 button.isActivated = true
                 delay(500)

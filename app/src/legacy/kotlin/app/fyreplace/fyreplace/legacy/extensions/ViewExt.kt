@@ -1,6 +1,8 @@
 package app.fyreplace.fyreplace.legacy.extensions
 
 import android.content.Context
+import android.os.Build
+import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.graphics.Insets
@@ -37,4 +39,30 @@ fun View.showSoftInput() {
 fun View.hideSoftInput() {
     context.getSystemService(InputMethodManager::class.java)
         ?.hideSoftInputFromWindow(windowToken, 0)
+}
+
+fun View.provideHapticFeedback(type: HapticType = HapticType.SIMPLE) {
+    performHapticFeedback(
+        when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE -> when (type) {
+                HapticType.TOGGLE_ON -> HapticFeedbackConstants.TOGGLE_ON
+                HapticType.TOGGLE_OFF -> HapticFeedbackConstants.TOGGLE_OFF
+                else -> HapticFeedbackConstants.CONFIRM
+            }
+
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> HapticFeedbackConstants.CONFIRM
+            else -> HapticFeedbackConstants.VIRTUAL_KEY
+        }
+    )
+}
+
+fun View.provideHapticFeedback(positive: Boolean) = provideHapticFeedback(
+    if (positive) HapticType.TOGGLE_ON
+    else HapticType.TOGGLE_OFF
+)
+
+enum class HapticType {
+    TOGGLE_ON,
+    TOGGLE_OFF,
+    SIMPLE
 }

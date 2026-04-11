@@ -20,12 +20,13 @@ import app.fyreplace.fyreplace.legacy.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasSubscribedToEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasUnsubscribedFromEvent
+import app.fyreplace.fyreplace.legacy.extensions.HapticType
 import app.fyreplace.fyreplace.legacy.extensions.formatDate
 import app.fyreplace.fyreplace.legacy.extensions.isAdmin
 import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
-import app.fyreplace.fyreplace.legacy.ui.BasePresenter
+import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
 import app.fyreplace.fyreplace.legacy.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
@@ -316,7 +317,7 @@ class PostFragment :
         vm.report()
         showBasicSnackbar(
             R.string.post_report_success_message,
-            haptics = BasePresenter.HapticType.SIMPLE
+            haptics = HapticType.SIMPLE
         )
     }
 
@@ -330,7 +331,7 @@ class PostFragment :
         vm.reportComment(comment.id)
         showBasicSnackbar(
             R.string.post_comment_report_success_message,
-            haptics = BasePresenter.HapticType.SIMPLE
+            haptics = HapticType.SIMPLE
         )
     }
 
