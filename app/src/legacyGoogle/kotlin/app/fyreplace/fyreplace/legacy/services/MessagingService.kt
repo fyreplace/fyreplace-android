@@ -16,7 +16,6 @@ import app.fyreplace.protos.MessagingToken
 import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.squareup.wire.GrpcException
 import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +55,7 @@ class MessagingService : FirebaseMessagingService() {
                         token = token
                     )
                 )
-            } catch (_: GrpcException) {
+            } catch (_: Exception) {
             }
         }
     }
