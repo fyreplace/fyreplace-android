@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.legacy.events
 
 import com.google.firebase.messaging.RemoteMessage
-import com.google.protobuf.ByteString
+import okio.ByteString
 
 class RemoteNotificationWasReceivedEvent(
     val message: RemoteMessage,

@@ -20,5 +20,5 @@ interface Module {
 
     @Binds
     @Singleton
-    fun bindSecretsHandler(resolver: EncryptedSecretsHandler): SecretsHandler
+    fun bindSecretsHandler(handler: EncryptedSecretsHandler): SecretsHandler
 }

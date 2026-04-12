@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStoppedEvent
@@ -12,36 +13,33 @@ import app.fyreplace.fyreplace.legacy.events.NotificationWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.NotificationWasUpdatedEvent
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.legacy.extensions.id
-import app.fyreplace.protos.CommentServiceGrpcKt
-import app.fyreplace.protos.Cursor
+import app.fyreplace.protos.CommentServiceClient
+import app.fyreplace.protos.Id
 import app.fyreplace.protos.Notification
-import app.fyreplace.protos.NotificationServiceGrpcKt
+import app.fyreplace.protos.NotificationServiceClient
 import app.fyreplace.protos.Notifications
-import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.UserServiceGrpcKt
-import app.fyreplace.protos.id
-import app.fyreplace.protos.notification
-import app.fyreplace.protos.post
-import com.google.protobuf.ByteString
-import com.google.protobuf.Empty
+import app.fyreplace.protos.Post
+import app.fyreplace.protos.PostServiceClient
+import app.fyreplace.protos.UserServiceClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import okio.ByteString
 import javax.inject.Inject
 
 @HiltViewModel
 @SuppressLint("CheckResult")
 class NotificationsViewModel @Inject constructor(
+    override val preferences: SharedPreferences,
     em: EventsManager,
-    private val notificationStub: NotificationServiceGrpcKt.NotificationServiceCoroutineStub,
-    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub,
-    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
-    private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub,
-) :
-    ItemListViewModel<Notification, Notifications>(em) {
+    private val notificationService: NotificationServiceClient,
+    private val userService: UserServiceClient,
+    private val postService: PostServiceClient,
+    private val commentService: CommentServiceClient,
+) : ItemListViewModel<Notification, Notifications>(em) {
     override val addedItems = emptyFlow<ItemEvent<Notification>>()
     override val updatedItems = em.events.filterIsInstance<NotificationWasUpdatedEvent>()
     override val removedItems = em.events.filterIsInstance<NotificationWasDeletedEvent>()
@@ -54,15 +52,13 @@ class NotificationsViewModel @Inject constructor(
 
         viewModelScope.launch {
             em.events.filterIsInstance<CommentWasSeenEvent>().collect {
-                val position = getPosition(notification { post = post { id = it.postId } })
+                val position = getPosition(Notification(post = Post(id = it.postId)))
                 val notification = items.getOrNull(position) ?: return@collect
 
                 if (it.commentsLeft == 0) {
                     em.post(NotificationWasDeletedEvent(notification))
                 } else if (notification.count >= it.commentsLeft) {
-                    val newNotification = Notification.newBuilder(notification)
-                        .setCount(it.commentsLeft)
-                        .build()
+                    val newNotification = notification.copy(count = it.commentsLeft)
                     em.post(NotificationWasUpdatedEvent(newNotification))
                 }
             }
@@ -70,13 +66,13 @@ class NotificationsViewModel @Inject constructor(
 
         viewModelScope.launch {
             em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>().collect {
-                val position = getPosition(notification { post = post { id = it.postId } })
+                val position = getPosition(Notification(post = Post(id = it.postId)))
                 val notification = items.getOrNull(position)
                 val event = when {
                     it.command !in setOf("comment:creation", "comment:deletion") -> return@collect
 
                     notification == null -> if (it.command == "comment:creation")
-                        NotificationWasCreatedEvent(notification { post = post { id = it.postId } })
+                        NotificationWasCreatedEvent(Notification(post = Post(id = it.postId)))
                     else return@collect
 
                     notification.count == 1 && it.command == "comment:deletion" -> NotificationWasDeletedEvent(
@@ -84,9 +80,7 @@ class NotificationsViewModel @Inject constructor(
                     )
 
                     else -> NotificationWasUpdatedEvent(
-                        Notification.newBuilder(notification)
-                            .setCount(notification.count + if (it.command == "comment:deletion") -1 else 1)
-                            .build()
+                        notification.copy(count = notification.count + if (it.command == "comment:deletion") -1 else 1)
                     )
                 }
 
@@ -95,36 +89,29 @@ class NotificationsViewModel @Inject constructor(
         }
     }
 
-    override fun getItemId(item: Notification): ByteString = item.id
+    override fun getItemId(item: Notification) = item.id
 
-    override fun listItems() = notificationStub.list(pages)
+    override fun listItems() = notificationService.List()
 
-    override fun hasNextCursor(items: Notifications) = items.hasNext()
+    override fun getNextCursor(items: Notifications) = items.next
 
-    override fun getNextCursor(items: Notifications): Cursor = items.next
+    override fun getItemList(items: Notifications) = items.notifications
 
-    override fun getItemList(items: Notifications): List<Notification> = items.notificationsList
+    suspend fun clearAll() = notificationService.Clear().executeFully(Unit)
 
-    suspend fun clearAll() {
-        notificationStub.clear(Empty.getDefaultInstance())
-    }
-
-    suspend fun absolve(notification: Notification) = when (notification.targetCase) {
-        Notification.TargetCase.USER -> absolveUser(notification.user.id)
-        Notification.TargetCase.POST -> absolvePost(notification.post.id)
-        Notification.TargetCase.COMMENT -> absolveComment(notification.comment.id)
+    suspend fun absolve(notification: Notification) = when {
+        notification.user != null -> absolveUser(notification.user.id)
+        notification.post != null -> absolvePost(notification.post.id)
+        notification.comment != null -> absolveComment(notification.comment.id)
         else -> Unit
     }
 
-    private suspend fun absolveUser(id: ByteString) {
-        userStub.absolve(id { this.id = id })
-    }
+    private suspend fun absolveUser(id: ByteString) =
+        userService.Absolve().executeFully(Id(id = id))
 
-    private suspend fun absolvePost(id: ByteString) {
-        postStub.absolve(id { this.id = id })
-    }
+    private suspend fun absolvePost(id: ByteString) =
+        postService.Absolve().executeFully(Id(id = id))
 
-    private suspend fun absolveComment(id: ByteString) {
-        commentStub.absolve(id { this.id = id })
-    }
+    private suspend fun absolveComment(id: ByteString) =
+        commentService.Absolve().executeFully(Id(id = id))
 }

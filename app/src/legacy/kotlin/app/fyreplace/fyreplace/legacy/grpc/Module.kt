@@ -3,74 +3,97 @@ package app.fyreplace.fyreplace.legacy.grpc
 import android.content.Context
 import android.content.SharedPreferences
 import app.fyreplace.fyreplace.R
-import app.fyreplace.protos.AccountServiceGrpcKt
-import app.fyreplace.protos.ChapterServiceGrpcKt
-import app.fyreplace.protos.CommentServiceGrpcKt
-import app.fyreplace.protos.NotificationServiceGrpcKt
-import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.UserServiceGrpcKt
+import app.fyreplace.protos.AccountServiceClient
+import app.fyreplace.protos.ChapterServiceClient
+import app.fyreplace.protos.CommentServiceClient
+import app.fyreplace.protos.NotificationServiceClient
+import app.fyreplace.protos.PostServiceClient
+import app.fyreplace.protos.UserServiceClient
+import com.squareup.wire.GrpcClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.grpc.ManagedChannel
-import io.grpc.ManagedChannelBuilder
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 
+@Suppress("unused")
 @Module
 @InstallIn(SingletonComponent::class)
 object GrpcModule {
+    private fun SharedPreferences.getEnvironment(context: Context) = getString(
+        "app.environment",
+        context.getString(R.string.settings_environment_default_value)
+    )
+
     @Provides
-    fun provideManagedChannel(
+    fun provideHttpClient(
         @ApplicationContext context: Context,
         preferences: SharedPreferences
-    ): ManagedChannel {
-        val environment = preferences.getString(
-            "app.environment",
-            context.getString(R.string.settings_environment_default_value)
-        )
-        val host = when (environment) {
-            context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main
-            context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev
-            context.getString(R.string.settings_environment_local_value) -> R.string.api_host_local
-            else -> R.string.api_host_default
-        }
-        val channel = ManagedChannelBuilder.forAddress(
-            context.resources.getString(host),
-            context.resources.getInteger(R.integer.api_port)
-        )
-
-        if (environment == context.getString(R.string.settings_environment_local_value)) {
-            channel.usePlaintext()
+    ): OkHttpClient {
+        val localEnvironment = context.getString(R.string.settings_environment_local_value)
+        val protocols = if (preferences.getEnvironment(context) == localEnvironment) {
+            listOf(Protocol.H2_PRIOR_KNOWLEDGE)
+        } else {
+            listOf(Protocol.HTTP_1_1, Protocol.HTTP_2)
         }
 
-        return channel
-            .enableRetry()
-            .intercept(RequestIdentificationInterceptor(), AuthenticationInterceptor(preferences))
+        return OkHttpClient.Builder()
+            .protocols(protocols)
             .build()
     }
 
     @Provides
-    fun provideAccountServiceStub(channel: ManagedChannel) =
-        AccountServiceGrpcKt.AccountServiceCoroutineStub(channel)
+    fun provideGrpcClient(
+        @ApplicationContext context: Context,
+        preferences: SharedPreferences,
+        httpClient: OkHttpClient
+    ): GrpcClient {
+        val environment = preferences.getEnvironment(context)
+        val localEnvironment = context.getString(R.string.settings_environment_local_value)
+        val isLocal = environment == localEnvironment
+        val (hostRes, portRes) = when (environment) {
+            context.getString(R.string.settings_environment_main_value) -> R.string.api_host_main to R.integer.api_port_main
+            context.getString(R.string.settings_environment_dev_value) -> R.string.api_host_dev to R.integer.api_port_dev
+            localEnvironment -> R.string.api_host_local to R.integer.api_port_local
+            else -> throw RuntimeException("Invalid environment")
+        }
+
+        val serverUrl = HttpUrl.Builder()
+            .scheme(if (isLocal) "http" else "https")
+            .host(context.resources.getString(hostRes))
+            .port(context.resources.getInteger(portRes))
+            .build()
+
+        return GrpcClient.Builder()
+            .client(httpClient)
+            .baseUrl(serverUrl)
+            .build()
+    }
 
     @Provides
-    fun provideUserServiceStub(channel: ManagedChannel) =
-        UserServiceGrpcKt.UserServiceCoroutineStub(channel)
+    fun provideAccountServiceStub(client: GrpcClient) =
+        client.create(AccountServiceClient::class)
 
     @Provides
-    fun providePostServiceStub(channel: ManagedChannel) =
-        PostServiceGrpcKt.PostServiceCoroutineStub(channel)
+    fun provideUserServiceStub(client: GrpcClient) =
+        client.create(UserServiceClient::class)
 
     @Provides
-    fun provideChapterServiceStub(channel: ManagedChannel) =
-        ChapterServiceGrpcKt.ChapterServiceCoroutineStub(channel)
+    fun providePostServiceStub(client: GrpcClient) =
+        client.create(PostServiceClient::class)
 
     @Provides
-    fun provideCommentServiceStub(channel: ManagedChannel) =
-        CommentServiceGrpcKt.CommentServiceCoroutineStub(channel)
+    fun provideChapterServiceStub(client: GrpcClient) =
+        client.create(ChapterServiceClient::class)
 
     @Provides
-    fun provideNotificationServiceStub(channel: ManagedChannel) =
-        NotificationServiceGrpcKt.NotificationServiceCoroutineStub(channel)
+    fun provideCommentServiceStub(client: GrpcClient) =
+        client.create(CommentServiceClient::class)
+
+    @Provides
+    fun provideNotificationServiceStub(client: GrpcClient) =
+        client.create(NotificationServiceClient::class)
 }

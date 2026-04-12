@@ -6,7 +6,6 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.extensions.firstChapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
-import com.google.protobuf.ByteString
 
 class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
     ItemListAdapter<Post, PreviewHolder>(itemListener) {
@@ -34,7 +33,7 @@ class ArchiveAdapter(itemListener: ItemClickListener<Post>) :
         holder.setup(items[position])
     }
 
-    override fun getItemId(item: Post): ByteString = item.id
+    override fun getItemId(item: Post) = item.id
 
     companion object {
         const val TYPE_TEXT = 1

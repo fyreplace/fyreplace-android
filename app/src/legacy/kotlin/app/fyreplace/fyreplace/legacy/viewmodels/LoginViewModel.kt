@@ -4,12 +4,13 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import androidx.annotation.IntegerRes
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.legacy.extensions.dedupe
 import app.fyreplace.fyreplace.legacy.extensions.storeAuthToken
 import app.fyreplace.fyreplace.legacy.grpc.defaultClient
-import app.fyreplace.protos.AccountServiceGrpcKt
-import app.fyreplace.protos.connectionCredentials
-import app.fyreplace.protos.email
-import app.fyreplace.protos.userCreation
+import app.fyreplace.protos.AccountServiceClient
+import app.fyreplace.protos.ConnectionCredentials
+import app.fyreplace.protos.Email
+import app.fyreplace.protos.UserCreation
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,9 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
+    override val preferences: SharedPreferences,
     private val resources: Resources,
-    private val preferences: SharedPreferences,
-    private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub
+    private val accountService: AccountServiceClient
 ) : LoadingViewModel() {
     private val mIsRegistering = MutableStateFlow(false)
     val isRegistering = mIsRegistering.asStateFlow()
@@ -47,25 +48,28 @@ class LoginViewModel @Inject constructor(
         mIsRegistering.value = registering
     }
 
-    suspend fun register(): Unit = whileLoading {
-        accountStub.create(userCreation {
-            email = this@LoginViewModel.email.value
-            username = this@LoginViewModel.username.value
-        })
+    suspend fun register() = whileLoading {
+        accountService.Create()
+            .dedupe()
+            .execute(UserCreation(email = email.value, username = username.value))
     }
 
-    suspend fun login(): Unit = whileLoading {
-        accountStub.sendConnectionEmail(email {
-            email = this@LoginViewModel.email.value
-        })
+    suspend fun login() = whileLoading {
+        accountService.SendConnectionEmail()
+            .dedupe()
+            .execute(Email(email = email.value))
     }
 
-    suspend fun login(password: String): Unit = whileLoading {
-        val token = accountStub.connect(connectionCredentials {
-            email = this@LoginViewModel.email.value
-            this.password = password
-            client = defaultClient
-        })
+    suspend fun login(password: String) = whileLoading {
+        val token = accountService.Connect()
+            .dedupe()
+            .execute(
+                ConnectionCredentials(
+                    email = email.value,
+                    password = password,
+                    client = defaultClient
+                )
+            )
         preferences.storeAuthToken(token)
     }
 

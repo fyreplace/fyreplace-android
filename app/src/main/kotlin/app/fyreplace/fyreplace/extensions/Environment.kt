@@ -4,5 +4,4 @@ import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.protos.Environment
 
 val Environment.orDefault: Environment
-    get() = this.takeUnless { it in setOf(Environment.UNSPECIFIED, Environment.UNRECOGNIZED) }
-        ?: BuildConfig.ENVIRONMENT_DEFAULT
+    get() = this.takeUnless { it == Environment.UNSPECIFIED } ?: BuildConfig.ENVIRONMENT_DEFAULT

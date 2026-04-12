@@ -4,33 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
-import androidx.core.view.updatePadding
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemRandomAccessListBinding
-import app.fyreplace.fyreplace.legacy.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemRandomAccessListAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.ItemRandomAccessListViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterIsInstance
 
-abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
-    ScrollingListFragment<Item>(R.layout.fragment_item_random_access_list),
+abstract class ItemRandomAccessListFragment<Item, Items : Any, VH : ItemHolder> :
+    DynamicListFragment<Item>(R.layout.fragment_item_random_access_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val em by lazy { vm.em }
+    override lateinit var bd: FragmentItemRandomAccessListBinding
     abstract override val vm: ItemRandomAccessListViewModel<Item, Items>
     override val recyclerView get() = bd.recyclerView
-    protected lateinit var bd: FragmentItemRandomAccessListBinding
     protected lateinit var adapter: ItemRandomAccessListAdapter<Item, VH>
-    private var retryCount = 0
 
     abstract fun makeAdapter(): ItemRandomAccessListAdapter<Item, VH>
 
@@ -51,12 +44,6 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         }
         bd.lifecycleOwner = viewLifecycleOwner
 
-        ViewCompat.setOnApplyWindowInsetsListener(bd.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(bottom = systemBars.bottom)
-            return@setOnApplyWindowInsetsListener insets
-        }
-
         with(recyclerView) {
             setHasFixedSize(true)
             addOnChildAttachStateChangeListener(this@ItemRandomAccessListFragment)
@@ -71,10 +58,6 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items, vm.totalSize)
         recyclerView.adapter = adapter
-
-        vm.em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
-            .debounce(1000)
-            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
     }
 
     override fun onDestroyView() {
@@ -84,12 +67,12 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onStart() {
         super.onStart()
-        launch { startFetchingData() }
+        startListing()
     }
 
     override fun onStop() {
         super.onStop()
-        vm.stopListing()
+        stopListing()
     }
 
     override fun addItem(event: PositionalEvent<Item>) =
@@ -110,6 +93,12 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
+    override fun startListing() {
+        launch { startFetchingData() }
+    }
+
+    override fun stopListing() = vm.stopListing()
+
     open fun onFetchedItems(position: Int, items: List<Item>) {
         adapter.update(position, items)
 
@@ -128,11 +117,5 @@ abstract class ItemRandomAccessListFragment<Item, Items, VH : ItemHolder> :
         if (adapter.totalSize == 0) {
             vm.fetchAround(0)
         }
-    }
-
-    private fun retryListing() {
-        vm.stopListing()
-        retryCount++
-        launch { startFetchingData() }
     }
 }

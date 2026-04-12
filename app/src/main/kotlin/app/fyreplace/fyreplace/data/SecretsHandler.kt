@@ -7,9 +7,10 @@ import android.security.keystore.KeyProperties.KEY_ALGORITHM_AES
 import android.security.keystore.KeyProperties.PURPOSE_DECRYPT
 import android.security.keystore.KeyProperties.PURPOSE_ENCRYPT
 import android.util.Base64
-import com.google.protobuf.ByteString
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okio.ByteString
+import okio.ByteString.Companion.encodeUtf8
 import java.security.KeyStore
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -28,12 +29,11 @@ class EncryptedSecretsHandler @Inject constructor() : SecretsHandler {
     override suspend fun encrypt(value: String): ByteString = withContext(Dispatchers.Default) {
         val cipher = getCipher().apply { init(Cipher.ENCRYPT_MODE, getKey()) }
         val data = cipher.doFinal(value.toByteArray())
-        return@withContext ByteString.copyFromUtf8("${data.encodedString}:${cipher.iv.encodedString}")
+        return@withContext "${data.encodedString}:${cipher.iv.encodedString}".encodeUtf8()
     }
 
     override suspend fun decrypt(data: ByteString): String = withContext(Dispatchers.Default) {
-        val string = data.toStringUtf8()
-        val (bytes, iv) = string.split(":").map { it.decodedBytes }
+        val (bytes, iv) = data.utf8().split(":").map { it.decodedBytes }
         val cipher = getCipher().apply { init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv)) }
         return@withContext String(cipher.doFinal(bytes))
     }

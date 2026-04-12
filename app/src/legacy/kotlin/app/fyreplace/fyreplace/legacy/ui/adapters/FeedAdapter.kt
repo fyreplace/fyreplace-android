@@ -12,9 +12,9 @@ import app.fyreplace.fyreplace.databinding.ItemFeedPostTextBinding
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
 import app.fyreplace.fyreplace.legacy.extensions.firstChapter
+import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
-import com.google.protobuf.ByteString
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -28,10 +28,9 @@ class FeedAdapter(
     private val canVote: StateFlow<Boolean>,
     private val voteListener: VoteListener,
     itemListener: ItemClickListener<Post>
-) :
-    ItemListAdapter<Post, PreviewHolder>(itemListener) {
+) : ItemListAdapter<Post, PreviewHolder>(itemListener) {
     override fun getItemViewType(position: Int) =
-        if (items[position].firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
+        if (items[position].firstChapter.image != null) TYPE_IMAGE else TYPE_TEXT
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -53,15 +52,31 @@ class FeedAdapter(
         holder.setup(items[position])
     }
 
-    override fun getItemId(item: Post): ByteString = item.id
+    override fun getItemId(item: Post) = item.id
 
-    fun addOrUpdate(item: Post) {
-        val position = items.indexOfFirst { it.id == item.id }
+    fun replaceAll(items: List<Post>) {
+        val staleIds = this.items.map(Post::id).toMutableSet()
 
-        if (position == -1) {
-            add(itemCount, item)
-        } else if (items[position] != item) {
-            update(position, item)
+        for (item in items) {
+            val position = this.items.indexOfFirst { it.id == item.id }
+
+            if (position != -1) {
+                if (item != this.items[position]) {
+                    update(position, item)
+                }
+
+                staleIds.remove(item.id)
+            } else {
+                add(itemCount, item)
+            }
+        }
+
+        for (id in staleIds) {
+            val position = this.items.indexOfFirst { it.id == id }
+
+            if (position != -1) {
+                remove(position)
+            }
         }
     }
 
@@ -82,13 +97,13 @@ class FeedAdapter(
         private val isVoting get() = down.isActivated || up.isActivated
         private val scope = MainScope()
 
-        override fun setup(post: Post) {
+        override fun setup(post: Post?) {
             super.setup(post)
-            votes.text = post.voteCount.toString()
-            comments.text = post.commentCount.toString()
+            votes.text = post?.vote_count.toString()
+            comments.text = post?.comment_count.toString()
             scope.launch {
                 em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
-                    .filter { it.command == "comment:creation" && it.postId == post.id }
+                    .filter { it.command == "comment:creation" && it.postId == post?.id }
                     .collect {
                         val newCount = comments.text.toString().toInt() + 1
                         comments.text = newCount.toString()
@@ -101,6 +116,8 @@ class FeedAdapter(
         fun onUpClicked(view: View) = vote(view)
 
         private fun vote(button: View) {
+            button.provideHapticFeedback(positive = button == up)
+
             if (!isVoting) scope.launch {
                 button.isActivated = true
                 delay(500)

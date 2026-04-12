@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.sentry) apply false
     alias(libs.plugins.openapi) apply false
-    alias(libs.plugins.protobuf) apply false
     alias(libs.plugins.navigation.safeargs) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google) apply false
+    alias(libs.plugins.wire) apply false
 }

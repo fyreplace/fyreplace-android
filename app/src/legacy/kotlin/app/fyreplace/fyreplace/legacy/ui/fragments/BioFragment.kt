@@ -6,8 +6,9 @@ import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.legacy.viewmodels.BioViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.BioViewModelFactory
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -15,6 +16,7 @@ class BioFragment : TextInputFragment() {
     @Inject
     lateinit var vmFactory: BioViewModelFactory
 
+    override val destinationId = R.id.fragment_bio
     override val vm by viewModels<BioViewModel> {
         BioViewModel.provideFactory(vmFactory, cvm.currentUser.value?.bio ?: "")
     }
@@ -22,8 +24,8 @@ class BioFragment : TextInputFragment() {
     override val allowEmpty = true
     private val cvm by activityViewModels<CentralViewModel>()
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.INVALID_ARGUMENT -> R.string.settings_error_bio_too_long_title to R.string.settings_error_bio_too_long_message
         else -> super.getFailureTexts(error)
     }
 

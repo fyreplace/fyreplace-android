@@ -1,8 +1,8 @@
 package app.fyreplace.fyreplace.legacy.grpc
 
-import app.fyreplace.protos.client
+import app.fyreplace.protos.Client
 
-val defaultClient = client {
-    hardware = "mobile"
+val defaultClient = Client(
+    hardware = "mobile",
     software = "android"
-}
+)

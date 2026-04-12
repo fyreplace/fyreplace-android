@@ -1,5 +1,6 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
+import android.content.SharedPreferences
 import androidx.annotation.IdRes
 import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.R
@@ -10,11 +11,9 @@ import app.fyreplace.fyreplace.legacy.events.PostWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasSeenEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasSubscribedToEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasUnsubscribedFromEvent
-import app.fyreplace.protos.Cursor
 import app.fyreplace.protos.Post
-import app.fyreplace.protos.PostServiceGrpcKt
+import app.fyreplace.protos.PostServiceClient
 import app.fyreplace.protos.Posts
-import com.google.protobuf.ByteString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,10 +30,10 @@ import javax.inject.Inject
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ArchiveViewModel @Inject constructor(
+    override val preferences: SharedPreferences,
     em: EventsManager,
-    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub
-) :
-    ItemListViewModel<Post, Posts>(em) {
+    private val postService: PostServiceClient
+) : ItemListViewModel<Post, Posts>(em) {
     private val mSelectedPage = MutableStateFlow(R.id.all_posts)
     val selectedPage = mSelectedPage.asStateFlow()
     override val addedItems = merge(
@@ -67,17 +66,15 @@ class ArchiveViewModel @Inject constructor(
         }
     }
 
-    override fun getItemId(item: Post): ByteString = item.id
+    override fun getItemId(item: Post) = item.id
 
     override fun listItems() =
-        if (selectedPage.value == R.id.all_posts) postStub.listArchive(pages)
-        else postStub.listOwnPosts(pages)
+        if (selectedPage.value == R.id.all_posts) postService.ListArchive()
+        else postService.ListOwnPosts()
 
-    override fun hasNextCursor(items: Posts) = items.hasNext()
+    override fun getNextCursor(items: Posts) = items.next
 
-    override fun getNextCursor(items: Posts): Cursor = items.next
-
-    override fun getItemList(items: Posts): List<Post> = items.postsList
+    override fun getItemList(items: Posts) = items.posts
 
     fun selectPage(@IdRes index: Int) {
         mSelectedPage.value = index

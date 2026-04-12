@@ -1,19 +1,20 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.fyreplace.protos.UserServiceGrpcKt
-import app.fyreplace.protos.bio
+import app.fyreplace.protos.Bio
+import app.fyreplace.protos.UserServiceClient
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 class BioViewModel @AssistedInject constructor(
-    @Assisted initialBio: String,
-    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
-) :
-    TextInputViewModel(initialBio) {
-    suspend fun update(text: String): Unit = whileLoading {
-        userStub.updateBio(bio { bio = text })
+    override val preferences: SharedPreferences,
+    private val userService: UserServiceClient,
+    @Assisted initialBio: String
+) : TextInputViewModel(initialBio) {
+    suspend fun update(text: String) = whileLoading {
+        userService.UpdateBio().executeFully(Bio(bio = text))
     }
 
     companion object {

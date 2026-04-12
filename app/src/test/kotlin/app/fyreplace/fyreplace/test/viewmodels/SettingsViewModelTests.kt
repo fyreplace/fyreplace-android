@@ -124,8 +124,7 @@ class SettingsViewModelTests : TestsBase() {
         eventBus = eventBus,
         resourceResolver = FakeResourceResolver(mapOf(R.integer.bio_max_length to bioMaxLength)),
         storeResolver = FakeStoreResolver(
-            secrets = Secrets.newBuilder()
-                .setToken(FakeSecretsHandler().encrypt(FakeTokensEndpointApi.TOKEN)).build()
+            secrets = Secrets(token = FakeSecretsHandler().encrypt(FakeTokensEndpointApi.TOKEN))
         ),
         apiResolver = FakeApiResolver()
     ).also { runCurrent() }

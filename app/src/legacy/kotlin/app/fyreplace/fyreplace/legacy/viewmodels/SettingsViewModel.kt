@@ -9,12 +9,13 @@ import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.UserWasBlockedEvent
 import app.fyreplace.fyreplace.legacy.events.UserWasUnblockedEvent
-import app.fyreplace.fyreplace.legacy.extensions.imageChunkFlow
-import app.fyreplace.protos.AccountServiceGrpcKt
-import app.fyreplace.protos.UserServiceGrpcKt
-import app.fyreplace.protos.email
-import app.fyreplace.protos.id
-import com.google.protobuf.Empty
+import app.fyreplace.fyreplace.legacy.extensions.imageChunks
+import app.fyreplace.fyreplace.legacy.extensions.sendAllAndClose
+import app.fyreplace.protos.AccountServiceClient
+import app.fyreplace.protos.Email
+import app.fyreplace.protos.Id
+import app.fyreplace.protos.Image
+import app.fyreplace.protos.UserServiceClient
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +25,11 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CheckResult")
 class SettingsViewModel @AssistedInject constructor(
-    @Assisted initialBlockedUsers: Int,
+    override val preferences: SharedPreferences,
     em: EventsManager,
-    private val preferences: SharedPreferences,
-    private val accountStub: AccountServiceGrpcKt.AccountServiceCoroutineStub,
-    private val userStub: UserServiceGrpcKt.UserServiceCoroutineStub
+    private val accountService: AccountServiceClient,
+    private val userService: UserServiceClient,
+    @Assisted initialBlockedUsers: Int,
 ) : BaseViewModel() {
     private var mBlockedUsers = MutableStateFlow(initialBlockedUsers)
     val blockedUsers = mBlockedUsers.asStateFlow()
@@ -42,19 +43,23 @@ class SettingsViewModel @AssistedInject constructor(
         }
     }
 
-    suspend fun updateAvatar(image: ByteArray?) = userStub.updateAvatar(image.imageChunkFlow)
+    suspend fun updateAvatar(image: ByteArray?): Image {
+        val (sender, receiver) = userService.UpdateAvatar().executeFully()
+        sender.sendAllAndClose(image.imageChunks)
+        return receiver.receive()
+    }
 
     suspend fun sendEmailUpdateEmail(address: String) {
-        userStub.sendEmailUpdateEmail(email { email = address })
+        userService.SendEmailUpdateEmail().executeFully(Email(email = address))
     }
 
     suspend fun logout() {
-        accountStub.disconnect(id { })
+        accountService.Disconnect().executeFully(Id())
         preferences.edit { putString("auth.token", "") }
     }
 
     suspend fun delete() {
-        accountStub.delete(Empty.getDefaultInstance())
+        accountService.Delete().executeFully(Unit)
         preferences.edit { putString("auth.token", "") }
     }
 

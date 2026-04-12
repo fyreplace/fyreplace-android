@@ -14,6 +14,7 @@ import app.fyreplace.fyreplace.data.SecretsHandler
 import app.fyreplace.fyreplace.data.StoreResolver
 import app.fyreplace.fyreplace.events.Event
 import app.fyreplace.fyreplace.events.EventBus
+import app.fyreplace.fyreplace.protos.Account
 import app.fyreplace.fyreplace.viewmodels.ApiViewModelBase
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -69,10 +70,7 @@ abstract class AccountViewModelBase(
     fun cancel() {
         viewModelScope.launch {
             storeResolver.accountStore.updateData {
-                it.toBuilder()
-                    .setIsWaitingForRandomCode(false)
-                    .setIsRegistering(false)
-                    .build()
+                it.copy(isWaitingForRandomCode = false, isRegistering = false)
             }
         }
     }
@@ -94,10 +92,7 @@ abstract class AccountViewModelBase(
     protected fun onEmailSent(isRegistering: Boolean, showEmailTip: Boolean = true) {
         viewModelScope.launch {
             storeResolver.accountStore.updateData {
-                it.toBuilder()
-                    .setIsWaitingForRandomCode(true)
-                    .setIsRegistering(isRegistering)
-                    .build()
+                it.copy(isWaitingForRandomCode = true, isRegistering = isRegistering)
             }
 
             if (showEmailTip) {
@@ -109,9 +104,9 @@ abstract class AccountViewModelBase(
     protected fun onTokenCreated(token: String) {
         viewModelScope.launch {
             storeResolver.secretsStore.updateData {
-                it.toBuilder().setToken(secretsHandler.encrypt(token)).build()
+                it.copy(token = secretsHandler.encrypt(token))
             }
-            storeResolver.accountStore.updateData { it.defaultInstanceForType }
+            storeResolver.accountStore.updateData { Account() }
             updateRandomCode("")
         }
     }

@@ -1,9 +1,7 @@
 package app.fyreplace.fyreplace.legacy.ui
 
 import android.content.Intent
-import android.graphics.Color
 import android.graphics.drawable.Drawable
-import android.os.Build
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.View
@@ -14,10 +12,14 @@ import android.view.animation.Transformation
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.BackEventCompat
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
@@ -34,36 +36,35 @@ import androidx.navigation.ui.setupWithNavController
 import app.fyreplace.fyreplace.MainDirections
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.ActivityMainBinding
+import app.fyreplace.fyreplace.extensions.isEmpty
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStartedEvent
 import app.fyreplace.fyreplace.legacy.events.ActivityWasStoppedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.legacy.extensions.byteString
 import app.fyreplace.fyreplace.legacy.extensions.current
-import app.fyreplace.fyreplace.legacy.extensions.getDynamicColor
 import app.fyreplace.fyreplace.legacy.extensions.getUsername
 import app.fyreplace.fyreplace.legacy.extensions.isAvailable
 import app.fyreplace.fyreplace.legacy.extensions.loadAvatar
-import app.fyreplace.fyreplace.legacy.grpc.p
 import app.fyreplace.fyreplace.legacy.ui.fragments.PostFragment
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.MainViewModel
 import app.fyreplace.protos.Comment
+import app.fyreplace.protos.Post
 import app.fyreplace.protos.Profile
-import app.fyreplace.protos.post
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import com.google.android.material.color.DynamicColors
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.protobuf.ByteString
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.withContext
+import okio.ByteString
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
@@ -77,13 +78,15 @@ class MainActivity :
     private val cvm by viewModels<CentralViewModel>()
     private lateinit var bd: ActivityMainBinding
     private lateinit var navHost: NavHostFragment
-    private var defaultNavigationBarDividerColor = Color.TRANSPARENT
+    private var systemInsets = Insets.NONE
     private var bottomBarHeight = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         DynamicColors.applyToActivityIfAvailable(this)
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+
         bd = ActivityMainBinding.bind(findViewById(R.id.root)).apply {
             lifecycleOwner = this@MainActivity
             ui = this@MainActivity
@@ -94,11 +97,6 @@ class MainActivity :
         navHost.childFragmentManager.addFragmentOnAttachListener(this)
         navHost.navController.addOnDestinationChangedListener(this)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            defaultNavigationBarDividerColor = window.navigationBarDividerColor
-        }
-
-        setNavigationBarColor(true)
         setSupportActionBar(bd.toolbar)
 
         val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
@@ -139,6 +137,11 @@ class MainActivity :
             refreshPrimaryAction()
         }
 
+        ViewCompat.setOnApplyWindowInsetsListener(bd.root) { _, insets ->
+            systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            return@setOnApplyWindowInsetsListener insets
+        }
+
         handleIntent(intent)
     }
 
@@ -174,14 +177,14 @@ class MainActivity :
 
     override fun getContext() = this
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.UNAUTHENTICATED -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.UNAUTHENTICATED -> when (error.grpcMessage) {
             "timestamp_exceeded" -> R.string.main_error_timestamp_exceeded_title to R.string.main_error_timestamp_exceeded_message
             "invalid_token" -> R.string.main_error_invalid_token_title to R.string.main_error_invalid_token_message
             else -> R.string.error_authentication_title to R.string.error_authentication_message
         }
 
-        Status.Code.PERMISSION_DENIED -> when (error.description) {
+        GrpcStatus.PERMISSION_DENIED -> when (error.grpcMessage) {
             "invalid_connection_token" -> R.string.main_error_invalid_connection_token_title to R.string.main_error_invalid_connection_token_message
             "user_not_pending" -> R.string.main_error_user_not_pending_title to R.string.main_error_user_not_pending_message
             else -> R.string.error_permission_title to R.string.error_permission_message
@@ -266,7 +269,7 @@ class MainActivity :
 
             for (view in textViews) {
                 view.setOnClickListener {
-                    navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
+                    navHost.navController.navigate(MainDirections.toUser(profile = profile))
                 }
             }
         } else {
@@ -344,8 +347,10 @@ class MainActivity :
         navHost.childFragmentManager.fragments.last { it !is DialogFragment }
 
     private fun setBottomNavigationVisible(visible: Boolean) = bd.bottomNavigation.doOnLayout {
-        val params = bd.bottomNavigation.layoutParams as MarginLayoutParams
-        val isBottomNavigationVisible = params.bottomMargin == 0
+        val bottomNavParams = bd.bottomNavigation.layoutParams as MarginLayoutParams
+        val primaryActionParams = bd.primaryAction.layoutParams as MarginLayoutParams
+        val isBottomNavigationVisible = bottomNavParams.bottomMargin == 0
+        val defaultPrimaryActionBottomMargin = resources.getDimension(R.dimen.gap)
 
         if (visible == isBottomNavigationVisible && bd.bottomNavigation.animation == null) {
             return@doOnLayout
@@ -353,55 +358,17 @@ class MainActivity :
 
         val animation = object : Animation() {
             override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                val factor = if (visible) interpolatedTime - 1 else -interpolatedTime
-                params.bottomMargin = (bottomBarHeight * factor).roundToInt()
-                bd.bottomNavigation.layoutParams = params
+                val factor = if (visible) 1 - interpolatedTime else interpolatedTime
+                bottomNavParams.bottomMargin = (bottomBarHeight * -factor).roundToInt()
+                primaryActionParams.bottomMargin =
+                    (defaultPrimaryActionBottomMargin + systemInsets.bottom * factor).roundToInt()
+                bd.bottomNavigation.layoutParams = bottomNavParams
+                bd.primaryAction.layoutParams = primaryActionParams
             }
         }
         animation.duration = resources.getInteger(android.R.integer.config_shortAnimTime).toLong()
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(animation: Animation?) {
-                if (visible) {
-                    setNavigationBarColor(true)
-                }
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                if (!visible) {
-                    setNavigationBarColor(false)
-                }
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) = Unit
-        })
         bd.bottomNavigation.clearAnimation()
         bd.bottomNavigation.startAnimation(animation)
-    }
-
-    private fun setNavigationBarColor(colored: Boolean) {
-        val background = bd.bottomNavigation.background
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1 || background !is MaterialShapeDrawable) {
-            return
-        }
-
-        window.navigationBarColor = if (colored)
-            background.resolvedTintColor
-        else
-            getDynamicColor(
-                com.google.android.material.R.attr.colorSurface,
-                getColor(R.color.navigation)
-            )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            window.navigationBarDividerColor = if (colored)
-                getDynamicColor(
-                    com.google.android.material.R.attr.colorSurfaceVariant,
-                    window.navigationBarDividerColor
-                )
-            else
-                defaultNavigationBarDividerColor
-        }
     }
 
     private fun handleIntent(intent: Intent?) {
@@ -454,7 +421,7 @@ class MainActivity :
     }
 
     private fun showPost(postIdShortString: String, commentPosition: Int? = null) {
-        val post = post { id = byteString(postIdShortString) }
+        val post = Post(id = byteString(postIdShortString))
         val postFragment = getPostFragment()
 
         when {
@@ -478,7 +445,7 @@ class MainActivity :
             postFragment != null && postFragment.args.post.id == post.id -> postFragment.showUnreadComments()
             else -> navHost.navController.navigate(
                 MainDirections.toPost(
-                    post = post.p,
+                    post = post,
                     commentPosition = commentPosition ?: -1
                 )
             )
@@ -490,7 +457,7 @@ class MainActivity :
         withContext(Dispatchers.IO) { Glide.get(this@MainActivity).clearDiskCache() }
     }
 
-    private companion object {
+    companion object {
         val TOP_LEVEL_DESTINATIONS = setOf(
             R.id.fragment_feed,
             R.id.fragment_notifications,
@@ -538,7 +505,7 @@ class MainActivity :
                     }
 
                     setOnClickListener {
-                        navHost.navController.navigate(MainDirections.toUser(profile = profile.p))
+                        navHost.navController.navigate(MainDirections.toUser(profile = profile))
                     }
                 }
         }

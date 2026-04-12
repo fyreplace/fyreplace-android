@@ -6,29 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import app.fyreplace.fyreplace.R
 import app.fyreplace.fyreplace.databinding.FragmentItemListBinding
-import app.fyreplace.fyreplace.legacy.events.NetworkConnectionWasChangedEvent
 import app.fyreplace.fyreplace.legacy.events.PositionalEvent
 import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.ItemListViewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlin.math.max
 
-abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
+abstract class ItemListFragment<Item, Items : Any, VH : ItemHolder> :
     DynamicListFragment<Item>(R.layout.fragment_item_list),
     RecyclerView.OnChildAttachStateChangeListener {
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val em by lazy { vm.em }
+    override lateinit var bd: FragmentItemListBinding
     abstract override val vm: ItemListViewModel<Item, Items>
-    protected lateinit var bd: FragmentItemListBinding
     private lateinit var adapter: ItemListAdapter<Item, VH>
-    private var retryCount = 0
 
     abstract fun makeAdapter(): ItemListAdapter<Item, VH>
 
@@ -65,15 +61,7 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items)
         bd.recyclerView.adapter = adapter
-        bd.swipe.setOnRefreshListener {
-            stopListing()
-            resetListing()
-            startListing()
-        }
-
-        vm.em.events.filterIsInstance<NetworkConnectionWasChangedEvent>()
-            .debounce(1000)
-            .launchCollect(viewLifecycleOwner.lifecycleScope) { retryListing() }
+        bd.swipe.setOnRefreshListener { launch { refreshListing() } }
     }
 
     override fun onDestroyView() {
@@ -125,26 +113,8 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
 
     override fun onChildViewDetachedFromWindow(view: View) = Unit
 
-    protected fun resetListing() {
-        adapter.removeAll()
-        vm.reset()
-    }
 
-    protected fun refreshListing(pauseAction: (() -> Unit)? = null) {
-        stopListing()
-        pauseAction?.invoke()
-        refreshAllEventHandlers()
-        resetListing()
-        startListing()
-    }
-
-    private fun retryListing() {
-        stopListing()
-        retryCount++
-        startListing()
-    }
-
-    private fun startListing() {
+    override fun startListing() {
         launch {
             vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
                 bd.swipe.isRefreshing = false
@@ -161,5 +131,20 @@ abstract class ItemListFragment<Item, Items, VH : ItemHolder> :
         }
     }
 
-    private fun stopListing() = vm.stopListing()
+    override fun stopListing() = vm.stopListing()
+
+    override suspend fun refreshListing() = refreshListing(null)
+
+    protected fun refreshListing(pauseAction: (() -> Unit)?) {
+        stopListing()
+        pauseAction?.invoke()
+        refreshAllEventHandlers()
+        resetListing()
+        startListing()
+    }
+
+    protected fun resetListing() {
+        adapter.removeAll()
+        vm.reset()
+    }
 }

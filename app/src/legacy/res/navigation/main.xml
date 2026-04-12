@@ -34,7 +34,7 @@
         tools:layout="@layout/fragment_item_random_access_list">
         <argument
             android:name="post"
-            app:argType="app.fyreplace.fyreplace.legacy.grpc.ParcelablePost" />
+            app:argType="app.fyreplace.protos.Post" />
         <argument
             android:name="commentPosition"
             android:defaultValue="-1"
@@ -49,7 +49,7 @@
         tools:layout="@layout/fragment_text_input">
         <argument
             android:name="postId"
-            app:argType="com.google.protobuf.ByteString" />
+            app:argType="okio.ByteString" />
         <argument
             android:name="text"
             app:argType="string" />
@@ -61,7 +61,7 @@
         tools:layout="@layout/fragment_draft">
         <argument
             android:name="post"
-            app:argType="app.fyreplace.fyreplace.legacy.grpc.ParcelablePost" />
+            app:argType="app.fyreplace.protos.Post" />
         <action
             android:id="@+id/to_text_chapter"
             app:destination="@id/fragment_text_chapter" />
@@ -73,7 +73,7 @@
         tools:layout="@layout/fragment_text_input">
         <argument
             android:name="postId"
-            app:argType="com.google.protobuf.ByteString" />
+            app:argType="okio.ByteString" />
         <argument
             android:name="position"
             app:argType="integer" />
@@ -88,7 +88,7 @@
         tools:layout="@layout/fragment_user">
         <argument
             android:name="profile"
-            app:argType="app.fyreplace.fyreplace.legacy.grpc.ParcelableProfile" />
+            app:argType="app.fyreplace.protos.Profile" />
     </dialog>
     <fragment
         android:id="@+id/fragment_settings"

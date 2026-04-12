@@ -1,23 +1,26 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import app.fyreplace.protos.CommentServiceGrpcKt
-import app.fyreplace.protos.commentCreation
-import com.google.protobuf.ByteString
+import app.fyreplace.protos.CommentCreation
+import app.fyreplace.protos.CommentServiceClient
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import okio.ByteString
 
 class CommentViewModel @AssistedInject constructor(
+    override val preferences: SharedPreferences,
+    private val commentService: CommentServiceClient,
     @Assisted private val postId: ByteString,
-    @Assisted initialText: String,
-    private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub
-) :
-    TextInputViewModel(initialText) {
-    suspend fun create() = commentStub.create(commentCreation {
-        postId = this@CommentViewModel.postId
-        text = this@CommentViewModel.text.value
-    })
+    @Assisted initialText: String
+) : TextInputViewModel(initialText) {
+    suspend fun create() = commentService.Create().executeFully(
+        CommentCreation(
+            post_id = postId,
+            text = text.value
+        )
+    )
 
     companion object {
         fun provideFactory(

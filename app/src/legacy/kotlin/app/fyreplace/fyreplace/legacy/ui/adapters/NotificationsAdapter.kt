@@ -10,19 +10,15 @@ import app.fyreplace.fyreplace.legacy.extensions.id
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Notification
-import com.google.protobuf.ByteString
 
 class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
     ItemListAdapter<Notification, ItemHolder>(itemListener) {
     override fun getItemViewType(position: Int): Int {
         val notification = items[position]
-        return when (notification.targetCase) {
-            Notification.TargetCase.USER -> TYPE_USER
-            Notification.TargetCase.POST ->
-                if (notification.post.firstChapter.hasImage()) TYPE_IMAGE else TYPE_TEXT
-
-            Notification.TargetCase.COMMENT -> TYPE_TEXT
-            else -> throw RuntimeException()
+        return when {
+            notification.user != null -> TYPE_USER
+            notification.post != null && notification.post.firstChapter.image != null -> TYPE_IMAGE
+            else -> TYPE_TEXT
         }
     }
 
@@ -50,7 +46,7 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
         (holder as NotificationHolder).setup(items[position])
     }
 
-    override fun getItemId(item: Notification): ByteString = item.id
+    override fun getItemId(item: Notification) = item.id
 
     companion object {
         const val TYPE_USER = 1
@@ -65,7 +61,7 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
             count.text = notification.count.toString()
 
             if (this is ItemHolder) {
-                count.setTextColor(if (notification.isFlag) textColorError else textColorNormal)
+                count.setTextColor(if (notification.is_flag) textColorError else textColorNormal)
             }
         }
     }
@@ -85,9 +81,9 @@ class NotificationsAdapter(itemListener: ItemClickListener<Notification>) :
         override fun setup(notification: Notification) {
             super<NotificationHolder>.setup(notification)
 
-            when (notification.targetCase) {
-                Notification.TargetCase.POST -> setup(notification.post)
-                Notification.TargetCase.COMMENT -> setup(notification.comment)
+            when {
+                notification.post != null -> setup(notification.post)
+                notification.comment != null -> setup(notification.comment)
                 else -> Unit
             }
         }

@@ -11,17 +11,18 @@ import java.io.InputStream
 import java.io.OutputStream
 
 object AccountSerializer : Serializer<Account> {
-    override val defaultValue: Account = Account.getDefaultInstance()
+    override val defaultValue = Account()
 
     override suspend fun readFrom(input: InputStream): Account {
         try {
-            return Account.parseFrom(input)
+            return Account.ADAPTER.decode(input)
         } catch (exception: IOException) {
             throw CorruptionException("Cannot read proto.", exception)
         }
     }
 
-    override suspend fun writeTo(t: Account, output: OutputStream) = t.writeTo(output)
+    override suspend fun writeTo(t: Account, output: OutputStream) =
+        Account.ADAPTER.encode(output, t)
 }
 
 val Context.accountStore by dataStore(

@@ -1,7 +1,7 @@
 package app.fyreplace.fyreplace.legacy.ui.adapters
 
 import androidx.recyclerview.widget.RecyclerView
-import com.google.protobuf.ByteString
+import okio.ByteString
 
 abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val itemListener: ItemClickListener<Item>) :
     RecyclerView.Adapter<VH>() {
@@ -11,9 +11,7 @@ abstract class ItemListAdapter<Item, VH : RecyclerView.ViewHolder>(private val i
         setHasStableIds(true)
     }
 
-    final override fun setHasStableIds(hasStableIds: Boolean) = super.setHasStableIds(hasStableIds)
-
-    override fun getItemId(position: Int) = getItemId(items[position]).asReadOnlyByteBuffer().long
+    override fun getItemId(position: Int) = getItemId(items[position]).asByteBuffer().getLong()
 
     override fun getItemCount() = items.size
 

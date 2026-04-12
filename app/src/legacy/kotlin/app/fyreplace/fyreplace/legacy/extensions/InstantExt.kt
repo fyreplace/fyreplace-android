@@ -1,6 +1,6 @@
 package app.fyreplace.fyreplace.legacy.extensions
 
-import com.google.protobuf.Timestamp
+import com.squareup.wire.Instant
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -13,9 +13,8 @@ private val shortDateFormat = SimpleDateFormat.getDateInstance(DateFormat.SHORT)
 private val timeFormat = SimpleDateFormat.getTimeInstance()
 private val shortTimeFormat = SimpleDateFormat.getTimeInstance(DateFormat.SHORT)
 
-val Timestamp.date get() = Date(seconds * 1000 + nanos / 1000 + 1)
-
-fun Timestamp.formatDate(singleLine: Boolean = true, short: Boolean = false): String {
+fun Instant.formatDate(singleLine: Boolean = true, short: Boolean = false): String {
+    val date = Date.from(this)
     return when {
         singleLine && short -> shortDateTimeFormat.format(date)
         singleLine -> dateTimeFormat.format(date)

@@ -11,23 +11,19 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.content.res.use
 import androidx.core.net.toUri
 import app.fyreplace.fyreplace.R
-import com.google.android.material.color.DynamicColors
-import com.google.protobuf.ByteString
-import java.util.Date
+import com.squareup.wire.Instant
+import okio.ByteString
 
 private val activityToAppIcon
     get() = mapOf(
-        "MainActivity.Normal" to R.mipmap.ic_launcher,
-        "MainActivity.Alternative" to R.mipmap.ic_launcher_alt
+        "app.fyreplace.fyreplace.legacy.ui.MainActivity.Normal" to R.mipmap.ic_launcher,
+        "app.fyreplace.fyreplace.legacy.ui.MainActivity.Alternative" to R.mipmap.ic_launcher_alt
     )
 
 val Context.mainPreferences: SharedPreferences
@@ -46,11 +42,6 @@ fun Context.makeShareIntent(type: String, id: ByteString, position: Int? = null)
         putExtra(Intent.EXTRA_TEXT, makeShareUri(type, id, position).toString())
     }
 
-fun Context.getDynamicColor(@AttrRes attr: Int, @ColorInt default: Int) = DynamicColors
-    .wrapContextIfAvailable(this)
-    .obtainStyledAttributes(intArrayOf(attr))
-    .use { it.getColor(0, default) }
-
 @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
 fun Context.createNotification(
     tag: String,
@@ -58,7 +49,7 @@ fun Context.createNotification(
     channel: String?,
     title: String,
     body: String,
-    date: Date
+    instant: Instant
 ) {
     val contentIntent = PendingIntent.getActivity(
         this,
@@ -75,7 +66,7 @@ fun Context.createNotification(
             .setColor(getColor(R.color.seed))
             .setContentTitle(title)
             .setContentText(body)
-            .setWhen(date.time)
+            .setWhen(instant.epochSecond)
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
@@ -85,12 +76,12 @@ fun Context.createNotification(
 
 fun Context.deleteNotification(tag: String) = NotificationManagerCompat.from(this).cancel(tag, 0)
 
-fun Context.deleteNotifications(tag: Regex, beforeDate: Date) {
+fun Context.deleteNotifications(tag: Regex, beforeDate: Instant) {
     val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
     val notificationManagerCompat = NotificationManagerCompat.from(this)
 
     for (statusNotification in notificationManager.activeNotifications) {
-        if (tag.matches(statusNotification.tag) && statusNotification.notification.`when` <= beforeDate.time) {
+        if (tag.matches(statusNotification.tag) && statusNotification.notification.`when` <= beforeDate.toEpochMilli()) {
             notificationManagerCompat.cancel(statusNotification.tag, statusNotification.id)
         }
     }
@@ -112,7 +103,13 @@ fun Context.setAppIcon(@DrawableRes newAppIcon: Int) {
 @DrawableRes
 fun Context.getAppIcon(): Int {
     for ((activity, appIcon) in activityToAppIcon.entries) {
-        if (packageManager.getComponentEnabledSetting(ComponentName(this, activity)) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) {
+        if (packageManager.getComponentEnabledSetting(
+                ComponentName(
+                    this,
+                    activity
+                )
+            ) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+        ) {
             return appIcon
         }
     }

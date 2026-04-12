@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Legacy-->
     <string name="settings_environment_default_value">@string/settings_environment_main_value</string>
     <string-array name="settings_environment">
         <item>@string/settings_environment_main</item>

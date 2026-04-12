@@ -7,7 +7,7 @@ import app.fyreplace.fyreplace.legacy.events.PositionalEvent
 import app.fyreplace.fyreplace.legacy.viewmodels.DynamicListViewModel
 import kotlinx.coroutines.Job
 
-abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(contentLayoutId) {
+abstract class DynamicListFragment<Item>(contentLayoutId: Int) : ListFragment(contentLayoutId) {
     abstract override val vm: DynamicListViewModel<Item>
     private val eventJobs = mutableListOf<Job>()
 
@@ -33,17 +33,26 @@ abstract class DynamicListFragment<Item>(contentLayoutId: Int) : BaseFragment(co
     }
 
     private fun refreshEventHandlers() {
-        eventJobs.forEach { it.cancel() }
+        eventJobs.forEach(Job::cancel)
         eventJobs.clear()
 
-        eventJobs.add(vm.addedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            addItem(it)
-        })
-        eventJobs.add(vm.updatedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            updateItem(it)
-        })
-        eventJobs.add(vm.removedPositions.launchCollect(viewLifecycleOwner.lifecycleScope) {
-            removeItem(it)
-        })
+        eventJobs.add(
+            vm.addedPositions.launchCollect(
+                viewLifecycleOwner.lifecycleScope,
+                action = ::addItem
+            )
+        )
+        eventJobs.add(
+            vm.updatedPositions.launchCollect(
+                viewLifecycleOwner.lifecycleScope,
+                action = ::updateItem
+            )
+        )
+        eventJobs.add(
+            vm.removedPositions.launchCollect(
+                viewLifecycleOwner.lifecycleScope,
+                action = ::removeItem
+            )
+        )
     }
 }

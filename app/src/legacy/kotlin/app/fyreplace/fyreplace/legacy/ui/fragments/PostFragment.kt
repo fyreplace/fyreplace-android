@@ -20,13 +20,14 @@ import app.fyreplace.fyreplace.legacy.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasSubscribedToEvent
 import app.fyreplace.fyreplace.legacy.events.PostWasUnsubscribedFromEvent
+import app.fyreplace.fyreplace.legacy.extensions.HapticType
 import app.fyreplace.fyreplace.legacy.extensions.formatDate
 import app.fyreplace.fyreplace.legacy.extensions.isAdmin
 import app.fyreplace.fyreplace.legacy.extensions.mainActivity
 import app.fyreplace.fyreplace.legacy.extensions.makePreview
 import app.fyreplace.fyreplace.legacy.extensions.makeShareIntent
-import app.fyreplace.fyreplace.legacy.grpc.p
-import app.fyreplace.fyreplace.legacy.ui.BasePresenter
+import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
+import app.fyreplace.fyreplace.legacy.ui.PrimaryActionProvider
 import app.fyreplace.fyreplace.legacy.ui.adapters.PostAdapter
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.ItemHolder
 import app.fyreplace.fyreplace.legacy.viewmodels.CentralViewModel
@@ -37,11 +38,12 @@ import app.fyreplace.protos.Comment
 import app.fyreplace.protos.Comments
 import app.fyreplace.protos.Profile
 import com.google.android.material.snackbar.Snackbar
-import com.google.protobuf.ByteString
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine
+import okio.ByteString
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -49,15 +51,18 @@ import kotlin.math.min
 class PostFragment :
     ItemRandomAccessListFragment<Comment, Comments, ItemHolder>(),
     PostAdapter.CommentListener,
-    MenuProvider {
+    MenuProvider,
+    PrimaryActionProvider {
     @Inject
     lateinit var vmFactory: PostViewModelFactory
 
+    override val destinationId = R.id.fragment_post
     override val vm by viewModels<PostViewModel> {
-        PostViewModel.provideFactory(vmFactory, args.post.v)
+        PostViewModel.provideFactory(vmFactory, args.post)
     }
     override val primaryActionText = R.string.post_primary_action_comment
     override val primaryActionIcon = R.drawable.ic_baseline_comment
+    override var primaryActionExtended = true
     val args by navArgs<PostFragmentArgs>()
     private val cvm by activityViewModels<CentralViewModel>()
     private var errored = false
@@ -93,10 +98,10 @@ class PostFragment :
         }
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
-        Status.Code.PERMISSION_DENIED -> R.string.error_permission_title to R.string.error_permission_message
-        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.NOT_FOUND -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
+        GrpcStatus.PERMISSION_DENIED -> R.string.error_permission_title to R.string.error_permission_message
+        GrpcStatus.INVALID_ARGUMENT -> when (error.grpcMessage) {
             "invalid_uuid" -> R.string.post_error_not_found_title to R.string.post_error_not_found_message
             else -> super.getFailureTexts(error)
         }
@@ -104,15 +109,15 @@ class PostFragment :
         else -> super.getFailureTexts(error)
     }
 
-    override fun onFailure(failure: Throwable) {
+    override fun onFailure(error: GrpcException) {
         if (errored) {
             return
         }
 
-        super.onFailure(failure)
-        val error = Status.fromThrowable(failure)
+        super.onFailure(error)
+        val error = error.grpcStatus
 
-        if (error.code in setOf(Status.Code.INVALID_ARGUMENT, Status.Code.NOT_FOUND)) {
+        if (error in setOf(GrpcStatus.INVALID_ARGUMENT, GrpcStatus.NOT_FOUND)) {
             errored = true
             findNavController().navigateUp()
         }
@@ -122,7 +127,7 @@ class PostFragment :
         PostAdapter(this, cvm.isAuthenticated, vm.post.value, this)
 
     override fun onFetchedItems(position: Int, items: List<Comment>) {
-        if (adapter.totalSize == 0 && vm.post.value.commentsRead in 1 until vm.totalSize) {
+        if (adapter.totalSize == 0 && vm.post.value.comments_read in 1 until vm.totalSize) {
             vm.setShouldScrollToComment(true)
         }
 
@@ -130,7 +135,7 @@ class PostFragment :
     }
 
     override suspend fun startFetchingData() {
-        if (args.post.isPreview || args.post.chapterCount == 0) {
+        if (args.post.is_preview || args.post.chapter_count == 0) {
             vm.retrieve(args.post.id)
         }
 
@@ -165,7 +170,7 @@ class PostFragment :
     }
 
     override fun onCommentProfileClicked(view: View, position: Int, profile: Profile) {
-        val directions = PostFragmentDirections.toUser(profile = profile.p)
+        val directions = PostFragmentDirections.toUser(profile = profile)
         findNavController().navigate(directions)
     }
 
@@ -193,7 +198,7 @@ class PostFragment :
         }
 
         val user = cvm.currentUser.value
-        val canDelete = user?.profile.isAdmin || comment.author.id == user?.profile?.id
+        val canDelete = user?.profile.isAdmin || comment.author?.id == user?.profile?.id
         popup.menu.findItem(R.id.report).isVisible = !canDelete
         popup.menu.findItem(R.id.delete).isVisible = canDelete
         popup.show()
@@ -213,20 +218,17 @@ class PostFragment :
         menuInflater.inflate(R.menu.fragment_post, menu)
         vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) { post ->
             mainActivity.setToolbarInfo(
-                if (!post.isAnonymous) post.author else Profile.getDefaultInstance(),
-                post.dateCreated.formatDate()
+                if (!post.is_anonymous) post.author else Profile(),
+                post.date_created?.formatDate()
             )
             val shareIntent = context?.makeShareIntent("p", post.id)
             menu.findItem(R.id.share)?.run { intent = Intent.createChooser(shareIntent, title) }
-        }
-
-        vm.subscribed.launchCollect(viewLifecycleOwner.lifecycleScope) { subscribed ->
-            menu.findItem(R.id.subscribe)?.isVisible = !subscribed
-            menu.findItem(R.id.unsubscribe)?.isVisible = subscribed
+            menu.findItem(R.id.subscribe)?.isVisible = !post.is_subscribed
+            menu.findItem(R.id.unsubscribe)?.isVisible = post.is_subscribed
         }
 
         cvm.currentUser.combine(vm.post) { u, p ->
-            val currentUserOwnsPost = p.hasAuthor() && p.author.id == u?.profile?.id
+            val currentUserOwnsPost = p.author != null && p.author.id == u?.profile?.id
             return@combine currentUserOwnsPost || u?.profile.isAdmin
         }.launchCollect(viewLifecycleOwner.lifecycleScope) { canDeletePost ->
             menu.findItem(R.id.report)?.isVisible = !canDeletePost
@@ -283,7 +285,7 @@ class PostFragment :
         } else {
             Snackbar.make(
                 bd.root,
-                getString(R.string.post_snackbar_comment_created, comment.author.username),
+                getString(R.string.post_snackbar_comment_created, comment.author?.username),
                 Snackbar.LENGTH_LONG
             )
                 .setAction(R.string.post_snackbar_comment_created_action) { showComment(vm.totalSize - 1) }
@@ -294,8 +296,8 @@ class PostFragment :
     }
 
     fun showUnreadComments() {
-        if (vm.post.value.commentsRead > 0) {
-            showComment(vm.post.value.commentsRead)
+        if (vm.post.value.comments_read > 0) {
+            showComment(vm.post.value.comments_read)
         }
     }
 
@@ -315,7 +317,7 @@ class PostFragment :
         vm.report()
         showBasicSnackbar(
             R.string.post_report_success_message,
-            haptics = BasePresenter.HapticType.SIMPLE
+            haptics = HapticType.SIMPLE
         )
     }
 
@@ -329,7 +331,7 @@ class PostFragment :
         vm.reportComment(comment.id)
         showBasicSnackbar(
             R.string.post_comment_report_success_message,
-            haptics = BasePresenter.HapticType.SIMPLE
+            haptics = HapticType.SIMPLE
         )
     }
 

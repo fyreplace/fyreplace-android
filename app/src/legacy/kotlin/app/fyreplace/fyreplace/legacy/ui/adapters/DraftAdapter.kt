@@ -13,16 +13,15 @@ import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Chapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.google.protobuf.ByteString
 import kotlinx.coroutines.flow.StateFlow
+import okio.ByteString
 
 class DraftAdapter(
     private val lifecycleOwner: LifecycleOwner,
     private val canAddChapter: StateFlow<Boolean>,
     private val chapterListener: ChapterListener,
     itemListener: ItemClickListener<Chapter>
-) :
-    ItemListAdapter<Chapter, PreviewHolder>(itemListener) {
+) : ItemListAdapter<Chapter, PreviewHolder>(itemListener) {
     init {
         setHasStableIds(false)
     }
@@ -31,7 +30,7 @@ class DraftAdapter(
 
     override fun getItemViewType(position: Int) = when {
         position >= items.size -> TYPE_BUTTONS
-        items[position].hasImage() -> TYPE_IMAGE
+        items[position].image != null -> TYPE_IMAGE
         else -> TYPE_TEXT
     }
 
@@ -56,10 +55,10 @@ class DraftAdapter(
 
     override fun onBindViewHolder(holder: PreviewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        holder.setup(if (position < items.size) items[position] else Chapter.getDefaultInstance())
+        holder.setup(if (position < items.size) items[position] else Chapter())
     }
 
-    override fun getItemId(item: Chapter): ByteString = ByteString.EMPTY
+    override fun getItemId(item: Chapter) = ByteString.EMPTY
 
     companion object {
         const val TYPE_TEXT = 1
@@ -70,20 +69,20 @@ class DraftAdapter(
     class DraftTextChapterHolder(itemView: View) : PreviewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.text)
 
-        override fun setup(chapter: Chapter) {
-            text.text = chapter.text.ifEmpty { itemView.context.getString(R.string.draft_empty) }
-            text.setTextAppearance(if (chapter.isTitle) textAppearanceTitle else textAppearanceNormal)
+        override fun setup(chapter: Chapter?) {
+            text.text = chapter?.text?.ifEmpty { itemView.context.getString(R.string.draft_empty) }
+            text.setTextAppearance(if (chapter?.is_title == true) textAppearanceTitle else textAppearanceNormal)
             val color = itemView.context.getColor(R.color.md_theme_onSurface)
-            text.setTextColor(if (chapter.text.isEmpty()) color.translucent() else color)
+            text.setTextColor(if (chapter?.text.isNullOrEmpty()) color.translucent() else color)
         }
     }
 
     class ImageChapterHolder(itemView: View) : PreviewHolder(itemView) {
         private val image: ImageView = itemView.findViewById(R.id.image)
 
-        override fun setup(chapter: Chapter) {
+        override fun setup(chapter: Chapter?) {
             Glide.with(itemView.context)
-                .load(chapter.image.url)
+                .load(chapter?.image?.url)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(image)
         }
@@ -98,7 +97,7 @@ class DraftAdapter(
             bd.canAddChapter = canAddChapter
         }
 
-        override fun setup(chapter: Chapter) = with(itemView) {
+        override fun setup(chapter: Chapter?) = with(itemView) {
             setOnClickListener(null)
             setOnLongClickListener(null)
         }

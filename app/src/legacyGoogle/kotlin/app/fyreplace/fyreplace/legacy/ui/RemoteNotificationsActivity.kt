@@ -14,20 +14,23 @@ import app.fyreplace.fyreplace.legacy.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
-import app.fyreplace.fyreplace.legacy.extensions.comment
+import app.fyreplace.fyreplace.legacy.extensions.authenticate
 import app.fyreplace.fyreplace.legacy.extensions.createNotification
-import app.fyreplace.fyreplace.legacy.extensions.date
+import app.fyreplace.fyreplace.legacy.extensions.dedupe
+import app.fyreplace.fyreplace.legacy.extensions.mainPreferences
 import app.fyreplace.fyreplace.legacy.extensions.makeShareUri
 import app.fyreplace.fyreplace.legacy.extensions.notificationTag
+import app.fyreplace.fyreplace.legacy.extensions.parseComment
 import app.fyreplace.protos.Comment
 import app.fyreplace.protos.MessagingService
-import app.fyreplace.protos.NotificationServiceGrpcKt
-import app.fyreplace.protos.messagingToken
+import app.fyreplace.protos.MessagingToken
+import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessaging
-import com.google.protobuf.ByteString
+import com.squareup.wire.Instant
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import okio.ByteString
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,7 +41,7 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
     lateinit var em: EventsManager
 
     @Inject
-    lateinit var notificationStub: NotificationServiceGrpcKt.NotificationServiceCoroutineStub
+    lateinit var notificationStub: NotificationServiceClient
 
     abstract fun tryHandleCommentCreation(comment: Comment, postId: ByteString): Boolean
 
@@ -52,23 +55,25 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:creation" }
             .launchCollect {
-                em.post(CommentWasCreatedEvent(it.comment, it.postId, false))
+                val comment = it.message.parseComment() ?: return@launchCollect
+                em.post(CommentWasCreatedEvent(comment, it.postId, false))
 
-                if (!tryHandleCommentCreation(it.comment, it.postId)) {
+                if (!tryHandleCommentCreation(comment, it.postId)) {
                     createNotification(
-                        it.comment.notificationTag(it.postId),
+                        comment.notificationTag(it.postId),
                         Intent(Intent.ACTION_VIEW, makeShareUri("p", it.postId)),
                         it.channel,
-                        it.comment.author.username,
-                        it.comment.text,
-                        it.comment.dateCreated.date
+                        comment.author?.username.orEmpty(),
+                        comment.text,
+                        comment.date_created ?: Instant.now()
                     )
                 }
             }
         em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
             .filter { it.command == "comment:deletion" }
             .launchCollect {
-                val comment = Comment.newBuilder(it.comment).setIsDeleted(true).build()
+                val comment = (it.message.parseComment() ?: return@launchCollect)
+                    .copy(is_deleted = true)
                 em.post(CommentWasDeletedEvent(comment, it.postId))
             }
     }
@@ -77,10 +82,12 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
         setupRemoteNotificationChannels()
         FirebaseMessaging.getInstance().token.addOnSuccessListener {
             launch {
-                notificationStub.registerToken(messagingToken {
-                    service = MessagingService.MESSAGING_SERVICE_FCM
-                    token = it
-                })
+                notificationStub.RegisterToken().authenticate(mainPreferences).dedupe().execute(
+                    MessagingToken(
+                        service = MessagingService.MESSAGING_SERVICE_FCM,
+                        token = it
+                    )
+                )
             }
         }
     }

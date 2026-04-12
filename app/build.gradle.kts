@@ -9,16 +9,16 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.sentry)
     alias(libs.plugins.openapi)
-    alias(libs.plugins.protobuf)
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.ksp)
     alias(libs.plugins.google)
+    alias(libs.plugins.wire)
 }
 
 val localProperties = Properties()
-val localPropertiesFile: File? = rootProject.file("local.properties")
+val localPropertiesFile: File = rootProject.file("local.properties")
 
-if (localPropertiesFile?.exists() == true) {
+if (localPropertiesFile.exists()) {
     localPropertiesFile.inputStream().use(localProperties::load)
 }
 
@@ -66,9 +66,25 @@ fun getVersionNumber(): Int {
 
 fun getVersionString(variant: String? = null): String {
     val parts = git("describe", "--tags", "--always").split('-')
+    val latestVersion = parts.first().removePrefix("v")
     val build = if (parts.size > 1) getVersionNumber().toString() else ""
     val result = StringBuilder()
-    result.append(parts.first(), '+')
+
+    when (getVersionNumberSuffix()) {
+        VersionSuffix.DEV -> {
+            val (major, minor, patch) = latestVersion.split('.').map(String::toInt)
+            result.append(major, '.', minor + 1, '.', patch)
+        }
+
+        VersionSuffix.RELEASE, VersionSuffix.HOTFIX -> {
+            val branch = git("rev-parse", "--abbrev-ref", "HEAD")
+            result.append(branch.split('/').last())
+        }
+
+        VersionSuffix.MAIN -> result.append(latestVersion)
+    }
+
+    result.append('+')
 
     if (build.isNotEmpty()) {
         result.append(build, '.')
@@ -79,7 +95,6 @@ fun getVersionString(variant: String? = null): String {
     }
 
     return result.toString()
-        .removePrefix("v")
         .removeSuffix("+")
         .removeSuffix(".")
 }
@@ -217,7 +232,7 @@ sentry {
     projectName = getValue("sentry.project")
     authToken = getValue("sentry.auth.token")
     includeSourceContext = true
-    ignoredFlavors = setOf("legacy", "libre")
+    ignoredFlavors = setOf("legacyGoogle", "legacyLibre", "nextLibre")
 }
 
 openApiGenerate {
@@ -249,36 +264,14 @@ tasks.named {
     dependsOn(tasks.named("openApiGenerate"))
 }
 
-protobuf {
-    fun artifactName(dependency: MinimalExternalModuleDependency) =
-        with(dependency) { "${group}:${name}:${version}" }
-
-    protoc {
-        artifact = artifactName(libs.protobuf.protoc.get())
+wire {
+    sourcePath {
+        srcDir("src/main/proto/")
+        srcDir("src/legacy/proto/")
     }
 
-    plugins {
-        create("grpc") {
-            artifact = artifactName(libs.grpc.protoc.java.get())
-        }
-
-        create("grpckt") {
-            artifact = artifactName(libs.grpc.protoc.kotlin.get())
-        }
-    }
-
-    generateProtoTasks {
-        all().configureEach {
-            builtins {
-                create("java") { option("lite") }
-                create("kotlin") { option("lite") }
-            }
-
-            plugins {
-                create("grpc") { option("lite") }
-                create("grpckt") { option("lite") }
-            }
-        }
+    kotlin {
+        android = true
     }
 }
 
@@ -298,6 +291,7 @@ dependencies {
     implementation(libs.androidx.material3.adaptive)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.splash)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -309,10 +303,12 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.adapters)
     implementation(libs.okhttp.logging.interceptor)
-    implementation(libs.protobuf.kotlin)
+    implementation(libs.okio)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.moshi)
     implementation(libs.retrofit.converter.scalars)
+    implementation(libs.wire.grpc.client)
+    implementation(libs.wire.runtime)
 
     "legacyImplementation"(libs.androidx.coordinatorlayout)
     "legacyImplementation"(libs.androidx.exifinterface)
@@ -326,10 +322,6 @@ dependencies {
     "legacyImplementation"(libs.androidx.swiperefreshlayout)
     "legacyImplementation"(libs.glide)
     "legacyImplementation"(libs.glide.okhttp)
-    "legacyImplementation"(libs.grpc.okhttp)
-    "legacyImplementation"(libs.grpc.protobuf)
-    "legacyImplementation"(libs.grpc.stub)
-    "legacyImplementation"(libs.grpc.stub.kotlin)
     "legacyImplementation"(libs.kotlinx.coroutines)
 
     "libreImplementation"(libs.conscrypt)

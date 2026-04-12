@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
 import android.annotation.SuppressLint
+import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,14 +11,12 @@ import app.fyreplace.fyreplace.legacy.events.CommentWasSavedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasSeenEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.protos.Comment
-import app.fyreplace.protos.CommentServiceGrpcKt
+import app.fyreplace.protos.CommentServiceClient
 import app.fyreplace.protos.Comments
+import app.fyreplace.protos.Id
 import app.fyreplace.protos.Post
-import app.fyreplace.protos.PostServiceGrpcKt
-import app.fyreplace.protos.copy
-import app.fyreplace.protos.id
-import app.fyreplace.protos.subscription
-import com.google.protobuf.ByteString
+import app.fyreplace.protos.PostServiceClient
+import app.fyreplace.protos.Subscription
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,31 +24,31 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import okio.ByteString
 import kotlin.math.min
 
 @SuppressLint("CheckResult")
 class PostViewModel @AssistedInject constructor(
+    override val preferences: SharedPreferences,
     em: EventsManager,
-    @Assisted initialPost: Post,
-    private val postStub: PostServiceGrpcKt.PostServiceCoroutineStub,
-    private val commentStub: CommentServiceGrpcKt.CommentServiceCoroutineStub
+    private val postService: PostServiceClient,
+    private val commentService: CommentServiceClient,
+    @Assisted initialPost: Post
 ) : ItemRandomAccessListViewModel<Comment, Comments>(em, initialPost.id) {
     override val addedItems = em.events.filterIsInstance<CommentWasCreatedEvent>()
         .filter { it.postId == post.value.id }
     override val updatedItems = em.events.filterIsInstance<CommentWasDeletedEvent>()
         .filter { it.postId == post.value.id }
     private val mPost = MutableStateFlow(initialPost)
-    private val mSubscribed = MutableStateFlow(initialPost.isSubscribed)
     private var mSelectedComment = MutableStateFlow<Int?>(null)
     private var mShouldScrollToComment = true
     private var mSavedComment = ""
     private var acknowledgedPosition = -1
     val post = mPost.asStateFlow()
-    val subscribed = mSubscribed.asStateFlow()
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
     val scrollTargetPosition
-        get() = selectedComment.value ?: min(post.value.commentsRead, totalSize)
+        get() = selectedComment.value ?: min(post.value.comments_read, totalSize)
     val savedComment get() = mSavedComment
 
     init {
@@ -60,12 +59,13 @@ class PostViewModel @AssistedInject constructor(
 
         viewModelScope.launch {
             em.events.filterIsInstance<CommentWasCreatedEvent>()
-                .filter { it.postId == post.value.id }
+                .filter { it.postId == post.value.id && it.byCurrentUser }
                 .collect {
-                    mPost.value = Post.newBuilder(post.value)
-                        .setCommentsRead(post.value.commentsRead + 1)
-                        .build()
-                    mSubscribed.value = true
+                    mPost.value = post.value.copy(
+                        is_subscribed = true,
+                        comments_read = post.value.comment_count,
+                        comment_count = post.value.comment_count + 1
+                    )
                     mShouldScrollToComment = true
                     mSavedComment = ""
                 }
@@ -77,11 +77,11 @@ class PostViewModel @AssistedInject constructor(
         return if (position == -1) totalSize else position
     }
 
-    override fun getItemId(item: Comment): ByteString = item.id
+    override fun getItemId(item: Comment) = item.id
 
-    override fun listItems() = commentStub.list(pages)
+    override fun listItems() = commentService.List()
 
-    override fun getItemList(items: Comments): List<Comment> = items.commentsList
+    override fun getItemList(items: Comments) = items.comments
 
     override fun getTotalSize(items: Comments) = items.count
 
@@ -92,34 +92,38 @@ class PostViewModel @AssistedInject constructor(
     }
 
     suspend fun retrieve(postId: ByteString) {
-        val newPost = postStub.retrieve(id { id = postId })
+        val newPost = postService.Retrieve().executeFully(Id(id = postId))
         mPost.value = newPost
-        mSubscribed.value = newPost.isSubscribed
-        acknowledgedPosition = newPost.commentsRead - 1
+        acknowledgedPosition = newPost.comments_read - 1
     }
 
     suspend fun updateSubscription(subscribed: Boolean) {
-        postStub.updateSubscription(subscription {
-            id = mPost.value.id
-            this.subscribed = subscribed
-        })
-        mSubscribed.value = subscribed
+        postService.UpdateSubscription().executeFully(
+            Subscription(
+                id = post.value.id,
+                subscribed = subscribed
+            )
+        )
+        mPost.value = post.value.copy(
+            is_subscribed = subscribed,
+            comments_read = if (subscribed) post.value.comment_count else 0
+        )
     }
 
     suspend fun report() {
-        postStub.report(id { id = mPost.value.id })
+        postService.Report().executeFully(Id(id = post.value.id))
     }
 
     suspend fun delete() {
-        postStub.delete(id { id = mPost.value.id })
+        postService.Delete().executeFully(Id(id = post.value.id))
     }
 
     suspend fun reportComment(commentId: ByteString) {
-        commentStub.report(id { id = commentId })
+        commentService.Report().executeFully(Id(id = commentId))
     }
 
     suspend fun deleteComment(commentId: ByteString) {
-        commentStub.delete(id { id = commentId })
+        commentService.Delete().executeFully(Id(id = commentId))
     }
 
     fun setSelectedComment(position: Int?) {
@@ -142,10 +146,10 @@ class PostViewModel @AssistedInject constructor(
         em.post(CommentWasSeenEvent(comment, post.value.id, lastPosition - position))
     }
 
-    fun makeDeletedComment(position: Int) = items[position]?.copy {
-        isDeleted = true
+    fun makeDeletedComment(position: Int) = items[position]?.copy(
+        is_deleted = true,
         text = ""
-    }
+    )
 
     companion object {
         fun provideFactory(assistedFactory: PostViewModelFactory, post: Post) =

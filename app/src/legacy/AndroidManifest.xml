@@ -2,40 +2,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".App"
-        android:allowBackup="true"
-        android:allowCrossUidActivitySwitchFromBelow="false"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:enableOnBackInvokedCallback="true"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:networkSecurityConfig="@xml/network"
-        android:resizeableActivity="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Fyreplace"
-        tools:targetApi="35">
+        android:theme="@style/AppTheme"
+        tools:ignore="MissingApplicationIcon">
 
         <activity
-            android:name=".legacy.ui.MainActivity"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:launchMode="singleTask"
             android:resizeableActivity="true"
-            android:theme="@style/Theme.Fyreplace"
-            android:windowSoftInputMode="adjustResize" />
+            android:theme="@style/AppTheme.Launcher"
+            android:windowSoftInputMode="adjustNothing" />
 
         <activity-alias
-            android:name="MainActivity.Normal"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity.Normal"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher_round"
-            android:targetActivity=".legacy.ui.MainActivity">
+            android:targetActivity="app.fyreplace.fyreplace.legacy.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -72,12 +59,12 @@
         </activity-alias>
 
         <activity-alias
-            android:name="MainActivity.Alternative"
+            android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity.Alternative"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_alt"
             android:roundIcon="@mipmap/ic_launcher_alt_round"
-            android:targetActivity=".legacy.ui.MainActivity">
+            android:targetActivity="app.fyreplace.fyreplace.legacy.ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -112,18 +99,6 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity-alias>
-
-        <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:theme="@style/Theme.Fyreplace"
-            android:windowSoftInputMode="adjustResize" />
-
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -136,13 +111,8 @@
                 android:resource="@xml/paths_images" />
         </provider>
 
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove" />
-
         <service
-            android:name=".legacy.services.MessagingService"
+            android:name="app.fyreplace.fyreplace.legacy.services.MessagingService"
             android:exported="false">
 
             <intent-filter>
@@ -161,10 +131,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/seed" />
-
-        <meta-data
-            android:name="io.sentry.auto-init"
-            android:value="false" />
 
     </application>
 

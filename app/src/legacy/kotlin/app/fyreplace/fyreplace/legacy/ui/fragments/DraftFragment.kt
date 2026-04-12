@@ -29,16 +29,16 @@ import app.fyreplace.fyreplace.legacy.ui.adapters.ItemListAdapter
 import app.fyreplace.fyreplace.legacy.viewmodels.DraftViewModel
 import app.fyreplace.fyreplace.legacy.viewmodels.DraftViewModelFactory
 import app.fyreplace.protos.Chapter
-import app.fyreplace.protos.chapter
+import com.squareup.wire.GrpcException
+import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
-import io.grpc.Status
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DraftFragment :
-    BaseFragment(R.layout.fragment_draft),
+    ScrollingListFragment(R.layout.fragment_draft),
     ImageSelector.Listener,
     ItemListAdapter.ItemClickListener<Chapter>,
     DraftAdapter.ChapterListener,
@@ -54,16 +54,19 @@ class DraftFragment :
     lateinit var imageSelectorFactory: ImageSelectorFactory
 
     override val rootView get() = if (::bd.isInitialized) bd.root else null
+    override val destinationId = R.id.fragment_draft
+    override lateinit var bd: FragmentDraftBinding
     override val vm by viewModels<DraftViewModel> {
-        DraftViewModel.provideFactory(vmFactory, args.post.v)
+        DraftViewModel.provideFactory(vmFactory, args.post)
     }
+    override val recyclerView get() = bd.recyclerView
     override val primaryActionText
         get() = if (vm.canPublish.value) R.string.draft_primary_action_publish else null
 
     override val primaryActionIcon
         get() = if (vm.canPublish.value) R.drawable.ic_baseline_check else null
+    override var primaryActionExtended = true
     private val args by navArgs<DraftFragmentArgs>()
-    private lateinit var bd: FragmentDraftBinding
     private lateinit var adapter: DraftAdapter
     private val imageSelector by lazy { imageSelectorFactory.create(this, this, this, 512 * 1024) }
     private var currentChapterPosition = -1
@@ -91,19 +94,19 @@ class DraftFragment :
             vm.retrieve(args.post.id)
             vm.post.launchCollect(viewLifecycleOwner.lifecycleScope) {
                 em.post(DraftWasUpdatedEvent(it))
-                mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapterCount))
+                mainActivity.setToolbarInfo(getString(R.string.draft_length, it.chapter_count))
             }
-            adapter.addAll(vm.post.value.chaptersList)
+            adapter.addAll(vm.post.value.chapters)
             em.events.filterIsInstance<ChapterWasUpdatedEvent>()
                 .filter { it.postId == vm.post.value.id }
                 .launchCollect(viewLifecycleOwner.lifecycleScope) {
-                    adapter.update(it.position, chapter { text = it.text })
+                    adapter.update(it.position, Chapter(text = it.text))
                 }
         }
     }
 
-    override fun getFailureTexts(error: Status) = when (error.code) {
-        Status.Code.INVALID_ARGUMENT -> when (error.description) {
+    override fun getFailureTexts(error: GrpcException) = when (error.grpcStatus) {
+        GrpcStatus.INVALID_ARGUMENT -> when (error.grpcMessage) {
             "payload_too_large" -> R.string.image_error_file_size_title to R.string.image_error_file_size_message
             "chapter_empty" -> R.string.draft_error_chapter_empty_title to R.string.draft_error_chapter_empty_message
             "post_empty" -> R.string.draft_error_post_empty_title to R.string.draft_error_post_empty_message
@@ -115,21 +118,15 @@ class DraftFragment :
 
     override suspend fun onImage(image: ByteArray) {
         val uploadedImage = vm.updateChapterImage(currentChapterPosition, image)
-        adapter.update(currentChapterPosition, chapter { this.image = uploadedImage })
+        adapter.update(currentChapterPosition, Chapter(image = uploadedImage))
     }
 
     override suspend fun onImageRemoved() = deleteChapter(currentChapterPosition)
 
-    override suspend fun onImageSelectionCancelled() {
-        if (!vm.post.value.chaptersList[currentChapterPosition].hasImage()) {
-            deleteChapter(currentChapterPosition)
-        }
-    }
-
     override fun onItemClick(item: Chapter, position: Int) {
         currentChapterPosition = position
 
-        if (item.hasImage()) {
+        if (item.image != null) {
             updateImageChapter(new = false)
         } else {
             updateTextChapter(item)
@@ -142,7 +139,7 @@ class DraftFragment :
         var firstAction = { moveChapter(position, position - 1) }
         val secondAction = { moveChapter(position, position + 1) }
 
-        if (position == vm.post.value.chapterCount - 1) {
+        if (position == vm.post.value.chapter_count - 1) {
             choices.removeAt(1)
         }
 
@@ -169,10 +166,10 @@ class DraftFragment :
         launch {
             currentChapterPosition = position
             vm.createChapter()
-            adapter.add(position, Chapter.getDefaultInstance())
+            adapter.add(position, Chapter())
 
             when (type) {
-                DraftAdapter.TYPE_TEXT -> updateTextChapter(Chapter.getDefaultInstance())
+                DraftAdapter.TYPE_TEXT -> updateTextChapter(Chapter())
                 DraftAdapter.TYPE_IMAGE -> updateImageChapter(new = true)
             }
         }

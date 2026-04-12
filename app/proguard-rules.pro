@@ -1,0 +1,4 @@
+-dontwarn org.conscrypt.**
+-dontwarn javax.naming.**
+-keep class app.fyreplace.protos.** { *; }
+-keepnames class app.fyreplace.fyreplace.ui.views.navigation.**
