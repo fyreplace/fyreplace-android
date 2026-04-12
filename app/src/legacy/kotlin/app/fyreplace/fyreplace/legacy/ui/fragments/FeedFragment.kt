@@ -42,6 +42,7 @@ class FeedFragment :
     override val recyclerView get() = bd.recyclerView
     private val cvm by activityViewModels<CentralViewModel>()
     private lateinit var adapter: FeedAdapter
+    private var currentListing = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,7 +73,7 @@ class FeedFragment :
         super.onViewCreated(view, savedInstanceState)
         adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
         bd.recyclerView.adapter = adapter
-        bd.swipe.setOnRefreshListener { refreshListing() }
+        bd.swipe.setOnRefreshListener { launch { refreshListing() } }
     }
 
     override fun onStart() {
@@ -111,14 +112,25 @@ class FeedFragment :
     }
 
     override fun startListing() {
+        val listing = currentListing
+
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
             retryCount = 0
             adapter.replaceAll(it)
-        }.invokeOnCompletion { bd.swipe.isRefreshing = false }
+        }.invokeOnCompletion {
+            if (listing == currentListing) {
+                bd.swipe.isRefreshing = false
+            }
+        }
     }
 
     override fun stopListing() = vm.stopListing()
+
+    override suspend fun refreshListing() {
+        currentListing++
+        super.refreshListing()
+    }
 
     private fun resetListing() = vm.reset()
 }

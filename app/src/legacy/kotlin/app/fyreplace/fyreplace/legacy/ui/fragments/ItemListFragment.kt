@@ -61,11 +61,7 @@ abstract class ItemListFragment<Item, Items : Any, VH : ItemHolder> :
         super.onViewCreated(view, savedInstanceState)
         adapter.resetTo(vm.items)
         bd.recyclerView.adapter = adapter
-        bd.swipe.setOnRefreshListener {
-            stopListing()
-            resetListing()
-            startListing()
-        }
+        bd.swipe.setOnRefreshListener { launch { refreshListing() } }
     }
 
     override fun onDestroyView() {
@@ -137,9 +133,9 @@ abstract class ItemListFragment<Item, Items : Any, VH : ItemHolder> :
 
     override fun stopListing() = vm.stopListing()
 
-    override fun refreshListing() = refreshListing(null)
+    override suspend fun refreshListing() = refreshListing(null)
 
-    protected fun refreshListing(pauseAction: (() -> Unit)? = null) {
+    protected fun refreshListing(pauseAction: (() -> Unit)?) {
         stopListing()
         pauseAction?.invoke()
         refreshAllEventHandlers()

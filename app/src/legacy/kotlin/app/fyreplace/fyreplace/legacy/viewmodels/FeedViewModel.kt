@@ -50,10 +50,11 @@ class FeedViewModel @Inject constructor(
     }
 
     fun startListing(): Flow<List<Post>> {
-        stalePostIds.addAll(posts.value.map(Post::id))
         val (sender, receiver) = postService.ListFeed().executeFully()
         votesChannel = sender
         return flow {
+            stalePostIds.addAll(posts.value.map(Post::id))
+
             for (newPost in receiver) {
                 emitFeed(newPost)
             }

@@ -6,9 +6,11 @@ import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.NetworkConnectionWasChangedEvent
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 abstract class ListFragment(contentLayoutId: Int) : ScrollingListFragment(contentLayoutId) {
@@ -29,8 +31,9 @@ abstract class ListFragment(contentLayoutId: Int) : ScrollingListFragment(conten
 
     protected abstract fun stopListing()
 
-    protected open fun refreshListing() {
+    protected open suspend fun refreshListing() {
         stopListing()
+        delay(300.milliseconds)
         startListing()
     }
 
