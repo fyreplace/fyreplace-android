@@ -2,24 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name=".App"
-        android:allowBackup="true"
-        android:allowCrossUidActivitySwitchFromBelow="false"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:enableOnBackInvokedCallback="true"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:networkSecurityConfig="@xml/network"
-        android:resizeableActivity="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:targetApi="35">
+        tools:ignore="MissingApplicationIcon">
 
         <activity
             android:name="app.fyreplace.fyreplace.legacy.ui.MainActivity"
@@ -113,18 +100,6 @@
                 android:resource="@xml/shortcuts" />
         </activity-alias>
 
-        <activity
-            android:name="app.fyreplace.fyreplace.MainActivity"
-            android:launchMode="singleTask"
-            android:resizeableActivity="true"
-            android:theme="@style/Theme.Fyreplace"
-            android:windowSoftInputMode="adjustResize" />
-
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="@string/file_provider_authority"
@@ -136,13 +111,8 @@
                 android:resource="@xml/paths_images" />
         </provider>
 
-        <provider
-            android:name="androidx.startup.InitializationProvider"
-            android:authorities="${applicationId}.androidx-startup"
-            tools:node="remove" />
-
         <service
-            android:name=".legacy.services.MessagingService"
+            android:name="app.fyreplace.fyreplace.legacy.services.MessagingService"
             android:exported="false">
 
             <intent-filter>
@@ -161,10 +131,6 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/seed" />
-
-        <meta-data
-            android:name="io.sentry.auto-init"
-            android:value="false" />
 
     </application>
 
