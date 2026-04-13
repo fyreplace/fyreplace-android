@@ -72,8 +72,10 @@ class FeedFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         adapter = FeedAdapter(em, viewLifecycleOwner, cvm.isAuthenticated, this, this)
+        adapter.replaceAll(vm.posts.value)
         bd.recyclerView.adapter = adapter
         bd.swipe.setOnRefreshListener { launch { refreshListing() } }
+        vm.posts.launchCollect(action = adapter::replaceAll)
     }
 
     override fun onStart() {
@@ -117,7 +119,6 @@ class FeedFragment :
         vm.startListing().launchCollect(retry = if (retryCount < 3) ::retryListing else null) {
             bd.swipe.isRefreshing = false
             retryCount = 0
-            adapter.replaceAll(it)
         }.invokeOnCompletion {
             if (listing == currentListing) {
                 bd.swipe.isRefreshing = false

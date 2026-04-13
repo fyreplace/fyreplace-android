@@ -142,8 +142,6 @@ jobs:
           case "${{ github.ref_name }}" in
           v*.*.*)
             export track=beta;;
-          hotfix/*)
-            export track=beta;;
           *)
             export track=internal;;
           esac

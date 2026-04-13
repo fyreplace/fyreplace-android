@@ -1,5 +1,5 @@
 [versions]
-androidPlugin = "9.1.0"
+androidPlugin = "9.1.1"
 kotlinPlugin = "2.3.20"
 sentryPlugin = "6.4.0"
 openapiPlugin = "7.21.0"

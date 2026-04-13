@@ -31,7 +31,8 @@ class FeedViewModel @Inject constructor(
     private val postService: PostServiceClient
 ) : BaseViewModel() {
     private lateinit var votesChannel: SendChannel<Vote>
-    private val posts = MutableStateFlow(emptyList<Post>())
+    private val mPosts = MutableStateFlow(emptyList<Post>())
+    val posts = mPosts.asStateFlow()
     val isEmpty = posts.map(List<Post>::isEmpty).asState(true)
     val emptyText = MutableStateFlow(R.string.feed_empty).asStateFlow()
     private val stalePostIds = mutableSetOf<ByteString>()
@@ -68,7 +69,7 @@ class FeedViewModel @Inject constructor(
     }
 
     fun reset() {
-        posts.value = emptyList()
+        mPosts.value = emptyList()
         stalePostIds.clear()
     }
 
@@ -80,7 +81,7 @@ class FeedViewModel @Inject constructor(
                 spread = spread
             )
         )
-        posts.value = posts.value.filter { it.id != postId }
+        mPosts.value = posts.value.filter { it.id != postId }
     }
 
     private suspend fun FlowCollector<List<Post>>.emitFeed(newPost: Post) {
@@ -102,20 +103,20 @@ class FeedViewModel @Inject constructor(
             pruneStalePosts()
         }
 
-        posts.value = newFeed
+        mPosts.value = newFeed
         emit(newFeed)
     }
 
     private fun pruneStalePosts() {
         for (id in stalePostIds) {
-            posts.value = posts.value.filter { it.id != id }
+            mPosts.value = posts.value.filter { it.id != id }
         }
 
         stalePostIds.clear()
     }
 
     private fun incrementCommentCount(postId: ByteString) {
-        posts.value = posts.value.map {
+        mPosts.value = posts.value.map {
             when (it.id) {
                 postId -> it.copy(comment_count = it.comment_count + 1)
                 else -> it

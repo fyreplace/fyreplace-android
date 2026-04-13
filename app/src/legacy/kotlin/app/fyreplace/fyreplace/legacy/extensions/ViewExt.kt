@@ -6,6 +6,7 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.graphics.Insets
+import androidx.core.graphics.Insets.max
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
@@ -21,7 +22,9 @@ fun View.updatePaddingWithSystemInsets(basePadding: Insets) =
 
 fun View.updatePaddingWithImeInsets(basePadding: Insets) =
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-        view.updatePadding(basePadding + insets.getInsets(WindowInsetsCompat.Type.ime()))
+        val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+        val barInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        view.updatePadding(basePadding + max(imeInsets, barInsets))
         return@setOnApplyWindowInsetsListener insets
     }
 
