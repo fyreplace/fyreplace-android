@@ -72,8 +72,8 @@ fun getVersionString(variant: String? = null): String {
 
     when (getVersionNumberSuffix()) {
         VersionSuffix.DEV -> {
-            val (major, minor, patch) = latestVersion.split('.').map(String::toInt)
-            result.append(major, '.', minor + 1, '.', patch)
+            val (major, minor, _) = latestVersion.split('.').map(String::toInt)
+            result.append(major, '.', minor + 1, ".0")
         }
 
         VersionSuffix.RELEASE, VersionSuffix.HOTFIX -> {
