@@ -16,20 +16,29 @@ val View.insets
 
 fun View.updatePaddingWithSystemInsets(basePadding: Insets) =
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
-        view.updatePadding(basePadding + insets.getInsets(WindowInsetsCompat.Type.systemBars()))
+        val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        view.updatePadding(
+            left = basePadding.left + systemInsets.left,
+            top = basePadding.top,
+            right = basePadding.right + systemInsets.right,
+            bottom = basePadding.bottom + systemInsets.bottom
+        )
         return@setOnApplyWindowInsetsListener insets
     }
 
 fun View.updatePaddingWithImeInsets(basePadding: Insets) =
     ViewCompat.setOnApplyWindowInsetsListener(this) { view, insets ->
         val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-        val barInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        view.updatePadding(basePadding + max(imeInsets, barInsets))
+        val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        val finalInsets = max(imeInsets, systemInsets)
+        view.updatePadding(
+            left = basePadding.left + finalInsets.left,
+            top = basePadding.top,
+            right = basePadding.right + finalInsets.right,
+            bottom = basePadding.bottom + finalInsets.bottom
+        )
         return@setOnApplyWindowInsetsListener insets
     }
-
-fun View.updatePadding(insets: Insets) =
-    updatePadding(insets.left, insets.top, insets.right, insets.bottom)
 
 fun View.showSoftInput() {
     if (requestFocus()) {
