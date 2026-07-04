@@ -101,13 +101,13 @@ fun getVersionString(variant: String? = null): String {
 
 android {
     namespace = "app.fyreplace.fyreplace"
-    compileSdk = 36
+    compileSdk = 37
     compileSdkMinor = 1
 
     defaultConfig {
         applicationId = "app.fyreplace.fyreplace"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37
         versionCode = getVersionNumber()
         versionName = getVersionString()
         testInstrumentationRunner = "app.fyreplace.fyreplace.androidtest.TestRunner"
@@ -237,8 +237,8 @@ sentry {
 
 openApiGenerate {
     generatorName = "kotlin"
-    inputSpec = "$projectDir/src/main/assets/openapi.yaml"
-    outputDir = "$projectDir/build/openapi"
+    inputSpec.set("$projectDir/src/main/assets/openapi.yaml")
+    outputDir.set("$projectDir/build/openapi")
     apiPackage = "app.fyreplace.api"
     modelPackage = "app.fyreplace.api.data"
     validateSpec = false

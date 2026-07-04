@@ -37,6 +37,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -78,6 +79,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val sizeClass = currentWindowAdaptiveInfo().windowSizeClass
     val compactWidth = !sizeClass.isWidthAtLeastBreakpoint(600)
@@ -163,7 +165,7 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
             }
 
             composable<Destination.Login>(
-                deepLinks = context.makeDeepLinks(context.getString(R.string.deep_link_path_login))
+                deepLinks = context.makeDeepLinks(resources.getString(R.string.deep_link_path_login))
             ) {
                 LoginScreen(
                     visibilityScope = this,
@@ -173,7 +175,7 @@ fun MainContent(viewModel: MainViewModel = hiltViewModel()) {
             }
 
             composable<Destination.Register>(
-                deepLinks = context.makeDeepLinks(context.getString(R.string.deep_link_path_register))
+                deepLinks = context.makeDeepLinks(resources.getString(R.string.deep_link_path_register))
             ) {
                 RegisterScreen(
                     visibilityScope = this,
