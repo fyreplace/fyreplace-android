@@ -9,6 +9,8 @@ import app.fyreplace.fyreplace.protos.Environment
 import app.fyreplace.fyreplace.protos.Secrets
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class FakeStoreResolver(
     connection: Connection = Connection(environment = Environment.LOCAL),
@@ -27,11 +29,13 @@ class FakeStoreResolver(
 
 class FakeSomethingStore<T>(initialValue: T) : DataStore<T> {
     private val mData = MutableStateFlow(initialValue)
+    private val mutex = Mutex()
 
     override val data = mData.asStateFlow()
 
-    override suspend fun updateData(transform: suspend (t: T) -> T): T {
-        mData.emit(transform(data.value))
-        return data.value
+    override suspend fun updateData(transform: suspend (t: T) -> T): T = mutex.withLock {
+        val newValue = transform(mData.value)
+        mData.value = newValue
+        newValue
     }
 }
