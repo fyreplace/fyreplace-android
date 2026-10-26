@@ -12,13 +12,14 @@ abstract class ItemRandomAccessListAdapter<Item, VH : ItemHolder>(val offset: In
     override fun getItemCount() = mTotalSize + offset
 
     fun setTotalSize(size: Int) {
-        val diff = totalSize - size
+        val oldSize = totalSize
+        val diff = size - oldSize
         mTotalSize = size
 
-        if (diff < 0) {
-            notifyItemRangeRemoved(totalSize + offset, -diff)
-        } else {
-            notifyItemRangeInserted(totalSize + offset, diff)
+        if (diff > 0) {
+            notifyItemRangeInserted(oldSize + offset, diff)
+        } else if (diff < 0) {
+            notifyItemRangeRemoved(size + offset, -diff)
         }
     }
 

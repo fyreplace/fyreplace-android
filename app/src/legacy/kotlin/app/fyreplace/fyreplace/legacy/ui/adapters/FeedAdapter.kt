@@ -15,7 +15,9 @@ import app.fyreplace.fyreplace.legacy.extensions.firstChapter
 import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
@@ -50,6 +52,11 @@ class FeedAdapter(
     override fun onBindViewHolder(holder: PreviewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
         holder.setup(items[position])
+    }
+
+    override fun onViewRecycled(holder: PreviewHolder) {
+        super.onViewRecycled(holder)
+        (holder as? PostHolder)?.clear()
     }
 
     override fun getItemId(item: Post) = item.id
@@ -96,12 +103,14 @@ class FeedAdapter(
         private val comments = itemView.findViewById<TextView>(R.id.comments)
         private val isVoting get() = down.isActivated || up.isActivated
         private val scope = MainScope()
+        private var collectorJob: Job? = null
 
         override fun setup(post: Post?) {
             super.setup(post)
             votes.text = post?.vote_count.toString()
             comments.text = post?.comment_count.toString()
-            scope.launch {
+            collectorJob?.cancel()
+            collectorJob = scope.launch {
                 em.events.filterIsInstance<RemoteNotificationWasReceivedEvent>()
                     .filter { it.command == "comment:creation" && it.postId == post?.id }
                     .collect {
@@ -109,6 +118,12 @@ class FeedAdapter(
                         comments.text = newCount.toString()
                     }
             }
+        }
+
+        fun clear() {
+            collectorJob?.cancel()
+            collectorJob = null
+            scope.cancel()
         }
 
         fun onDownClicked(view: View) = vote(view)

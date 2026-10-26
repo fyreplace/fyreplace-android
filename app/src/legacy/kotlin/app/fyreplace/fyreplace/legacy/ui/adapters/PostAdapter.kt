@@ -26,8 +26,6 @@ class PostAdapter(
 ) : ItemRandomAccessListAdapter<Comment, ItemHolder>(1) {
     private var selectedComment: Int? = null
 
-    override fun getItemCount() = super.getItemCount()
-
     override fun getItemViewType(position: Int) = when {
         position == 0 -> TYPE_CHAPTERS
         items.containsKey(position - offset) -> TYPE_COMMENT
