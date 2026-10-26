@@ -48,7 +48,7 @@ class PostViewModel @AssistedInject constructor(
     val selectedComment = mSelectedComment.asStateFlow()
     val shouldScrollToComment get() = mShouldScrollToComment
     val scrollTargetPosition
-        get() = selectedComment.value ?: min(post.value.comments_read, totalSize)
+        get() = selectedComment.value ?: min(post.value.comments_read, maxOf(0, totalSize - 1))
     val savedComment get() = mSavedComment
 
     init {

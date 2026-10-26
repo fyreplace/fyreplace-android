@@ -296,8 +296,9 @@ class PostFragment :
     }
 
     fun showUnreadComments() {
-        if (vm.post.value.comments_read > 0) {
-            showComment(vm.post.value.comments_read)
+        val commentsRead = vm.post.value.comments_read
+        if (commentsRead > 0 && commentsRead < vm.totalSize) {
+            showComment(commentsRead)
         }
     }
 
