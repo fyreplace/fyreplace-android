@@ -20,6 +20,6 @@ fun SharedPreferences.moveTo(other: SharedPreferences) = other.edit {
             else -> (value as? Set<String>)?.let { putStringSet(key, it) }
         }
 
-        edit { remove(key) }
+        this@moveTo.edit { remove(key) }
     }
 }

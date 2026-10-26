@@ -66,7 +66,7 @@ fun Context.createNotification(
             .setColor(getColor(R.color.seed))
             .setContentTitle(title)
             .setContentText(body)
-            .setWhen(instant.epochSecond)
+            .setWhen(instant.toEpochMilli())
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .build()
@@ -81,8 +81,9 @@ fun Context.deleteNotifications(tag: Regex, beforeDate: Instant) {
     val notificationManagerCompat = NotificationManagerCompat.from(this)
 
     for (statusNotification in notificationManager.activeNotifications) {
-        if (tag.matches(statusNotification.tag) && statusNotification.notification.`when` <= beforeDate.toEpochMilli()) {
-            notificationManagerCompat.cancel(statusNotification.tag, statusNotification.id)
+        val notificationTag = statusNotification.tag ?: continue
+        if (tag.matches(notificationTag) && statusNotification.notification.`when` <= beforeDate.toEpochMilli()) {
+            notificationManagerCompat.cancel(notificationTag, statusNotification.id)
         }
     }
 }
