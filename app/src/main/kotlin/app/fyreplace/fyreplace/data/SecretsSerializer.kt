@@ -10,7 +10,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 
-object SecretSerializer : Serializer<Secrets> {
+object SecretsSerializer : Serializer<Secrets> {
     override val defaultValue = Secrets()
 
     override suspend fun readFrom(input: InputStream): Secrets {
@@ -27,6 +27,6 @@ object SecretSerializer : Serializer<Secrets> {
 
 val Context.secretsStore by dataStore(
     fileName = "secrets.pb",
-    serializer = SecretSerializer,
-    corruptionHandler = ReplaceFileCorruptionHandler { SecretSerializer.defaultValue }
+    serializer = SecretsSerializer,
+    corruptionHandler = ReplaceFileCorruptionHandler { SecretsSerializer.defaultValue }
 )
