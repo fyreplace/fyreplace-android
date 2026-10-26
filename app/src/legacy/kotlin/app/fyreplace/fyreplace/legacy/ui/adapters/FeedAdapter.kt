@@ -15,6 +15,7 @@ import app.fyreplace.fyreplace.legacy.extensions.firstChapter
 import app.fyreplace.fyreplace.legacy.extensions.provideHapticFeedback
 import app.fyreplace.fyreplace.legacy.ui.adapters.holders.PreviewHolder
 import app.fyreplace.protos.Post
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
@@ -135,7 +136,7 @@ class FeedAdapter(
 
             if (!isVoting) scope.launch {
                 button.isActivated = true
-                delay(500)
+                delay(500.milliseconds)
                 voteListener.onPostVoted(button, bindingAdapterPosition, button == up)
                 button.isActivated = false
             }

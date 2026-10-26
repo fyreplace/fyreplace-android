@@ -14,6 +14,7 @@ import app.fyreplace.fyreplace.legacy.viewmodels.ArchiveViewModel
 import app.fyreplace.protos.Post
 import app.fyreplace.protos.Posts
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
@@ -37,7 +38,7 @@ class ArchiveFragment :
         ui = this@ArchiveFragment
         pages.doOnLayout {
             launch {
-                delay(100)
+                delay(100.milliseconds)
                 pages.check(vm.selectedPage.value)
             }
         }

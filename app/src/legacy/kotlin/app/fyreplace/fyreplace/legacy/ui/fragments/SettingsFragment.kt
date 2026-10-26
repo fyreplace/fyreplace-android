@@ -33,6 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcStatus
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -237,7 +238,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
 
             for (i in 3 downTo 1) {
                 button.text = getString(R.string.settings_delete_countdown, i)
-                delay(1000)
+                delay(1000.milliseconds)
             }
 
             button.setText(R.string.settings_delete)

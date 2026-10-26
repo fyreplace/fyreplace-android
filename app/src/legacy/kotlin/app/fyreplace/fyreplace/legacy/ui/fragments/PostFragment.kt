@@ -46,6 +46,7 @@ import kotlinx.coroutines.flow.combine
 import okio.ByteString
 import javax.inject.Inject
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 class PostFragment :
@@ -353,7 +354,7 @@ class PostFragment :
         isScrolling = true
 
         launch {
-            delay(300)
+            delay(300.milliseconds)
             isScrolling = false
             layoutManager.scrollToPositionWithOffset(viewPosition, 0)
         }

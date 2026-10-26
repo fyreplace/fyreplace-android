@@ -52,6 +52,8 @@ import app.fyreplace.fyreplace.viewmodels.screens.LoginViewModel
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+private val UI_READY_DELAY = 100.milliseconds
+
 @ExperimentalSharedTransitionApi
 @Composable
 fun SharedTransitionScope.LoginScreen(
@@ -154,12 +156,12 @@ fun SharedTransitionScope.LoginScreen(
         )
 
         LaunchedEffect(deepLinkRandomCode) {
-            delay(100.milliseconds)
+            delay(UI_READY_DELAY)
             deepLinkRandomCode?.let(viewModel::trySubmitDeepLinkRandomCode)
         }
 
         LaunchedEffect(Unit) {
-            delay(100.milliseconds)
+            delay(UI_READY_DELAY)
 
             if (viewModel.identifier.isBlank()) {
                 identifierFocus.requestFocus()

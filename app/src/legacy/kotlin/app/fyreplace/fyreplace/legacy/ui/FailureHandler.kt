@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.time.Duration.Companion.milliseconds
 
 interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     val preferences get() = getContext()?.mainPreferences
@@ -68,7 +69,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
     ) = when (error.grpcStatus) {
         GrpcStatus.UNAVAILABLE ->
             if (retry != null) {
-                delay(500)
+                delay(500.milliseconds)
                 retry()
             } else {
                 showBasicAlert(

@@ -66,6 +66,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.withContext
 import okio.ByteString
 import kotlin.math.roundToInt
+import kotlin.time.Duration.Companion.milliseconds
 
 @AndroidEntryPoint
 class MainActivity :
@@ -209,7 +210,7 @@ class MainActivity :
     override fun onBackStackChangeCommitted(fragment: Fragment, pop: Boolean) {
         bd.toolbar.alpha = 1f
         launch {
-            delay(100)
+            delay(100.milliseconds)
             refreshCustomTitle()
             refreshPrimaryAction()
             bd.appBar.liftOnScrollTargetViewId = R.id.recycler_view
