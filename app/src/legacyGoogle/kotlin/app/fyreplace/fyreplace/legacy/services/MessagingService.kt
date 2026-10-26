@@ -45,14 +45,21 @@ class MessagingService : FirebaseMessagingService() {
         super.onDestroy()
     }
 
+    @Suppress("DEPRECATION")
+    @Deprecated("Deprecated in Java")
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        onRegistered(token)
+    }
+
+    override fun onRegistered(installationId: String) {
+        super.onRegistered(installationId)
         lifecycleScope.launch {
             try {
                 notificationService.RegisterToken().authenticate(mainPreferences).dedupe().execute(
                     MessagingToken(
                         service = MessagingService.MESSAGING_SERVICE_FCM,
-                        token = token
+                        token = installationId
                     )
                 )
             } catch (_: Exception) {

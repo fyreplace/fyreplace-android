@@ -14,16 +14,11 @@ import app.fyreplace.fyreplace.legacy.events.CommentWasCreatedEvent
 import app.fyreplace.fyreplace.legacy.events.CommentWasDeletedEvent
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.RemoteNotificationWasReceivedEvent
-import app.fyreplace.fyreplace.legacy.extensions.authenticate
 import app.fyreplace.fyreplace.legacy.extensions.createNotification
-import app.fyreplace.fyreplace.legacy.extensions.dedupe
-import app.fyreplace.fyreplace.legacy.extensions.mainPreferences
 import app.fyreplace.fyreplace.legacy.extensions.makeShareUri
 import app.fyreplace.fyreplace.legacy.extensions.notificationTag
 import app.fyreplace.fyreplace.legacy.extensions.parseComment
 import app.fyreplace.protos.Comment
-import app.fyreplace.protos.MessagingService
-import app.fyreplace.protos.MessagingToken
 import app.fyreplace.protos.NotificationServiceClient
 import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.wire.Instant
@@ -80,20 +75,11 @@ abstract class RemoteNotificationsActivity(contentLayoutId: Int) :
 
     protected fun startReceivingRemoteNotifications() {
         setupRemoteNotificationChannels()
-        FirebaseMessaging.getInstance().token.addOnSuccessListener {
-            launch {
-                notificationStub.RegisterToken().authenticate(mainPreferences).dedupe().execute(
-                    MessagingToken(
-                        service = MessagingService.MESSAGING_SERVICE_FCM,
-                        token = it
-                    )
-                )
-            }
-        }
+        FirebaseMessaging.getInstance().register()
     }
 
     protected fun stopReceivingRemoteNotifications() {
-        FirebaseMessaging.getInstance().deleteToken()
+        FirebaseMessaging.getInstance().unregister()
     }
 
     protected fun requestNotificationPermission() {

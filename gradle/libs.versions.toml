@@ -29,8 +29,7 @@ androidxWork = "2.11.2"
 coilCompose = "2.7.0"
 conscrypt = "2.5.3"
 desugar = "2.1.5"
-firebaseBom = "34.15.0"
-firebaseMessaging = "24.1.2"
+firebaseBom = "35.1.0"
 glide = "5.0.7"
 hilt = "2.60"
 junit = "4.13.2"
@@ -83,7 +82,7 @@ coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coi
 conscrypt = { group = "org.conscrypt", name = "conscrypt-android", version.ref = "conscrypt" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
-firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessaging" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-okhttp = { group = "com.github.bumptech.glide", name = "okhttp3-integration", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "glide" }
