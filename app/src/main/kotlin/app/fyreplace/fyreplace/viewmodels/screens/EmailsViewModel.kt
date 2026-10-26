@@ -45,9 +45,7 @@ class EmailsViewModel @Inject constructor(
                 }
             }
         }
-    }
 
-    init {
         loadEmails()
     }
 

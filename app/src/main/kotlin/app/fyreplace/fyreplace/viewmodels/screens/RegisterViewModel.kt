@@ -24,10 +24,10 @@ import kotlin.math.min
 class RegisterViewModel @Inject constructor(
     state: SavedStateHandle,
     eventBus: EventBus,
-    resourceResolver: ResourceResolver,
     storeResolver: StoreResolver,
-    secretsHandler: SecretsHandler,
-    apiResolver: ApiResolver
+    apiResolver: ApiResolver,
+    resourceResolver: ResourceResolver,
+    secretsHandler: SecretsHandler
 ) : AccountViewModelBase(
     state,
     eventBus,
