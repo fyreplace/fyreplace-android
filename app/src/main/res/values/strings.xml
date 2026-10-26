@@ -42,7 +42,7 @@
     <string name="settings_about_privacy_policy">Privacy policy</string>
     <string name="settings_about_source_code">Source code</string>
     <string name="settings_error_413_title">File too large</string>
-    <string name="settings_error_413_message">Uploaded files can only go up to 10M.</string>
+    <string name="settings_error_413_message">Uploaded files can only go up to 10MB.</string>
     <string name="settings_error_415_title">Unsupported file format</string>
     <string name="settings_error_415_message">The type of file you have selected is not supported.</string>
 

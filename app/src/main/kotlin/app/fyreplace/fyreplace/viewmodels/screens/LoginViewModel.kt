@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.min
 
-
 @OptIn(SavedStateHandleSaveableApi::class)
 @HiltViewModel
 class LoginViewModel @Inject constructor(

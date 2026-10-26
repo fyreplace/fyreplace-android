@@ -39,7 +39,6 @@ abstract class ImageSelectorActivity : SecureActivity() {
         getContentLauncher.launch("image/*")
     }
 
-
     suspend fun makeFileFromUri(uri: Uri): File = withContext(Dispatchers.IO) {
         val file = File.createTempFile("image", null)
         file.deleteOnExit()

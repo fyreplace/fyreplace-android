@@ -60,7 +60,6 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel(), navigateToEma
                 onRemoveAvatar = viewModel::removeAvatar
             )
 
-
             ListItem(
                 headlineContent = { Text(stringResource(R.string.settings_profile_logout)) },
                 supportingContent = { Text(stringResource(R.string.settings_profile_logout_summary)) },
