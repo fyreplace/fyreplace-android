@@ -75,9 +75,7 @@ class LoginViewModel @Inject constructor(
                 403 -> Event.Failure(
                     R.string.login_error_403_title,
                     R.string.login_error_403_message
-                ).also {
-                    onEmailSent(isRegistering = false, showEmailTip = false)
-                }
+                )
 
                 404 -> Event.Failure(
                     R.string.login_error_404_title,
