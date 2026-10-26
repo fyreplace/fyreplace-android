@@ -8,9 +8,6 @@
     <string name="app_code_url" translatable="false">https://github.com/fyreplace</string>
     <string name="app_bug_report_url" translatable="false">mailto:bugs@fyreplace.app</string>
 
-    <string name="shortcuts_next_label_short">Next</string>
-    <string name="shortcuts_next_label_long">The next version of Fyreplace</string>
-
     <string name="legal_privacy_policy">Privacy policy</string>
     <string name="legal_privacy_policy_url" translatable="false">https://fyreplace.net/privacy-policy</string>
     <string name="legal_terms_of_service">Terms of service</string>

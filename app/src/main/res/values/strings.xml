@@ -6,6 +6,8 @@
     <string name="cancel" translatable="false">Cancel</string>
 
     <string name="keyboard_shortcuts_navigation">Navigation</string>
+    <string name="shortcuts_next_label_short">Next</string>
+    <string name="shortcuts_next_label_long">The next version of Fyreplace</string>
 
     <string name="main_destination_feed">Feed</string>
     <string name="main_destination_notifications">Notifications</string>
