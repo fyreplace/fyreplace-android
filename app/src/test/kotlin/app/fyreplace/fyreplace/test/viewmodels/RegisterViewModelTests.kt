@@ -16,6 +16,7 @@ import app.fyreplace.fyreplace.viewmodels.screens.RegisterViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -27,55 +28,55 @@ import org.junit.Test
 class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Username must have correct length`() = runTest {
-        val (minLength, maxLength, viewModel) = makeViewModel()
+        val viewModel = makeViewModel()
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         viewModel.updateHasAcceptedTerms(true)
 
-        for (i in 0..<minLength) {
+        for (i in 0..<MIN_LENGTH) {
             viewModel.updateUsername("a".repeat(i))
             runCurrent()
             assertFalse(viewModel.canSubmit)
         }
 
-        for (i in minLength..maxLength) {
+        for (i in MIN_LENGTH..MAX_LENGTH) {
             viewModel.updateUsername("a".repeat(i))
             runCurrent()
             assertTrue(viewModel.canSubmit)
         }
 
-        viewModel.updateUsername("a".repeat(maxLength + 1))
+        viewModel.updateUsername("a".repeat(MAX_LENGTH + 1))
         runCurrent()
-        assertEquals(maxLength, viewModel.username.length)
+        assertEquals(MAX_LENGTH, viewModel.username.length)
         assertTrue(viewModel.canSubmit)
     }
 
     @Test
     fun `Email must have correct length`() = runTest {
-        val (minLength, maxLength, viewModel) = makeViewModel()
+        val viewModel = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
 
-        for (i in 0..<minLength) {
+        for (i in 0..<MIN_LENGTH) {
             viewModel.updateEmail("@".repeat(i))
             runCurrent()
             assertFalse(viewModel.canSubmit)
         }
 
-        for (i in minLength..maxLength) {
+        for (i in MIN_LENGTH..MAX_LENGTH) {
             viewModel.updateEmail("@".repeat(i))
             runCurrent()
             assertTrue(viewModel.canSubmit)
         }
 
-        viewModel.updateEmail("@".repeat(maxLength + 1))
+        viewModel.updateEmail("@".repeat(MAX_LENGTH + 1))
         runCurrent()
-        assertEquals(maxLength, viewModel.email.length)
+        assertEquals(MAX_LENGTH, viewModel.email.length)
         assertTrue(viewModel.canSubmit)
     }
 
     @Test
     fun `Email must have @`() = runTest {
-        val (_, _, viewModel) = makeViewModel()
+        val viewModel = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateHasAcceptedTerms(true)
         viewModel.updateEmail("email")
@@ -88,7 +89,7 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Terms must be accepted`() = runTest {
-        val (_, _, viewModel) = makeViewModel()
+        val viewModel = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         viewModel.updateHasAcceptedTerms(false)
@@ -102,7 +103,7 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Invalid username produces a failure`() = runTest {
         val eventBus = FakeEventBus()
-        val (_, _, viewModel) = makeViewModel(eventBus)
+        val viewModel = makeViewModel(eventBus)
         val invalidValues = listOf(
             FakeUsersEndpointApi.BAD_USERNAME,
             FakeUsersEndpointApi.RESERVED_USERNAME,
@@ -124,7 +125,7 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Invalid email produces a failure`() = runTest {
         val eventBus = FakeEventBus()
-        val (_, _, viewModel) = makeViewModel(eventBus)
+        val viewModel = makeViewModel(eventBus)
         val invalidValues = listOf(
             FakeUsersEndpointApi.BAD_EMAIL,
             FakeUsersEndpointApi.USED_EMAIL
@@ -145,7 +146,7 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Valid username and email produce no failures`() = runTest {
         val eventBus = FakeEventBus()
-        val (_, _, viewModel) = makeViewModel(eventBus)
+        val viewModel = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
@@ -158,28 +159,28 @@ class RegisterViewModelTests : TestsBase() {
 
     @Test
     fun `Random code must have correct length`() = runTest {
-        val (minLength, _, viewModel) = makeViewModel()
+        val viewModel = makeViewModel()
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
         runCurrent()
         viewModel.submit()
         runCurrent()
 
-        for (i in 0..<minLength) {
+        for (i in 0..<MIN_LENGTH) {
             viewModel.updateRandomCode("a".repeat(i))
             runCurrent()
             assertFalse(viewModel.canSubmit)
         }
 
-        viewModel.updateRandomCode("a".repeat(minLength))
+        viewModel.updateRandomCode("a".repeat(MIN_LENGTH))
         runCurrent()
         assertTrue(viewModel.canSubmit)
     }
 
     @Test
-    fun `Invalid random code produces failure`() = runTest {
+    fun `Invalid random code produces a failure`() = runTest {
         val eventBus = FakeEventBus()
-        val (_, _, viewModel) = makeViewModel(eventBus)
+        val viewModel = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
@@ -196,7 +197,7 @@ class RegisterViewModelTests : TestsBase() {
     @Test
     fun `Valid random code produces no failures`() = runTest {
         val eventBus = FakeEventBus()
-        val (_, _, viewModel) = makeViewModel(eventBus)
+        val viewModel = makeViewModel(eventBus)
         backgroundScope.launch { eventBus.events.collect() }
         viewModel.updateUsername(FakeUsersEndpointApi.GOOD_USERNAME)
         viewModel.updateEmail(FakeUsersEndpointApi.GOOD_EMAIL)
@@ -210,26 +211,25 @@ class RegisterViewModelTests : TestsBase() {
         assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
     }
 
-    private fun makeViewModel(eventBus: EventBus = FakeEventBus()): Triple<Int, Int, RegisterViewModel> {
-        val minLength = 5
-        val maxLength = 100
-        val resources = FakeResourceResolver(
+    private fun TestScope.makeViewModel(eventBus: EventBus = FakeEventBus()) = RegisterViewModel(
+        state = SavedStateHandle(),
+        eventBus = eventBus,
+        storeResolver = FakeStoreResolver(),
+        apiResolver = FakeApiResolver(),
+        resourceResolver = FakeResourceResolver(
             mapOf(
-                R.integer.username_min_length to minLength,
-                R.integer.username_max_length to maxLength,
-                R.integer.email_min_length to minLength,
-                R.integer.email_max_length to maxLength,
-                R.integer.random_code_min_length to minLength
+                R.integer.username_min_length to MIN_LENGTH,
+                R.integer.username_max_length to MAX_LENGTH,
+                R.integer.email_min_length to MIN_LENGTH,
+                R.integer.email_max_length to MAX_LENGTH,
+                R.integer.random_code_min_length to MIN_LENGTH
             )
-        )
-        val viewModel = RegisterViewModel(
-            state = SavedStateHandle(),
-            eventBus = eventBus,
-            resourceResolver = resources,
-            storeResolver = FakeStoreResolver(),
-            secretsHandler = FakeSecretsHandler(),
-            apiResolver = FakeApiResolver()
-        )
-        return Triple(minLength, maxLength, viewModel)
+        ),
+        secretsHandler = FakeSecretsHandler()
+    ).also { runCurrent() }
+
+    companion object {
+        const val MIN_LENGTH = 5
+        const val MAX_LENGTH = 100
     }
 }

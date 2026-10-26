@@ -45,7 +45,7 @@ class SettingsViewModelTests : TestsBase() {
     }
 
     @Test
-    fun `Updating avatar with an invalid produces a failure`() = runTest {
+    fun `Updating avatar with an invalid file produces a failure`() = runTest {
         val eventBus = FakeEventBus()
         val viewModel = makeViewModel(eventBus)
         viewModel.updateAvatar(FakeUsersEndpointApi.NOT_IMAGE_FILE)
@@ -84,13 +84,10 @@ class SettingsViewModelTests : TestsBase() {
         val maxLength = 30
         val viewModel = makeViewModel(bioMaxLength = maxLength)
         viewModel.updatePendingBio("a")
-        runCurrent()
         assertTrue(viewModel.canUpdateBio)
         viewModel.updatePendingBio("a".repeat(maxLength))
-        runCurrent()
         assertTrue(viewModel.canUpdateBio)
         viewModel.updatePendingBio("a".repeat(maxLength + 1))
-        runCurrent()
         assertFalse(viewModel.canUpdateBio)
     }
 
@@ -98,7 +95,6 @@ class SettingsViewModelTests : TestsBase() {
     fun `Bio must be different`() = runTest {
         val viewModel = makeViewModel()
         viewModel.updatePendingBio("Hello")
-        runCurrent()
         assertTrue(viewModel.canUpdateBio)
         viewModel.updateBio()
         runCurrent()

@@ -48,4 +48,8 @@ class FakeEmailsEndpointApi : EmailsEndpointApi {
             FakeTokensEndpointApi.GOOD_SECRET -> ok(Unit)
             else -> notFound()
         }
+
+    companion object {
+        const val INITIAL_EMAIL_COUNT = 3
+    }
 }

@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.test.viewmodels
 import androidx.lifecycle.SavedStateHandle
 import app.fyreplace.api.data.Email
 import app.fyreplace.fyreplace.events.Event
+import app.fyreplace.fyreplace.events.EventBus
 import app.fyreplace.fyreplace.events.HotEventBus
 import app.fyreplace.fyreplace.extensions.make
 import app.fyreplace.fyreplace.fakes.FakeApiResolver
@@ -14,6 +15,7 @@ import app.fyreplace.fyreplace.viewmodels.MainViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
@@ -27,12 +29,7 @@ class MainViewModelTests : TestsBase() {
     @Test
     fun `Failures can be dismissed`() = runTest {
         val eventBus = HotEventBus()
-        val viewModel = MainViewModel(
-            state = SavedStateHandle(),
-            eventBus = eventBus,
-            storeResolver = FakeStoreResolver(),
-            apiResolver = FakeApiResolver()
-        )
+        val viewModel = makeViewModel(eventBus)
         backgroundScope.launch { viewModel.events.collect() }
         runCurrent()
         assertNull(viewModel.currentFailure)
@@ -41,22 +38,15 @@ class MainViewModelTests : TestsBase() {
         runCurrent()
         assertNotNull(viewModel.currentFailure)
         viewModel.dismiss(viewModel.currentFailure!!)
-        runCurrent()
         assertNotNull(viewModel.currentFailure)
         viewModel.dismiss(viewModel.currentFailure!!)
-        runCurrent()
         assertNull(viewModel.currentFailure)
     }
 
     @Test
     fun `Invalid random code produces failure`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = MainViewModel(
-            state = SavedStateHandle(),
-            eventBus = eventBus,
-            storeResolver = FakeStoreResolver(),
-            apiResolver = FakeApiResolver()
-        )
+        val viewModel = makeViewModel(eventBus)
         val email = Email.make(verified = false)
         viewModel.verifyEmail(email.email, FakeTokensEndpointApi.BAD_SECRET)
         runCurrent()
@@ -66,15 +56,17 @@ class MainViewModelTests : TestsBase() {
     @Test
     fun `Valid random code produces no failures`() = runTest {
         val eventBus = FakeEventBus()
-        val viewModel = MainViewModel(
-            state = SavedStateHandle(),
-            eventBus = eventBus,
-            storeResolver = FakeStoreResolver(),
-            apiResolver = FakeApiResolver()
-        )
+        val viewModel = makeViewModel(eventBus)
         val email = Email.make(verified = false)
         viewModel.verifyEmail(email.email, FakeTokensEndpointApi.GOOD_SECRET)
         runCurrent()
         assertTrue(eventBus.storedEvents.filterIsInstance<Event.Failure>().isEmpty())
     }
+
+    private fun TestScope.makeViewModel(eventBus: EventBus = FakeEventBus()) = MainViewModel(
+        state = SavedStateHandle(),
+        eventBus = eventBus,
+        storeResolver = FakeStoreResolver(),
+        apiResolver = FakeApiResolver()
+    ).also { runCurrent() }
 }
