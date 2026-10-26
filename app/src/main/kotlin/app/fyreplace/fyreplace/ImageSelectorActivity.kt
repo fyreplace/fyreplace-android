@@ -44,8 +44,11 @@ abstract class ImageSelectorActivity : SecureActivity() {
         val file = File.createTempFile("image", null)
         file.deleteOnExit()
 
-        contentResolver.openInputStream(uri)?.use { stream ->
-            file.outputStream().use(stream::copyTo)
+        val stream = contentResolver.openInputStream(uri)
+            ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
+
+        stream.use { input ->
+            file.outputStream().use(input::copyTo)
         }
 
         return@withContext file
