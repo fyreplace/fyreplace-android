@@ -1,12 +1,22 @@
 package app.fyreplace.fyreplace.extensions
 
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import retrofit2.Response.error
 
 fun <T> ok(body: T): Response<T> = Response.success(body)
 
-fun <T> created(body: T): Response<T> = Response.success(body)
+fun <T> created(body: T): Response<T> = Response.success(
+    body,
+    okhttp3.Response.Builder()
+        .code(201)
+        .message("Created")
+        .protocol(Protocol.HTTP_1_1)
+        .request(Request.Builder().url("http://localhost/").build())
+        .build()
+)
 
 fun noContent(): Response<Unit> = Response.success(Unit)
 

@@ -21,7 +21,7 @@ class TokenRefreshWorker @AssistedInject constructor(
     override suspend fun doWork(): Result {
         try {
             val response = apiResolver.tokens().getNewToken()
-            val newToken = response.body() ?: throw Exception("No token received")
+            val newToken = response.body() ?: throw IllegalStateException("No token received")
             storeResolver.secretsStore.updateData {
                 Secrets(token = secretsHandler.encrypt(newToken))
             }

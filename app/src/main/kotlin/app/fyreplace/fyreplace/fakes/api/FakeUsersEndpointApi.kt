@@ -51,7 +51,7 @@ class FakeUsersEndpointApi : UsersEndpointApi {
         throw NotImplementedError()
 
     override suspend fun setCurrentUserAvatar(body: File) = when (body.path) {
-        NORMAL_IMAGE_FILE.path -> created(NORMAL_IMAGE_FILE.path)
+        NORMAL_IMAGE_FILE.path -> ok(NORMAL_IMAGE_FILE.path)
         LARGE_IMAGE_FILE.path -> payloadTooLarge()
         else -> unsupportedMediaType()
     }
