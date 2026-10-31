@@ -6,9 +6,13 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
 import app.fyreplace.fyreplace.R
 
+const val PREF_AUTH_TOKEN = "auth.token"
+const val PREF_SETTINGS_THEME = "settings.theme"
+const val PREF_APP_ENVIRONMENT = "app.environment"
+
 fun SharedPreferences.applyTheme(context: Context) {
     val themeValue = getString(
-        "settings.theme",
+        PREF_SETTINGS_THEME,
         context.getString(R.string.settings_theme_auto_value)
     )
     val nightMode = when (themeValue) {

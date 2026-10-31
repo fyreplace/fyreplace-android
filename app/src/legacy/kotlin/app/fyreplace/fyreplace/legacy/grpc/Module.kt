@@ -3,6 +3,7 @@ package app.fyreplace.fyreplace.legacy.grpc
 import android.content.Context
 import android.content.SharedPreferences
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.legacy.extensions.PREF_APP_ENVIRONMENT
 import app.fyreplace.protos.AccountServiceClient
 import app.fyreplace.protos.ChapterServiceClient
 import app.fyreplace.protos.CommentServiceClient
@@ -24,7 +25,7 @@ import okhttp3.Protocol
 @InstallIn(SingletonComponent::class)
 object GrpcModule {
     private fun SharedPreferences.getEnvironment(context: Context) = getString(
-        "app.environment",
+        PREF_APP_ENVIRONMENT,
         context.getString(R.string.settings_environment_default_value)
     )
 

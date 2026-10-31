@@ -16,6 +16,8 @@ import androidx.preference.PreferenceDataStore
 import androidx.preference.PreferenceFragmentCompat
 import app.fyreplace.fyreplace.BuildConfig
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.legacy.extensions.PREF_APP_ENVIRONMENT
+import app.fyreplace.fyreplace.legacy.extensions.PREF_SETTINGS_THEME
 import app.fyreplace.fyreplace.legacy.extensions.applyTheme
 import app.fyreplace.fyreplace.legacy.extensions.formatDate
 import app.fyreplace.fyreplace.legacy.extensions.getAppIcon
@@ -57,7 +59,7 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private val canChangeEnvironment: Boolean
         get() {
             val environment = preferences?.getString(
-                "app.environment",
+                PREF_APP_ENVIRONMENT,
                 getString(R.string.settings_environment_default_value)
             )
 
@@ -257,12 +259,12 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
     private inner class SettingsDataStore : PreferenceDataStore() {
         override fun getString(key: String?, defValue: String?) = when (key) {
             "theme" -> preferences?.getString(
-                "settings.theme",
+                PREF_SETTINGS_THEME,
                 getString(R.string.settings_theme_auto_value)
             )
 
             "environment" -> preferences?.getString(
-                "app.environment",
+                PREF_APP_ENVIRONMENT,
                 getString(R.string.settings_environment_default_value)
             )
 
@@ -280,12 +282,12 @@ class SettingsFragment : PreferenceFragmentCompat(), FailureHandler, ImageSelect
                 }
 
                 "theme" -> {
-                    preferences?.edit { putString("settings.theme", value) }
+                    preferences?.edit { putString(PREF_SETTINGS_THEME, value) }
                     preferences?.applyTheme(requireContext())
                 }
 
                 "environment" -> {
-                    preferences?.edit { putString("app.environment", value) }
+                    preferences?.edit { putString(PREF_APP_ENVIRONMENT, value) }
                     activity?.run { startActivity(Intent.makeRestartActivityTask(componentName)) }
                 }
 

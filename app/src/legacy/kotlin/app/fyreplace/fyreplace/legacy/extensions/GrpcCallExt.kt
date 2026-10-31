@@ -19,7 +19,7 @@ fun <S : Any, R : Any> GrpcStreamingCall<S, R>.dedupe() = apply {
 }
 
 fun Map<String, String>.authenticated(preferences: SharedPreferences): Map<String, String> {
-    val token = preferences.getString("auth.token", null)
+    val token = preferences.getString(PREF_AUTH_TOKEN, null)
     return if (token.isNotNullOrBlank()) this + ("authorization" to "Bearer $token") else this
 }
 

@@ -57,7 +57,10 @@ class FeedAdapter(
 
     override fun onViewRecycled(holder: PreviewHolder) {
         super.onViewRecycled(holder)
-        (holder as? PostHolder)?.clear()
+
+        if (holder is PostHolder) {
+            holder.clear()
+        }
     }
 
     override fun getItemId(item: Post) = item.id

@@ -7,6 +7,7 @@ import androidx.core.content.edit
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import app.fyreplace.fyreplace.R
+import app.fyreplace.fyreplace.legacy.extensions.PREF_AUTH_TOKEN
 import app.fyreplace.fyreplace.legacy.extensions.mainPreferences
 import com.squareup.wire.GrpcException
 import com.squareup.wire.GrpcStatus
@@ -80,7 +81,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
             }
 
         GrpcStatus.UNAUTHENTICATED if autoDisconnect -> {
-            if (preferences?.getString("auth.token", null)?.isNotEmpty() == true) {
+            if (preferences?.getString(PREF_AUTH_TOKEN, null)?.isNotEmpty() == true) {
                 showBasicAlert(
                     R.string.error_autodisconnect_title,
                     R.string.error_autodisconnect_message,
@@ -88,7 +89,7 @@ interface FailureHandler : BasePresenter, LifecycleOwner, ComponentCallbacks {
                 )
             }
 
-            preferences?.edit { putString("auth.token", "") }
+            preferences?.edit { putString(PREF_AUTH_TOKEN, "") }
         }
 
         else -> onFailure(error)

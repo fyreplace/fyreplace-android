@@ -1,6 +1,7 @@
 package app.fyreplace.fyreplace.legacy.viewmodels
 
 import android.content.SharedPreferences
+import app.fyreplace.fyreplace.legacy.extensions.PREF_AUTH_TOKEN
 import app.fyreplace.fyreplace.legacy.extensions.isNotNullOrBlank
 import app.fyreplace.protos.Image
 import app.fyreplace.protos.User
@@ -22,7 +23,7 @@ class CentralViewModel @Inject constructor(
 
     init {
         preferences.registerOnSharedPreferenceChangeListener(this)
-        onSharedPreferenceChanged(preferences, "auth.token")
+        onSharedPreferenceChanged(preferences, PREF_AUTH_TOKEN)
     }
 
     override fun onCleared() {
@@ -31,7 +32,7 @@ class CentralViewModel @Inject constructor(
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-        if (key == "auth.token") {
+        if (key == PREF_AUTH_TOKEN) {
             mIsAuthenticated.value = sharedPreferences.getString(key, null).isNotNullOrBlank()
         }
     }

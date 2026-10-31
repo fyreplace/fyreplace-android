@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import app.fyreplace.fyreplace.legacy.events.EventsManager
 import app.fyreplace.fyreplace.legacy.events.UserWasBlockedEvent
 import app.fyreplace.fyreplace.legacy.events.UserWasUnblockedEvent
+import app.fyreplace.fyreplace.legacy.extensions.PREF_AUTH_TOKEN
 import app.fyreplace.fyreplace.legacy.extensions.imageChunks
 import app.fyreplace.fyreplace.legacy.extensions.sendAllAndClose
 import app.fyreplace.protos.AccountServiceClient
@@ -55,12 +56,12 @@ class SettingsViewModel @AssistedInject constructor(
 
     suspend fun logout() {
         accountService.Disconnect().executeFully(Id())
-        preferences.edit { putString("auth.token", "") }
+        preferences.edit { putString(PREF_AUTH_TOKEN, "") }
     }
 
     suspend fun delete() {
         accountService.Delete().executeFully(Unit)
-        preferences.edit { putString("auth.token", "") }
+        preferences.edit { putString(PREF_AUTH_TOKEN, "") }
     }
 
     companion object {
