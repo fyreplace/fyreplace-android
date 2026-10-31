@@ -141,7 +141,6 @@
     <color name="md_theme_surfaceContainer_highContrast">#F1DFD8</color>
     <color name="md_theme_surfaceContainerHigh_highContrast">#E2D1CA</color>
     <color name="md_theme_surfaceContainerHighest_highContrast">#D4C3BD</color>
-    <color name="seed">#FF8243</color>
     <color name="splash_background">@android:color/white</color>
     <color name="splash_foreground">@color/seed</color>
     <color name="error">#BA1B1B</color>

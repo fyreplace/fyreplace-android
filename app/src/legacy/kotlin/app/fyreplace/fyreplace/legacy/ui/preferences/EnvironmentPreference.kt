@@ -6,7 +6,7 @@ import app.fyreplace.fyreplace.R
 
 class EnvironmentPreference : SingleChoicePreference {
     override val title = R.string.settings_environment
-    override val choiceNames = R.array.settings_environment
+    override val choiceNames = R.array.settings_environments
     override val choiceValues = R.array.settings_environment_values
     override val defaultValue = R.string.settings_environment_default_value
 

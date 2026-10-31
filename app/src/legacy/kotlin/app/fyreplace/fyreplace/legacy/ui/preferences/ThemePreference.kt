@@ -6,7 +6,7 @@ import app.fyreplace.fyreplace.R
 
 class ThemePreference : SingleChoicePreference {
     override val title = R.string.settings_theme
-    override val choiceNames = R.array.settings_theme
+    override val choiceNames = R.array.settings_themes
     override val choiceValues = R.array.settings_theme_values
     override val defaultValue = R.string.settings_theme_auto_value
 
